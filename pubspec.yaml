@@ -1,0 +1,74 @@
+name: divinity_app
+description: "Divinity — Academy Operating System. Manage People. Measure Transformation. Scale Impact."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
+
+  # Navigation
+  go_router: ^14.6.3
+
+  # Backend
+  supabase_flutter: ^2.9.0
+
+  # Firebase
+  firebase_core: ^3.13.1
+  firebase_analytics: ^11.4.6
+  firebase_crashlytics: ^4.3.6
+  firebase_messaging: ^15.2.6
+
+  # Fonts
+  google_fonts: ^6.2.1
+
+  # Storage / env
+  shared_preferences: ^2.3.5
+  flutter_dotenv: ^5.2.1
+
+  # Charts
+  fl_chart: ^0.70.0
+
+  # Calendar
+  table_calendar: ^3.1.2
+
+  # Geo
+  geolocator: ^13.0.2
+
+  # Utils
+  collection: ^1.19.1
+  intl: ^0.20.1
+
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+
+  # Code generation
+  riverpod_generator: ^2.6.5
+  build_runner: ^2.4.13
+
+  # Mocking
+  mocktail: ^1.0.4
+
+  # Lints
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - .env
+
+  # Fonts loaded via google_fonts package at runtime
