@@ -10,6 +10,12 @@ final supabaseClientProvider = Provider<SupabaseClient>(
   (_) => Supabase.instance.client,
 );
 
+/// Derives the current signed-in user's ID from Supabase auth.
+/// Override in tests to inject a known user ID without initialising Supabase.
+final currentUserIdProvider = Provider<String?>((ref) {
+  return ref.watch(supabaseClientProvider).auth.currentUser?.id;
+});
+
 // ── Auth repository ──────────────────────────────────────────────────────────
 
 final authRepositoryProvider = Provider<AuthRepository>(
