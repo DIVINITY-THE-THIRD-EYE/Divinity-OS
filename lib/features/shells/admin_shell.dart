@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/theme_provider.dart';
 import '../../features/admissions/presentation/leads_screen.dart';
 import '../../features/auth/presentation/auth_provider.dart';
-import '../../features/batches/presentation/batches_screen.dart';
+import '../../features/dashboard/presentation/admin_dashboard_screen.dart';
 import '../../features/leave/presentation/leave_approval_screen.dart';
 import '../../features/payments/presentation/admin_payments_screen.dart';
 import '../../features/shared/students_screen.dart';
@@ -22,10 +22,10 @@ class _AdminShellState extends ConsumerState<AdminShell> {
   int _index = 0;
 
   static const _tabs = [
+    _Tab(label: 'Dashboard', icon: Icons.dashboard_outlined),
     _Tab(label: 'Payments', icon: Icons.account_balance_wallet_outlined),
     _Tab(label: 'Admissions', icon: Icons.how_to_reg_outlined),
     _Tab(label: 'Students', icon: Icons.people_outline),
-    _Tab(label: 'Batches', icon: Icons.groups_outlined),
     _Tab(label: 'Leaves', icon: Icons.event_busy_outlined),
   ];
 
@@ -61,12 +61,12 @@ class _AdminShellState extends ConsumerState<AdminShell> {
       ),
       body: IndexedStack(
         index: _index,
-        children: [
-          const AdminPaymentsScreen(),
-          const LeadsScreen(),
-          const StudentsScreen(),
-          const BatchesScreen(),
-          const LeaveApprovalScreen(),
+        children: const [
+          AdminDashboardScreen(),
+          AdminPaymentsScreen(),
+          LeadsScreen(),
+          StudentsScreen(),
+          LeaveApprovalScreen(),
         ],
       ),
       bottomNavigationBar: NavigationBar(

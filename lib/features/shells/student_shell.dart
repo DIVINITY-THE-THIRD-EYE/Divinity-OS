@@ -7,6 +7,7 @@ import '../../features/attendance/presentation/check_in_screen.dart';
 import '../../features/auth/presentation/auth_provider.dart';
 import '../../features/leave/presentation/leave_request_screen.dart';
 import '../../features/payments/presentation/payments_screen.dart';
+import '../../features/profile/presentation/profile_screen.dart';
 import '../../shared/widgets/notification_bell.dart';
 import '../../shared/widgets/third_eye_icon.dart';
 
@@ -65,7 +66,7 @@ class _StudentShellState extends ConsumerState<StudentShell> {
           const CheckInScreen(),
           const MyLeaveScreen(),
           const PaymentsScreen(),
-          _StubPage(title: _tabs[4].label, icon: _tabs[4].icon),
+          const ProfileScreen(),
         ],
       ),
       bottomNavigationBar: NavigationBar(
