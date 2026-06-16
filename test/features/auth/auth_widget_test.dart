@@ -35,6 +35,9 @@ class _FakeAuthRepository implements AuthRepository {
 
   @override
   Future<Map<String, dynamic>?> fetchProfile(String userId) async => null;
+
+  @override
+  Future<void> updateProfile(String userId, Map<String, dynamic> data) async {}
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────

@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/theme_provider.dart';
+import '../../features/attendance/presentation/check_in_screen.dart';
 import '../../features/auth/presentation/auth_provider.dart';
+import '../../features/leave/presentation/leave_request_screen.dart';
 import '../../shared/widgets/third_eye_icon.dart';
 
 class StudentShell extends ConsumerStatefulWidget {
@@ -19,7 +21,7 @@ class _StudentShellState extends ConsumerState<StudentShell> {
   static const _tabs = [
     _Tab(label: 'Home', icon: Icons.home_outlined),
     _Tab(label: 'Attendance', icon: Icons.check_circle_outline),
-    _Tab(label: 'Progress', icon: Icons.timeline_outlined),
+    _Tab(label: 'Leaves', icon: Icons.event_busy_outlined),
     _Tab(label: 'Payments', icon: Icons.account_balance_wallet_outlined),
     _Tab(label: 'Profile', icon: Icons.person_outline),
   ];
@@ -55,9 +57,13 @@ class _StudentShellState extends ConsumerState<StudentShell> {
       ),
       body: IndexedStack(
         index: _index,
-        children: _tabs
-            .map((t) => _StubPage(title: t.label, icon: t.icon))
-            .toList(),
+        children: [
+          _StubPage(title: _tabs[0].label, icon: _tabs[0].icon),
+          const CheckInScreen(),
+          const MyLeaveScreen(),
+          _StubPage(title: _tabs[3].label, icon: _tabs[3].icon),
+          _StubPage(title: _tabs[4].label, icon: _tabs[4].icon),
+        ],
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,

@@ -47,6 +47,12 @@ class AuthNotifier extends StateNotifier<app_auth.AuthState> {
         state = app_auth.AuthUnauthenticated();
         return;
       }
+      final onboardingComplete =
+          profile['onboarding_complete'] as bool? ?? false;
+      if (!onboardingComplete) {
+        state = app_auth.AuthNeedsOnboarding(user);
+        return;
+      }
       final planStatus = profile['plan_status'] as String? ?? 'UNPAID';
       final role = app_auth.UserRole.fromString(
         profile['role'] as String? ?? 'STUDENT',
@@ -56,6 +62,22 @@ class AuthNotifier extends StateNotifier<app_auth.AuthState> {
       } else {
         state = app_auth.AuthAuthenticated(user, role);
       }
+    } catch (e) {
+      state = app_auth.AuthError(e.toString());
+    }
+  }
+
+  Future<void> completeOnboarding(Map<String, dynamic> profileData) async {
+    final currentState = state;
+    if (currentState is! app_auth.AuthNeedsOnboarding) return;
+    state = app_auth.AuthLoading();
+    try {
+      await _repo.updateProfile(currentState.user.id, {
+        ...profileData,
+        'onboarding_complete': true,
+        'plan_status': 'PENDING_ADMIN',
+      });
+      await _resolveUserState(currentState.user);
     } catch (e) {
       state = app_auth.AuthError(e.toString());
     }

@@ -17,6 +17,11 @@ final class AuthOtpSent extends AuthState {
   final String phone;
 }
 
+final class AuthNeedsOnboarding extends AuthState {
+  AuthNeedsOnboarding(this.user);
+  final User user;
+}
+
 final class AuthPendingApproval extends AuthState {
   AuthPendingApproval(this.user);
   final User user;

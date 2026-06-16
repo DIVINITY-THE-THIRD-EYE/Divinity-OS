@@ -8,6 +8,7 @@ abstract interface class AuthRepository {
   Future<void> verifyOtp({required String phone, required String token});
   Future<void> signOut();
   Future<Map<String, dynamic>?> fetchProfile(String userId);
+  Future<void> updateProfile(String userId, Map<String, dynamic> data);
 }
 
 class SupabaseAuthRepository implements AuthRepository {
@@ -51,5 +52,10 @@ class SupabaseAuthRepository implements AuthRepository {
   @override
   Future<Map<String, dynamic>?> fetchProfile(String userId) async {
     return _client.from('users').select().eq('id', userId).maybeSingle();
+  }
+
+  @override
+  Future<void> updateProfile(String userId, Map<String, dynamic> data) async {
+    await _client.from('users').update(data).eq('id', userId);
   }
 }

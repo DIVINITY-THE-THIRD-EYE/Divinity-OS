@@ -20,6 +20,12 @@ Future<AuthNotifier> buildNotifier(AuthRepository repo) async {
   return notifier;
 }
 
+Map<String, dynamic> activeProfile({String role = 'STUDENT'}) => {
+      'role': role,
+      'plan_status': 'ACTIVE',
+      'onboarding_complete': true,
+    };
+
 // ── Tests ────────────────────────────────────────────────────────────────────
 
 void main() {
@@ -49,18 +55,49 @@ void main() {
       expect(n.state, isA<app_auth.AuthUnauthenticated>());
     });
 
-    test('resolves to AuthAuthenticated for active user', () async {
+    test('resolves to AuthAuthenticated for fully active user', () async {
       final user = MockUser();
       when(() => user.id).thenReturn('uid-1');
       when(() => repo.currentUser).thenReturn(user);
-      when(() => repo.fetchProfile('uid-1')).thenAnswer(
-        (_) async => {'role': 'STUDENT', 'plan_status': 'ACTIVE'},
-      );
+      when(() => repo.fetchProfile('uid-1'))
+          .thenAnswer((_) async => activeProfile());
 
       final n = await buildNotifier(repo);
       expect(n.state, isA<app_auth.AuthAuthenticated>());
-      final s = n.state as app_auth.AuthAuthenticated;
-      expect(s.role, app_auth.UserRole.student);
+      expect(
+        (n.state as app_auth.AuthAuthenticated).role,
+        app_auth.UserRole.student,
+      );
+    });
+
+    test('resolves to AuthNeedsOnboarding when onboarding_complete is false',
+        () async {
+      final user = MockUser();
+      when(() => user.id).thenReturn('uid-ob');
+      when(() => repo.currentUser).thenReturn(user);
+      when(() => repo.fetchProfile('uid-ob')).thenAnswer(
+        (_) async => {
+          'role': 'STUDENT',
+          'plan_status': 'UNPAID',
+          'onboarding_complete': false,
+        },
+      );
+
+      final n = await buildNotifier(repo);
+      expect(n.state, isA<app_auth.AuthNeedsOnboarding>());
+    });
+
+    test('resolves to AuthNeedsOnboarding when onboarding_complete absent',
+        () async {
+      final user = MockUser();
+      when(() => user.id).thenReturn('uid-ob2');
+      when(() => repo.currentUser).thenReturn(user);
+      when(() => repo.fetchProfile('uid-ob2')).thenAnswer(
+        (_) async => {'role': 'STUDENT', 'plan_status': 'UNPAID'},
+      );
+
+      final n = await buildNotifier(repo);
+      expect(n.state, isA<app_auth.AuthNeedsOnboarding>());
     });
 
     test('resolves to AuthPendingApproval for pending user', () async {
@@ -68,11 +105,61 @@ void main() {
       when(() => user.id).thenReturn('uid-2');
       when(() => repo.currentUser).thenReturn(user);
       when(() => repo.fetchProfile('uid-2')).thenAnswer(
-        (_) async => {'role': 'STUDENT', 'plan_status': 'PENDING_ADMIN'},
+        (_) async => {
+          'role': 'STUDENT',
+          'plan_status': 'PENDING_ADMIN',
+          'onboarding_complete': true,
+        },
       );
 
       final n = await buildNotifier(repo);
       expect(n.state, isA<app_auth.AuthPendingApproval>());
+    });
+  });
+
+  group('AuthNotifier — completeOnboarding', () {
+    test('calls updateProfile and resolves to AuthPendingApproval', () async {
+      final user = MockUser();
+      when(() => user.id).thenReturn('uid-onboard');
+      when(() => repo.currentUser).thenReturn(user);
+      when(() => repo.fetchProfile('uid-onboard')).thenAnswer(
+        (_) async => {'role': 'STUDENT', 'plan_status': 'UNPAID'},
+      );
+
+      final n = await buildNotifier(repo);
+      expect(n.state, isA<app_auth.AuthNeedsOnboarding>());
+
+      when(() => repo.updateProfile('uid-onboard', any()))
+          .thenAnswer((_) async {});
+      // After update, re-fetch returns pending profile.
+      when(() => repo.fetchProfile('uid-onboard')).thenAnswer(
+        (_) async => {
+          'role': 'STUDENT',
+          'plan_status': 'PENDING_ADMIN',
+          'onboarding_complete': true,
+        },
+      );
+
+      await n.completeOnboarding({'name': 'Arjun', 'age': 28});
+
+      expect(n.state, isA<app_auth.AuthPendingApproval>());
+      verify(() => repo.updateProfile(
+            'uid-onboard',
+            any(that: predicate<Map<String, dynamic>>(
+              (m) =>
+                  m['onboarding_complete'] == true &&
+                  m['plan_status'] == 'PENDING_ADMIN',
+            )),
+          )).called(1);
+    });
+
+    test('is a no-op when state is not AuthNeedsOnboarding', () async {
+      final n = await buildNotifier(repo);
+      expect(n.state, isA<app_auth.AuthUnauthenticated>());
+      await n.completeOnboarding({'name': 'Test'});
+      // Should still be unauthenticated, no repo calls made.
+      expect(n.state, isA<app_auth.AuthUnauthenticated>());
+      verifyNever(() => repo.updateProfile(any(), any()));
     });
   });
 
@@ -87,9 +174,8 @@ void main() {
             password: any(named: 'password'),
           )).thenAnswer((_) async {});
       when(() => repo.currentUser).thenReturn(user);
-      when(() => repo.fetchProfile('uid-3')).thenAnswer(
-        (_) async => {'role': 'TRAINER', 'plan_status': 'ACTIVE'},
-      );
+      when(() => repo.fetchProfile('uid-3'))
+          .thenAnswer((_) async => activeProfile(role: 'TRAINER'));
 
       await n.signInWithPhone(phone: '+919876543210', password: 'secret');
 
@@ -152,9 +238,8 @@ void main() {
             token: any(named: 'token'),
           )).thenAnswer((_) async {});
       when(() => repo.currentUser).thenReturn(user);
-      when(() => repo.fetchProfile('uid-4')).thenAnswer(
-        (_) async => {'role': 'ADMIN', 'plan_status': 'ACTIVE'},
-      );
+      when(() => repo.fetchProfile('uid-4'))
+          .thenAnswer((_) async => activeProfile(role: 'ADMIN'));
 
       await n.verifyOtp(phone: '+919876543210', token: '123456');
 
@@ -173,7 +258,6 @@ void main() {
             phone: any(named: 'phone'),
             token: any(named: 'token'),
           )).thenAnswer((_) async {});
-      // currentUser still null after verify (unusual but guard it)
       when(() => repo.currentUser).thenReturn(null);
 
       await n.verifyOtp(phone: '+919876543210', token: '999999');
@@ -187,9 +271,8 @@ void main() {
       final user = MockUser();
       when(() => user.id).thenReturn('uid-5');
       when(() => repo.currentUser).thenReturn(user);
-      when(() => repo.fetchProfile('uid-5')).thenAnswer(
-        (_) async => {'role': 'STUDENT', 'plan_status': 'ACTIVE'},
-      );
+      when(() => repo.fetchProfile('uid-5'))
+          .thenAnswer((_) async => activeProfile());
       final n = await buildNotifier(repo);
       expect(n.state, isA<app_auth.AuthAuthenticated>());
 

@@ -1,34 +1,37 @@
 # DIVINITY BUILD STATUS
-Session completed: 1 — Auth + RBAC + RLS
+Session completed: 3 — Attendance + Leave Requests + Admin Student Activation
 Date: 2026-06-16
 
 ## Done this session
-- Added `AuthOtpSent` state to sealed `AuthState`
-- `AuthNotifier.sendOtp` → transitions to `AuthOtpSent`; `verifyOtp` → resolves role; `resendOtp` helper
-- `LoginScreen` OTP toggle (password ↔ OTP mode, single phone field shared)
-- New `OtpScreen` — 6-digit PIN input, auto-submit on full entry, Resend + Back to Login
-- `Routes.otp` added to router; redirect handles `AuthOtpSent` → `/otp`
-- Role-based shells: `StudentShell` (5 tabs), `TrainerShell` (4 tabs), `AdminShell` (5 tabs)
-- `RoleShell` — reads `AuthAuthenticated.role` and renders correct shell
-- Router home `/` now uses `RoleShell` instead of `HomeStubScreen`
-- Supabase migration `001_users_rls.sql` — `public.users` table, 6 RLS policies, auto-create trigger on signup, age/gender lock trigger after onboarding
-- Unit tests (12): UserRole.fromString, AuthNotifier init/signIn/sendOtp/verifyOtp/signOut
-- Widget tests (9): LoginScreen render/toggle/validation/branding, OtpScreen render/phone display
-- `flutter analyze`: 0 issues | `flutter test`: 24/24 passing
+- Migration `003_attendance_leave.sql` — `enrollments`, `attendance`, `leave_requests` tables with RLS + unique constraint on `(student_id, date)` for upsert
+- Attendance domain: `AttendanceRecord`, `AttendanceStatus`, `MarkedBy` enums with `fromString`/`dbValue`
+- `SupabaseAttendanceRepository` — `fetchTodayRecord`, `fetchHistory`, `checkIn` (upsert), `updateStatus`, `fetchActiveBatch` (joins enrollments→batches for geofence), `fetchBatchAttendanceToday`
+- Attendance providers: `TodayAttendanceNotifier`, `AttendanceHistoryNotifier`, `GeolocationNotifier`, `activeBatchProvider`
+- `CheckInScreen` — date card, status card, geofenced check-in (Haversine via `geolocator`), "Request Leave" button, recent history list
+- `AttendanceHistoryScreen` — full history list
+- Android/iOS location permissions added to `AndroidManifest.xml` + `Info.plist`
+- Leave domain: `LeaveRequest`, `LeaveStatus` with `fromString`/`dbValue`
+- `SupabaseLeaveRepository` — `fetchMyRequests`, `fetchPendingRequests` (joined), `submitRequest`, `updateStatus`
+- Leave providers: `MyLeaveNotifier.submit`, `PendingLeaveNotifier.approve/reject/refresh` — `approvedBy` passed as param for testability
+- `LeaveRequestSheet` (bottom sheet) + `MyLeaveScreen` (student history)
+- `LeaveApprovalScreen` — pending list with approve/reject + confirm dialog
+- `StudentsScreen` (Admin) — lists all students, "Activate" button sets `plan_status = ACTIVE`
+- Shell wiring: `StudentShell` tab 1→CheckIn, tab 2→MyLeave; `AdminShell` tab 2→Students, tab 3→Batches, tab 4→LeaveApproval; `TrainerShell` tab 1→LeaveApproval
+- Tests: 71/71 passing
+- `flutter analyze`: 0 issues
 
-## Next session (2) will do
-- `branches` + `batches` CRUD (admin/trainer)
-- Member onboarding wizard (medical, emergency contacts, age/gender lock UI)
-- CRM: `leads` table, pipeline NEW→CONSULTATION→ADMITTED→LOST
-- Admission flow: convert lead → `users` row + set plan_status
-- Tests: unit (lead→member conversion), widget (onboarding wizard lock), integration stubs
+## Next session (4) will do
+- Payments: Razorpay integration (package `razorpay_flutter`), `payments` table, `PaymentRecord` model, fee collection screen, receipt view, payment history
+- Notifications: In-app notification centre, `notifications` table, `NotificationNotifier`, mark-read
+- Trainer dashboard: batch attendance summary, daily check-in list per batch
 
 ## Decisions needed from human
 - Supabase ANON KEY still needs to be added to .env (placeholder in place)
 - Firebase project not yet created — needed for Session 5 (FCM/Analytics/Crashlytics)
+- Razorpay test key needed for Session 4 payment integration
 
 ## How to resume
 Paste: "Read STATUS.md and git log, then continue with the next session."
 
 ## Test status
-unit: PASS  widget: PASS  integration: n/a  e2e: n/a
+unit: PASS (71/71)  widget: PASS  integration: n/a  e2e: n/a

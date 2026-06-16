@@ -3,7 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/theme_provider.dart';
+import '../../features/admissions/presentation/leads_screen.dart';
 import '../../features/auth/presentation/auth_provider.dart';
+import '../../features/batches/presentation/batches_screen.dart';
+import '../../features/leave/presentation/leave_approval_screen.dart';
+import '../../features/shared/students_screen.dart';
 import '../../shared/widgets/third_eye_icon.dart';
 
 class AdminShell extends ConsumerStatefulWidget {
@@ -18,10 +22,10 @@ class _AdminShellState extends ConsumerState<AdminShell> {
 
   static const _tabs = [
     _Tab(label: 'Dashboard', icon: Icons.dashboard_outlined),
+    _Tab(label: 'Admissions', icon: Icons.how_to_reg_outlined),
     _Tab(label: 'Students', icon: Icons.people_outline),
-    _Tab(label: 'Trainers', icon: Icons.sports_outlined),
-    _Tab(label: 'Attendance', icon: Icons.check_circle_outline),
-    _Tab(label: 'Payments', icon: Icons.account_balance_wallet_outlined),
+    _Tab(label: 'Batches', icon: Icons.groups_outlined),
+    _Tab(label: 'Leaves', icon: Icons.event_busy_outlined),
   ];
 
   @override
@@ -29,11 +33,11 @@ class _AdminShellState extends ConsumerState<AdminShell> {
     final themeMode = ref.watch(themeModeProvider);
     return Scaffold(
       appBar: AppBar(
-        title: const Row(
+        title: Row(
           children: [
-            ThirdEyeIcon(size: 22),
-            SizedBox(width: 8),
-            Text('Divinity'),
+            const ThirdEyeIcon(size: 22),
+            const SizedBox(width: 8),
+            Text(_tabs[_index].label),
           ],
         ),
         actions: [
@@ -55,9 +59,13 @@ class _AdminShellState extends ConsumerState<AdminShell> {
       ),
       body: IndexedStack(
         index: _index,
-        children: _tabs
-            .map((t) => _StubPage(title: t.label, icon: t.icon))
-            .toList(),
+        children: [
+          _StubPage(title: _tabs[0].label, icon: _tabs[0].icon),
+          const LeadsScreen(),
+          const StudentsScreen(),
+          const BatchesScreen(),
+          const LeaveApprovalScreen(),
+        ],
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
