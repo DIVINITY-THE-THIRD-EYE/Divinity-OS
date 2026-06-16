@@ -1,14 +1,10 @@
-// Run `flutterfire configure` to replace these placeholder values.
-// Until configured, Firebase (FCM, Analytics, Crashlytics) is gracefully
-// disabled: main.dart wraps Firebase.initializeApp in try/catch.
-
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
 
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
-    if (kIsWeb) return web;
+    if (kIsWeb) throw UnsupportedError('Web not configured. Run `flutterfire configure`.');
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
@@ -16,35 +12,25 @@ class DefaultFirebaseOptions {
         return ios;
       default:
         throw UnsupportedError(
-          'DefaultFirebaseOptions not configured for '
-          '${defaultTargetPlatform.name}. Run `flutterfire configure`.',
+          'DefaultFirebaseOptions not configured for ${defaultTargetPlatform.name}.',
         );
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'PLACEHOLDER',
-    appId: '1:000000000000:web:000000000000000000000000',
-    messagingSenderId: '000000000000',
-    projectId: 'divinity-placeholder',
-    storageBucket: 'divinity-placeholder.appspot.com',
-  );
-
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'PLACEHOLDER',
-    appId: '1:000000000000:android:000000000000000000000000',
-    messagingSenderId: '000000000000',
-    projectId: 'divinity-placeholder',
-    storageBucket: 'divinity-placeholder.appspot.com',
+    apiKey: 'AIzaSyD5bGoBTwdvFvR1d_nv0UeEsW7xP1d-WmE',
+    appId: '1:570181543606:android:825ee98cce08e361316817',
+    messagingSenderId: '570181543606',
+    projectId: 'divinity-the-third-eye',
+    storageBucket: 'divinity-the-third-eye.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'PLACEHOLDER',
-    appId: '1:000000000000:ios:000000000000000000000000',
-    messagingSenderId: '000000000000',
-    projectId: 'divinity-placeholder',
-    storageBucket: 'divinity-placeholder.appspot.com',
-    iosClientId: 'PLACEHOLDER.apps.googleusercontent.com',
-    iosBundleId: 'com.divinity.app',
+    apiKey: 'AIzaSyA9_MnUohwn6vFgGMiBHZ2cZ-QeRoiC4fo',
+    appId: '1:570181543606:ios:a05d2f7c28c51cb3316817',
+    messagingSenderId: '570181543606',
+    projectId: 'divinity-the-third-eye',
+    storageBucket: 'divinity-the-third-eye.firebasestorage.app',
+    iosBundleId: 'com.divinity.thirdeye',
   );
 }

@@ -7,6 +7,7 @@ import '../../features/batches/presentation/batches_screen.dart';
 import '../../features/leave/presentation/leave_approval_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/trainer/presentation/trainer_dashboard_screen.dart';
+import '../../services/fcm_provider.dart';
 import '../../shared/widgets/notification_bell.dart';
 import '../../shared/widgets/third_eye_icon.dart';
 
@@ -27,8 +28,18 @@ class _TrainerShellState extends ConsumerState<TrainerShell> {
     _Tab(label: 'Profile', icon: Icons.person_outline),
   ];
 
+  static int _targetToIndex(String target) => switch (target) {
+        'leaves' => 1,
+        'batches' => 2,
+        'profile' => 3,
+        _ => 0,
+      };
+
   @override
   Widget build(BuildContext context) {
+    ref.listen<AsyncValue<String>>(fcmNotificationTapProvider, (_, next) {
+      next.whenData((target) => setState(() => _index = _targetToIndex(target)));
+    });
     final themeMode = ref.watch(themeModeProvider);
     return Scaffold(
       appBar: AppBar(

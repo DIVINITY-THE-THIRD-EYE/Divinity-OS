@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "570181543606",
+    "project_id": "divinity-the-third-eye",
+    "storage_bucket": "divinity-the-third-eye.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:570181543606:android:825ee98cce08e361316817",
+        "android_client_info": {
+          "package_name": "com.divinity.thethirdeye"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5bGoBTwdvFvR1d_nv0UeEsW7xP1d-WmE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

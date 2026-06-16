@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -18,8 +17,6 @@ class FcmService {
 
   Future<void> init() async {
     if (_initialized) return;
-    if (Firebase.apps.isEmpty) return; // not configured yet
-
     _initialized = true;
     final messaging = FirebaseMessaging.instance;
 

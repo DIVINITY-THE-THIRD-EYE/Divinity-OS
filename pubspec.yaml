@@ -43,6 +43,10 @@ dependencies:
   # Geo
   geolocator: ^13.0.2
 
+  # File sharing / export
+  share_plus: ^10.1.4
+  path_provider: ^2.1.5
+
   # Utils
   collection: ^1.19.1
   intl: ^0.20.1

@@ -8,6 +8,7 @@ import '../../features/dashboard/presentation/admin_dashboard_screen.dart';
 import '../../features/leave/presentation/leave_approval_screen.dart';
 import '../../features/payments/presentation/admin_payments_screen.dart';
 import '../../features/shared/students_screen.dart';
+import '../../services/fcm_provider.dart';
 import '../../shared/widgets/notification_bell.dart';
 import '../../shared/widgets/third_eye_icon.dart';
 
@@ -29,8 +30,19 @@ class _AdminShellState extends ConsumerState<AdminShell> {
     _Tab(label: 'Leaves', icon: Icons.event_busy_outlined),
   ];
 
+  static int _targetToIndex(String target) => switch (target) {
+        'payments' => 1,
+        'admissions' => 2,
+        'students' => 3,
+        'leaves' => 4,
+        _ => 0,
+      };
+
   @override
   Widget build(BuildContext context) {
+    ref.listen<AsyncValue<String>>(fcmNotificationTapProvider, (_, next) {
+      next.whenData((target) => setState(() => _index = _targetToIndex(target)));
+    });
     final themeMode = ref.watch(themeModeProvider);
     return Scaffold(
       appBar: AppBar(

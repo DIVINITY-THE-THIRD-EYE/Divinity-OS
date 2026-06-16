@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../core/theme/app_theme.dart';
 import '../../core/theme/theme_provider.dart';
 import '../../features/attendance/presentation/check_in_screen.dart';
 import '../../features/auth/presentation/auth_provider.dart';
+import '../../features/home/presentation/student_home_screen.dart';
 import '../../features/leave/presentation/leave_request_screen.dart';
 import '../../features/payments/presentation/payments_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
+import '../../services/fcm_provider.dart';
 import '../../shared/widgets/notification_bell.dart';
 import '../../shared/widgets/third_eye_icon.dart';
 
@@ -29,8 +30,19 @@ class _StudentShellState extends ConsumerState<StudentShell> {
     _Tab(label: 'Profile', icon: Icons.person_outline),
   ];
 
+  static int _targetToIndex(String target) => switch (target) {
+        'attendance' => 1,
+        'leaves' => 2,
+        'payments' => 3,
+        'profile' => 4,
+        _ => 0,
+      };
+
   @override
   Widget build(BuildContext context) {
+    ref.listen<AsyncValue<String>>(fcmNotificationTapProvider, (_, next) {
+      next.whenData((target) => setState(() => _index = _targetToIndex(target)));
+    });
     final themeMode = ref.watch(themeModeProvider);
     return Scaffold(
       appBar: AppBar(
@@ -62,7 +74,7 @@ class _StudentShellState extends ConsumerState<StudentShell> {
       body: IndexedStack(
         index: _index,
         children: [
-          _StubPage(title: _tabs[0].label, icon: _tabs[0].icon),
+          const StudentHomeScreen(),
           const CheckInScreen(),
           const MyLeaveScreen(),
           const PaymentsScreen(),
@@ -89,31 +101,3 @@ class _Tab {
   final IconData icon;
 }
 
-class _StubPage extends StatelessWidget {
-  const _StubPage({required this.title, required this.icon});
-  final String title;
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon,
-              size: 64,
-              color: AppColors.accentViolet.withValues(alpha: 0.4)),
-          const SizedBox(height: 16),
-          Text(title, style: tt.headlineSmall),
-          const SizedBox(height: 8),
-          Text(
-            'Coming in a future session.',
-            style: tt.bodyMedium
-                ?.copyWith(color: AppColors.textSecondaryDark),
-          ),
-        ],
-      ),
-    );
-  }
-}

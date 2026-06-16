@@ -1,4 +1,4 @@
-package com.divinity.divinity_app
+package com.divinity.thethirdeye
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -19,15 +19,9 @@ Future<void> main() async {
     publishableKey: dotenv.env['SUPABASE_ANON_KEY'] ?? '',
   );
 
-  // Firebase init is gracefully skipped until `flutterfire configure` is run
-  // and google-services.json / GoogleService-Info.plist are in place.
-  try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-  } catch (e) {
-    debugPrint('[Firebase] init skipped (placeholder config): $e');
-  }
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   runApp(const ProviderScope(child: DivinityApp()));
 }

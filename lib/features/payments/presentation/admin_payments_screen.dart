@@ -1,5 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../domain/payment_record.dart';
@@ -8,6 +13,29 @@ import 'record_payment_sheet.dart';
 
 class AdminPaymentsScreen extends ConsumerWidget {
   const AdminPaymentsScreen({super.key});
+
+  Future<void> _exportCsv(
+    BuildContext context,
+    List<PaymentRecord> payments,
+  ) async {
+    final buf = StringBuffer();
+    buf.writeln('Date,Student,Amount,Method,Status,Reference');
+    for (final p in payments) {
+      final date = DateFormat('yyyy-MM-dd').format(p.paidAt);
+      final name = (p.studentName ?? p.studentId).replaceAll(',', ' ');
+      final ref = (p.referenceNumber ?? '').replaceAll(',', ' ');
+      buf.writeln('$date,$name,${p.amount},${p.method.label},${p.status.label},$ref');
+    }
+    final dir = await getTemporaryDirectory();
+    final stamp = DateFormat('yyyyMMdd_HHmm').format(DateTime.now());
+    final file = File('${dir.path}/payments_$stamp.csv');
+    await file.writeAsString(buf.toString());
+    if (!context.mounted) return;
+    await Share.shareXFiles(
+      [XFile(file.path, mimeType: 'text/csv')],
+      subject: 'Divinity Payments Export $stamp',
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -59,21 +87,28 @@ class AdminPaymentsScreen extends ConsumerWidget {
                                 color: Theme.of(context).colorScheme.primary,
                                 size: 32),
                             const SizedBox(width: 16),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Total Collected',
-                                    style: tt.bodySmall),
-                                Text(
-                                  '₹${totalCollected.toStringAsFixed(0)}',
-                                  style: tt.headlineMedium?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .primary,
-                                    fontWeight: FontWeight.bold,
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Total Collected',
+                                      style: tt.bodySmall),
+                                  Text(
+                                    '₹${totalCollected.toStringAsFixed(0)}',
+                                    style: tt.headlineMedium?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.download_outlined),
+                              tooltip: 'Export CSV',
+                              onPressed: () => _exportCsv(context, payments),
                             ),
                           ],
                         ),
