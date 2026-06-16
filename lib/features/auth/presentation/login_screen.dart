@@ -19,6 +19,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _phoneCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   bool _obscurePassword = true;
+  bool _otpMode = false;
 
   @override
   void dispose() {
@@ -29,10 +30,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _submit() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
-    await ref.read(authStateProvider.notifier).signInWithPhone(
-          phone: '+91${_phoneCtrl.text.trim()}',
-          password: _passwordCtrl.text,
-        );
+    final phone = '+91${_phoneCtrl.text.trim()}';
+    if (_otpMode) {
+      await ref.read(authStateProvider.notifier).sendOtp(phone: phone);
+    } else {
+      await ref.read(authStateProvider.notifier).signInWithPhone(
+            phone: phone,
+            password: _passwordCtrl.text,
+          );
+    }
   }
 
   @override
@@ -54,16 +60,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   phoneCtrl: _phoneCtrl,
                   passwordCtrl: _passwordCtrl,
                   obscurePassword: _obscurePassword,
+                  otpMode: _otpMode,
                   isLoading: isLoading,
                   error: error,
                   onTogglePassword: () =>
                       setState(() => _obscurePassword = !_obscurePassword),
+                  onToggleOtpMode: () =>
+                      setState(() => _otpMode = !_otpMode),
                   onSubmit: _submit,
                 ),
               ),
             ),
           ),
-          if (isLoading) const LoadingOverlay(message: 'Signing in…'),
+          if (isLoading)
+            LoadingOverlay(
+              message: _otpMode ? 'Sending OTP…' : 'Signing in…',
+            ),
         ],
       ),
     );
@@ -94,8 +106,10 @@ class _LoginCard extends StatelessWidget {
     required this.phoneCtrl,
     required this.passwordCtrl,
     required this.obscurePassword,
+    required this.otpMode,
     required this.isLoading,
     required this.onTogglePassword,
+    required this.onToggleOtpMode,
     required this.onSubmit,
     this.error,
   });
@@ -104,8 +118,10 @@ class _LoginCard extends StatelessWidget {
   final TextEditingController phoneCtrl;
   final TextEditingController passwordCtrl;
   final bool obscurePassword;
+  final bool otpMode;
   final bool isLoading;
   final VoidCallback onTogglePassword;
+  final VoidCallback onToggleOtpMode;
   final VoidCallback onSubmit;
   final String? error;
 
@@ -163,31 +179,45 @@ class _LoginCard extends StatelessWidget {
                 return null;
               },
             ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: passwordCtrl,
-              obscureText: obscurePassword,
-              decoration: InputDecoration(
-                labelText: 'Password',
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    obscurePassword
-                        ? Icons.visibility_off_outlined
-                        : Icons.visibility_outlined,
-                    size: 20,
+            if (!otpMode) ...[
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: passwordCtrl,
+                obscureText: obscurePassword,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      obscurePassword
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                      size: 20,
+                    ),
+                    onPressed: onTogglePassword,
                   ),
-                  onPressed: onTogglePassword,
                 ),
+                validator: (v) =>
+                    (v == null || v.isEmpty) ? 'Enter your password' : null,
               ),
-              validator: (v) =>
-                  (v == null || v.isEmpty) ? 'Enter your password' : null,
-            ),
+            ],
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: isLoading ? null : onSubmit,
-                child: const Text('Sign In'),
+                child: Text(otpMode ? 'Send OTP' : 'Sign In'),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextButton(
+              onPressed: isLoading ? null : onToggleOtpMode,
+              child: Text(
+                otpMode
+                    ? 'Sign in with password instead'
+                    : 'Sign in with OTP instead',
+                style: tt.bodySmall?.copyWith(
+                  color: AppColors.accentViolet,
+                ),
               ),
             ),
           ],

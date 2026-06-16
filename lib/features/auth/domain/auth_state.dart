@@ -12,6 +12,11 @@ final class AuthAuthenticated extends AuthState {
   final UserRole role;
 }
 
+final class AuthOtpSent extends AuthState {
+  AuthOtpSent(this.phone);
+  final String phone;
+}
+
 final class AuthPendingApproval extends AuthState {
   AuthPendingApproval(this.user);
   final User user;

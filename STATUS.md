@@ -1,34 +1,30 @@
 # DIVINITY BUILD STATUS
-Session completed: 0 — Foundation & Scaffold
+Session completed: 1 — Auth + RBAC + RLS
 Date: 2026-06-16
 
 ## Done this session
-- Audited existing repo (Next.js + static HTML/CSS/JS in divinity-third-eye) — keeping as design reference / future marketing site
-- Created Flutter project at divinity_flutter/ (targets: android, ios, web)
-- Feature-first folder structure: lib/core/{theme,router,constants}, lib/features/{auth,admissions,attendance,payments,batches,analytics}, lib/shared/widgets/
-- All dependencies installed: Riverpod, go_router, supabase_flutter, firebase_*, google_fonts, fl_chart, table_calendar, geolocator, flutter_dotenv, shared_preferences, mocktail
-- Brand design system translated to Flutter ThemeData (dark #0B0721/violet, light #FFFDF6/gold; Playfair Display + Poppins + JetBrains Mono via google_fonts)
-- GoRouter with reactive auth redirect (sealed AuthState → 3 routes: login / pending / home)
-- Riverpod StateNotifier for theme (dark default, persisted via shared_preferences)
-- Supabase initialized via flutter_dotenv
-- Auth repository interface + SupabaseAuthRepository impl
-- Login screen with brand styling (dark radial gradient, chakra glow, phone+password form)
-- PendingApprovalScreen
-- HomeStubScreen (placeholder with theme toggle)
-- ThirdEyeIcon (CustomPainter lotus/mandala motif)
-- ChakraLoader (animated gradient ring)
-- Strict analysis_options.yaml — flutter analyze: 0 issues
-- 4 smoke widget tests — all passing
+- Added `AuthOtpSent` state to sealed `AuthState`
+- `AuthNotifier.sendOtp` → transitions to `AuthOtpSent`; `verifyOtp` → resolves role; `resendOtp` helper
+- `LoginScreen` OTP toggle (password ↔ OTP mode, single phone field shared)
+- New `OtpScreen` — 6-digit PIN input, auto-submit on full entry, Resend + Back to Login
+- `Routes.otp` added to router; redirect handles `AuthOtpSent` → `/otp`
+- Role-based shells: `StudentShell` (5 tabs), `TrainerShell` (4 tabs), `AdminShell` (5 tabs)
+- `RoleShell` — reads `AuthAuthenticated.role` and renders correct shell
+- Router home `/` now uses `RoleShell` instead of `HomeStubScreen`
+- Supabase migration `001_users_rls.sql` — `public.users` table, 6 RLS policies, auto-create trigger on signup, age/gender lock trigger after onboarding
+- Unit tests (12): UserRole.fromString, AuthNotifier init/signIn/sendOtp/verifyOtp/signOut
+- Widget tests (9): LoginScreen render/toggle/validation/branding, OtpScreen render/phone display
+- `flutter analyze`: 0 issues | `flutter test`: 24/24 passing
 
-## Next session (1) will do
-- Supabase Auth: phone password + OTP flow, persisted session, trainer first-login password reset
-- `users` table RLS policies (admin reads all, trainer reads own batch students, student reads own row)
-- Role-based route guards (Student/Trainer/Admin shells with bottom nav)
-- Supabase anon key needs to be added to .env (currently placeholder — SUPABASE_ANON_KEY=YOUR_KEY)
+## Next session (2) will do
+- `branches` + `batches` CRUD (admin/trainer)
+- Member onboarding wizard (medical, emergency contacts, age/gender lock UI)
+- CRM: `leads` table, pipeline NEW→CONSULTATION→ADMITTED→LOST
+- Admission flow: convert lead → `users` row + set plan_status
+- Tests: unit (lead→member conversion), widget (onboarding wizard lock), integration stubs
 
 ## Decisions needed from human
-- Provide correct Supabase ANON KEY for .env (the one in divinity-third-eye/.env looks truncated)
-- Confirm: skip Razorpay for now, use UPI screenshot + UTR flow only? (per spec)
+- Supabase ANON KEY still needs to be added to .env (placeholder in place)
 - Firebase project not yet created — needed for Session 5 (FCM/Analytics/Crashlytics)
 
 ## How to resume
@@ -36,6 +32,3 @@ Paste: "Read STATUS.md and git log, then continue with the next session."
 
 ## Test status
 unit: PASS  widget: PASS  integration: n/a  e2e: n/a
-
-## Cost note
-Still $0. Paid only at store publish (Google ~$25 once, Apple ~$99/yr).

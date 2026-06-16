@@ -77,6 +77,40 @@ class AuthNotifier extends StateNotifier<app_auth.AuthState> {
     }
   }
 
+  Future<void> sendOtp({required String phone}) async {
+    state = app_auth.AuthLoading();
+    try {
+      await _repo.signInWithOtp(phone: phone);
+      state = app_auth.AuthOtpSent(phone);
+    } on AuthException catch (e) {
+      state = app_auth.AuthError(e.message);
+    } catch (_) {
+      state = app_auth.AuthError('Failed to send OTP. Please try again.');
+    }
+  }
+
+  Future<void> verifyOtp({
+    required String phone,
+    required String token,
+  }) async {
+    state = app_auth.AuthLoading();
+    try {
+      await _repo.verifyOtp(phone: phone, token: token);
+      final user = _repo.currentUser;
+      if (user != null) {
+        await _resolveUserState(user);
+      } else {
+        state = app_auth.AuthError('Verification failed. Please try again.');
+      }
+    } on AuthException catch (e) {
+      state = app_auth.AuthError(e.message);
+    } catch (_) {
+      state = app_auth.AuthError('Unexpected error. Please try again.');
+    }
+  }
+
+  Future<void> resendOtp({required String phone}) => sendOtp(phone: phone);
+
   Future<void> signOut() async {
     await _repo.signOut();
     state = app_auth.AuthUnauthenticated();
