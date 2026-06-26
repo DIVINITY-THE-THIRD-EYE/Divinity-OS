@@ -1,0 +1,74 @@
+# Divinity CI — Phase 0 quality gates.
+# SCAFFOLD: activates once this folder is a git repo pushed to GitHub AND the devDeps + npm scripts
+# listed in design/phase0/quality-gates.md are added. Until then it is inert (no repo = never runs).
+# Every job is a required check; a failure blocks merge (configure branch protection).
+
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20            # pin LTS (see BASELINE: prod should target 20.x, not 24)
+          cache: npm
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck        # tsc --noEmit
+
+      - name: Lint
+        run: npm run lint             # next lint / eslint (NOT ignored in CI)
+
+      - name: Format check
+        run: npm run format:check      # prettier --check  (or biome ci)
+
+      - name: Unit tests
+        run: npm run test:unit         # vitest run
+
+      - name: Build
+        run: npm run build
+
+      - name: Bundle-size budget
+        run: npm run size              # size-limit (config: .size-limit.json, first-load ≤ 210 kB)
+
+  e2e-a11y-vrt:
+    runs-on: ubuntu-latest
+    needs: quality
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Build & start
+        run: npm run build && npm run start & npx wait-on http://localhost:3000
+      - name: Accessibility (axe)
+        run: npm run test:a11y         # @axe-core/playwright — 0 critical/serious
+      - name: Visual regression
+        run: npm run test:vrt          # playwright toHaveScreenshot (design/20)
+      - name: Dead links
+        run: npx linkinator http://localhost:3000 --recurse --silent
+      - name: Broken images
+        run: npm run test:images       # playwright: assert every <img> naturalWidth > 0
+
+  lighthouse:
+    runs-on: ubuntu-latest
+    needs: quality
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci && npm run build
+      - name: Lighthouse CI
+        run: npx @lhci/cli autorun      # config: lighthouserc.json (asserts in design/11)

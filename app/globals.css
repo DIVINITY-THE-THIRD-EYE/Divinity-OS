@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --void: #15161e;
+  --deep: #1e2029;
+  --smoke: #2a2d38;
+  --bone: #ece7db;
+  --ember: #d08a3e;
+  --ember-deep: #a85e2a;
+  --mist: #8e93a6;
+  --line-dark: rgba(208, 138, 62, 0.16);
+  --line-light: rgba(32, 36, 47, 0.14);
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+html {
+  background: var(--void);
+}
+
+body {
+  background: var(--void);
+  color: var(--bone);
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-weight: 300;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--ember);
+  color: var(--void);
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Type roles */
+.font-display {
+  font-family: var(--font-display), Georgia, serif;
+}
+.eyebrow {
+  font-family: var(--font-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+/* Focus visibility (a11y floor) */
+:focus-visible {
+  outline: 2px solid var(--ember);
+  outline-offset: 3px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Hide native cursor only on devices with a fine pointer */
+@media (hover: hover) and (pointer: fine) {
+  .has-custom-cursor,
+  .has-custom-cursor * {
+    cursor: none;
+  }
+}
+
+/* ── Award layer ─────────────────────────────────────────────── */
+
+/* Breathing ambient gradient (fixed, behind everything) */
+.ambient {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 50% at 50% 0%, rgba(208, 138, 62, 0.10), transparent 70%),
+    radial-gradient(50% 40% at 85% 30%, rgba(168, 94, 42, 0.08), transparent 70%),
+    radial-gradient(45% 45% at 10% 80%, rgba(208, 138, 62, 0.06), transparent 70%);
+  animation: breatheBg 12s ease-in-out infinite;
+}
+@keyframes breatheBg {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  45% { opacity: 1; transform: scale(1.06); }
+  60% { opacity: 1; transform: scale(1.06); }
+}
+
+/* Fine film grain for tactile depth */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient { animation: none; opacity: 0.7; }
+}
+
+/* Scroll progress bar */
+.scroll-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  transform-origin: 0%;
+  background: linear-gradient(90deg, var(--ember-deep), var(--ember));
+  z-index: 350;
+}
+
+/* kbd chip */
+.kbd {
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  border: 1px solid var(--line-dark);
+  border-radius: 4px;
+  padding: 2px 6px;
+  color: var(--mist);
+}
