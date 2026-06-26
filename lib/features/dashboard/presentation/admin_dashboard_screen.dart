@@ -5,6 +5,9 @@ import 'package:intl/intl.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../shared/widgets/loading_widget.dart';
+import '../../auth/presentation/auth_provider.dart' show supabaseClientProvider;
+import '../../notifications/domain/app_notification.dart' show NotificationKind;
+import '../../notifications/presentation/notification_provider.dart' show notificationRepositoryProvider;
 import '../domain/dashboard_stats.dart';
 import 'dashboard_provider.dart';
 
@@ -71,6 +74,7 @@ class _DashboardBody extends StatelessWidget {
           child: _EnrolmentChart(data: stats.monthlyEnrolments),
         ),
         const SizedBox(height: 16),
+        const _AdminActionsCard(),
       ],
     );
   }
@@ -439,3 +443,106 @@ class _EnrolmentChart extends StatelessWidget {
     );
   }
 }
+
+// ── Admin Actions Card ────────────────────────────────────────────────────────
+
+class _AdminActionsCard extends ConsumerStatefulWidget {
+  const _AdminActionsCard();
+
+  @override
+  ConsumerState<_AdminActionsCard> createState() => _AdminActionsCardState();
+}
+
+class _AdminActionsCardState extends ConsumerState<_AdminActionsCard> {
+  bool _sending = false;
+
+  Future<void> _triggerLowStreakAlerts() async {
+    setState(() => _sending = true);
+    try {
+      final client = ref.read(supabaseClientProvider);
+      
+      final students = await client
+          .from('users')
+          .select('id, name, current_streak')
+          .eq('role', 'STUDENT')
+          .eq('plan_status', 'ACTIVE')
+          .lt('current_streak', 3);
+
+      if (students.isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No active students with low streaks (< 3 days).')),
+          );
+        }
+        return;
+      }
+
+      final repo = ref.read(notificationRepositoryProvider);
+      var count = 0;
+      
+      for (final s in (students as List)) {
+        final studentId = s['id'] as String;
+        final name = s['name'] as String? ?? 'Student';
+        final streak = s['current_streak'] as int? ?? 0;
+        
+        await repo.sendNotification(
+          userId: studentId,
+          kind: NotificationKind.general,
+          title: '🔥 Keep up your streak, $name!',
+          body: streak == 0 
+              ? 'You don\'t have an active streak. Join a class today to start your journey!'
+              : 'Your current streak is $streak days. Show up today to keep the fire burning!',
+          metadata: {'type': 'low_streak', 'streak': streak},
+        );
+        count++;
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Sent low streak alert notifications to $count students.')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error sending alerts: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _sending = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Quick Operations', style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                icon: _sending 
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.flash_on, color: AppColors.accentGold),
+                label: const Text('Send Low Streak Alerts (FCM)'),
+                onPressed: _sending ? null : _triggerLowStreakAlerts,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+

@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/theme_provider.dart';
 import '../../features/admissions/presentation/leads_screen.dart';
 import '../../features/auth/presentation/auth_provider.dart';
+import '../../features/batches/presentation/admin_batches_screen.dart';
 import '../../features/dashboard/presentation/admin_dashboard_screen.dart';
+import '../../features/holidays/presentation/holidays_screen.dart';
 import '../../features/leave/presentation/leave_approval_screen.dart';
 import '../../features/payments/presentation/admin_payments_screen.dart';
 import '../../features/shared/students_screen.dart';
@@ -28,6 +30,7 @@ class _AdminShellState extends ConsumerState<AdminShell> {
     _Tab(label: 'Admissions', icon: Icons.how_to_reg_outlined),
     _Tab(label: 'Students', icon: Icons.people_outline),
     _Tab(label: 'Leaves', icon: Icons.event_busy_outlined),
+    _Tab(label: 'Batches', icon: Icons.groups_outlined),
   ];
 
   static int _targetToIndex(String target) => switch (target) {
@@ -35,6 +38,7 @@ class _AdminShellState extends ConsumerState<AdminShell> {
         'admissions' => 2,
         'students' => 3,
         'leaves' => 4,
+        'batches' => 5,
         _ => 0,
       };
 
@@ -55,6 +59,15 @@ class _AdminShellState extends ConsumerState<AdminShell> {
         ),
         actions: [
           const NotificationBell(),
+          IconButton(
+            icon: const Icon(Icons.event_outlined),
+            tooltip: 'Holidays',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const HolidaysScreen(),
+              ),
+            ),
+          ),
           IconButton(
             icon: Icon(
               themeMode == ThemeMode.dark
@@ -79,6 +92,7 @@ class _AdminShellState extends ConsumerState<AdminShell> {
           LeadsScreen(),
           StudentsScreen(),
           LeaveApprovalScreen(),
+          AdminBatchesScreen(),
         ],
       ),
       bottomNavigationBar: NavigationBar(

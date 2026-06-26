@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../features/auth/presentation/auth_provider.dart';
 import '../../shared/widgets/loading_widget.dart' show ChakraLoader;
+import '../transformation/presentation/student_progress_detail_screen.dart';
 
 // ── Domain ────────────────────────────────────────────────────────────────────
 
@@ -125,6 +126,13 @@ class _StudentTile extends ConsumerWidget {
     final statusColor = _planColor(user.planStatus);
 
     return ListTile(
+      onTap: isPending
+          ? null
+          : () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => StudentProgressDetailScreen(student: user),
+                ),
+              ),
       leading: CircleAvatar(child: Text(user.name[0].toUpperCase())),
       title: Text(user.name),
       subtitle: Text(user.phone ?? user.email ?? '—'),

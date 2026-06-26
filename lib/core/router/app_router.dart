@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -8,13 +9,16 @@ import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/onboarding_wizard.dart';
 import '../../features/auth/presentation/otp_screen.dart';
 import '../../features/auth/presentation/pending_approval_screen.dart';
+import '../../features/auth/presentation/reset_password_screen.dart';
 import '../../features/shells/role_shell.dart';
+import 'app_transitions.dart';
 
 abstract final class Routes {
   static const String login = '/login';
   static const String otp = '/otp';
   static const String onboarding = '/onboarding';
   static const String pendingApproval = '/pending';
+  static const String resetPassword = '/reset-password';
   static const String home = '/';
 }
 
@@ -23,28 +27,42 @@ final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     refreshListenable: notifier,
     redirect: notifier.redirect,
+    observers: [
+      FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+    ],
     routes: [
+      // Auth flow — shared axis horizontal for sequential progression
       GoRoute(
         path: Routes.login,
-        pageBuilder: (_, s) => const NoTransitionPage(child: LoginScreen()),
+        pageBuilder: (_, s) =>
+            AppTransitions.sharedAxisX(child: const LoginScreen(), state: s),
       ),
       GoRoute(
         path: Routes.otp,
-        pageBuilder: (_, s) => const NoTransitionPage(child: OtpScreen()),
+        pageBuilder: (_, s) =>
+            AppTransitions.sharedAxisX(child: const OtpScreen(), state: s),
       ),
       GoRoute(
         path: Routes.onboarding,
-        pageBuilder: (_, s) =>
-            const NoTransitionPage(child: OnboardingWizard()),
+        pageBuilder: (_, s) => AppTransitions.sharedAxisX(
+            child: const OnboardingWizard(), state: s),
       ),
+      // Modal-style routes — slide up
       GoRoute(
         path: Routes.pendingApproval,
-        pageBuilder: (_, s) =>
-            const NoTransitionPage(child: PendingApprovalScreen()),
+        pageBuilder: (_, s) => AppTransitions.slideUp(
+            child: const PendingApprovalScreen(), state: s),
       ),
       GoRoute(
+        path: Routes.resetPassword,
+        pageBuilder: (_, s) => AppTransitions.sharedAxisX(
+            child: const ResetPasswordScreen(), state: s),
+      ),
+      // Main dashboard — fade through for shell/tab transitions
+      GoRoute(
         path: Routes.home,
-        pageBuilder: (_, s) => const NoTransitionPage(child: RoleShell()),
+        pageBuilder: (_, s) =>
+            AppTransitions.fadeThrough(child: const RoleShell(), state: s),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
@@ -77,10 +95,13 @@ class _RouterNotifier extends ChangeNotifier {
         loc == Routes.onboarding ? null : Routes.onboarding,
       app_auth.AuthPendingApproval() =>
         loc == Routes.pendingApproval ? null : Routes.pendingApproval,
+      app_auth.AuthPasswordRecovery() =>
+        loc == Routes.resetPassword ? null : Routes.resetPassword,
       app_auth.AuthAuthenticated() =>
         (loc == Routes.login ||
                 loc == Routes.otp ||
-                loc == Routes.pendingApproval)
+                loc == Routes.pendingApproval ||
+                loc == Routes.resetPassword)
             ? Routes.home
             : null,
     };

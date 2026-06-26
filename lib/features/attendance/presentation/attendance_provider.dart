@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 
+import '../../../services/analytics_service.dart';
 import '../../auth/presentation/auth_provider.dart';
 import '../data/attendance_repository.dart';
 import '../domain/attendance_record.dart';
@@ -14,7 +15,7 @@ final attendanceRepositoryProvider = Provider<AttendanceRepository>(
 class TodayAttendanceNotifier extends AsyncNotifier<AttendanceRecord?> {
   @override
   Future<AttendanceRecord?> build() {
-    final uid = ref.watch(supabaseClientProvider).auth.currentUser?.id;
+    final uid = ref.watch(currentUserIdProvider);
     if (uid == null) return Future.value();
     return ref.read(attendanceRepositoryProvider).fetchTodayRecord(uid);
   }
@@ -24,13 +25,23 @@ class TodayAttendanceNotifier extends AsyncNotifier<AttendanceRecord?> {
     state = await AsyncValue.guard(() => future);
   }
 
-  Future<void> checkIn({String? batchId}) async {
-    final uid = ref.read(supabaseClientProvider).auth.currentUser?.id;
-    if (uid == null) return;
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(
-      () => ref.read(attendanceRepositoryProvider).checkIn(uid, batchId: batchId),
-    );
+  Future<AttendanceRecord> checkIn({
+    required double lat,
+    required double lng,
+    String? batchId,
+  }) async {
+    // On reject, CheckInException propagates and `state` is left as the real
+    // persisted today-record (no error-card flicker); the screen shows a snackbar.
+    final record = await ref
+        .read(attendanceRepositoryProvider)
+        .checkIn(lat: lat, lng: lng, batchId: batchId);
+    state = AsyncData(record);
+    if (batchId != null) {
+      try {
+        AnalyticsService.logCheckIn(batchId: batchId).ignore();
+      } catch (_) {}
+    }
+    return record;
   }
 }
 
@@ -44,7 +55,7 @@ final todayAttendanceProvider =
 class AttendanceHistoryNotifier extends AsyncNotifier<List<AttendanceRecord>> {
   @override
   Future<List<AttendanceRecord>> build() {
-    final uid = ref.watch(supabaseClientProvider).auth.currentUser?.id;
+    final uid = ref.watch(currentUserIdProvider);
     if (uid == null) return Future.value([]);
     return ref.read(attendanceRepositoryProvider).fetchHistory(uid);
   }
@@ -96,7 +107,7 @@ final geolocationProvider =
 // ── Active batch for student ──────────────────────────────────────────────────
 
 final activeBatchProvider = FutureProvider<Map<String, dynamic>?>((ref) {
-  final uid = ref.watch(supabaseClientProvider).auth.currentUser?.id;
+  final uid = ref.watch(currentUserIdProvider);
   if (uid == null) return Future.value();
   return ref.read(attendanceRepositoryProvider).fetchActiveBatch(uid);
 });

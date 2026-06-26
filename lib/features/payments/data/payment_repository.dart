@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/payment_record.dart';
@@ -12,8 +13,21 @@ abstract interface class PaymentRepository {
     String? referenceNumber,
     String? notes,
     String? recordedBy,
+    String? screenshotUrl,
+    PaymentStatus status = PaymentStatus.paid,
+    bool adminApproved = false,
+    bool receiptGivenByTrainer = false,
+    DateTime? planExpirationDate,
   });
   Future<PaymentRecord> updateStatus(String id, PaymentStatus status);
+  Future<PaymentRecord> approvePayment(String id, DateTime expirationDate);
+  Future<PaymentRecord> rejectPayment(String id);
+  Future<PaymentRecord> confirmTrainerReceipt(String id);
+  Future<String> uploadScreenshot({
+    required String userId,
+    required String filename,
+    required List<int> bytes,
+  });
 }
 
 class SupabasePaymentRepository implements PaymentRepository {
@@ -53,16 +67,28 @@ class SupabasePaymentRepository implements PaymentRepository {
     String? referenceNumber,
     String? notes,
     String? recordedBy,
+    String? screenshotUrl,
+    PaymentStatus status = PaymentStatus.paid,
+    bool adminApproved = false,
+    bool receiptGivenByTrainer = false,
+    DateTime? planExpirationDate,
   }) async {
     final insert = <String, dynamic>{
       'student_id': studentId,
       'amount': amount,
       'payment_method': method.dbValue,
-      'status': 'PAID',
+      'status': status.dbValue,
+      'admin_approved': adminApproved,
+      'receipt_given_by_trainer': receiptGivenByTrainer,
     };
     if (referenceNumber != null) insert['reference_number'] = referenceNumber;
     if (notes != null) insert['notes'] = notes;
     if (recordedBy != null) insert['recorded_by'] = recordedBy;
+    if (screenshotUrl != null) insert['screenshot_url'] = screenshotUrl;
+    if (planExpirationDate != null) {
+      insert['plan_expiration_date'] = DateFormat('yyyy-MM-dd').format(planExpirationDate);
+    }
+    
     final row = await _client
         .from('payments')
         .insert(insert)
@@ -80,5 +106,58 @@ class SupabasePaymentRepository implements PaymentRepository {
         .select()
         .single();
     return PaymentRecord.fromMap(row);
+  }
+
+  @override
+  Future<PaymentRecord> approvePayment(String id, DateTime expirationDate) async {
+    final row = await _client
+        .from('payments')
+        .update({
+          'admin_approved': true,
+          'plan_expiration_date': DateFormat('yyyy-MM-dd').format(expirationDate),
+        })
+        .eq('id', id)
+        .select()
+        .single();
+    return PaymentRecord.fromMap(row);
+  }
+
+  @override
+  Future<PaymentRecord> rejectPayment(String id) async {
+    final row = await _client
+        .from('payments')
+        .update({'status': 'FAILED'})
+        .eq('id', id)
+        .select()
+        .single();
+    return PaymentRecord.fromMap(row);
+  }
+
+  @override
+  Future<PaymentRecord> confirmTrainerReceipt(String id) async {
+    final row = await _client
+        .from('payments')
+        .update({'receipt_given_by_trainer': true})
+        .eq('id', id)
+        .select()
+        .single();
+    return PaymentRecord.fromMap(row);
+  }
+
+  @override
+  Future<String> uploadScreenshot({
+    required String userId,
+    required String filename,
+    required List<int> bytes,
+  }) async {
+    final path = '$userId/$filename';
+    await _client.storage.from('payment_screenshots').uploadBinary(
+          path,
+          bytes as dynamic,
+          fileOptions: const FileOptions(
+            upsert: true,
+          ),
+        );
+    return _client.storage.from('payment_screenshots').getPublicUrl(path);
   }
 }

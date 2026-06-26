@@ -139,12 +139,30 @@ void main() {
 
     test('checkIn returns PRESENT record', () async {
       final record = _fakeRecord();
-      when(() => mockRepo.checkIn(any(), batchId: any(named: 'batchId')))
-          .thenAnswer((_) async => record);
+      when(() => mockRepo.checkIn(
+            lat: any(named: 'lat'),
+            lng: any(named: 'lng'),
+            batchId: any(named: 'batchId'),
+          )).thenAnswer((_) async => record);
 
-      final result = await mockRepo.checkIn('user-1', batchId: 'b-1');
+      final result =
+          await mockRepo.checkIn(lat: 26.8467, lng: 80.9462, batchId: 'b-1');
       expect(result.status, AttendanceStatus.present);
       expect(result.markedBy, MarkedBy.student);
+    });
+
+    test('checkIn surfaces a CheckInException when the server rejects',
+        () async {
+      when(() => mockRepo.checkIn(
+            lat: any(named: 'lat'),
+            lng: any(named: 'lng'),
+            batchId: any(named: 'batchId'),
+          )).thenThrow(CheckInException('outside check-in radius'));
+
+      expect(
+        () => mockRepo.checkIn(lat: 0, lng: 0, batchId: 'b-1'),
+        throwsA(isA<CheckInException>()),
+      );
     });
 
     test('updateStatus changes status on the record', () async {

@@ -41,6 +41,67 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
+  void _showForgotPasswordDialog() {
+    final emailCtrl = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Reset Password'),
+          content: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Enter your registered email address to receive a password reset link.',
+                  style: TextStyle(fontSize: 14),
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: emailCtrl,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: const InputDecoration(
+                    labelText: 'Email Address',
+                  ),
+                  validator: (v) {
+                    if (v == null || v.isEmpty || !v.contains('@')) {
+                      return 'Enter a valid email address';
+                    }
+                    return null;
+                  },
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (formKey.currentState?.validate() ?? false) {
+                  ref
+                      .read(authStateProvider.notifier)
+                      .sendPasswordReset(emailCtrl.text.trim());
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Password reset link sent to your email.'),
+                    ),
+                  );
+                }
+              },
+              child: const Text('Send Reset Link'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authStateProvider);
@@ -67,6 +128,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       setState(() => _obscurePassword = !_obscurePassword),
                   onToggleOtpMode: () =>
                       setState(() => _otpMode = !_otpMode),
+                  onForgotPassword: _showForgotPasswordDialog,
                   onSubmit: _submit,
                 ),
               ),
@@ -110,6 +172,7 @@ class _LoginCard extends StatelessWidget {
     required this.isLoading,
     required this.onTogglePassword,
     required this.onToggleOtpMode,
+    required this.onForgotPassword,
     required this.onSubmit,
     this.error,
   });
@@ -122,6 +185,7 @@ class _LoginCard extends StatelessWidget {
   final bool isLoading;
   final VoidCallback onTogglePassword;
   final VoidCallback onToggleOtpMode;
+  final VoidCallback onForgotPassword;
   final VoidCallback onSubmit;
   final String? error;
 
@@ -199,6 +263,19 @@ class _LoginCard extends StatelessWidget {
                 validator: (v) =>
                     (v == null || v.isEmpty) ? 'Enter your password' : null,
               ),
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: onForgotPassword,
+                  child: Text(
+                    'Forgot Password?',
+                    style: tt.bodySmall?.copyWith(
+                      color: AppColors.accentViolet,
+                    ),
+                  ),
+                ),
+              ),
             ],
             const SizedBox(height: 24),
             SizedBox(
@@ -208,6 +285,8 @@ class _LoginCard extends StatelessWidget {
                 child: Text(otpMode ? 'Send OTP' : 'Sign In'),
               ),
             ),
+            // OTP login option is disabled for the closed beta (relying on password login)
+            /*
             const SizedBox(height: 12),
             TextButton(
               onPressed: isLoading ? null : onToggleOtpMode,
@@ -220,6 +299,7 @@ class _LoginCard extends StatelessWidget {
                 ),
               ),
             ),
+            */
           ],
         ),
       ),

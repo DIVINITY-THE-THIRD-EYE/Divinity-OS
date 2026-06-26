@@ -3,10 +3,27 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/attendance_record.dart';
 
+/// Thrown when the server rejects a check-in (outside geofence, not enrolled,
+/// no active batch). Carries a user-facing message from the RPC.
+class CheckInException implements Exception {
+  CheckInException(this.message);
+  final String message;
+  @override
+  String toString() => message;
+}
+
 abstract interface class AttendanceRepository {
   Future<AttendanceRecord?> fetchTodayRecord(String studentId);
   Future<List<AttendanceRecord>> fetchHistory(String studentId, {int days = 30});
-  Future<AttendanceRecord> checkIn(String studentId, {String? batchId});
+
+  /// Records the current user's check-in via the server-side `check_in` RPC,
+  /// which validates the geofence and forces marked_by=STUDENT. The user id is
+  /// derived server-side from auth.uid(). Throws [CheckInException] if rejected.
+  Future<AttendanceRecord> checkIn({
+    required double lat,
+    required double lng,
+    String? batchId,
+  });
   Future<AttendanceRecord> updateStatus(
     String id,
     AttendanceStatus status, {
@@ -15,6 +32,14 @@ abstract interface class AttendanceRepository {
   /// Returns the first active enrollment's batch row for the given student, or null.
   Future<Map<String, dynamic>?> fetchActiveBatch(String studentId);
   Future<List<Map<String, dynamic>>> fetchBatchAttendanceToday(String batchId);
+  Future<List<Map<String, dynamic>>> fetchBatchesAttendanceToday(List<String> batchIds);
+
+  /// Upserts an attendance record on behalf of a trainer.
+  Future<void> trainerMark({
+    required String studentId,
+    required String batchId,
+    required AttendanceStatus status,
+  });
 }
 
 class SupabaseAttendanceRepository implements AttendanceRepository {
@@ -54,23 +79,26 @@ class SupabaseAttendanceRepository implements AttendanceRepository {
   }
 
   @override
-  Future<AttendanceRecord> checkIn(String studentId, {String? batchId}) async {
-    final now = DateTime.now().toUtc().toIso8601String();
-    final insert = {
-      'student_id': studentId,
-      'batch_id': ?batchId,
-      'date': _today(),
-      'checkin_time': now,
-      'status': 'PRESENT',
-      'marked_by': 'STUDENT',
-    };
-    // Use upsert so a second tap just refreshes the checkin_time.
-    final row = await _client
-        .from('attendance')
-        .upsert(insert, onConflict: 'student_id,date')
-        .select()
-        .single();
-    return AttendanceRecord.fromMap(row);
+  Future<AttendanceRecord> checkIn({
+    required double lat,
+    required double lng,
+    String? batchId,
+  }) async {
+    try {
+      // Server validates geofence + enrollment, forces student_id & marked_by.
+      final data = await _client.rpc('check_in', params: {
+        'p_lat': lat,
+        'p_lng': lng,
+        'p_batch_id': batchId,
+      });
+      // `returns public.attendance` → single object; tolerate a 1-element list.
+      final map = data is List
+          ? (data.first as Map<String, dynamic>)
+          : (data as Map<String, dynamic>);
+      return AttendanceRecord.fromMap(map);
+    } on PostgrestException catch (e) {
+      throw CheckInException(e.message);
+    }
   }
 
   @override
@@ -93,7 +121,7 @@ class SupabaseAttendanceRepository implements AttendanceRepository {
     // Returns the batch row for the student's first enrollment that has a location.
     final rows = await _client
         .from('enrollments')
-        .select('batch_id, batches(id, name, location_lat, location_lng, schedule_time)')
+        .select('batch_id, batches(id, name, location_lat, location_lng, radius_meters, schedule_time)')
         .eq('student_id', studentId)
         .limit(1);
     final list = rows as List<dynamic>;
@@ -111,5 +139,36 @@ class SupabaseAttendanceRepository implements AttendanceRepository {
         .eq('batch_id', batchId)
         .eq('date', _today());
     return (rows as List<dynamic>).cast<Map<String, dynamic>>();
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> fetchBatchesAttendanceToday(
+    List<String> batchIds,
+  ) async {
+    if (batchIds.isEmpty) return [];
+    final rows = await _client
+        .from('attendance')
+        .select('*, users(id, name, phone)')
+        .inFilter('batch_id', batchIds)
+        .eq('date', _today());
+    return (rows as List<dynamic>).cast<Map<String, dynamic>>();
+  }
+
+  @override
+  Future<void> trainerMark({
+    required String studentId,
+    required String batchId,
+    required AttendanceStatus status,
+  }) async {
+    await _client.from('attendance').upsert(
+      {
+        'student_id': studentId,
+        'batch_id': batchId,
+        'date': _today(),
+        'status': status.dbValue,
+        'marked_by': 'TRAINER',
+      },
+      onConflict: 'student_id,date',
+    );
   }
 }

@@ -27,6 +27,7 @@ class Batch {
     this.trainerId,
     this.locationLat,
     this.locationLng,
+    this.radiusMeters = 100.0,
     required this.createdAt,
   });
 
@@ -39,6 +40,7 @@ class Batch {
   final BatchStatus status;
   final double? locationLat;
   final double? locationLng;
+  final double radiusMeters;
   final DateTime createdAt;
 
   factory Batch.fromMap(Map<String, dynamic> m) {
@@ -55,6 +57,7 @@ class Batch {
       status: BatchStatus.fromString(m['status'] as String? ?? 'ACTIVE'),
       locationLat: (m['location_lat'] as num?)?.toDouble(),
       locationLng: (m['location_lng'] as num?)?.toDouble(),
+      radiusMeters: (m['radius_meters'] as num?)?.toDouble() ?? 100.0,
       createdAt: DateTime.parse(m['created_at'] as String),
     );
   }
@@ -68,5 +71,6 @@ class Batch {
         'status': status.name.toUpperCase(),
         if (locationLat != null) 'location_lat': locationLat,
         if (locationLng != null) 'location_lng': locationLng,
+        'radius_meters': radiusMeters,
       };
 }

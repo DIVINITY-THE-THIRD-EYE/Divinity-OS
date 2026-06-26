@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../services/analytics_service.dart';
 import '../../../shared/widgets/loading_widget.dart' show ChakraLoader;
 import '../domain/leave_request.dart';
 import 'leave_provider.dart';
@@ -65,6 +66,9 @@ class _LeaveRequestSheetState extends ConsumerState<LeaveRequestSheet> {
             reason: _reasonCtrl.text.trim().isEmpty ? null : _reasonCtrl.text.trim(),
           );
       if (mounted) {
+        try {
+          AnalyticsService.logLeaveRequestSubmit().ignore();
+        } catch (_) {}
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Leave request submitted.')),

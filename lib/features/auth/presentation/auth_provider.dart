@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../services/analytics_service.dart';
 import '../data/auth_repository.dart';
 import '../domain/auth_state.dart' as app_auth;
 
@@ -10,10 +13,19 @@ final supabaseClientProvider = Provider<SupabaseClient>(
   (_) => Supabase.instance.client,
 );
 
-/// Derives the current signed-in user's ID from Supabase auth.
-/// Override in tests to inject a known user ID without initialising Supabase.
+/// The authenticated user's UUID, or null when signed out.
+/// Derived from authStateProvider so all consumers rebuild reactively on
+/// login/logout without watching the Supabase singleton directly.
+/// Override in tests by overriding this provider — no Supabase needed.
 final currentUserIdProvider = Provider<String?>((ref) {
-  return ref.watch(supabaseClientProvider).auth.currentUser?.id;
+  final state = ref.watch(authStateProvider);
+  return state is app_auth.AuthAuthenticated ? state.user.id : null;
+});
+
+/// The authenticated user's role, or null when signed out.
+final currentUserRoleProvider = Provider<app_auth.UserRole?>((ref) {
+  final state = ref.watch(authStateProvider);
+  return state is app_auth.AuthAuthenticated ? state.role : null;
 });
 
 // ── Auth repository ──────────────────────────────────────────────────────────
@@ -31,10 +43,78 @@ final authStateProvider =
 
 class AuthNotifier extends StateNotifier<app_auth.AuthState> {
   AuthNotifier(this._repo) : super(app_auth.AuthInitial()) {
+    _sub = _repo.authEvents().listen(_onAuthEvent);
     _init();
   }
 
   final AuthRepository _repo;
+  StreamSubscription<AuthLifecycleEvent>? _sub;
+  RealtimeChannel? _realtimeChannel;
+  // Suppresses external-event handling while a local sign-in/out/verify is in
+  // flight, so the stream does not double-resolve what the method already set.
+  bool _handlingLocal = false;
+
+  @override
+  void dispose() {
+    _sub?.cancel();
+    _cleanupRealtime();
+    super.dispose();
+  }
+
+  void _cleanupRealtime() {
+    if (_realtimeChannel != null) {
+      _repo.unsubscribeFromChannel(_realtimeChannel!).ignore();
+      _realtimeChannel = null;
+    }
+  }
+
+  void _setupRealtime(String userId, User user) {
+    if (_realtimeChannel != null) return;
+    _realtimeChannel = _repo.subscribeToUserProfile(userId, (record) {
+      _resolveUserState(user).ignore();
+    });
+  }
+
+  Future<void> _onAuthEvent(AuthLifecycleEvent event) async {
+    if (_handlingLocal) return; // local flow owns the transition
+    try {
+      switch (event) {
+        case AuthLifecycleEvent.signedOut:
+          // Covers terminal token-refresh failure AND sign-out on another
+          // device — Supabase emits signedOut when the session is lost.
+          _cleanupRealtime();
+          if (state is! app_auth.AuthUnauthenticated) {
+            state = app_auth.AuthUnauthenticated();
+          }
+        case AuthLifecycleEvent.signedIn:
+          final user = _repo.currentUser;
+          if (user != null && state is! app_auth.AuthAuthenticated) {
+            await _resolveUserState(user);
+          }
+        case AuthLifecycleEvent.userUpdated:
+          // auth.user changed (email/metadata). Does NOT fire for public.users
+          // row changes (e.g. admin sets plan_status) — that needs Realtime.
+          final user = _repo.currentUser;
+          if (user != null) await _resolveUserState(user);
+        case AuthLifecycleEvent.tokenRefreshed:
+          // Self-heal: refresh succeeded but we believed we were signed out.
+          final user = _repo.currentUser;
+          if (user != null && state is app_auth.AuthUnauthenticated) {
+            await _resolveUserState(user);
+          }
+        case AuthLifecycleEvent.passwordRecovery:
+          final user = _repo.currentUser;
+          if (user != null) {
+            state = app_auth.AuthPasswordRecovery(user);
+          }
+          break;
+      }
+    } catch (_) {
+      // Never let an event handler crash the notifier; fail safe to login.
+      _cleanupRealtime();
+      state = app_auth.AuthUnauthenticated();
+    }
+  }
 
   Future<void> _init() async {
     final user = _repo.currentUser;
@@ -50,12 +130,14 @@ class AuthNotifier extends StateNotifier<app_auth.AuthState> {
     try {
       final profile = await _repo.fetchProfile(user.id);
       if (profile == null) {
+        _cleanupRealtime();
         state = app_auth.AuthUnauthenticated();
         return;
       }
       final onboardingComplete =
           profile['onboarding_complete'] as bool? ?? false;
       if (!onboardingComplete) {
+        _cleanupRealtime();
         state = app_auth.AuthNeedsOnboarding(user);
         return;
       }
@@ -65,10 +147,13 @@ class AuthNotifier extends StateNotifier<app_auth.AuthState> {
       );
       if (planStatus == 'PENDING_ADMIN' || planStatus == 'PENDING_TRAINER') {
         state = app_auth.AuthPendingApproval(user);
+        _setupRealtime(user.id, user);
       } else {
         state = app_auth.AuthAuthenticated(user, role);
+        _setupRealtime(user.id, user);
       }
     } catch (e) {
+      _cleanupRealtime();
       state = app_auth.AuthError(e.toString());
     }
   }
@@ -93,6 +178,7 @@ class AuthNotifier extends StateNotifier<app_auth.AuthState> {
     required String phone,
     required String password,
   }) async {
+    _handlingLocal = true;
     state = app_auth.AuthLoading();
     try {
       await _repo.signInWithPhone(phone: phone, password: password);
@@ -102,6 +188,8 @@ class AuthNotifier extends StateNotifier<app_auth.AuthState> {
       state = app_auth.AuthError(e.message);
     } catch (e) {
       state = app_auth.AuthError('Unexpected error. Please try again.');
+    } finally {
+      _handlingLocal = false;
     }
   }
 
@@ -121,12 +209,19 @@ class AuthNotifier extends StateNotifier<app_auth.AuthState> {
     required String phone,
     required String token,
   }) async {
+    _handlingLocal = true;
     state = app_auth.AuthLoading();
     try {
       await _repo.verifyOtp(phone: phone, token: token);
       final user = _repo.currentUser;
       if (user != null) {
         await _resolveUserState(user);
+        if (state is app_auth.AuthAuthenticated) {
+          // Fire-and-forget; must never affect auth flow.
+          try {
+            AnalyticsService.logLogin().ignore();
+          } catch (_) {}
+        }
       } else {
         state = app_auth.AuthError('Verification failed. Please try again.');
       }
@@ -134,13 +229,58 @@ class AuthNotifier extends StateNotifier<app_auth.AuthState> {
       state = app_auth.AuthError(e.message);
     } catch (_) {
       state = app_auth.AuthError('Unexpected error. Please try again.');
+    } finally {
+      _handlingLocal = false;
     }
   }
 
   Future<void> resendOtp({required String phone}) => sendOtp(phone: phone);
 
   Future<void> signOut() async {
-    await _repo.signOut();
-    state = app_auth.AuthUnauthenticated();
+    _handlingLocal = true;
+    _cleanupRealtime();
+    try {
+      await _repo.signOut();
+      // currentUserIdProvider (watching this provider) returns null, so every
+      // feature provider rebuilds to empty. No per-provider invalidation needed.
+      state = app_auth.AuthUnauthenticated();
+    } finally {
+      _handlingLocal = false;
+    }
+  }
+
+  Future<void> sendPasswordReset(String email) async {
+    _handlingLocal = true;
+    state = app_auth.AuthLoading();
+    try {
+      await _repo.sendPasswordResetEmail(email);
+      state = app_auth.AuthUnauthenticated();
+    } on AuthException catch (e) {
+      state = app_auth.AuthError(e.message);
+    } catch (_) {
+      state = app_auth.AuthError('Unexpected error. Please try again.');
+    } finally {
+      _handlingLocal = false;
+    }
+  }
+
+  Future<void> updatePassword(String newPassword) async {
+    _handlingLocal = true;
+    state = app_auth.AuthLoading();
+    try {
+      await _repo.updatePassword(newPassword);
+      final user = _repo.currentUser;
+      if (user != null) {
+        await _resolveUserState(user);
+      } else {
+        state = app_auth.AuthUnauthenticated();
+      }
+    } on AuthException catch (e) {
+      state = app_auth.AuthError(e.message);
+    } catch (_) {
+      state = app_auth.AuthError('Unexpected error. Please try again.');
+    } finally {
+      _handlingLocal = false;
+    }
   }
 }

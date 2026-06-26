@@ -29,6 +29,11 @@ final class AuthPendingApproval extends AuthState {
 
 final class AuthUnauthenticated extends AuthState {}
 
+final class AuthPasswordRecovery extends AuthState {
+  AuthPasswordRecovery(this.user);
+  final User user;
+}
+
 final class AuthError extends AuthState {
   AuthError(this.message);
   final String message;

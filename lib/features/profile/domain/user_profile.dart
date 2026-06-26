@@ -16,6 +16,7 @@ class UserProfile {
     this.currentStreak = 0,
     this.maxStreak = 0,
     this.expirationDate,
+    this.pauseStartDate,
     this.avatarUrl,
     required this.createdAt,
   });
@@ -36,6 +37,7 @@ class UserProfile {
   final int currentStreak;
   final int maxStreak;
   final DateTime? expirationDate;
+  final DateTime? pauseStartDate;
   final String? avatarUrl;
   final DateTime createdAt;
 
@@ -58,16 +60,24 @@ class UserProfile {
         expirationDate: m['expiration_date'] == null
             ? null
             : DateTime.parse(m['expiration_date'] as String),
+        pauseStartDate: m['pause_start_date'] == null
+            ? null
+            : DateTime.parse(m['pause_start_date'] as String),
         avatarUrl: m['avatar_url'] as String?,
         createdAt: DateTime.parse(m['created_at'] as String),
       );
 
-  UserProfile copyWith({String? name}) => UserProfile(
+  UserProfile copyWith({
+    String? name,
+    String? planStatus,
+    DateTime? expirationDate,
+    DateTime? pauseStartDate,
+  }) => UserProfile(
         id: id,
         name: name ?? this.name,
         phone: phone,
         role: role,
-        planStatus: planStatus,
+        planStatus: planStatus ?? this.planStatus,
         age: age,
         gender: gender,
         primaryGoal: primaryGoal,
@@ -78,7 +88,8 @@ class UserProfile {
         medicalConditions: medicalConditions,
         currentStreak: currentStreak,
         maxStreak: maxStreak,
-        expirationDate: expirationDate,
+        expirationDate: expirationDate ?? this.expirationDate,
+        pauseStartDate: pauseStartDate ?? this.pauseStartDate,
         avatarUrl: avatarUrl,
         createdAt: createdAt,
       );

@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../auth/presentation/auth_provider.dart';
 import '../data/notification_repository.dart';
@@ -14,6 +15,29 @@ class MyNotificationsNotifier extends AsyncNotifier<List<AppNotification>> {
   Future<List<AppNotification>> build() {
     final uid = ref.watch(currentUserIdProvider);
     if (uid == null) return Future.value([]);
+
+    // Establish a Realtime listener to push new notifications to the client
+    final client = ref.watch(supabaseClientProvider);
+    final channel = client.channel('public:notifications:user_id=eq.$uid');
+    channel.onPostgresChanges(
+      event: PostgresChangeEvent.all,
+      schema: 'public',
+      table: 'notifications',
+      filter: PostgresChangeFilter(
+        type: PostgresChangeFilterType.eq,
+        column: 'user_id',
+        value: uid,
+      ),
+      callback: (payload) {
+        ref.invalidateSelf();
+      },
+    );
+    channel.subscribe();
+
+    ref.onDispose(() {
+      client.removeChannel(channel);
+    });
+
     return ref
         .read(notificationRepositoryProvider)
         .fetchMyNotifications(uid);

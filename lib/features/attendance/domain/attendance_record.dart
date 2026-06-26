@@ -50,6 +50,13 @@ enum MarkedBy {
       };
 
   String get dbValue => name.toUpperCase();
+
+  String get label => switch (this) {
+        MarkedBy.student => 'Student',
+        MarkedBy.trainer => 'Trainer',
+        MarkedBy.admin => 'Admin',
+        MarkedBy.system => 'System',
+      };
 }
 
 class AttendanceRecord {

@@ -13,7 +13,7 @@ final leaveRepositoryProvider = Provider<LeaveRepository>(
 class MyLeaveNotifier extends AsyncNotifier<List<LeaveRequest>> {
   @override
   Future<List<LeaveRequest>> build() {
-    final uid = ref.watch(supabaseClientProvider).auth.currentUser?.id;
+    final uid = ref.watch(currentUserIdProvider);
     if (uid == null) return Future.value([]);
     return ref.read(leaveRepositoryProvider).fetchMyRequests(uid);
   }
@@ -23,7 +23,7 @@ class MyLeaveNotifier extends AsyncNotifier<List<LeaveRequest>> {
     required DateTime endDate,
     String? reason,
   }) async {
-    final uid = ref.read(supabaseClientProvider).auth.currentUser?.id;
+    final uid = ref.read(currentUserIdProvider);
     if (uid == null) return;
     final created = await ref.read(leaveRepositoryProvider).submitRequest(
           studentId: uid,

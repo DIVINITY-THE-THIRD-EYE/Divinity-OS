@@ -57,7 +57,7 @@ class _LeaveApprovalTile extends ConsumerWidget {
             tooltip: 'Approve',
             icon: const Icon(Icons.check_circle_outline, color: Colors.green),
             onPressed: () {
-              final uid = ref.read(supabaseClientProvider).auth.currentUser?.id ?? '';
+              final uid = ref.read(currentUserIdProvider) ?? '';
               _confirm(
                 context,
                 ref,
@@ -70,7 +70,7 @@ class _LeaveApprovalTile extends ConsumerWidget {
             tooltip: 'Reject',
             icon: const Icon(Icons.cancel_outlined, color: Colors.red),
             onPressed: () {
-              final uid = ref.read(supabaseClientProvider).auth.currentUser?.id ?? '';
+              final uid = ref.read(currentUserIdProvider) ?? '';
               _confirm(
                 context,
                 ref,

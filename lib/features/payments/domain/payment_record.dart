@@ -68,10 +68,14 @@ class PaymentRecord {
     required this.status,
     this.referenceNumber,
     this.notes,
+    this.screenshotUrl,
     this.razorpayOrderId,
     this.razorpayPaymentId,
     required this.paidAt,
     required this.createdAt,
+    this.adminApproved = false,
+    this.receiptGivenByTrainer = false,
+    this.planExpirationDate,
   });
 
   final String id;
@@ -84,10 +88,14 @@ class PaymentRecord {
   final PaymentStatus status;
   final String? referenceNumber;
   final String? notes;
+  final String? screenshotUrl;
   final String? razorpayOrderId;
   final String? razorpayPaymentId;
   final DateTime paidAt;
   final DateTime createdAt;
+  final bool adminApproved;
+  final bool receiptGivenByTrainer;
+  final DateTime? planExpirationDate;
 
   factory PaymentRecord.fromMap(Map<String, dynamic> m) {
     final usersMap = m['users'] as Map<String, dynamic>?;
@@ -103,11 +111,17 @@ class PaymentRecord {
       status: PaymentStatus.fromString(m['status'] as String? ?? 'PAID'),
       referenceNumber: m['reference_number'] as String?,
       notes: m['notes'] as String?,
+      screenshotUrl: m['screenshot_url'] as String?,
       razorpayOrderId: m['razorpay_order_id'] as String?,
       razorpayPaymentId: m['razorpay_payment_id'] as String?,
       paidAt: DateTime.parse(
           m['paid_at'] as String? ?? DateTime.now().toIso8601String()),
       createdAt: DateTime.parse(m['created_at'] as String),
+      adminApproved: m['admin_approved'] as bool? ?? false,
+      receiptGivenByTrainer: m['receipt_given_by_trainer'] as bool? ?? false,
+      planExpirationDate: m['plan_expiration_date'] != null
+          ? DateTime.parse(m['plan_expiration_date'] as String)
+          : null,
     );
   }
 

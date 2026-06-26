@@ -1,11 +1,10 @@
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:divinity_app/features/auth/presentation/auth_provider.dart';
 import 'package:divinity_app/features/home/data/home_repository.dart';
 import 'package:divinity_app/features/home/domain/home_data.dart';
 import 'package:divinity_app/features/home/presentation/home_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 
 class MockHomeRepository extends Mock implements HomeRepository {}
 
@@ -82,7 +81,7 @@ void main() {
 
   group('HomeData', () {
     test('holds all fields correctly', () {
-      final data = HomeData(
+      const data = HomeData(
         firstName: 'Priya',
         streak: 7,
         upcomingClasses: [],
@@ -104,7 +103,7 @@ void main() {
 
     test('loads home data from repository', () async {
       const userId = 'user-123';
-      final expected = HomeData(
+      const expected = HomeData(
         firstName: 'Priya',
         streak: 5,
         upcomingClasses: [],

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:divinity_app/features/auth/data/auth_repository.dart';
 import 'package:divinity_app/features/auth/domain/auth_state.dart' as app_auth;
 import 'package:divinity_app/features/auth/presentation/auth_provider.dart';
@@ -10,6 +12,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class MockAuthRepository extends Mock implements AuthRepository {}
 
 class MockUser extends Mock implements User {}
+
+class MockRealtimeChannel extends Mock implements RealtimeChannel {}
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -31,9 +35,23 @@ Map<String, dynamic> activeProfile({String role = 'STUDENT'}) => {
 void main() {
   late MockAuthRepository repo;
 
+  setUpAll(() {
+    registerFallbackValue(MockRealtimeChannel());
+  });
+
   setUp(() {
     repo = MockAuthRepository();
     when(() => repo.currentUser).thenReturn(null);
+    // Default: no external auth events. Tests needing them override with a
+    // StreamController.
+    when(() => repo.authEvents())
+        .thenAnswer((_) => const Stream<AuthLifecycleEvent>.empty());
+
+    final mockChannel = MockRealtimeChannel();
+    when(() => repo.subscribeToUserProfile(any(), any()))
+        .thenReturn(mockChannel);
+    when(() => repo.unsubscribeFromChannel(any()))
+        .thenAnswer((_) async {});
   });
 
   group('UserRole.fromString', () {
@@ -280,6 +298,107 @@ void main() {
       await n.signOut();
 
       expect(n.state, isA<app_auth.AuthUnauthenticated>());
+    });
+  });
+
+  group('AuthNotifier — external auth events (H1)', () {
+    test('external signedOut forces AuthUnauthenticated', () async {
+      final controller = StreamController<AuthLifecycleEvent>();
+      final user = MockUser();
+      when(() => user.id).thenReturn('uid-ext');
+      when(() => repo.currentUser).thenReturn(user);
+      when(() => repo.fetchProfile('uid-ext'))
+          .thenAnswer((_) async => activeProfile());
+      when(() => repo.authEvents()).thenAnswer((_) => controller.stream);
+
+      final n = await buildNotifier(repo);
+      expect(n.state, isA<app_auth.AuthAuthenticated>());
+
+      // Simulate session loss / sign-out on another device.
+      controller.add(AuthLifecycleEvent.signedOut);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(n.state, isA<app_auth.AuthUnauthenticated>());
+      await controller.close();
+    });
+
+    test('userUpdated re-resolves the profile (role change)', () async {
+      final controller = StreamController<AuthLifecycleEvent>();
+      final user = MockUser();
+      when(() => user.id).thenReturn('uid-upd');
+      when(() => repo.currentUser).thenReturn(user);
+      when(() => repo.fetchProfile('uid-upd'))
+          .thenAnswer((_) async => activeProfile());
+      when(() => repo.authEvents()).thenAnswer((_) => controller.stream);
+
+      final n = await buildNotifier(repo);
+      expect(
+        (n.state as app_auth.AuthAuthenticated).role,
+        app_auth.UserRole.student,
+      );
+
+      // Profile now resolves to ADMIN; userUpdated should re-resolve.
+      when(() => repo.fetchProfile('uid-upd'))
+          .thenAnswer((_) async => activeProfile(role: 'ADMIN'));
+      controller.add(AuthLifecycleEvent.userUpdated);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(
+        (n.state as app_auth.AuthAuthenticated).role,
+        app_auth.UserRole.admin,
+      );
+      await controller.close();
+    });
+  });
+
+  group('AuthNotifier — Password Recovery & Reset', () {
+    test('routes to AuthPasswordRecovery on passwordRecovery lifecycle event', () async {
+      final controller = StreamController<AuthLifecycleEvent>();
+      final user = MockUser();
+      when(() => user.id).thenReturn('uid-rec');
+      when(() => repo.currentUser).thenReturn(user);
+      when(() => repo.fetchProfile('uid-rec'))
+          .thenAnswer((_) async => activeProfile());
+      when(() => repo.authEvents()).thenAnswer((_) => controller.stream);
+
+      final n = await buildNotifier(repo);
+      expect(n.state, isA<app_auth.AuthAuthenticated>());
+
+      controller.add(AuthLifecycleEvent.passwordRecovery);
+      await Future<void>.delayed(Duration.zero);
+
+      expect(n.state, isA<app_auth.AuthPasswordRecovery>());
+      expect((n.state as app_auth.AuthPasswordRecovery).user, user);
+      await controller.close();
+    });
+
+    test('sendPasswordReset calls repo.sendPasswordResetEmail and goes to AuthUnauthenticated', () async {
+      when(() => repo.sendPasswordResetEmail('test@divinity.local'))
+          .thenAnswer((_) async {});
+
+      final n = await buildNotifier(repo);
+      expect(n.state, isA<app_auth.AuthUnauthenticated>());
+
+      await n.sendPasswordReset('test@divinity.local');
+      verify(() => repo.sendPasswordResetEmail('test@divinity.local')).called(1);
+      expect(n.state, isA<app_auth.AuthUnauthenticated>());
+    });
+
+    test('updatePassword calls repo.updatePassword and resolves user profile', () async {
+      final user = MockUser();
+      when(() => user.id).thenReturn('uid-reset');
+      when(() => repo.currentUser).thenReturn(user);
+      when(() => repo.updatePassword('newsecurepass'))
+          .thenAnswer((_) async {});
+      when(() => repo.fetchProfile('uid-reset'))
+          .thenAnswer((_) async => activeProfile());
+
+      final n = await buildNotifier(repo);
+      n.state = app_auth.AuthPasswordRecovery(user);
+
+      await n.updatePassword('newsecurepass');
+      verify(() => repo.updatePassword('newsecurepass')).called(1);
+      expect(n.state, isA<app_auth.AuthAuthenticated>());
     });
   });
 }

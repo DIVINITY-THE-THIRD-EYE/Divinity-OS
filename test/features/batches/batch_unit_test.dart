@@ -86,6 +86,57 @@ void main() {
       expect(batch.locationLat, isNull);
       expect(batch.daysOfWeek, isEmpty);
     });
+
+    test('parses radius_meters when present', () {
+      final batch = Batch.fromMap({
+        'id': 'b-1',
+        'name': 'Yoga',
+        'schedule_time': '07:00',
+        'days_of_week': [],
+        'capacity': 20,
+        'status': 'ACTIVE',
+        'location_lat': 12.9716,
+        'location_lng': 77.5946,
+        'radius_meters': 50,
+        'created_at': '2026-01-01T00:00:00.000Z',
+      });
+
+      expect(batch.radiusMeters, 50.0);
+    });
+
+    test('defaults radiusMeters to 100 when absent', () {
+      final batch = Batch.fromMap({
+        'id': 'b-1',
+        'name': 'Yoga',
+        'schedule_time': '07:00',
+        'days_of_week': [],
+        'capacity': 20,
+        'status': 'ACTIVE',
+        'created_at': '2026-01-01T00:00:00.000Z',
+      });
+
+      expect(batch.radiusMeters, 100.0);
+    });
+
+    test('toInsertMap includes radius_meters', () {
+      final batch = Batch(
+        id: '',
+        name: 'Yoga',
+        scheduleTime: '07:00',
+        daysOfWeek: const ['MON'],
+        capacity: 20,
+        status: BatchStatus.active,
+        locationLat: 12.9716,
+        locationLng: 77.5946,
+        radiusMeters: 75.0,
+        createdAt: DateTime(2026),
+      );
+
+      final map = batch.toInsertMap();
+      expect(map['radius_meters'], 75.0);
+      expect(map['location_lat'], 12.9716);
+      expect(map['location_lng'], 77.5946);
+    });
   });
 
   group('BatchNotifier', () {

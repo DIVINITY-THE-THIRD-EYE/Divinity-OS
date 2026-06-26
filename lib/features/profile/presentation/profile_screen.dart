@@ -279,14 +279,66 @@ class _AvatarHeader extends StatelessWidget {
   }
 }
 
-class _PlanStatusCard extends StatelessWidget {
+class _PlanStatusCard extends ConsumerWidget {
   const _PlanStatusCard({required this.profile});
   final UserProfile profile;
 
+  Future<void> _togglePause(BuildContext context, WidgetRef ref) async {
+    final planStatus = profile.planStatus.toUpperCase();
+    final isPaused = planStatus == 'PAUSED';
+
+    if (isPaused) {
+      final confirm = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Resume Membership?'),
+          content: const Text(
+            'Resuming will reactivate your access and extend your membership expiration date by the number of days you were paused.',
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              style: TextButton.styleFrom(foregroundColor: AppColors.success),
+              child: const Text('Resume'),
+            ),
+          ],
+        ),
+      );
+      if (confirm == true) {
+        await ref.read(myProfileProvider.notifier).resumeMembership();
+      }
+    } else {
+      final confirm = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Pause Membership?'),
+          content: const Text(
+            'Pausing your membership halts your expiration date. You won\'t be able to check in to classes until you resume. Are you sure?',
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              style: TextButton.styleFrom(foregroundColor: AppColors.warning),
+              child: const Text('Pause'),
+            ),
+          ],
+        ),
+      );
+      if (confirm == true) {
+        await ref.read(myProfileProvider.notifier).pauseMembership();
+      }
+    }
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final tt = Theme.of(context).textTheme;
     final color = _statusColor(profile.planStatus);
+    final planStatus = profile.planStatus.toUpperCase();
+    final canPause = planStatus == 'ACTIVE' || planStatus == 'PAUSED';
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
@@ -298,29 +350,42 @@ class _PlanStatusCard extends StatelessWidget {
         children: [
           Icon(_statusIcon(profile.planStatus), color: color, size: 20),
           const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Membership',
-                style: tt.labelSmall?.copyWith(color: color),
-              ),
-              Text(
-                profile.planStatusLabel,
-                style: tt.titleSmall?.copyWith(
-                  color: color,
-                  fontWeight: FontWeight.w700,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Membership',
+                  style: tt.labelSmall?.copyWith(color: color),
                 ),
-              ),
-            ],
+                Text(
+                  profile.planStatusLabel,
+                  style: tt.titleSmall?.copyWith(
+                    color: color,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
           ),
-          if (profile.expirationDate != null) ...[
-            const Spacer(),
+          if (profile.expirationDate != null && planStatus != 'PAUSED') ...[
             Text(
               'Expires ${_expiryLabel(profile.expirationDate!)}',
               style: tt.labelSmall?.copyWith(color: color),
             ),
+            const SizedBox(width: 12),
           ],
+          if (canPause)
+            IconButton(
+              icon: Icon(
+                planStatus == 'PAUSED' ? Icons.play_arrow_outlined : Icons.pause_circle_outline,
+                color: color,
+                size: 20,
+              ),
+              visualDensity: VisualDensity.compact,
+              tooltip: planStatus == 'PAUSED' ? 'Resume Membership' : 'Pause Membership',
+              onPressed: () => _togglePause(context, ref),
+            ),
         ],
       ),
     );
@@ -377,7 +442,8 @@ class _InfoSection extends StatelessWidget {
                 letterSpacing: 0.8,
               ),
             ),
-            ?action,
+            // ignore: use_null_aware_elements
+            if (action != null) action!,
           ],
         ),
         const SizedBox(height: 8),

@@ -1,48 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/theme/app_theme.dart';
+import '../../../services/analytics_service.dart';
 import '../../../shared/widgets/loading_widget.dart';
 import '../domain/auth_state.dart' as app_auth;
 import 'auth_provider.dart';
+import 'onboarding/onboarding_constants.dart';
+import 'onboarding/steps/step_age_gender.dart';
+import 'onboarding/steps/step_emergency_contact.dart';
+import 'onboarding/steps/step_goal.dart';
+import 'onboarding/steps/step_health.dart';
+import 'onboarding/steps/step_name.dart';
 
-// ── Constants ────────────────────────────────────────────────────────────────
-
-const _totalSteps = 5;
-
-const _genderOptions = ['MALE', 'FEMALE', 'OTHER', 'PREFER_NOT_TO_SAY'];
-const _genderLabels = ['Male', 'Female', 'Other', 'Prefer not to say'];
-
-const _lifestyleOptions = [
-  'SEDENTARY',
-  'LIGHTLY_ACTIVE',
-  'MODERATELY_ACTIVE',
-  'VERY_ACTIVE',
-];
-const _lifestyleLabels = [
-  'Sedentary (desk work)',
-  'Lightly active',
-  'Moderately active',
-  'Very active',
-];
-
-const _goalOptions = [
-  'WEIGHT_LOSS',
-  'STRENGTH',
-  'WELLNESS',
-  'THERAPEUTIC_RECOVERY',
-  'LIFE_TRANSFORMATION',
-];
-const _goalLabels = [
-  'Weight Loss',
-  'Strength',
-  'Wellness',
-  'Therapeutic Recovery',
-  'Life Transformation',
-];
-
-// ── Wizard ───────────────────────────────────────────────────────────────────
-
+/// Coordinator widget. Owns wizard state and delegates rendering to step
+/// widgets in the `onboarding/steps/` sub-package. Step widgets are pure
+/// StatelessWidgets — all mutable state lives here.
 class OnboardingWizard extends ConsumerStatefulWidget {
   const OnboardingWizard({super.key});
 
@@ -85,9 +57,11 @@ class _OnboardingWizardState extends ConsumerState<OnboardingWizard> {
     super.dispose();
   }
 
+  // ── Navigation ──────────────────────────────────────────────────────────────
+
   void _next() {
     if (!_validateStep()) return;
-    if (_step < _totalSteps - 1) {
+    if (_step < kOnboardingTotalSteps - 1) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
@@ -105,6 +79,8 @@ class _OnboardingWizardState extends ConsumerState<OnboardingWizard> {
       );
     }
   }
+
+  // ── Validation ──────────────────────────────────────────────────────────────
 
   bool _validateStep() {
     final messenger = ScaffoldMessenger.of(context);
@@ -135,14 +111,17 @@ class _OnboardingWizardState extends ConsumerState<OnboardingWizard> {
             _ecPhoneCtrl.text.trim().isEmpty) {
           messenger.showSnackBar(
             const SnackBar(
-                content: Text('Emergency contact name and phone required.')),
+              content: Text('Emergency contact name and phone required.'),
+            ),
           );
           return false;
         }
       case 3:
         if (_lifestyle == null) {
           messenger.showSnackBar(
-            const SnackBar(content: Text('Please select your activity level.')),
+            const SnackBar(
+              content: Text('Please select your activity level.'),
+            ),
           );
           return false;
         }
@@ -157,8 +136,11 @@ class _OnboardingWizardState extends ConsumerState<OnboardingWizard> {
     return true;
   }
 
+  // ── Submission ───────────────────────────────────────────────────────────────
+
   Future<void> _submit() async {
-    final data = <String, dynamic>{
+    final goal = _goal ?? '';
+    await ref.read(authStateProvider.notifier).completeOnboarding({
       'name': _nameCtrl.text.trim(),
       'age': int.parse(_ageCtrl.text.trim()),
       'gender': _gender,
@@ -171,10 +153,14 @@ class _OnboardingWizardState extends ConsumerState<OnboardingWizard> {
           ? null
           : _medicalCtrl.text.trim(),
       'lifestyle_activity': _lifestyle,
-      'primary_goal': _goal,
-    };
-    await ref.read(authStateProvider.notifier).completeOnboarding(data);
+      'primary_goal': goal,
+    });
+    try {
+      AnalyticsService.logOnboardingComplete(goal: goal).ignore();
+    } catch (_) {}
   }
+
+  // ── Build ────────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -196,11 +182,7 @@ class _OnboardingWizardState extends ConsumerState<OnboardingWizard> {
                 Text('Something went wrong', style: tt.titleMedium),
                 const SizedBox(height: 8),
                 if (authState case app_auth.AuthError(:final message))
-                  Text(
-                    message,
-                    style: tt.bodyMedium,
-                    textAlign: TextAlign.center,
-                  ),
+                  Text(message, style: tt.bodyMedium, textAlign: TextAlign.center),
                 const SizedBox(height: 24),
                 FilledButton(
                   onPressed: () => setState(() {}),
@@ -217,23 +199,7 @@ class _OnboardingWizardState extends ConsumerState<OnboardingWizard> {
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Step ${_step + 1} of $_totalSteps',
-                    style: tt.labelMedium?.copyWith(color: cs.primary),
-                  ),
-                  const SizedBox(height: 8),
-                  LinearProgressIndicator(
-                    value: (_step + 1) / _totalSteps,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ],
-              ),
-            ),
+            _ProgressHeader(step: _step, total: kOnboardingTotalSteps, cs: cs, tt: tt),
             const SizedBox(height: 8),
             Expanded(
               child: PageView(
@@ -241,53 +207,34 @@ class _OnboardingWizardState extends ConsumerState<OnboardingWizard> {
                 physics: const NeverScrollableScrollPhysics(),
                 onPageChanged: (i) => setState(() => _step = i),
                 children: [
-                  _StepName(ctrl: _nameCtrl),
-                  _StepAgeGender(
+                  StepName(ctrl: _nameCtrl),
+                  StepAgeGender(
                     ageCtrl: _ageCtrl,
                     gender: _gender,
                     onGender: (v) => setState(() => _gender = v),
                   ),
-                  _StepEmergencyContact(
+                  StepEmergencyContact(
                     nameCtrl: _ecNameCtrl,
                     phoneCtrl: _ecPhoneCtrl,
                   ),
-                  _StepHealth(
+                  StepHealth(
                     injuriesCtrl: _injuriesCtrl,
                     medicalCtrl: _medicalCtrl,
                     lifestyle: _lifestyle,
                     onLifestyle: (v) => setState(() => _lifestyle = v),
                   ),
-                  _StepGoal(
+                  StepGoal(
                     goal: _goal,
                     onGoal: (v) => setState(() => _goal = v),
                   ),
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-              child: Row(
-                children: [
-                  if (_step > 0) ...[
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: _back,
-                        child: const Text('Back'),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                  ],
-                  Expanded(
-                    flex: 2,
-                    child: FilledButton(
-                      onPressed: _next,
-                      child: Text(
-                        _step == _totalSteps - 1 ? 'Complete' : 'Next',
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            _NavigationFooter(
+              step: _step,
+              total: kOnboardingTotalSteps,
+              onBack: _back,
+              onNext: _next,
             ),
           ],
         ),
@@ -296,287 +243,78 @@ class _OnboardingWizardState extends ConsumerState<OnboardingWizard> {
   }
 }
 
-// ── Step widgets ─────────────────────────────────────────────────────────────
+// ── Private layout widgets (coordinator-only, not exported) ──────────────────
 
-class _StepName extends StatelessWidget {
-  const _StepName({required this.ctrl});
-  final TextEditingController ctrl;
-
-  @override
-  Widget build(BuildContext context) {
-    return _StepScaffold(
-      title: 'What should we call you?',
-      subtitle: 'Your name will appear on your profile and certificates.',
-      child: TextField(
-        controller: ctrl,
-        textCapitalization: TextCapitalization.words,
-        decoration: const InputDecoration(
-          labelText: 'Full name',
-          prefixIcon: Icon(Icons.person_outline),
-        ),
-      ),
-    );
-  }
-}
-
-class _StepAgeGender extends StatelessWidget {
-  const _StepAgeGender({
-    required this.ageCtrl,
-    required this.gender,
-    required this.onGender,
+class _ProgressHeader extends StatelessWidget {
+  const _ProgressHeader({
+    required this.step,
+    required this.total,
+    required this.cs,
+    required this.tt,
   });
-  final TextEditingController ageCtrl;
-  final String? gender;
-  final ValueChanged<String?> onGender;
+
+  final int step;
+  final int total;
+  final ColorScheme cs;
+  final TextTheme tt;
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
-    return _StepScaffold(
-      title: 'A little about you',
-      subtitle: 'Age and gender personalise your journey and cannot be '
-          'changed after onboarding.',
-      child: Column(
-        children: [
-          TextField(
-            controller: ageCtrl,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-              labelText: 'Age',
-              prefixIcon: Icon(Icons.cake_outlined),
-            ),
-          ),
-          const SizedBox(height: 16),
-          DropdownButtonFormField<String>(
-            initialValue: gender,
-            decoration: const InputDecoration(
-              labelText: 'Gender',
-              prefixIcon: Icon(Icons.wc_outlined),
-            ),
-            items: List.generate(
-              _genderOptions.length,
-              (i) => DropdownMenuItem(
-                value: _genderOptions[i],
-                child: Text(_genderLabels[i]),
-              ),
-            ),
-            onChanged: onGender,
-          ),
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppColors.warning.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.circular(8),
-              border:
-                  Border.all(color: AppColors.warning.withValues(alpha: 0.3)),
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.lock_outline,
-                    size: 16, color: AppColors.warning),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Age and gender are locked after onboarding completes.',
-                    style: tt.labelSmall?.copyWith(color: AppColors.warning),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _StepEmergencyContact extends StatelessWidget {
-  const _StepEmergencyContact({
-    required this.nameCtrl,
-    required this.phoneCtrl,
-  });
-  final TextEditingController nameCtrl;
-  final TextEditingController phoneCtrl;
-
-  @override
-  Widget build(BuildContext context) {
-    return _StepScaffold(
-      title: 'Emergency contact',
-      subtitle: 'Who should we contact in case of an emergency?',
-      child: Column(
-        children: [
-          TextField(
-            controller: nameCtrl,
-            textCapitalization: TextCapitalization.words,
-            decoration: const InputDecoration(
-              labelText: 'Contact name',
-              prefixIcon: Icon(Icons.contact_page_outlined),
-            ),
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: phoneCtrl,
-            keyboardType: TextInputType.phone,
-            decoration: const InputDecoration(
-              labelText: 'Contact phone',
-              prefixIcon: Icon(Icons.phone_outlined),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _StepHealth extends StatelessWidget {
-  const _StepHealth({
-    required this.injuriesCtrl,
-    required this.medicalCtrl,
-    required this.lifestyle,
-    required this.onLifestyle,
-  });
-  final TextEditingController injuriesCtrl;
-  final TextEditingController medicalCtrl;
-  final String? lifestyle;
-  final ValueChanged<String?> onLifestyle;
-
-  @override
-  Widget build(BuildContext context) {
-    return _StepScaffold(
-      title: 'Health information',
-      subtitle: 'Helps your trainer design a safe and effective programme.',
-      child: Column(
-        children: [
-          TextField(
-            controller: injuriesCtrl,
-            maxLines: 2,
-            decoration: const InputDecoration(
-              labelText: 'Any injuries? (optional)',
-              prefixIcon: Icon(Icons.healing_outlined),
-              alignLabelWithHint: true,
-            ),
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: medicalCtrl,
-            maxLines: 2,
-            decoration: const InputDecoration(
-              labelText: 'Medical conditions? (optional)',
-              prefixIcon: Icon(Icons.medical_information_outlined),
-              alignLabelWithHint: true,
-            ),
-          ),
-          const SizedBox(height: 16),
-          DropdownButtonFormField<String>(
-            initialValue: lifestyle,
-            decoration: const InputDecoration(
-              labelText: 'Activity level *',
-              prefixIcon: Icon(Icons.directions_run_outlined),
-            ),
-            items: List.generate(
-              _lifestyleOptions.length,
-              (i) => DropdownMenuItem(
-                value: _lifestyleOptions[i],
-                child: Text(_lifestyleLabels[i]),
-              ),
-            ),
-            onChanged: onLifestyle,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _StepGoal extends StatelessWidget {
-  const _StepGoal({required this.goal, required this.onGoal});
-  final String? goal;
-  final ValueChanged<String?> onGoal;
-
-  @override
-  Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
-    final cs = Theme.of(context).colorScheme;
-    return _StepScaffold(
-      title: 'Your primary goal',
-      subtitle: 'This shapes your transformation path at Divinity.',
-      child: Column(
-        children: List.generate(_goalOptions.length, (i) {
-          final selected = goal == _goalOptions[i];
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: InkWell(
-              onTap: () => onGoal(_goalOptions[i]),
-              borderRadius: BorderRadius.circular(12),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 150),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: selected
-                        ? cs.primary
-                        : cs.outline.withValues(alpha: 0.4),
-                    width: selected ? 2 : 1,
-                  ),
-                  color: selected
-                      ? cs.primary.withValues(alpha: 0.08)
-                      : Colors.transparent,
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      selected
-                          ? Icons.radio_button_checked
-                          : Icons.radio_button_off,
-                      color: selected ? cs.primary : cs.outline,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 12),
-                    Text(_goalLabels[i], style: tt.bodyMedium),
-                  ],
-                ),
-              ),
-            ),
-          );
-        }),
-      ),
-    );
-  }
-}
-
-class _StepScaffold extends StatelessWidget {
-  const _StepScaffold({
-    required this.title,
-    required this.subtitle,
-    required this.child,
-  });
-  final String title;
-  final String subtitle;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: tt.headlineSmall),
-          const SizedBox(height: 8),
           Text(
-            subtitle,
-            style: tt.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            'Step ${step + 1} of $total',
+            style: tt.labelMedium?.copyWith(color: cs.primary),
+          ),
+          const SizedBox(height: 8),
+          LinearProgressIndicator(
+            value: (step + 1) / total,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NavigationFooter extends StatelessWidget {
+  const _NavigationFooter({
+    required this.step,
+    required this.total,
+    required this.onBack,
+    required this.onNext,
+  });
+
+  final int step;
+  final int total;
+  final VoidCallback onBack;
+  final VoidCallback onNext;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+      child: Row(
+        children: [
+          if (step > 0) ...[
+            Expanded(
+              child: OutlinedButton(
+                onPressed: onBack,
+                child: const Text('Back'),
+              ),
+            ),
+            const SizedBox(width: 12),
+          ],
+          Expanded(
+            flex: 2,
+            child: FilledButton(
+              onPressed: onNext,
+              child: Text(step == total - 1 ? 'Complete' : 'Next'),
             ),
           ),
-          const SizedBox(height: 28),
-          child,
         ],
       ),
     );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../services/analytics_service.dart';
 import '../../shared/students_screen.dart' show studentsProvider;
 import '../domain/payment_record.dart';
 import 'payment_provider.dart';
@@ -54,9 +55,10 @@ class _RecordPaymentSheetState extends ConsumerState<RecordPaymentSheet> {
     }
     setState(() => _saving = true);
     try {
+      final amount = double.parse(_amountCtrl.text.trim());
       await ref.read(allPaymentsProvider.notifier).record(
             studentId: studentId,
-            amount: double.parse(_amountCtrl.text.trim()),
+            amount: amount,
             method: _method,
             referenceNumber: _refCtrl.text.trim().isEmpty
                 ? null
@@ -65,6 +67,10 @@ class _RecordPaymentSheetState extends ConsumerState<RecordPaymentSheet> {
                 ? null
                 : _notesCtrl.text.trim(),
           );
+      unawaited(AnalyticsService.logPaymentRecord(
+        amount: amount,
+        method: _method.dbValue,
+      ));
       if (mounted) Navigator.of(context).pop(true);
     } catch (e) {
       if (mounted) {
@@ -245,3 +251,6 @@ class _StudentPicker extends ConsumerWidget {
     );
   }
 }
+
+// Silence unawaited future lint for fire-and-forget analytics.
+void unawaited(Future<void> future) {}

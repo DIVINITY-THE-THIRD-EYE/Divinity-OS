@@ -1,15 +1,34 @@
+import 'dart:async';
+
+// ignore: unused_shown_name
 import 'package:divinity_app/features/auth/presentation/auth_provider.dart'
-    show currentUserIdProvider;
+    show currentUserIdProvider, supabaseClientProvider;
 import 'package:divinity_app/features/payments/data/payment_repository.dart';
 import 'package:divinity_app/features/payments/domain/payment_record.dart';
 import 'package:divinity_app/features/payments/presentation/payment_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
 
 class MockPaymentRepository extends Mock implements PaymentRepository {}
+class MockSupabaseClient extends Mock implements SupabaseClient {}
+class MockSupabaseQueryBuilder extends Mock implements SupabaseQueryBuilder {}
+
+class FakePostgrestFilterBuilder<T> extends Fake implements PostgrestFilterBuilder<T> {
+  final Future<T> _future;
+  FakePostgrestFilterBuilder(this._future);
+
+  @override
+  PostgrestFilterBuilder<T> eq(String column, Object value) => this;
+
+  @override
+  Future<R> then<R>(FutureOr<R> Function(T value) onValue, {Function? onError}) {
+    return _future.then(onValue, onError: onError);
+  }
+}
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -154,14 +173,17 @@ void main() {
 
   group('AllPaymentsNotifier', () {
     late MockPaymentRepository mockRepo;
+    late MockSupabaseClient mockClient;
     late ProviderContainer container;
 
     setUp(() {
       mockRepo = MockPaymentRepository();
+      mockClient = MockSupabaseClient();
       container = ProviderContainer(
         overrides: [
           currentUserIdProvider.overrideWithValue('admin-1'),
           paymentRepositoryProvider.overrideWithValue(mockRepo),
+          supabaseClientProvider.overrideWithValue(mockClient),
         ],
       );
     });
@@ -216,6 +238,66 @@ void main() {
       await container.read(allPaymentsProvider.notifier).refresh();
 
       expect(container.read(allPaymentsProvider).value!.length, 2);
+    });
+
+    test('verifyPayment calls approvePayment on repo when status is paid', () async {
+      when(() => mockRepo.fetchAllPayments())
+          .thenAnswer((_) async => [_fakeRecord(status: PaymentStatus.pending)]);
+      await container.read(allPaymentsProvider.future);
+
+      final updatedRecord = _fakeRecord();
+      when(() => mockRepo.approvePayment('pay-1', any()))
+          .thenAnswer((_) async => updatedRecord);
+
+      await container.read(allPaymentsProvider.notifier).verifyPayment(
+            paymentId: 'pay-1',
+            studentId: 'user-1',
+            status: PaymentStatus.paid,
+            expirationDate: DateTime(2026, 7, 16),
+          );
+
+      final state = container.read(allPaymentsProvider).value!;
+      expect(state.first.status, PaymentStatus.paid);
+
+      verify(() => mockRepo.approvePayment('pay-1', any())).called(1);
+    });
+
+    test('verifyPayment calls rejectPayment on repo when status is failed', () async {
+      when(() => mockRepo.fetchAllPayments())
+          .thenAnswer((_) async => [_fakeRecord(status: PaymentStatus.pending)]);
+      await container.read(allPaymentsProvider.future);
+
+      final updatedRecord = _fakeRecord(status: PaymentStatus.failed);
+      when(() => mockRepo.rejectPayment('pay-1'))
+          .thenAnswer((_) async => updatedRecord);
+
+      await container.read(allPaymentsProvider.notifier).verifyPayment(
+            paymentId: 'pay-1',
+            studentId: 'user-1',
+            status: PaymentStatus.failed,
+          );
+
+      final state = container.read(allPaymentsProvider).value!;
+      expect(state.first.status, PaymentStatus.failed);
+
+      verify(() => mockRepo.rejectPayment('pay-1')).called(1);
+    });
+  });
+
+  group('PaymentRecord extra fields', () {
+    test('fromMap parses screenshot_url correctly', () {
+      final record = PaymentRecord.fromMap({
+        'id': 'pay-99',
+        'student_id': 'user-1',
+        'amount': 6000,
+        'currency': 'INR',
+        'payment_method': 'UPI',
+        'status': 'PAID',
+        'screenshot_url': 'https://supabase.com/receipt.png',
+        'paid_at': '2026-06-16T10:00:00.000Z',
+        'created_at': '2026-06-16T10:00:00.000Z',
+      });
+      expect(record.screenshotUrl, 'https://supabase.com/receipt.png');
     });
   });
 

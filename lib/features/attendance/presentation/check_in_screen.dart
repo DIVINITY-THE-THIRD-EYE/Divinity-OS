@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart'
+    show kDebugMode, defaultTargetPlatform, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
@@ -5,17 +7,26 @@ import 'package:intl/intl.dart';
 
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../services/analytics_service.dart';
 import '../../../shared/widgets/loading_widget.dart' show ChakraLoader;
 import '../../leave/presentation/leave_request_screen.dart';
+import '../data/attendance_repository.dart' show CheckInException;
 import '../domain/attendance_record.dart';
 import 'attendance_history_screen.dart';
 import 'attendance_provider.dart';
 
-class CheckInScreen extends ConsumerWidget {
+class CheckInScreen extends ConsumerStatefulWidget {
   const CheckInScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CheckInScreen> createState() => _CheckInScreenState();
+}
+
+class _CheckInScreenState extends ConsumerState<CheckInScreen> {
+  bool _submitting = false;
+
+  @override
+  Widget build(BuildContext context) {
     final todayAsync = ref.watch(todayAttendanceProvider);
     final batchAsync = ref.watch(activeBatchProvider);
     final geoAsync = ref.watch(geolocationProvider);
@@ -39,14 +50,14 @@ class CheckInScreen extends ConsumerWidget {
             data: (batch) => _CheckInCard(
               batch: batch,
               position: geoAsync.value,
-              isLoading: geoAsync.isLoading,
+              isLoading: geoAsync.isLoading || _submitting,
               todayRecord: todayAsync.value,
-              onCheckIn: () => _handleCheckIn(context, ref, batch),
+              onCheckIn: () => _handleCheckIn(batch),
             ),
           ),
           const SizedBox(height: 12),
           OutlinedButton.icon(
-            onPressed: () => _showLeaveSheet(context),
+            onPressed: _showLeaveSheet,
             icon: const Icon(Icons.event_busy_outlined),
             label: const Text('Request Leave'),
           ),
@@ -59,55 +70,100 @@ class CheckInScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _handleCheckIn(
-    BuildContext context,
-    WidgetRef ref,
-    Map<String, dynamic>? batch,
-  ) async {
-    // 1. Request location
-    final geoNotifier = ref.read(geolocationProvider.notifier);
-    final error = await geoNotifier.requestAndFetch();
-    if (error != null && context.mounted) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(error)));
+  Future<void> _handleCheckIn(Map<String, dynamic>? batch) async {
+    if (_submitting) return; // re-entrancy guard (double-tap)
+    final messenger = ScaffoldMessenger.of(context);
+
+    // 1. Resolve device location (permission prompt + fix).
+    final error = await ref.read(geolocationProvider.notifier).requestAndFetch();
+    if (error != null) {
+      messenger.showSnackBar(SnackBar(content: Text(error)));
+      return;
+    }
+    final pos = ref.read(geolocationProvider).value;
+    if (pos == null) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Could not determine your location.')),
+      );
       return;
     }
 
-    final pos = ref.read(geolocationProvider).value;
+    // 2. Mock-location deterrent (Android-only; isMocked is always false on
+    // iOS). Excluded in debug builds so emulators/QA devices are not blocked.
+    // Client-side only — a modified client can bypass this; it stops the casual
+    // fake-GPS case, not a determined attacker. Trainer confirmation and the
+    // server-side geofence (check_in RPC) are the real integrity controls.
+    if (!kDebugMode &&
+        defaultTargetPlatform == TargetPlatform.android &&
+        pos.isMocked) {
+      try {
+        AnalyticsService.logMockLocationBlocked().ignore();
+      } catch (_) {}
+      messenger.showSnackBar(const SnackBar(
+        content: Text(
+          'Mock location detected. Disable fake GPS / developer location '
+          'mocking to check in. Contact your trainer if this is a mistake.',
+        ),
+      ));
+      return;
+    }
 
-    // 2. Validate geofence if batch has location
-    if (pos != null && batch != null) {
+    // 3. Optional fast-fail hint (server is authoritative; avoids a round-trip
+    // when obviously out of range).
+    if (batch != null) {
       final lat = (batch['location_lat'] as num?)?.toDouble();
       final lng = (batch['location_lng'] as num?)?.toDouble();
       if (lat != null && lng != null) {
+        final radius = (batch['radius_meters'] as num?)?.toDouble()
+            ?? AppConstants.geofenceDefaultRadius;
         final dist = Geolocator.distanceBetween(
           pos.latitude, pos.longitude, lat, lng,
         );
-        if (dist > AppConstants.geofenceDefaultRadius && context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(
-              'You are ${dist.toStringAsFixed(0)} m from the centre '
-              '(max ${AppConstants.geofenceDefaultRadius.toStringAsFixed(0)} m).',
-            ),
-          ));
+        if (dist > radius) {
+          messenger.showSnackBar(SnackBar(content: Text(
+            'You are ${dist.toStringAsFixed(0)} m from the centre '
+            '(max ${radius.toStringAsFixed(0)} m).',
+          )));
           return;
         }
       }
     }
 
-    // 3. Record check-in
-    final batchId = batch?['id'] as String?;
-    await ref.read(todayAttendanceProvider.notifier).checkIn(batchId: batchId);
-
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Check-in recorded ✓')),
-      );
+    // 4. Server-validated check-in.
+    setState(() => _submitting = true);
+    try {
+      final record = await ref.read(todayAttendanceProvider.notifier).checkIn(
+            lat: pos.latitude,
+            lng: pos.longitude,
+            batchId: batch?['id'] as String?,
+          );
+      if (!mounted) return;
+      
+      if (record.status == AttendanceStatus.present) {
+        messenger.showSnackBar(
+          const SnackBar(content: Text('Check-in recorded ✓')),
+        );
+      } else {
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(
+              'Check-in received. Maintained "${record.status.label}" '
+              'previously marked by ${record.markedBy.label}.',
+            ),
+          ),
+        );
+      }
+      ref.invalidate(attendanceHistoryProvider);
+    } on CheckInException catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(e.message)));
+    } catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text('Check-in failed: $e')));
+    } finally {
+      if (mounted) setState(() => _submitting = false);
     }
-    ref.invalidate(attendanceHistoryProvider);
   }
 
-  void _showLeaveSheet(BuildContext context) {
+  void _showLeaveSheet() {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -198,11 +254,13 @@ class _CheckInCard extends StatelessWidget {
       final lat = (batch!['location_lat'] as num?)?.toDouble();
       final lng = (batch!['location_lng'] as num?)?.toDouble();
       if (lat != null && lng != null) {
+        final radius = (batch!['radius_meters'] as num?)?.toDouble()
+            ?? AppConstants.geofenceDefaultRadius;
         final dist = Geolocator.distanceBetween(
           position!.latitude, position!.longitude, lat, lng,
         );
         distanceLabel =
-            '${dist.toStringAsFixed(0)} m from ${batch!['name'] ?? 'centre'}';
+            '${dist.toStringAsFixed(0)} m from ${batch!['name'] ?? 'centre'} (radius ${radius.toStringAsFixed(0)} m)';
       }
     }
 

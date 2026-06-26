@@ -1,16 +1,21 @@
 import 'package:divinity_app/features/auth/presentation/auth_provider.dart'
-    show currentUserIdProvider;
+    show currentUserIdProvider, supabaseClientProvider;
 import 'package:divinity_app/features/notifications/data/notification_repository.dart';
 import 'package:divinity_app/features/notifications/domain/app_notification.dart';
 import 'package:divinity_app/features/notifications/presentation/notification_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
 
 class MockNotificationRepository extends Mock
     implements NotificationRepository {}
+
+class MockSupabaseClient extends Mock implements SupabaseClient {}
+
+class MockRealtimeChannel extends Mock implements RealtimeChannel {}
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -36,6 +41,13 @@ AppNotification _fakeNotification({
 void main() {
   setUpAll(() {
     registerFallbackValue(NotificationKind.general);
+    registerFallbackValue(PostgresChangeEvent.all);
+    registerFallbackValue(PostgresChangeFilter(
+      type: PostgresChangeFilterType.eq,
+      column: 'user_id',
+      value: 'user-1',
+    ));
+    registerFallbackValue(MockRealtimeChannel());
   });
 
   // ── NotificationKind parsing ───────────────────────────────────────────────
@@ -126,13 +138,30 @@ void main() {
 
   group('MyNotificationsNotifier', () {
     late MockNotificationRepository mockRepo;
+    late MockSupabaseClient mockClient;
+    late MockRealtimeChannel mockChannel;
     late ProviderContainer container;
 
     setUp(() {
       mockRepo = MockNotificationRepository();
+      mockClient = MockSupabaseClient();
+      mockChannel = MockRealtimeChannel();
+
+      when(() => mockClient.channel(any())).thenReturn(mockChannel);
+      when(() => mockChannel.onPostgresChanges(
+            event: any(named: 'event'),
+            schema: any(named: 'schema'),
+            table: any(named: 'table'),
+            filter: any(named: 'filter'),
+            callback: any(named: 'callback'),
+          )).thenReturn(mockChannel);
+      when(() => mockChannel.subscribe()).thenReturn(mockChannel);
+      when(() => mockClient.removeChannel(any())).thenAnswer((_) async => '');
+
       container = ProviderContainer(
         overrides: [
           currentUserIdProvider.overrideWithValue('user-1'),
+          supabaseClientProvider.overrideWithValue(mockClient),
           notificationRepositoryProvider.overrideWithValue(mockRepo),
         ],
       );
@@ -196,9 +225,24 @@ void main() {
   group('unreadCountProvider', () {
     test('counts unread notifications correctly', () async {
       final mockRepo = MockNotificationRepository();
+      final mockClient = MockSupabaseClient();
+      final mockChannel = MockRealtimeChannel();
+
+      when(() => mockClient.channel(any())).thenReturn(mockChannel);
+      when(() => mockChannel.onPostgresChanges(
+            event: any(named: 'event'),
+            schema: any(named: 'schema'),
+            table: any(named: 'table'),
+            filter: any(named: 'filter'),
+            callback: any(named: 'callback'),
+          )).thenReturn(mockChannel);
+      when(() => mockChannel.subscribe()).thenReturn(mockChannel);
+      when(() => mockClient.removeChannel(any())).thenAnswer((_) async => '');
+
       final container = ProviderContainer(
         overrides: [
           currentUserIdProvider.overrideWithValue('user-1'),
+          supabaseClientProvider.overrideWithValue(mockClient),
           notificationRepositoryProvider.overrideWithValue(mockRepo),
         ],
       );
@@ -217,9 +261,24 @@ void main() {
 
     test('returns 0 when all read', () async {
       final mockRepo = MockNotificationRepository();
+      final mockClient = MockSupabaseClient();
+      final mockChannel = MockRealtimeChannel();
+
+      when(() => mockClient.channel(any())).thenReturn(mockChannel);
+      when(() => mockChannel.onPostgresChanges(
+            event: any(named: 'event'),
+            schema: any(named: 'schema'),
+            table: any(named: 'table'),
+            filter: any(named: 'filter'),
+            callback: any(named: 'callback'),
+          )).thenReturn(mockChannel);
+      when(() => mockChannel.subscribe()).thenReturn(mockChannel);
+      when(() => mockClient.removeChannel(any())).thenAnswer((_) async => '');
+
       final container = ProviderContainer(
         overrides: [
           currentUserIdProvider.overrideWithValue('user-1'),
+          supabaseClientProvider.overrideWithValue(mockClient),
           notificationRepositoryProvider.overrideWithValue(mockRepo),
         ],
       );

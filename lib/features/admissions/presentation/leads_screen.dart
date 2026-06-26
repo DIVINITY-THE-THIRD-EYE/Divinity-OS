@@ -416,12 +416,6 @@ class _ConvertToMemberSheetState
       await ref
           .read(leadsProvider.notifier)
           .convertToMember(widget.lead.id, _foundUser!['id'] as String);
-      // Set plan to PENDING_ADMIN so admin can activate.
-      final client = ref.read(supabaseClientProvider);
-      await client
-          .from('users')
-          .update({'plan_status': 'PENDING_ADMIN'})
-          .eq('id', _foundUser!['id'] as String);
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(

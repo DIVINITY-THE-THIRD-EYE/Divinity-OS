@@ -1,47 +1,34 @@
 # DIVINITY BUILD STATUS
-Session completed: 6 — Firebase cleanup, Student Home tab, Admin CSV export, FCM deep linking
-Date: 2026-06-16
+Session completed: 12 — Next.js integrations, Android release signing, AAB packaging, CI/CD pipeline setup, and Beta Launch Blockers
+Date: 2026-06-21
 
 ## Done this session
 
-### Firebase cleanup (post flutterfire configure)
-- Removed `try/catch` guard from `main.dart` — Firebase always initialises now
-- Removed `if (Firebase.apps.isEmpty) return;` guard from `FcmService.init()`
-- Removed unused `firebase_core` import from `fcm_service.dart`
-- Razorpay integration dropped (deferred — test key not yet provided)
+### Next.js Portal & Integrations (Milestone 5 Track A)
+- Mapped all prisma models to Supabase tables using @map, and updated enums to String to support plain text columns.
+- Created `013_nextjs_compatibility.sql` migration adding compatibility columns and `library_books` table.
+- Fixed middleware redirects to allow `/api` routes (tRPC) during onboarding.
+- Verified registration, onboarding wizard, login redirects, and dashboards (Student, Admin Control Center with Recharts, Trainer Portal) via Playwright E2E browser tests.
 
-### Student Home tab
-- `lib/features/home/domain/home_data.dart` — `UpcomingClass`, `ActivityItem`, `HomeData` domain models; `dayLabel` (Today / Tomorrow / formatted date)
-- `lib/features/home/data/home_repository.dart` — `SupabaseHomeRepository`: 3 parallel queries (user name, enrolled batches+trainer, last 60 attendance rows); `_computeStreak` (consecutive PRESENT days ending today/yesterday); `_buildUpcomingClasses` (next occurrence from `days_of_week`, sorted, limit 5); `_buildActivityFeed` (last 7 attendance records)
-- `lib/features/home/presentation/home_provider.dart` — `homeRepositoryProvider` + `homeDataProvider` (FutureProvider)
-- `lib/features/home/presentation/student_home_screen.dart` — `StudentHomeScreen`: greeting card (time-of-day), streak card (🔥 gold), upcoming classes list, recent activity feed, empty state; RefreshIndicator
-- StudentShell tab 0 → `StudentHomeScreen` (stub removed; `app_theme.dart` import removed)
+### Android Release Signing & Packaging (Store Distribution Setup)
+- Generated release keystore `upload-keystore.jks` and configured signing configs in `build.gradle.kts` using Kotlin DSL.
+- Set up fallback mechanism in Gradle to use debug signing if `key.properties` is missing.
+- Updated `build_all.ps1` to compile the release Android App Bundle (AAB).
+- Compiled and verified signed release AAB locally (`build/app/outputs/bundle/release/app-release.aab`).
 
-### Admin CSV export
-- Added `share_plus: ^10.1.4` and `path_provider: ^2.1.5` to `pubspec.yaml`
-- `AdminPaymentsScreen._exportCsv()` — builds CSV string (Date, Student, Amount, Method, Status, Reference), writes to `getTemporaryDirectory()`, shares via `Share.shareXFiles`
-- Download icon button added to the summary card row in `AdminPaymentsScreen`
+### CI/CD Workflow
+- Configured unified GitHub Actions workflow `.github/workflows/build-and-test.yml` to run tests and builds on pushes/PRs for both Web (Next.js) and Mobile (Flutter) tracks.
 
-### Push notification deep linking
-- `lib/services/fcm_provider.dart` — added `fcmNotificationTapProvider` (StreamProvider): listens to `FirebaseMessaging.getInitialMessage()` + `onMessageOpenedApp`; emits `data['target']` string
-- All three role shells now listen to `fcmNotificationTapProvider` and switch tabs accordingly:
-  - `StudentShell`: attendance→1, leaves→2, payments→3, profile→4, default→0
-  - `TrainerShell`: leaves→1, batches→2, profile→3, default→0
-  - `AdminShell`: payments→1, admissions→2, students→3, leaves→4, default→0
+### Beta Launch Blockers & Improvements (Track B / Security & Config)
+- Resolved A7 (SMS-OTP login) by disabling the OTP mode toggle in the login interface to prevent silent failure for beta users (relying entirely on password login).
+- Resolved B2 (Streak synchronization trigger) by adding `014_attendance_streak_trigger.sql` recalculating streaks on attendance inserts/updates/deletes.
+- Resolved B3 (Performance indexes) by creating `015_performance_indexes.sql` adding indexes to hot foreign key columns.
+- Resolved B4 (Trainer-marked overrides) by feeding check-in snackbar messages from RPC return values.
+- Resolved B5 (Silent geofence bypass) by enforcing batch coordinates at both UI form and DB levels (`016_require_batch_coordinates.sql`).
+- Updated widget and unit tests to maintain 100% green compliance.
 
 ## Test status
-unit: PASS (139/139)  analyze: 0 issues
-
-## Next session (7) will do
-- Trainer check-in screen: mark student PRESENT/ABSENT from their batch roster
-- Admin batch management: create / edit batches, assign trainer, set schedule
-- Batch enrolment: assign student to batch from admin Students screen
-- Firebase Analytics events: screen_view, check_in, payment_recorded
-- Firebase Crashlytics: non-fatal error reporting for Supabase query failures
-
-## Decisions needed from human
-- Razorpay test key — provide when ready to wire payment gateway
-- Supabase ANON KEY still needs to be added to .env (placeholder in place)
-
-## How to resume
-Paste: "Read STATUS.md and git log, then continue with the next session."
+- Flutter unit/widget tests: PASS (170/170)
+- pgTAP database security tests: PASS (20/20)
+- Flutter static analysis: Clean (0 issues)
+- Next.js production build: Compile PASS (0 issues)
