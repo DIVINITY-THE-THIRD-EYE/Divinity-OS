@@ -29,6 +29,7 @@ export default function Contact() {
       email: String(form.get("email") || ""),
       intention: String(form.get("intention") || ""),
       message: String(form.get("message") || ""),
+      company: String(form.get("company") || ""), // honeypot
     };
     try {
       const res = await fetch("/api/contact", {
@@ -92,6 +93,17 @@ export default function Contact() {
             </div>
           ) : (
             <form onSubmit={onSubmit} className="space-y-7">
+              {/* Honeypot — hidden from users, off the a11y tree; bots fill it */}
+              <div className="absolute left-[-9999px]" aria-hidden="true">
+                <label htmlFor="contact-company">Company</label>
+                <input
+                  id="contact-company"
+                  name="company"
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
+              </div>
               <div>
                 <label htmlFor="contact-name" className="eyebrow mb-2 block text-mist">Name</label>
                 <input id="contact-name" name="name" required className={field} placeholder="Your name" aria-required="true" />

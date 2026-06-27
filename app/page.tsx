@@ -2,7 +2,6 @@ import SmoothScroll from "@/components/SmoothScroll";
 import Cursor from "@/components/Cursor";
 import Ambient from "@/components/Ambient";
 import ScrollProgress from "@/components/ScrollProgress";
-import IntroCurtain from "@/components/IntroCurtain";
 import CommandPalette from "@/components/CommandPalette";
 import WhatsAppFab from "@/components/WhatsAppFab";
 import Nav from "@/components/Nav";
@@ -51,7 +50,6 @@ export default async function Page() {
 
   return (
     <>
-      <IntroCurtain />
       <Ambient />
       <ScrollProgress />
       <SmoothScroll />
@@ -60,7 +58,7 @@ export default async function Page() {
       <PromoBar />
       <Nav />
 
-      <main>
+      <main id="main-content" tabIndex={-1} className="outline-none">
         <BreathHero />
         <StatsBand />
         <Marquee />

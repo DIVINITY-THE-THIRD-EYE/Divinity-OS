@@ -12,23 +12,45 @@ export default function Manifesto() {
     if (!el || reduce) return;
     const lines = el.querySelectorAll(".m-line");
 
-    // Dynamic import keeps GSAP off the critical render path (mobile LCP fix)
-    import("gsap").then(({ gsap }) =>
-      import("gsap/ScrollTrigger").then(({ ScrollTrigger }) => {
-        gsap.registerPlugin(ScrollTrigger);
-        const ctx = gsap.context(() => {
-          gsap.set(lines, { opacity: 0.12, y: 18 });
-          gsap.to(lines, {
-            opacity: 1,
-            y: 0,
-            stagger: 0.5,
-            ease: "power2.out",
-            scrollTrigger: { trigger: el, start: "top 70%", end: "bottom 80%", scrub: 1 },
-          });
-        }, el);
-        return () => ctx.revert();
-      })
-    );
+    let cancelled = false;
+    let cleanup = () => {};
+
+    // Dynamic import + idle deferral keeps GSAP out of the initial load window
+    // (it otherwise gates TTI/LCP). The reveal is a scroll effect anyway.
+    const start = () => {
+      import("gsap").then(({ gsap }) =>
+        import("gsap/ScrollTrigger").then(({ ScrollTrigger }) => {
+          if (cancelled) return;
+          gsap.registerPlugin(ScrollTrigger);
+          const ctx = gsap.context(() => {
+            gsap.set(lines, { opacity: 0.12, y: 18 });
+            gsap.to(lines, {
+              opacity: 1,
+              y: 0,
+              stagger: 0.5,
+              ease: "power2.out",
+              scrollTrigger: { trigger: el, start: "top 70%", end: "bottom 80%", scrub: 1 },
+            });
+          }, el);
+          cleanup = () => ctx.revert();
+        })
+      );
+    };
+
+    const w = window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    const ric = w.requestIdleCallback
+      ? w.requestIdleCallback(start, { timeout: 2000 })
+      : window.setTimeout(start, 1500);
+
+    return () => {
+      cancelled = true;
+      if (w.cancelIdleCallback) w.cancelIdleCallback(ric);
+      else clearTimeout(ric);
+      cleanup();
+    };
   }, []);
 
   return (

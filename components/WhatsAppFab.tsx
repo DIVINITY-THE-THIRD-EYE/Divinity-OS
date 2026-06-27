@@ -10,7 +10,7 @@ export default function WhatsAppFab() {
   useEffect(() => {
     const onScroll = () => setShow(window.scrollY > window.innerHeight * 0.9);
     onScroll();
-    window.addEventListener("scroll", onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 

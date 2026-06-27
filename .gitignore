@@ -2,5 +2,14 @@ node_modules
 .next
 out
 .env.local
+.env*.local
 .DS_Store
 *.log
+
+# tooling / audit artifacts
+.tmp-lh
+.lighthouseci
+*.report.html
+*.report.json
+coverage
+*.tsbuildinfo

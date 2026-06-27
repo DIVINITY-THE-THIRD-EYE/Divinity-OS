@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import { motion } from "framer-motion";
 
 // Pranayama cadence (seconds): sama-style with a longer exhale.
@@ -144,21 +143,22 @@ export default function BreathHero() {
 
   return (
     <section id="top" className="relative h-[100svh] min-h-[640px] w-full overflow-hidden">
-      {/* studio backdrop — grounds the breathing guide in the real space */}
+      {/* warm-studio backdrop — pure CSS so the LCP isn't gated on a
+          full-viewport image decode (the photo sat at 0.28 opacity under
+          these gradients anyway). Evokes the lamp-lit amber studio tone. */}
       <div className="absolute inset-0" aria-hidden>
-        <Image
-          src="/studio/yc_18.webp"
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover opacity-[0.28]"
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(90% 70% at 50% 16%, rgba(208,138,62,0.16), transparent 58%), radial-gradient(70% 55% at 80% 6%, rgba(232,196,144,0.10), transparent 60%), linear-gradient(160deg, #20212b 0%, #1a1b23 46%, #15161e 100%)",
+          }}
         />
         <div
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(58% 55% at 50% 46%, rgba(21,22,30,0.82), transparent 62%), linear-gradient(to bottom, rgba(21,22,30,0.74), rgba(21,22,30,0.5) 42%, rgba(21,22,30,0.95))",
+              "radial-gradient(58% 55% at 50% 46%, rgba(21,22,30,0.55), transparent 64%), linear-gradient(to bottom, rgba(21,22,30,0.4), rgba(21,22,30,0.22) 42%, rgba(21,22,30,0.92))",
           }}
         />
       </div>
@@ -170,25 +170,27 @@ export default function BreathHero() {
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.3 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
           className="eyebrow mb-7 text-ember"
         >
           Yoga · Fitness · Wellness — Lucknow
         </motion.p>
 
+        {/* Transform-only entrance (opacity stays 1) so the LCP heading is
+            painted at first contentful paint, not after the animation. */}
         <h1 className="font-display font-light leading-[0.86] tracking-tight text-bone">
           <motion.span
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.1, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ y: 26 }}
+            animate={{ y: 0 }}
+            transition={{ duration: 0.7, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
             className="block text-[clamp(72px,16vw,210px)] italic text-ember"
           >
             Breathe
           </motion.span>
           <motion.span
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.1, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ y: 26 }}
+            animate={{ y: 0 }}
+            transition={{ duration: 0.7, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
             className="block pl-[0.06em] text-[clamp(40px,8vw,104px)]"
           >
             your way inward.
@@ -198,7 +200,7 @@ export default function BreathHero() {
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.8 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
           className="mt-8 max-w-md font-body text-base leading-relaxed text-mist"
         >
           A yoga, fitness and wellness academy guiding body and mind toward
@@ -208,7 +210,7 @@ export default function BreathHero() {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 1.0, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.5, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
           className="mt-10 flex flex-wrap items-center gap-4"
         >
           <a

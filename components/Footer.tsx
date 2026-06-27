@@ -47,7 +47,7 @@ export default function Footer() {
 
         {cols.map((c) => (
           <div key={c.title}>
-            <h4 className="eyebrow mb-5 text-ember">{c.title}</h4>
+            <h2 className="eyebrow mb-5 text-ember">{c.title}</h2>
             {c.links.map(([label, href]) => (
               <a
                 key={label}
@@ -61,7 +61,7 @@ export default function Footer() {
         ))}
 
         <div>
-          <h4 className="eyebrow mb-5 text-ember">Visit &amp; connect</h4>
+          <h2 className="eyebrow mb-5 text-ember">Visit &amp; connect</h2>
           <p className="mb-2.5 font-body text-[13px] text-mist">{site.city}</p>
           <p className="mb-2.5 font-body text-[13px] text-mist">{site.entity}</p>
           <a

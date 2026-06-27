@@ -26,6 +26,7 @@ const Option = ({
 }) => (
   <button
     onClick={onClick}
+    aria-pressed={active}
     className={`border px-4 py-2.5 font-mono text-[11px] uppercase tracking-wide transition-colors ${
       active
         ? "border-ember bg-ember text-void"
@@ -67,8 +68,8 @@ export default function PlanCalculator() {
         <div className="grid gap-10 md:grid-cols-[1fr_0.9fr] md:gap-16">
           <div className="space-y-9">
             <div>
-              <p className="eyebrow mb-4 text-mist">How would you like to start?</p>
-              <div className="flex flex-wrap gap-2">
+              <p className="eyebrow mb-4 text-mist" id="pc-start">How would you like to start?</p>
+              <div className="flex flex-wrap gap-2" role="group" aria-labelledby="pc-start">
                 {(["Try it", "Monthly", "Quarterly", "Yearly"] as Commit[]).map((c) => (
                   <Option key={c} active={commit === c} onClick={() => setCommit(c)}>
                     {c}
@@ -78,8 +79,8 @@ export default function PlanCalculator() {
             </div>
 
             <div>
-              <p className="eyebrow mb-4 text-mist">Your focus</p>
-              <div className="flex flex-wrap gap-2">
+              <p className="eyebrow mb-4 text-mist" id="pc-focus">Your focus</p>
+              <div className="flex flex-wrap gap-2" role="group" aria-labelledby="pc-focus">
                 {(["One discipline", "Everything"] as Focus[]).map((f) => (
                   <Option key={f} active={focus === f} onClick={() => setFocus(f)}>
                     {f}
@@ -89,8 +90,8 @@ export default function PlanCalculator() {
             </div>
 
             <div>
-              <p className="eyebrow mb-4 text-mist">One-on-one guidance?</p>
-              <div className="flex flex-wrap gap-2">
+              <p className="eyebrow mb-4 text-mist" id="pc-onetoone">One-on-one guidance?</p>
+              <div className="flex flex-wrap gap-2" role="group" aria-labelledby="pc-onetoone">
                 <Option active={!oneToOne} onClick={() => setOneToOne(false)}>
                   Group is fine
                 </Option>
@@ -112,7 +113,7 @@ export default function PlanCalculator() {
               }}
             />
             <div className="relative">
-              <p className="eyebrow text-mist">We'd suggest</p>
+              <p className="eyebrow text-mist">We&apos;d suggest</p>
               <AnimatePresence mode="wait">
                 <motion.div
                   key={plan.name}

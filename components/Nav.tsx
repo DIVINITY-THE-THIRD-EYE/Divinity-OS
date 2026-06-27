@@ -25,7 +25,7 @@ export default function Nav() {
 
   useEffect(() => {
     const onScroll = () => setSolid(window.scrollY > 64);
-    window.addEventListener("scroll", onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 

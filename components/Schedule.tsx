@@ -24,11 +24,12 @@ export default function Schedule({ data }: { data: Record<string, ClassSlot[]> }
             </h2>
           </div>
 
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-1.5" role="group" aria-label="Choose a day">
             {DAYS.map((d) => (
               <button
                 key={d}
                 onClick={() => setDay(d)}
+                aria-pressed={day === d}
                 className={`border px-4 py-2.5 font-mono text-[11px] uppercase tracking-wide transition-colors ${
                   day === d
                     ? "border-ember bg-ember text-void"

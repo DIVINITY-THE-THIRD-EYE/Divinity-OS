@@ -53,16 +53,21 @@ export default function Voices({ items }: { items: Testimonial[] }) {
           </AnimatePresence>
         </div>
 
-        <div className="mt-12 flex justify-center gap-2.5">
+        <div className="mt-12 flex justify-center gap-1">
           {items.map((_, idx) => (
             <button
               key={idx}
               onClick={() => setI(idx)}
-              aria-label={`Voice ${idx + 1}`}
-              className={`h-2 w-2 rounded-full border border-[var(--line-dark)] transition-all ${
-                idx === i ? "scale-125 bg-ember" : "bg-transparent"
-              }`}
-            />
+              aria-label={`Show testimonial ${idx + 1}`}
+              aria-pressed={idx === i}
+              className="flex h-6 w-6 items-center justify-center"
+            >
+              <span
+                className={`h-2 w-2 rounded-full border border-[var(--line-dark)] transition-all ${
+                  idx === i ? "scale-125 bg-ember" : "bg-transparent"
+                }`}
+              />
+            </button>
           ))}
         </div>
       </div>

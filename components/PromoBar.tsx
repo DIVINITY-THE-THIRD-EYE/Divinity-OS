@@ -23,9 +23,9 @@ export default function PromoBar() {
         >
           <div className="flex items-center justify-between gap-3 px-4 py-2.5 md:justify-center md:gap-6">
             <p className="font-mono text-[11px] uppercase tracking-wide text-void">
-              <span className="opacity-60 line-through">₹500</span>
+              <span className="line-through opacity-90">₹500</span>
               <span className="mx-1.5 font-bold">₹99 first week</span>
-              <span className="hidden opacity-75 md:inline">— try any class, no commitment.</span>
+              <span className="hidden md:inline">— try any class, no commitment.</span>
             </p>
             <a
               href={whatsappHref}
@@ -38,7 +38,7 @@ export default function PromoBar() {
             <button
               onClick={() => setDismissed(true)}
               aria-label="Dismiss offer banner"
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-void/60 hover:text-void md:static md:translate-y-0"
+              className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center text-void/80 hover:text-void md:static md:translate-y-0"
             >
               ✕
             </button>

@@ -5,12 +5,16 @@ Generated from real environment/build output; items that need a live tool run (L
 marked **TO RUN** with the method to fill them — not guessed.
 
 ## Repository
-| Field | Value |
-|---|---|
-| Commit hash | **N/A — not a git repository yet** (run `git init`; see `design/phase0/release-strategy.md`) |
-| Branch | N/A |
-| Project | `divinity-third-eye` v1.0.0 (private) |
-| Path | `divinity-third-eye/divinity` |
+| Field | Value | Label |
+|---|---|---|
+| Commit hash | **`c7e05402ef3a4ff5996b59aaf5c0bf848523c5f6`** (short `c7e0540`) | MEASURED |
+| Branch | `main` | MEASURED |
+| Tags | `dossier-v1.0`, `baseline-phase0` | MEASURED |
+| Initial commit | "chore: Phase 0 engineering baseline freeze" — 155 files | MEASURED |
+| Remote | none yet — `git remote add origin <url>` then push (GitHub-side) | PROPOSED |
+| Branch protection / signed commits | configure on GitHub after push (not possible locally) | PROPOSED |
+| Project | `divinity-third-eye` v1.0.0 (private) | MEASURED |
+| Path | `divinity-third-eye/divinity` | MEASURED |
 
 ## Toolchain
 | Field | Value |

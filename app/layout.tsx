@@ -6,7 +6,9 @@ import "./globals.css";
 
 const display = Cormorant({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  // Only 300 (font-light) and the default 400 are used in the UI — dropping the
+  // unused 500/600 weights removes 4 font files from the initial load.
+  weight: ["300", "400"],
   style: ["normal", "italic"],
   variable: "--font-display",
   display: "swap",
@@ -68,6 +70,12 @@ export default function RootLayout({
       className={`${display.variable} ${body.variable} ${mono.variable}`}
     >
       <body className="has-custom-cursor">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[999] focus:bg-ember focus:px-4 focus:py-2 focus:font-mono focus:text-[12px] focus:uppercase focus:tracking-wide focus:text-void"
+        >
+          Skip to content
+        </a>
         <JsonLd />
         {children}
       </body>

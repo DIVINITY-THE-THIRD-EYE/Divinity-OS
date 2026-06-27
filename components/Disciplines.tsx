@@ -9,38 +9,61 @@ export default function Disciplines({ items }: { items: Discipline[] }) {
 
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) return;
+    // The horizontal-pin effect is desktop-only (≥900px). Skip the GSAP fetch
+    // entirely on mobile so it never enters the initial load window.
+    if (reduce || window.innerWidth < 900) return;
 
-    // Dynamic import keeps GSAP off the critical render path (mobile LCP fix)
-    import("gsap").then(({ gsap }) =>
-      import("gsap/ScrollTrigger").then(({ ScrollTrigger }) => {
-        gsap.registerPlugin(ScrollTrigger);
-        const mm = gsap.matchMedia();
+    let cancelled = false;
+    let cleanup = () => {};
 
-        mm.add("(min-width: 900px)", () => {
-          const t = track.current!;
-          const s = section.current!;
-          const distance = () => t.scrollWidth - window.innerWidth;
+    // Defer the GSAP fetch until the browser is idle so it doesn't gate TTI/LCP.
+    const start = () => {
+      import("gsap").then(({ gsap }) =>
+        import("gsap/ScrollTrigger").then(({ ScrollTrigger }) => {
+          if (cancelled) return;
+          gsap.registerPlugin(ScrollTrigger);
+          const mm = gsap.matchMedia();
 
-          const tween = gsap.to(t, {
-            x: () => -distance(),
-            ease: "none",
-            scrollTrigger: {
-              trigger: s,
-              start: "top top",
-              end: () => "+=" + distance(),
-              scrub: 1,
-              pin: true,
-              anticipatePin: 1,
-              invalidateOnRefresh: true,
-            },
+          mm.add("(min-width: 900px)", () => {
+            const t = track.current!;
+            const s = section.current!;
+            const distance = () => t.scrollWidth - window.innerWidth;
+
+            const tween = gsap.to(t, {
+              x: () => -distance(),
+              ease: "none",
+              scrollTrigger: {
+                trigger: s,
+                start: "top top",
+                end: () => "+=" + distance(),
+                scrub: 1,
+                pin: true,
+                anticipatePin: 1,
+                invalidateOnRefresh: true,
+              },
+            });
+            return () => tween.kill();
           });
-          return () => tween.kill();
-        });
 
-        return () => mm.revert();
-      })
-    );
+          cleanup = () => mm.revert();
+        })
+      );
+    };
+
+    const w = window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    const ric = w.requestIdleCallback
+      ? w.requestIdleCallback(start, { timeout: 2000 })
+      : window.setTimeout(start, 1500);
+
+    return () => {
+      cancelled = true;
+      if (w.cancelIdleCallback) w.cancelIdleCallback(ric);
+      else clearTimeout(ric);
+      cleanup();
+    };
   }, []);
 
   return (
@@ -66,7 +89,7 @@ export default function Disciplines({ items }: { items: Discipline[] }) {
             className="group flex w-full shrink-0 flex-col justify-between border-t border-[var(--line-dark)] py-8 md:mr-8 md:h-[64%] md:w-[440px] md:border-l md:border-t-0 md:py-0 md:pl-10"
           >
             <div>
-              <p className="eyebrow mb-8 text-ember/80">{d.intention}</p>
+              <p className="eyebrow mb-8 text-ember">{d.intention}</p>
               <h3 className="font-display text-[clamp(32px,4.4vw,56px)] font-light leading-[1.02] tracking-tight text-bone">
                 {d.title}
               </h3>

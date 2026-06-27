@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { rateLimit, clientIp, sweep } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -7,11 +8,23 @@ type Body = {
   email?: string;
   intention?: string;
   message?: string;
+  // Honeypot: a hidden field real users never fill. Bots do.
+  company?: string;
 };
 
 const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 
 export async function POST(req: Request) {
+  // Rate limit: 5 enquiries / minute / IP.
+  sweep();
+  const limit = rateLimit(`contact:${clientIp(req)}`, 5, 60_000);
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: "Too many requests. Please wait a moment and try again." },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfter) } }
+    );
+  }
+
   let body: Body;
   try {
     body = await req.json();
@@ -19,10 +32,20 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 
+  // Honeypot tripped → pretend success, drop silently.
+  if ((body.company || "").trim() !== "") {
+    return NextResponse.json({ ok: true, delivered: false });
+  }
+
   const name = (body.name || "").trim();
   const email = (body.email || "").trim();
   const intention = (body.intention || "").trim();
   const message = (body.message || "").trim();
+
+  // Length guards — reject absurd payloads before any downstream call.
+  if (name.length > 120 || email.length > 200 || message.length > 4000) {
+    return NextResponse.json({ error: "That request is too large." }, { status: 413 });
+  }
 
   if (!name || !isEmail(email)) {
     return NextResponse.json(

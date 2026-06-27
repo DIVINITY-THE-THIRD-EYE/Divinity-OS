@@ -14,12 +14,14 @@ export default function Newsletter() {
     e.preventDefault();
     setStatus("sending");
     setError("");
-    const email = String(new FormData(e.currentTarget).get("email") || "").trim();
+    const form = new FormData(e.currentTarget);
+    const email = String(form.get("email") || "").trim();
+    const company = String(form.get("company") || ""); // honeypot
     try {
       const res = await fetch("/api/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, company }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -56,6 +58,11 @@ export default function Newsletter() {
             </motion.p>
           ) : (
             <form onSubmit={onSubmit} className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+              {/* Honeypot — hidden from users and the a11y tree */}
+              <div className="absolute left-[-9999px]" aria-hidden="true">
+                <label htmlFor="newsletter-company">Company</label>
+                <input id="newsletter-company" name="company" type="text" tabIndex={-1} autoComplete="off" />
+              </div>
               <label htmlFor="newsletter-email" className="sr-only">Email address</label>
               <input
                 id="newsletter-email"

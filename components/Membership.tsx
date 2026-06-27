@@ -118,10 +118,6 @@ export default function Membership({ plans }: { plans: Plan[] }) {
               </p>
             </div>
           </div>
-          <p className="mt-7 text-center font-mono text-[11px] text-ink-mute">
-            Prices shown are placeholders — update to your real fees in the CMS
-            before launch.
-          </p>
         </Reveal>
       </div>
     </section>
