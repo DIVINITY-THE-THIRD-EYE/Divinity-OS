@@ -93,24 +93,26 @@ export default function Contact() {
           ) : (
             <form onSubmit={onSubmit} className="space-y-7">
               <div>
-                <label className="eyebrow mb-2 block text-mist">Name</label>
-                <input name="name" required className={field} placeholder="Your name" />
+                <label htmlFor="contact-name" className="eyebrow mb-2 block text-mist">Name</label>
+                <input id="contact-name" name="name" required className={field} placeholder="Your name" aria-required="true" />
               </div>
               <div>
-                <label className="eyebrow mb-2 block text-mist">Email</label>
+                <label htmlFor="contact-email" className="eyebrow mb-2 block text-mist">Email</label>
                 <input
+                  id="contact-email"
                   name="email"
                   type="email"
                   required
+                  aria-required="true"
                   className={field}
                   placeholder="you@example.com"
                 />
               </div>
               <div>
-                <label className="eyebrow mb-2 block text-mist">
+                <label htmlFor="contact-intention" className="eyebrow mb-2 block text-mist">
                   What draws you
                 </label>
-                <select name="intention" required className={`${field} appearance-none`} defaultValue="">
+                <select id="contact-intention" name="intention" required aria-required="true" className={`${field} appearance-none`} defaultValue="">
                   <option value="" disabled className="bg-deep">
                     Choose a practice
                   </option>
@@ -122,8 +124,9 @@ export default function Contact() {
                 </select>
               </div>
               <div>
-                <label className="eyebrow mb-2 block text-mist">Message</label>
+                <label htmlFor="contact-message" className="eyebrow mb-2 block text-mist">Message</label>
                 <textarea
+                  id="contact-message"
                   name="message"
                   rows={3}
                   className={`${field} resize-none`}
@@ -132,7 +135,7 @@ export default function Contact() {
               </div>
 
               {status === "error" && (
-                <p className="font-mono text-[12px] text-clay">{error}</p>
+                <p role="alert" className="font-mono text-[12px] text-clay">{error}</p>
               )}
 
               <button

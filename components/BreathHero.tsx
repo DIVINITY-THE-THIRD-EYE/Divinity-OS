@@ -204,6 +204,26 @@ export default function BreathHero() {
           A yoga, fitness and wellness academy guiding body and mind toward
           balance — one breath at a time.
         </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, delay: 1.0, ease: [0.22, 1, 0.36, 1] }}
+          className="mt-10 flex flex-wrap items-center gap-4"
+        >
+          <a
+            href="#contact"
+            className="bg-ember px-8 py-3.5 font-mono text-[11px] uppercase tracking-wide text-void transition-colors hover:bg-ember-pale"
+          >
+            Book a class — ₹99 first week
+          </a>
+          <a
+            href="#about"
+            className="font-mono text-[11px] uppercase tracking-wide text-mist transition-colors hover:text-bone"
+          >
+            Learn more ↓
+          </a>
+        </motion.div>
       </div>
 
       {/* breath guide readout */}

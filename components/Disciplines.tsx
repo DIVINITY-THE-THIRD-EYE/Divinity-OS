@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { Discipline } from "@/lib/content";
 
 export default function Disciplines({ items }: { items: Discipline[] }) {
@@ -13,31 +11,36 @@ export default function Disciplines({ items }: { items: Discipline[] }) {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) return;
 
-    gsap.registerPlugin(ScrollTrigger);
-    const mm = gsap.matchMedia();
+    // Dynamic import keeps GSAP off the critical render path (mobile LCP fix)
+    import("gsap").then(({ gsap }) =>
+      import("gsap/ScrollTrigger").then(({ ScrollTrigger }) => {
+        gsap.registerPlugin(ScrollTrigger);
+        const mm = gsap.matchMedia();
 
-    mm.add("(min-width: 900px)", () => {
-      const t = track.current!;
-      const s = section.current!;
-      const distance = () => t.scrollWidth - window.innerWidth;
+        mm.add("(min-width: 900px)", () => {
+          const t = track.current!;
+          const s = section.current!;
+          const distance = () => t.scrollWidth - window.innerWidth;
 
-      const tween = gsap.to(t, {
-        x: () => -distance(),
-        ease: "none",
-        scrollTrigger: {
-          trigger: s,
-          start: "top top",
-          end: () => "+=" + distance(),
-          scrub: 1,
-          pin: true,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-        },
-      });
-      return () => tween.kill();
-    });
+          const tween = gsap.to(t, {
+            x: () => -distance(),
+            ease: "none",
+            scrollTrigger: {
+              trigger: s,
+              start: "top top",
+              end: () => "+=" + distance(),
+              scrub: 1,
+              pin: true,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+            },
+          });
+          return () => tween.kill();
+        });
 
-    return () => mm.revert();
+        return () => mm.revert();
+      })
+    );
   }, []);
 
   return (

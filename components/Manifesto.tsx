@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { manifestoLines } from "@/lib/content";
 
 export default function Manifesto() {
@@ -11,26 +9,26 @@ export default function Manifesto() {
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const el = root.current;
-    if (!el) return;
+    if (!el || reduce) return;
     const lines = el.querySelectorAll(".m-line");
 
-    if (reduce) {
-      gsap.set(lines, { opacity: 1, y: 0 });
-      return;
-    }
-
-    gsap.registerPlugin(ScrollTrigger);
-    const ctx = gsap.context(() => {
-      gsap.set(lines, { opacity: 0.12, y: 18 });
-      gsap.to(lines, {
-        opacity: 1,
-        y: 0,
-        stagger: 0.5, // breath-paced
-        ease: "power2.out",
-        scrollTrigger: { trigger: el, start: "top 70%", end: "bottom 80%", scrub: 1 },
-      });
-    }, el);
-    return () => ctx.revert();
+    // Dynamic import keeps GSAP off the critical render path (mobile LCP fix)
+    import("gsap").then(({ gsap }) =>
+      import("gsap/ScrollTrigger").then(({ ScrollTrigger }) => {
+        gsap.registerPlugin(ScrollTrigger);
+        const ctx = gsap.context(() => {
+          gsap.set(lines, { opacity: 0.12, y: 18 });
+          gsap.to(lines, {
+            opacity: 1,
+            y: 0,
+            stagger: 0.5,
+            ease: "power2.out",
+            scrollTrigger: { trigger: el, start: "top 70%", end: "bottom 80%", scrub: 1 },
+          });
+        }, el);
+        return () => ctx.revert();
+      })
+    );
   }, []);
 
   return (

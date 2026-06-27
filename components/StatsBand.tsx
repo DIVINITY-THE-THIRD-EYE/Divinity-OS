@@ -1,0 +1,58 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { useInView } from "framer-motion";
+
+type Stat = { value: number; suffix: string; label: string };
+
+const stats: Stat[] = [
+  { value: 200, suffix: "+", label: "Members transformed" },
+  { value: 6,   suffix: "+", label: "Disciplines taught" },
+  { value: 3,   suffix: "",  label: "Batches daily" },
+  { value: 2,   suffix: "+", label: "Years of practice" },
+];
+
+function Counter({ value, suffix }: { value: number; suffix: string }) {
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-20% 0px" });
+
+  useEffect(() => {
+    if (!inView) return;
+    let start = 0;
+    const duration = 1400;
+    const step = performance.now();
+    const tick = (now: number) => {
+      const progress = Math.min((now - step) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.round(eased * value));
+      if (progress < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, [inView, value]);
+
+  return (
+    <span ref={ref}>
+      {count}{suffix}
+    </span>
+  );
+}
+
+export default function StatsBand() {
+  return (
+    <section aria-label="Academy at a glance" className="border-y border-[var(--line-dark)] bg-deep">
+      <div className="mx-auto grid max-w-6xl grid-cols-2 divide-x divide-y divide-[var(--line-dark)] md:grid-cols-4 md:divide-y-0">
+        {stats.map((s) => (
+          <div key={s.label} className="px-8 py-10 text-center">
+            <p className="font-display text-[clamp(40px,6vw,72px)] font-light leading-none text-ember">
+              <Counter value={s.value} suffix={s.suffix} />
+            </p>
+            <p className="mt-2 font-mono text-[11px] uppercase tracking-wide text-mist">
+              {s.label}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}

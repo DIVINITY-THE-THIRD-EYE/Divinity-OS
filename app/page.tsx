@@ -6,7 +6,10 @@ import IntroCurtain from "@/components/IntroCurtain";
 import CommandPalette from "@/components/CommandPalette";
 import WhatsAppFab from "@/components/WhatsAppFab";
 import Nav from "@/components/Nav";
+import PromoBar from "@/components/PromoBar";
+import StickyCta from "@/components/StickyCta";
 import BreathHero from "@/components/BreathHero";
+import StatsBand from "@/components/StatsBand";
 import Marquee from "@/components/Marquee";
 import Manifesto from "@/components/Manifesto";
 import About from "@/components/About";
@@ -16,6 +19,7 @@ import Method from "@/components/Method";
 import Schedule from "@/components/Schedule";
 import Membership from "@/components/Membership";
 import PlanCalculator from "@/components/PlanCalculator";
+import Newsletter from "@/components/Newsletter";
 import Voices from "@/components/Voices";
 import Faq from "@/components/Faq";
 import Contact from "@/components/Contact";
@@ -53,10 +57,12 @@ export default async function Page() {
       <SmoothScroll />
       <Cursor />
       <CommandPalette />
+      <PromoBar />
       <Nav />
 
       <main>
         <BreathHero />
+        <StatsBand />
         <Marquee />
         <Manifesto />
         <About />
@@ -66,6 +72,7 @@ export default async function Page() {
         <Schedule data={schedule} />
         <Membership plans={plans} />
         <PlanCalculator />
+        <Newsletter />
         <Voices items={testimonials} />
         <Faq />
         <Contact />
@@ -73,6 +80,7 @@ export default async function Page() {
       </main>
 
       <WhatsAppFab />
+      <StickyCta />
     </>
   );
 }
