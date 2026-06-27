@@ -109,7 +109,7 @@ class ShimmerCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Theme.of(context).dividerColor.withOpacity(0.1),
+          color: Theme.of(context).dividerColor.withValues(alpha: 0.1),
         ),
       ),
       child: Column(
@@ -119,10 +119,10 @@ class ShimmerCard extends StatelessWidget {
             children: [
               ShimmerLoading.circular(size: 40),
               const SizedBox(width: 12),
-              Expanded(
+              const Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children: [
                     ShimmerLoading(width: 120, height: 14, borderRadius: 4),
                     SizedBox(height: 6),
                     ShimmerLoading(width: 80, height: 10, borderRadius: 4),
