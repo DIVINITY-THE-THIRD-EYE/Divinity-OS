@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Cormorant, Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
 import { site } from "@/lib/content";
 import JsonLd from "@/components/JsonLd";
+import MotionProvider from "@/components/MotionProvider";
 import "./globals.css";
 
 const display = Cormorant({
@@ -73,7 +74,7 @@ export default function RootLayout({
 }) {
   return (
     <html
-      lang="en"
+      lang="en-IN"
       className={`${display.variable} ${body.variable} ${mono.variable}`}
     >
       <body className="has-custom-cursor">
@@ -84,7 +85,7 @@ export default function RootLayout({
           Skip to content
         </a>
         <JsonLd />
-        {children}
+        <MotionProvider>{children}</MotionProvider>
       </body>
     </html>
   );

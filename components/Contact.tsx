@@ -82,7 +82,7 @@ export default function Contact() {
 
         <Reveal delay={0.1}>
           {status === "done" ? (
-            <div className="flex h-full flex-col justify-center border border-[var(--line-dark)] p-10 text-center">
+            <div role="status" aria-live="polite" className="flex h-full flex-col justify-center border border-[var(--line-dark)] p-10 text-center">
               <p className="font-display text-3xl italic text-ember">
                 Thank you.
               </p>

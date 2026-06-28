@@ -50,6 +50,8 @@ export default function Newsletter() {
 
           {status === "done" ? (
             <motion.p
+              role="status"
+              aria-live="polite"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               className="mt-8 font-display text-xl italic text-ember"
