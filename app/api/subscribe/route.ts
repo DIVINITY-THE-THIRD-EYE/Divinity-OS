@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import { rateLimit, clientIp, sweep } from "@/lib/rate-limit";
+import { isEmail } from "@/lib/validation";
 
 export const runtime = "nodejs";
-
-const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 
 export async function POST(req: Request) {
   // Rate limit: 5 subscribes / minute / IP.

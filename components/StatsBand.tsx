@@ -19,21 +19,38 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
 
   useEffect(() => {
     if (!inView) return;
-    let start = 0;
+
+    // Respect reduced motion: jump straight to the final value.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setCount(value);
+      return;
+    }
+
+    let raf = 0;
     const duration = 1400;
     const step = performance.now();
     const tick = (now: number) => {
       const progress = Math.min((now - step) / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
       setCount(Math.round(eased * value));
-      if (progress < 1) requestAnimationFrame(tick);
+      if (progress < 1) raf = requestAnimationFrame(tick);
     };
-    requestAnimationFrame(tick);
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf); // stop on unmount (no setState leak)
   }, [inView, value]);
 
   return (
     <span ref={ref}>
-      {count}{suffix}
+      {/* Screen readers get the final value as real text; the animated count is
+          hidden from them so they don't read a mid-animation number. */}
+      <span className="sr-only">
+        {value}
+        {suffix}
+      </span>
+      <span aria-hidden="true">
+        {count}
+        {suffix}
+      </span>
     </span>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import {
   motion,
   useAnimationFrame,
@@ -25,15 +25,20 @@ export default function Marquee() {
   const factor = useTransform(smooth, [0, 1000], [0, 4], { clamp: false });
   const skew = useTransform(smooth, [-1500, 0, 1500], [-6, 0, 6], { clamp: true });
   const dir = useRef(1);
+  // Cache the media query instead of re-evaluating it on every frame.
+  const reduce = useRef(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    reduce.current = mq.matches;
+    const onChange = (e: MediaQueryListEvent) => (reduce.current = e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
 
   const x = useTransform(baseX, (v) => `${wrap(-50, 0, v)}%`);
 
   useAnimationFrame((_, delta) => {
-    if (
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    )
-      return;
+    if (reduce.current) return;
     let move = dir.current * 1.6 * (delta / 1000);
     const f = factor.get();
     if (f < 0) dir.current = -1;

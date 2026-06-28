@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { rateLimit, clientIp, sweep } from "@/lib/rate-limit";
+import { isEmail } from "@/lib/validation";
 
 export const runtime = "nodejs";
 
@@ -11,8 +12,6 @@ type Body = {
   // Honeypot: a hidden field real users never fill. Bots do.
   company?: string;
 };
-
-const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 
 export async function POST(req: Request) {
   // Rate limit: 5 enquiries / minute / IP.

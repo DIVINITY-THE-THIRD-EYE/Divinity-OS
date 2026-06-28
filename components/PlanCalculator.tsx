@@ -4,16 +4,7 @@ import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Reveal from "./Reveal";
 import { plans, site } from "@/lib/content";
-
-type Commit = "Try it" | "Monthly" | "Quarterly" | "Yearly";
-type Focus = "One discipline" | "Everything";
-
-function recommend(commit: Commit, focus: Focus, oneToOne: boolean) {
-  if (oneToOne || commit === "Yearly") return "The Yogi";
-  if (commit === "Try it") return "Drop-in";
-  if (focus === "One discipline" && commit === "Monthly") return "The Seeker";
-  return "The Devotee";
-}
+import { recommend, type Commit, type Focus } from "@/lib/recommend";
 
 const Option = ({
   active,
