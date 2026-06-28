@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { site } from "@/lib/content";
+import { waHref } from "@/lib/links";
 
 export default function WhatsAppFab() {
   const [show, setShow] = useState(false);
@@ -14,9 +14,7 @@ export default function WhatsAppFab() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const href = `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(
-    "Namaste — I'd like to know more about practising at Divinity."
-  )}`;
+  const href = waHref("Namaste — I'd like to know more about practising at Divinity.");
 
   return (
     <AnimatePresence>

@@ -2,11 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { site } from "@/lib/content";
+import { waHref } from "@/lib/links";
 
-const whatsappHref = `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(
-  "Namaste — I'd like to book a first class at Divinity."
-)}`;
+const whatsappHref = waHref("Namaste — I'd like to book a first class at Divinity.");
 
 export default function StickyCta() {
   const [visible, setVisible] = useState(false);

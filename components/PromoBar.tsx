@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { site } from "@/lib/content";
+import { waHref } from "@/lib/links";
 
-const whatsappHref = `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(
+const whatsappHref = waHref(
   "Namaste — I'd like to claim the first-week trial offer at Divinity."
-)}`;
+);
 
 export default function PromoBar() {
   const [dismissed, setDismissed] = useState(false);

@@ -3,7 +3,8 @@
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Reveal from "./Reveal";
-import { plans, site } from "@/lib/content";
+import { plans } from "@/lib/content";
+import { waHref } from "@/lib/links";
 import { recommend, type Commit, type Focus } from "@/lib/recommend";
 
 const Option = ({
@@ -39,9 +40,9 @@ export default function PlanCalculator() {
   );
   const plan = plans.find((p) => p.name === rec) ?? plans[0];
 
-  const wa = `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(
+  const wa = waHref(
     `Namaste — based on the site I think ${rec} suits me. I'd like to begin.`
-  )}`;
+  );
 
   return (
     <section

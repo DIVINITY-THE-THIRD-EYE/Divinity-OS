@@ -2,10 +2,9 @@
 
 import Image from "next/image";
 import { site } from "@/lib/content";
+import { waHref } from "@/lib/links";
 
-const whatsappHref = `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(
-  "Namaste — I'd like to know more about practising at Divinity."
-)}`;
+const whatsappHref = waHref("Namaste — I'd like to know more about practising at Divinity.");
 
 const cols = [
   {

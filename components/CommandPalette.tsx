@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { site } from "@/lib/content";
+import { waHref } from "@/lib/links";
 
 type Item = {
   label: string;
@@ -20,7 +21,7 @@ const ITEMS: Item[] = [
   { label: "Membership", hint: "Plans & pricing", kind: "section", target: "#membership" },
   { label: "Questions", hint: "FAQ", kind: "section", target: "#faq" },
   { label: "Begin", hint: "Send an enquiry", kind: "section", target: "#contact" },
-  { label: "WhatsApp", hint: "Chat with us now", kind: "link", target: `https://wa.me/${site.whatsapp}` },
+  { label: "WhatsApp", hint: "Chat with us now", kind: "link", target: waHref() },
   { label: "Instagram", hint: "Follow the practice", kind: "link", target: site.instagram },
 ];
 
