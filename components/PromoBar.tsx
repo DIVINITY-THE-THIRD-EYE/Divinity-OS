@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { waHref } from "@/lib/links";
 
 const whatsappHref = waHref(
@@ -14,7 +14,7 @@ export default function PromoBar() {
   return (
     <AnimatePresence>
       {!dismissed && (
-        <motion.div
+        <m.div
           initial={{ height: 0, opacity: 0 }}
           animate={{ height: "auto", opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
@@ -43,7 +43,7 @@ export default function PromoBar() {
               ✕
             </button>
           </div>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

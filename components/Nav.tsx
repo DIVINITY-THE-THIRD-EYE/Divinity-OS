@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { site } from "@/lib/content";
 import Magnetic from "./Magnetic";
 
@@ -67,7 +67,7 @@ export default function Nav() {
 
   return (
     <>
-      <motion.nav
+      <m.nav
         initial={{ y: -40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
@@ -131,11 +131,11 @@ export default function Nav() {
         >
           Menu
         </button>
-      </motion.nav>
+      </m.nav>
 
       <AnimatePresence>
         {open && (
-          <motion.div
+          <m.div
             id="mobile-menu"
             role="dialog"
             aria-modal="true"
@@ -154,7 +154,7 @@ export default function Nav() {
               Close
             </button>
             {[...links, { href: "#contact", label: "Begin", id: "contact" }].map((l, i) => (
-              <motion.a
+              <m.a
                 key={l.href}
                 href={l.href}
                 onClick={() => setOpen(false)}
@@ -164,9 +164,9 @@ export default function Nav() {
                 className="font-display text-4xl font-light text-bone"
               >
                 {l.label}
-              </motion.a>
+              </m.a>
             ))}
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </>

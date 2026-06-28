@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { site } from "@/lib/content";
 import { waHref } from "@/lib/links";
 
@@ -92,7 +92,7 @@ export default function CommandPalette() {
   return (
     <AnimatePresence>
       {open && (
-        <motion.div
+        <m.div
           className="fixed inset-0 z-[450] flex items-start justify-center px-4 pt-[18vh]"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -100,7 +100,7 @@ export default function CommandPalette() {
           onClick={() => setOpen(false)}
         >
           <div className="absolute inset-0 bg-void/70 backdrop-blur-sm" />
-          <motion.div
+          <m.div
             role="dialog"
             aria-modal="true"
             aria-label="Command menu"
@@ -156,8 +156,8 @@ export default function CommandPalette() {
                 </li>
               ))}
             </ul>
-          </motion.div>
-        </motion.div>
+          </m.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

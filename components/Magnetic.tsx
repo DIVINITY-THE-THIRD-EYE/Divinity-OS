@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, type ReactNode } from "react";
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import { m, useMotionValue, useSpring } from "framer-motion";
 
 export default function Magnetic({
   children,
@@ -32,7 +32,7 @@ export default function Magnetic({
   }
 
   return (
-    <motion.div
+    <m.div
       ref={ref}
       onMouseMove={onMove}
       onMouseLeave={reset}
@@ -41,6 +41,6 @@ export default function Magnetic({
       data-hover
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 }

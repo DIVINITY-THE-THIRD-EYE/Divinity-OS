@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { studioGallery } from "@/lib/content";
 
 export default function Gallery() {
@@ -31,7 +31,7 @@ export default function Gallery() {
         {/* masonry — natural aspect ratios, no layout shift */}
         <div className="[column-fill:_balance] gap-4 sm:columns-2 sm:gap-5 lg:columns-3">
           {studioGallery.map((shot, i) => (
-            <motion.figure
+            <m.figure
               key={shot.src}
               initial={{ opacity: 0, y: 28 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -47,7 +47,7 @@ export default function Gallery() {
                 sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 30vw"
                 className="h-auto w-full object-cover grayscale-[0.18] transition duration-700 ease-out will-change-transform group-hover:scale-[1.04] group-hover:grayscale-0"
               />
-            </motion.figure>
+            </m.figure>
           ))}
         </div>
       </div>

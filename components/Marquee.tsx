@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import {
-  motion,
+  m,
   useAnimationFrame,
   useMotionValue,
   useScroll,
@@ -62,10 +62,10 @@ export default function Marquee() {
 
   return (
     <section className="overflow-hidden border-y border-[var(--line-dark)] bg-deep py-10">
-      <motion.div style={{ x, skewX: skew }} className="flex whitespace-nowrap will-change-transform">
+      <m.div style={{ x, skewX: skew }} className="flex whitespace-nowrap will-change-transform">
         <Row />
         <Row />
-      </motion.div>
+      </m.div>
     </section>
   );
 }

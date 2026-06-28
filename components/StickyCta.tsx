@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import { waHref } from "@/lib/links";
 
 const whatsappHref = waHref("Namaste — I'd like to book a first class at Divinity.");
@@ -25,7 +25,7 @@ export default function StickyCta() {
   return (
     <AnimatePresence>
       {visible && !pastContact && (
-        <motion.div
+        <m.div
           initial={{ y: 80, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 80, opacity: 0 }}
@@ -46,7 +46,7 @@ export default function StickyCta() {
           >
             Book a class
           </a>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

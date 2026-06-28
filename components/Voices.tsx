@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import type { Testimonial } from "@/lib/content";
 
 export default function Voices({ items }: { items: Testimonial[] }) {
@@ -31,7 +31,7 @@ export default function Voices({ items }: { items: Testimonial[] }) {
 
         <div className="min-h-[220px]">
           <AnimatePresence mode="wait">
-            <motion.div
+            <m.div
               key={i}
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
@@ -52,7 +52,7 @@ export default function Voices({ items }: { items: Testimonial[] }) {
                   <span className="font-body text-[12px] text-mist">{t.meta}</span>
                 </span>
               </div>
-            </motion.div>
+            </m.div>
           </AnimatePresence>
         </div>
 

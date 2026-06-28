@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import type { ClassSlot } from "@/lib/content";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -44,7 +44,7 @@ export default function Schedule({ data }: { data: Record<string, ClassSlot[]> }
 
         <div className="min-h-[260px]">
           <AnimatePresence mode="wait">
-            <motion.div
+            <m.div
               key={day}
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
@@ -71,7 +71,7 @@ export default function Schedule({ data }: { data: Record<string, ClassSlot[]> }
                   </span>
                 </div>
               ))}
-            </motion.div>
+            </m.div>
           </AnimatePresence>
         </div>
       </div>

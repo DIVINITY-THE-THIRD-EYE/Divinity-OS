@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 // Pranayama cadence (seconds): sama-style with a longer exhale.
 const INHALE = 4;
@@ -167,37 +167,37 @@ export default function BreathHero() {
 
       {/* editorial type */}
       <div className="relative z-10 mx-auto flex h-full max-w-[1400px] flex-col justify-center px-6 md:px-10">
-        <motion.p
+        <m.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
           className="eyebrow mb-7 text-ember"
         >
           Yoga · Fitness · Wellness — Lucknow
-        </motion.p>
+        </m.p>
 
         {/* Transform-only entrance (opacity stays 1) so the LCP heading is
             painted at first contentful paint, not after the animation. */}
         <h1 className="font-display font-light leading-[0.86] tracking-tight text-bone">
-          <motion.span
+          <m.span
             initial={{ y: 26 }}
             animate={{ y: 0 }}
             transition={{ duration: 0.7, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
             className="block text-[clamp(72px,16vw,210px)] italic text-ember"
           >
             Breathe
-          </motion.span>
-          <motion.span
+          </m.span>
+          <m.span
             initial={{ y: 26 }}
             animate={{ y: 0 }}
             transition={{ duration: 0.7, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
             className="block pl-[0.06em] text-[clamp(40px,8vw,104px)]"
           >
             your way inward.
-          </motion.span>
+          </m.span>
         </h1>
 
-        <motion.p
+        <m.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
@@ -205,9 +205,9 @@ export default function BreathHero() {
         >
           A yoga, fitness and wellness academy guiding body and mind toward
           balance — one breath at a time.
-        </motion.p>
+        </m.p>
 
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
@@ -225,11 +225,11 @@ export default function BreathHero() {
           >
             Learn more ↓
           </a>
-        </motion.div>
+        </m.div>
       </div>
 
       {/* breath guide readout */}
-      <motion.div
+      <m.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1.2, delay: 1.1 }}
@@ -238,7 +238,7 @@ export default function BreathHero() {
         <span className="text-ember">{phase.label}</span>
         <span className="h-3 w-px bg-[var(--line-dark)]" />
         <span>inhale 4 · hold 4 · exhale 6</span>
-      </motion.div>
+      </m.div>
 
       {/* scroll cue */}
       <div className="absolute bottom-8 right-6 z-10 hidden items-center gap-2 font-mono text-[10px] uppercase tracking-wide text-mist md:right-10 md:flex">

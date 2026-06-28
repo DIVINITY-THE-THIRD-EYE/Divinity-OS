@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import Reveal from "./Reveal";
 import { faqs } from "@/lib/content";
 
@@ -45,7 +45,7 @@ export default function Faq() {
                   </button>
                   <AnimatePresence initial={false}>
                     {isOpen && (
-                      <motion.div
+                      <m.div
                         id={`faq-panel-${i}`}
                         role="region"
                         aria-labelledby={`faq-button-${i}`}
@@ -58,7 +58,7 @@ export default function Faq() {
                         <p className="max-w-2xl pb-7 font-body text-[15px] leading-[1.85] text-ink-mute">
                           {f.a}
                         </p>
-                      </motion.div>
+                      </m.div>
                     )}
                   </AnimatePresence>
                 </div>

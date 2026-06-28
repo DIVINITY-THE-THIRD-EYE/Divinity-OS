@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import Reveal from "./Reveal";
 import { plans } from "@/lib/content";
 import { waHref } from "@/lib/links";
@@ -107,7 +107,7 @@ export default function PlanCalculator() {
             <div className="relative">
               <p className="eyebrow text-mist">We&apos;d suggest</p>
               <AnimatePresence mode="wait">
-                <motion.div
+                <m.div
                   key={plan.name}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -124,7 +124,7 @@ export default function PlanCalculator() {
                     </span>
                   </div>
                   <p className="mt-4 font-body text-sm text-mist">{plan.blurb}</p>
-                </motion.div>
+                </m.div>
               </AnimatePresence>
             </div>
 

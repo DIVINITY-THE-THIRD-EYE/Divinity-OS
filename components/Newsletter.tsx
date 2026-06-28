@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import Reveal from "./Reveal";
 
 type Status = "idle" | "sending" | "done" | "error";
@@ -49,7 +49,7 @@ export default function Newsletter() {
           </p>
 
           {status === "done" ? (
-            <motion.p
+            <m.p
               role="status"
               aria-live="polite"
               initial={{ opacity: 0, y: 10 }}
@@ -57,7 +57,7 @@ export default function Newsletter() {
               className="mt-8 font-display text-xl italic text-ember"
             >
               Check your inbox — your free session is on its way.
-            </motion.p>
+            </m.p>
           ) : (
             <form onSubmit={onSubmit} className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
               {/* Honeypot — hidden from users and the a11y tree */}

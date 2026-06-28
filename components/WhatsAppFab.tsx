@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { waHref } from "@/lib/links";
 
 export default function WhatsAppFab() {
@@ -19,7 +19,7 @@ export default function WhatsAppFab() {
   return (
     <AnimatePresence>
       {show && (
-        <motion.a
+        <m.a
           href={href}
           target="_blank"
           rel="noopener noreferrer"
@@ -40,7 +40,7 @@ export default function WhatsAppFab() {
           <span className="max-w-0 whitespace-nowrap font-mono text-[11px] uppercase tracking-wide text-bone opacity-0 transition-all duration-300 group-hover:ml-2.5 group-hover:max-w-[160px] group-hover:opacity-100">
             Chat with us
           </span>
-        </motion.a>
+        </m.a>
       )}
     </AnimatePresence>
   );
