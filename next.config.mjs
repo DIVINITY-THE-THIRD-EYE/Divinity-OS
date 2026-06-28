@@ -40,6 +40,10 @@ const nextConfig = {
   poweredByHeader: false, // don't advertise the framework
   images: {
     formats: ["image/avif", "image/webp"],
+    // Static photography — cache optimized variants for a day instead of the
+    // 60s default, cutting revalidation round-trips (short enough that a
+    // pre-launch asset swap still propagates within a day).
+    minimumCacheTTL: 86400,
     remotePatterns: [{ protocol: "https", hostname: "cdn.sanity.io" }],
   },
   async headers() {
