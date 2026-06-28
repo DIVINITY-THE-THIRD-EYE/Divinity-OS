@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, m } from "framer-motion";
 import { site } from "@/lib/content";
+import { trapTab } from "@/lib/focus-trap";
 import Magnetic from "./Magnetic";
 
 const links = [
@@ -140,6 +141,7 @@ export default function Nav() {
             role="dialog"
             aria-modal="true"
             aria-label="Site menu"
+            onKeyDown={trapTab}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}

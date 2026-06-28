@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, m } from "framer-motion";
 import { site } from "@/lib/content";
 import { waHref } from "@/lib/links";
+import { trapTab } from "@/lib/focus-trap";
 
 type Item = {
   label: string;
@@ -78,23 +79,9 @@ export default function CommandPalette() {
   useEffect(() => setActive(0), [q]);
 
   const onListKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    // Trap Tab within the dialog (it's aria-modal) so keyboard focus can't
-    // wander to the page behind it.
+    // Trap Tab within the dialog (it's aria-modal).
     if (e.key === "Tab") {
-      const focusables = e.currentTarget.querySelectorAll<HTMLElement>(
-        "input, button"
-      );
-      if (focusables.length > 0) {
-        const first = focusables[0];
-        const last = focusables[focusables.length - 1];
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      }
+      trapTab(e);
       return;
     }
     if (e.key === "ArrowDown") {
