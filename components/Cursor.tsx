@@ -9,6 +9,7 @@ export default function Cursor() {
   useEffect(() => {
     const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
     if (!fine) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     let mx = 0,
       my = 0,
@@ -33,8 +34,10 @@ export default function Cursor() {
     };
 
     const loop = () => {
-      rx += (mx - rx) * 0.16;
-      ry += (my - ry) * 0.16;
+      // Reduced motion: snap the ring to the pointer instead of easing toward it.
+      const ease = reduce ? 1 : 0.16;
+      rx += (mx - rx) * ease;
+      ry += (my - ry) * ease;
       if (ring.current) ring.current.style.transform = `translate(${rx}px, ${ry}px)`;
       raf = requestAnimationFrame(loop);
     };

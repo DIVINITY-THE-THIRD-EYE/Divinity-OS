@@ -53,6 +53,8 @@ export async function POST(req: Request) {
         updateEnabled: true,
         ...(listId ? { listIds: [listId] } : {}),
       }),
+      // Don't let a slow/hung Brevo keep the request open.
+      signal: AbortSignal.timeout(8000),
     });
 
     if (!res.ok) {

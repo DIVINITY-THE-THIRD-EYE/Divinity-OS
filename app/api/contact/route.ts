@@ -94,6 +94,8 @@ export async function POST(req: Request) {
         subject: `New enquiry from ${name}`,
         htmlContent: html,
       }),
+      // Don't let a slow/hung Brevo keep the request open.
+      signal: AbortSignal.timeout(8000),
     });
 
     if (!res.ok) {
