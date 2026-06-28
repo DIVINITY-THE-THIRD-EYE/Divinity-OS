@@ -8,11 +8,14 @@ export default function Voices({ items }: { items: Testimonial[] }) {
   const [i, setI] = useState(0);
 
   useEffect(() => {
+    if (items.length < 2) return; // nothing to rotate through
     const id = setInterval(() => setI((p) => (p + 1) % items.length), 6500);
     return () => clearInterval(id);
   }, [items.length]);
 
-  const t = items[i];
+  // Guard against an empty CMS result so the section never crashes.
+  if (items.length === 0) return null;
+  const t = items[Math.min(i, items.length - 1)];
 
   return (
     <section className="relative overflow-hidden border-t border-[var(--line-dark)] bg-void px-6 py-32 text-center md:px-10 md:py-44">

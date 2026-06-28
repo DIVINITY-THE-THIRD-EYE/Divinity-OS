@@ -5,6 +5,7 @@ import Reveal from "./Reveal";
 import { payment, type Plan } from "@/lib/content";
 
 export default function Membership({ plans }: { plans: Plan[] }) {
+  if (plans.length === 0) return null; // guard against an empty CMS result
   const featured = plans.find((p) => p.featured) ?? plans[0];
   const rest = plans.filter((p) => p !== featured);
 
