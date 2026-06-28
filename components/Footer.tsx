@@ -84,7 +84,9 @@ export default function Footer() {
 
       <div className="mx-auto mt-14 flex max-w-6xl flex-wrap items-center justify-between gap-3 border-t border-[var(--line-dark)] pt-7">
         <p className="font-mono text-[11px] text-mist">
-          © {new Date().getFullYear()} {site.full}
+          {/* suppressHydrationWarning: the year is baked at build time in the
+              static HTML but re-evaluates to the current year on the client. */}
+          © <span suppressHydrationWarning>{new Date().getFullYear()}</span> {site.full}
         </p>
         <p className="font-mono text-[11px] uppercase tracking-label text-ember">
           Align · Awaken · Ascend
