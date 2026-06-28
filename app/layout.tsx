@@ -77,7 +77,7 @@ export default function RootLayout({
       lang="en-IN"
       className={`${display.variable} ${body.variable} ${mono.variable}`}
     >
-      <body className="has-custom-cursor">
+      <body>
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[999] focus:bg-ember focus:px-4 focus:py-2 focus:font-mono focus:text-[12px] focus:uppercase focus:tracking-wide focus:text-void"
