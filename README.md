@@ -182,13 +182,31 @@ Real photography from the academy is wired in via `next/image` (sources live in
 
 ```
 app/
-  layout.tsx          fonts + metadata
+  layout.tsx          fonts + metadata + viewport/theme-color
   page.tsx            section assembly (fetches CMS-or-fallback)
   globals.css         tokens + base styles
-  api/contact/route.ts  Brevo handler
+  error.tsx           route error boundary  ·  global-error.tsx (root)
+  manifest.ts         PWA web-app manifest
+  api/contact/route.ts    Brevo handler (rate-limited + honeypot)
+  api/subscribe/route.ts  newsletter → Brevo contact
 components/            Hero, Nav, Disciplines, Schedule, … (one per section)
 lib/
   content.ts          content source of truth / CMS fallback
   sanity.ts           Sanity client + safe fetch
+  rate-limit.ts       in-memory fixed-window limiter (API abuse guard)
+  validation.ts       shared input validators  ·  links.ts (waHref)
+  recommend.ts        plan-recommendation logic (pure, tested)
+  *.test.ts           vitest unit tests
 sanity/schemas/       schemas for a Sanity Studio
 ```
+
+## Testing & quality gates
+
+```bash
+npm test            # vitest unit tests (lib logic)
+npm run lint        # next lint (also runs in the production build)
+npx tsc --noEmit    # strict type check
+```
+
+Security headers, a Content-Security-Policy (production), and API rate-limiting
++ honeypots are configured in `next.config.mjs` and the API routes.
