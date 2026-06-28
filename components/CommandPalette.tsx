@@ -77,7 +77,26 @@ export default function CommandPalette() {
 
   useEffect(() => setActive(0), [q]);
 
-  const onListKey = (e: React.KeyboardEvent) => {
+  const onListKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    // Trap Tab within the dialog (it's aria-modal) so keyboard focus can't
+    // wander to the page behind it.
+    if (e.key === "Tab") {
+      const focusables = e.currentTarget.querySelectorAll<HTMLElement>(
+        "input, button"
+      );
+      if (focusables.length > 0) {
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+      return;
+    }
     if (e.key === "ArrowDown") {
       e.preventDefault();
       setActive((a) => Math.min(a + 1, results.length - 1));
