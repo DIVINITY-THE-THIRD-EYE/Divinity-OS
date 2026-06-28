@@ -105,7 +105,7 @@ export default function Contact() {
               </div>
               <div>
                 <label htmlFor="contact-name" className="eyebrow mb-2 block text-mist">Name</label>
-                <input id="contact-name" name="name" required className={field} placeholder="Your name" aria-required="true" />
+                <input id="contact-name" name="name" required autoComplete="name" className={field} placeholder="Your name" aria-required="true" />
               </div>
               <div>
                 <label htmlFor="contact-email" className="eyebrow mb-2 block text-mist">Email</label>
@@ -114,6 +114,8 @@ export default function Contact() {
                   name="email"
                   type="email"
                   required
+                  autoComplete="email"
+                  inputMode="email"
                   aria-required="true"
                   className={field}
                   placeholder="you@example.com"

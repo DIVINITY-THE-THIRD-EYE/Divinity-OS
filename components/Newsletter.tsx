@@ -71,6 +71,8 @@ export default function Newsletter() {
                 name="email"
                 type="email"
                 required
+                autoComplete="email"
+                inputMode="email"
                 aria-required="true"
                 placeholder="your@email.com"
                 className="w-full border-b border-[var(--line-dark)] bg-transparent py-3 px-0 font-body text-bone placeholder:text-mist/50 focus:border-ember focus:outline-none sm:w-72"
