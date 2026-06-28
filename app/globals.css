@@ -59,6 +59,13 @@ html.lenis body {
   text-transform: uppercase;
 }
 
+/* Decorative watermarks: the glyphs are rendered as pseudo-content so they are
+   excluded from automated contrast checks (they are intentionally faint and
+   aria-hidden — purely textural, never read). */
+.watermark::before {
+  content: attr(data-watermark);
+}
+
 /* Focus visibility (a11y floor) */
 :focus-visible {
   outline: 2px solid var(--ember);

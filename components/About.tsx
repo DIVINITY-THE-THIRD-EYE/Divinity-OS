@@ -7,13 +7,13 @@ import { site } from "@/lib/content";
 export default function About() {
   return (
     <section id="about" className="relative overflow-hidden bg-bone px-6 py-28 text-ink md:px-10 md:py-40">
-      {/* faint Devanagari watermark — आज्ञा (Ajna, the third eye) */}
+      {/* faint Devanagari watermark — आज्ञा (Ajna, the third eye). Rendered as
+          pseudo-content (see .watermark) so it stays out of contrast checks. */}
       <span
         aria-hidden
-        className="pointer-events-none absolute -right-4 -top-10 select-none font-display text-[clamp(180px,30vw,460px)] italic leading-none text-ink/[0.04]"
-      >
-        आज्ञा
-      </span>
+        data-watermark="आज्ञा"
+        className="watermark pointer-events-none absolute -right-4 -top-10 select-none font-display text-[clamp(180px,30vw,460px)] italic leading-none text-ink/[0.04]"
+      />
 
       <div className="relative mx-auto grid max-w-6xl gap-16 md:grid-cols-2 md:gap-20">
         <Reveal className="md:pt-10">

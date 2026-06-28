@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Cormorant, Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
 import { site } from "@/lib/content";
 import JsonLd from "@/components/JsonLd";
@@ -57,6 +57,13 @@ export const metadata: Metadata = {
     description:
       "Breath, movement and stillness. A yoga, fitness and wellness academy in Lucknow.",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#15161e",
+  width: "device-width",
+  initialScale: 1,
+  colorScheme: "dark",
 };
 
 export default function RootLayout({

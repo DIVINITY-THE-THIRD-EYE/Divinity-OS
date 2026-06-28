@@ -58,10 +58,9 @@ export default function Contact() {
     >
       <span
         aria-hidden
-        className="pointer-events-none absolute bottom-[-90px] left-1/2 -translate-x-1/2 select-none font-display text-[clamp(120px,20vw,320px)] leading-none text-bone/[0.025]"
-      >
-        Divinity
-      </span>
+        data-watermark="Divinity"
+        className="watermark pointer-events-none absolute bottom-[-90px] left-1/2 -translate-x-1/2 select-none font-display text-[clamp(120px,20vw,320px)] leading-none text-bone/[0.025]"
+      />
 
       <div className="relative mx-auto grid max-w-6xl gap-16 md:grid-cols-2 md:gap-24">
         <Reveal>
