@@ -62,6 +62,8 @@ export default function BreathHero() {
 
     const start = performance.now();
     let raf = 0;
+    let inView = true;
+    const shouldRun = () => !reduce && inView && !document.hidden;
 
     const draw = (now: number) => {
       const tSec = (now - start) / 1000;
@@ -126,18 +128,47 @@ export default function BreathHero() {
         ctx.fill();
       });
 
-      if (!reduce) raf = requestAnimationFrame(draw);
+      if (shouldRun()) raf = requestAnimationFrame(draw);
+      else raf = 0;
     };
 
+    const kick = () => {
+      if (raf === 0 && shouldRun()) raf = requestAnimationFrame(draw);
+    };
+    const pause = () => {
+      cancelAnimationFrame(raf);
+      raf = 0;
+    };
+
+    let io: IntersectionObserver | null = null;
+    let onVisibility: (() => void) | null = null;
+
     if (reduce) {
-      draw(performance.now());
+      draw(performance.now()); // single static frame
     } else {
       raf = requestAnimationFrame(draw);
+
+      // Stop rendering when the hero is off-screen or the tab is hidden — the
+      // canvas otherwise runs at 60fps forever, wasting CPU and battery.
+      io = new IntersectionObserver(
+        ([e]) => {
+          inView = e.isIntersecting;
+          if (inView && !document.hidden) kick();
+          else pause();
+        },
+        { threshold: 0 }
+      );
+      io.observe(c);
+
+      onVisibility = () => (document.hidden ? pause() : kick());
+      document.addEventListener("visibilitychange", onVisibility);
     }
 
     return () => {
-      cancelAnimationFrame(raf);
+      pause();
       window.removeEventListener("resize", resize);
+      io?.disconnect();
+      if (onVisibility) document.removeEventListener("visibilitychange", onVisibility);
     };
   }, []);
 
