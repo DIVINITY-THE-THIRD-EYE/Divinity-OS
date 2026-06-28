@@ -32,6 +32,10 @@ const securityHeaders = [
     key: "Strict-Transport-Security",
     value: "max-age=63072000; includeSubDomains; preload",
   },
+  // Isolate this browsing context from cross-origin openers. The
+  // `-allow-popups` variant keeps the site's own WhatsApp/Instagram popups
+  // working while still preventing cross-origin pages from referencing us.
+  { key: "Cross-Origin-Opener-Policy", value: "same-origin-allow-popups" },
   ...(isProd ? [{ key: "Content-Security-Policy", value: csp }] : []),
 ];
 
