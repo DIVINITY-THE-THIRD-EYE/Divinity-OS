@@ -1,17 +1,8 @@
 import { NextResponse } from "next/server";
 import { rateLimit, clientIp, sweep } from "@/lib/rate-limit";
-import { isEmail } from "@/lib/validation";
+import { isEmail, asString, isPlainObject } from "@/lib/validation";
 
 export const runtime = "nodejs";
-
-type Body = {
-  name?: string;
-  email?: string;
-  intention?: string;
-  message?: string;
-  // Honeypot: a hidden field real users never fill. Bots do.
-  company?: string;
-};
 
 export async function POST(req: Request) {
   // Rate limit: 5 enquiries / minute / IP.
@@ -24,26 +15,39 @@ export async function POST(req: Request) {
     );
   }
 
-  let body: Body;
+  let body: unknown;
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 
+  // Reject null / array / primitive bodies before reading fields.
+  if (!isPlainObject(body)) {
+    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+  }
+
   // Honeypot tripped → pretend success, drop silently.
-  if ((body.company || "").trim() !== "") {
+  if (asString(body.company).trim() !== "") {
     return NextResponse.json({ ok: true, delivered: false });
   }
 
-  const name = (body.name || "").trim();
-  const email = (body.email || "").trim();
-  const intention = (body.intention || "").trim();
-  const message = (body.message || "").trim();
+  const name = asString(body.name).trim();
+  const email = asString(body.email).trim();
+  const intention = asString(body.intention).trim();
+  const message = asString(body.message).trim();
 
   // Length guards — reject absurd payloads before any downstream call.
   if (name.length > 120 || email.length > 200 || message.length > 4000) {
     return NextResponse.json({ error: "That request is too large." }, { status: 413 });
+  }
+
+  const VALID_INTENTIONS = [
+    "Yoga", "Fitness", "Therapeutic yoga",
+    "Pranayama & meditation", "Diet & lifestyle", "Not sure yet", ""
+  ];
+  if (intention && !VALID_INTENTIONS.includes(intention)) {
+    return NextResponse.json({ error: "Invalid selection." }, { status: 422 });
   }
 
   if (!name || !isEmail(email)) {
@@ -71,6 +75,8 @@ export async function POST(req: Request) {
   const fromEmail = process.env.BREVO_FROM_EMAIL || "no-reply@divinity.example";
   const fromName = process.env.BREVO_FROM_NAME || "Divinity Website";
 
+  const safeName = name.replace(/[^\p{L}\p{N}\s.\-']/gu, '').slice(0, 80);
+
   const html = `
     <h2>New enquiry — Divinity</h2>
     <p><strong>Name:</strong> ${escapeHtml(name)}</p>
@@ -90,8 +96,8 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         sender: { email: fromEmail, name: fromName },
         to: [{ email: toEmail, name: toName }],
-        replyTo: { email, name },
-        subject: `New enquiry from ${name}`,
+        replyTo: { email, name: safeName },
+        subject: `New enquiry from ${safeName}`,
         htmlContent: html,
       }),
       // Don't let a slow/hung Brevo keep the request open.

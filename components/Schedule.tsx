@@ -42,7 +42,7 @@ export default function Schedule({ data }: { data: Record<string, ClassSlot[]> }
           </div>
         </div>
 
-        <div className="min-h-[260px]">
+        <div className="min-h-[260px]" aria-live="polite" aria-atomic="true">
           <AnimatePresence mode="wait">
             <m.div
               key={day}

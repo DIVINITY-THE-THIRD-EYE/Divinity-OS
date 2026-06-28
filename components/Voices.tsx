@@ -6,19 +6,20 @@ import type { Testimonial } from "@/lib/content";
 
 export default function Voices({ items }: { items: Testimonial[] }) {
   const [i, setI] = useState(0);
+  const [autoPlay, setAutoPlay] = useState(true);
 
   useEffect(() => {
-    if (items.length < 2) return; // nothing to rotate through
+    if (items.length < 2 || !autoPlay) return; // nothing to rotate through or paused
     const id = setInterval(() => setI((p) => (p + 1) % items.length), 6500);
     return () => clearInterval(id);
-  }, [items.length]);
+  }, [items.length, autoPlay]);
 
   // Guard against an empty CMS result so the section never crashes.
   if (items.length === 0) return null;
   const t = items[Math.min(i, items.length - 1)];
 
   return (
-    <section className="relative overflow-hidden border-t border-[var(--line-dark)] bg-void px-6 py-32 text-center md:px-10 md:py-44">
+    <section className="relative overflow-hidden border-t border-[var(--line-dark)] bg-void px-6 py-32 text-center md:px-10 md:py-44" aria-label="Member Testimonials">
       <span
         aria-hidden
         className="pointer-events-none absolute left-1/2 top-12 -translate-x-1/2 font-display text-[200px] leading-none text-ember/[0.08]"
@@ -27,7 +28,7 @@ export default function Voices({ items }: { items: Testimonial[] }) {
       </span>
 
       <div className="relative mx-auto max-w-3xl">
-        <p className="eyebrow mb-12 text-ember">Voices</p>
+        <h2 className="eyebrow mb-12 text-ember">Voices</h2>
 
         <div className="min-h-[220px]">
           <AnimatePresence mode="wait">
@@ -60,7 +61,10 @@ export default function Voices({ items }: { items: Testimonial[] }) {
           {items.map((_, idx) => (
             <button
               key={idx}
-              onClick={() => setI(idx)}
+              onClick={() => {
+                setI(idx);
+                setAutoPlay(false);
+              }}
               aria-label={`Show testimonial ${idx + 1}`}
               aria-pressed={idx === i}
               className="flex h-6 w-6 items-center justify-center"

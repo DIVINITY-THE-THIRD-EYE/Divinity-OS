@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type ReactNode } from "react";
+import { useRef, useEffect, type ReactNode } from "react";
 import { m, useMotionValue, useSpring } from "framer-motion";
 
 export default function Magnetic({
@@ -13,15 +13,26 @@ export default function Magnetic({
   className?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const reduceRef = useRef(false);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const sx = useSpring(x, { stiffness: 200, damping: 15, mass: 0.4 });
   const sy = useSpring(y, { stiffness: 200, damping: 15, mass: 0.4 });
 
+  useEffect(() => {
+    const q = window.matchMedia("(prefers-reduced-motion: reduce)");
+    reduceRef.current = q.matches;
+    const onChange = (e: MediaQueryListEvent) => {
+      reduceRef.current = e.matches;
+    };
+    q.addEventListener("change", onChange);
+    return () => q.removeEventListener("change", onChange);
+  }, []);
+
   function onMove(e: React.MouseEvent) {
     const el = ref.current;
     if (!el) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (reduceRef.current) return;
     const r = el.getBoundingClientRect();
     x.set((e.clientX - (r.left + r.width / 2)) * strength);
     y.set((e.clientY - (r.top + r.height / 2)) * strength);

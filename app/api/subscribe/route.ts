@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { rateLimit, clientIp, sweep } from "@/lib/rate-limit";
-import { isEmail } from "@/lib/validation";
+import { isEmail, asString, isPlainObject } from "@/lib/validation";
 
 export const runtime = "nodejs";
 
@@ -15,19 +15,24 @@ export async function POST(req: Request) {
     );
   }
 
-  let body: { email?: string; company?: string };
+  let body: unknown;
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 
+  // Reject null / array / primitive bodies before reading fields.
+  if (!isPlainObject(body)) {
+    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+  }
+
   // Honeypot tripped → pretend success, drop silently.
-  if ((body.company || "").trim() !== "") {
+  if (asString(body.company).trim() !== "") {
     return NextResponse.json({ ok: true, delivered: false });
   }
 
-  const email = (body.email || "").trim();
+  const email = asString(body.email).trim();
   if (email.length > 200 || !isEmail(email)) {
     return NextResponse.json({ error: "Please enter a valid email." }, { status: 422 });
   }

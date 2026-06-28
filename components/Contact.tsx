@@ -91,7 +91,7 @@ export default function Contact() {
               </p>
             </div>
           ) : (
-            <form onSubmit={onSubmit} className="space-y-7">
+            <form onSubmit={onSubmit} className="space-y-7" aria-label="Contact enquiry form">
               {/* Honeypot — hidden from users, off the a11y tree; bots fill it */}
               <div className="absolute left-[-9999px]" aria-hidden="true">
                 <label htmlFor="contact-company">Company</label>

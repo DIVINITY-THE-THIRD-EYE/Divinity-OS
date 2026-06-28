@@ -66,11 +66,13 @@ export default function CommandPalette() {
   }, []);
 
   useEffect(() => {
+    let tid: any;
     if (open) {
       setQ("");
       setActive(0);
-      setTimeout(() => inputRef.current?.focus(), 40);
+      tid = setTimeout(() => inputRef.current?.focus(), 40);
     }
+    return () => clearTimeout(tid);
   }, [open]);
 
   useEffect(() => setActive(0), [q]);

@@ -41,6 +41,18 @@ describe("POST /api/contact", () => {
     expect(res.status).toBe(413);
   });
 
+  it("rejects null / array / primitive bodies with 400 (no 500)", async () => {
+    expect((await contact(null)).status).toBe(400);
+    expect((await contact([])).status).toBe(400);
+    expect((await contact(42)).status).toBe(400);
+    expect((await contact("hi")).status).toBe(400);
+  });
+
+  it("coerces non-string fields without throwing", async () => {
+    const res = await contact({ name: { x: 1 }, email: "a@b.co" });
+    expect(res.status).toBe(422); // name coerced to "" → invalid, not a 500
+  });
+
   it("rate-limits after 5 requests from one IP", async () => {
     const ip = "contact-rl";
     const codes: number[] = [];
@@ -63,6 +75,11 @@ describe("POST /api/subscribe", () => {
 
   it("rejects an invalid email with 422", async () => {
     expect((await subscribe({ email: "nope" })).status).toBe(422);
+  });
+
+  it("rejects null / array bodies with 400 (no 500)", async () => {
+    expect((await subscribe(null)).status).toBe(400);
+    expect((await subscribe([])).status).toBe(400);
   });
 
   it("rate-limits after 5 requests from one IP", async () => {
