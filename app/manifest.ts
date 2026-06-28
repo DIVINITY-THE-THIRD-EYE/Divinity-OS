@@ -3,11 +3,15 @@ import { site } from "@/lib/content";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
+    id: "/",
     name: site.full,
     short_name: site.name,
     description:
       "A yoga, fitness and wellness academy in Lucknow — breath, movement and stillness.",
     start_url: "/",
+    scope: "/",
+    lang: "en-IN",
+    categories: ["health", "fitness", "lifestyle"],
     display: "standalone",
     background_color: "#15161e",
     theme_color: "#15161e",
