@@ -34,7 +34,7 @@ export default function Manifesto() {
           }, el);
           cleanup = () => ctx.revert();
         })
-      );
+      ).catch((err) => console.warn("[Manifesto] reveal skipped:", err));
     };
 
     const w = window as Window & {

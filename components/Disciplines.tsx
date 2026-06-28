@@ -47,7 +47,7 @@ export default function Disciplines({ items }: { items: Discipline[] }) {
 
           cleanup = () => mm.revert();
         })
-      );
+      ).catch((err) => console.warn("[Disciplines] pin skipped:", err));
     };
 
     const w = window as Window & {

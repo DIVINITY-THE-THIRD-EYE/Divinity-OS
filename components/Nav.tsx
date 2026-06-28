@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { site } from "@/lib/content";
@@ -22,6 +22,8 @@ export default function Nav() {
   const [solid, setSolid] = useState(false);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState<string>("");
+  const menuBtnRef = useRef<HTMLButtonElement>(null);
+  const closeBtnRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const onScroll = () => setSolid(window.scrollY > 64);
@@ -45,17 +47,21 @@ export default function Nav() {
     return () => obs.disconnect();
   }, []);
 
-  // Mobile menu: close on Escape and lock background scroll while open.
+  // Mobile menu: close on Escape, lock background scroll, and manage focus
+  // (move into the dialog on open, return to the trigger on close).
   useEffect(() => {
     if (!open) return;
+    const trigger = menuBtnRef.current; // capture for the cleanup (stable node)
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false);
     };
     document.addEventListener("keydown", onKey);
     document.documentElement.style.overflow = "hidden";
+    closeBtnRef.current?.focus();
     return () => {
       document.removeEventListener("keydown", onKey);
       document.documentElement.style.overflow = "";
+      trigger?.focus();
     };
   }, [open]);
 
@@ -116,6 +122,7 @@ export default function Nav() {
         </div>
 
         <button
+          ref={menuBtnRef}
           onClick={() => setOpen(true)}
           className="font-mono text-[11px] uppercase tracking-wide text-bone md:hidden"
           aria-label="Open menu"
@@ -139,6 +146,7 @@ export default function Nav() {
             className="fixed inset-0 z-[400] flex flex-col items-center justify-center gap-8 bg-void/95 backdrop-blur-lg md:hidden"
           >
             <button
+              ref={closeBtnRef}
               onClick={() => setOpen(false)}
               className="absolute right-6 top-6 font-mono text-[11px] uppercase tracking-wide text-mist"
               aria-label="Close menu"
