@@ -45,6 +45,20 @@ export default function Nav() {
     return () => obs.disconnect();
   }, []);
 
+  // Mobile menu: close on Escape and lock background scroll while open.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    document.documentElement.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.documentElement.style.overflow = "";
+    };
+  }, [open]);
+
   return (
     <>
       <motion.nav
@@ -105,6 +119,8 @@ export default function Nav() {
           onClick={() => setOpen(true)}
           className="font-mono text-[11px] uppercase tracking-wide text-bone md:hidden"
           aria-label="Open menu"
+          aria-expanded={open}
+          aria-controls="mobile-menu"
         >
           Menu
         </button>
@@ -113,6 +129,10 @@ export default function Nav() {
       <AnimatePresence>
         {open && (
           <motion.div
+            id="mobile-menu"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Site menu"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
