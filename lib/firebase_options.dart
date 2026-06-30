@@ -24,13 +24,12 @@ class DefaultFirebaseOptions {
     projectId: 'divinity-the-third-eye',
     storageBucket: 'divinity-the-third-eye.firebasestorage.app',
   );
-
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyA9_MnUohwn6vFgGMiBHZ2cZ-QeRoiC4fo',
-    appId: '1:570181543606:ios:a05d2f7c28c51cb3316817',
+    appId: '1:570181543606:ios:fb361149975be350316817',
     messagingSenderId: '570181543606',
     projectId: 'divinity-the-third-eye',
     storageBucket: 'divinity-the-third-eye.firebasestorage.app',
-    iosBundleId: 'com.divinity.thirdeye',
+    iosBundleId: 'com.divinity.divinityApp',
   );
 }
