@@ -46,8 +46,8 @@ export const site = {
   logoMark: "/brand/logo-mark.png", // ember lotus, transparent — for dark surfaces
   logoFull: "/brand/logo-full.png", // full lockup with wordmark — for light surfaces
   // Placeholders — replace with the academy's real numbers/handles
-  phone: "+91 90000 00000",
-  whatsapp: "919000000000", // digits only, for wa.me links
+  phone: "+91 92146 52400",
+  whatsapp: "919214652400", // digits only, for wa.me links
   instagram: "https://instagram.com/",
 };
 
