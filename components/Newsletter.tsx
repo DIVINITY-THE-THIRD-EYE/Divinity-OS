@@ -1,17 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { m } from "framer-motion";
 import Reveal from "./Reveal";
+import { formErrorMessage } from "@/lib/form-error";
 
 type Status = "idle" | "sending" | "done" | "error";
 
 export default function Newsletter() {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
+  const abortRef = useRef<AbortController | null>(null);
+
+  // Cancel any in-flight request if the form unmounts (e.g. route change).
+  useEffect(() => () => abortRef.current?.abort(), []);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    // Supersede any prior in-flight submit so a double-tap can't race.
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
     setStatus("sending");
     setError("");
     const form = new FormData(e.currentTarget);
@@ -22,6 +31,7 @@ export default function Newsletter() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, company }),
+        signal: controller.signal,
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -29,8 +39,10 @@ export default function Newsletter() {
       }
       setStatus("done");
     } catch (err) {
+      // Aborted (unmounted or superseded) — drop silently, don't flash an error.
+      if (controller.signal.aborted) return;
       setStatus("error");
-      setError(err instanceof Error ? err.message : "Please try again.");
+      setError(formErrorMessage(err));
     }
   }
 

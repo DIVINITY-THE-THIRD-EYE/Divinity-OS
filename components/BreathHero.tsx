@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { m } from "framer-motion";
 
 // Pranayama cadence (seconds): sama-style with a longer exhale.
@@ -244,12 +245,12 @@ export default function BreathHero() {
           transition={{ duration: 0.5, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
           className="mt-10 flex flex-wrap items-center gap-4"
         >
-          <a
-            href="#contact"
+          <Link
+            href="/contact"
             className="bg-ember px-8 py-3.5 font-mono text-[11px] uppercase tracking-wide text-void transition-colors hover:bg-ember-pale"
           >
             Book a class — ₹99 first week
-          </a>
+          </Link>
           <a
             href="#about"
             className="font-mono text-[11px] uppercase tracking-wide text-mist transition-colors hover:text-bone"

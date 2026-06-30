@@ -69,8 +69,8 @@ Selected for impact — and kept restrained, because piling on every effect read
 as AI clutter and works *against* award juries.
 
 **Award / motion layer**
-- Command palette — press **⌘K / Ctrl+K** to jump to any section or action
-- Magnetic CTA, custom cursor, scroll-progress bar, active-section nav
+- Command palette — press **⌘K / Ctrl+K** to jump to any page or action
+- Magnetic CTA, custom cursor, scroll-progress bar, active-route nav
 - Intro curtain on first visit (once per session, reduced-motion safe)
 - Kinetic marquee that reacts to scroll velocity (skews + speeds with you)
 - Breathing ambient gradient + film-grain texture (ties to the concept)
@@ -81,9 +81,14 @@ as AI clutter and works *against* award juries.
 - FAQ section
 
 **SEO layer**
-- JSON-LD structured data: LocalBusiness/HealthClub, FAQPage, Course
-- Dynamic Open Graph image (`/opengraph-image`), Twitter card, canonical
-- `sitemap.xml` and `robots.txt` (generated)
+- JSON-LD structured data: LocalBusiness (HealthAndBeautyBusiness /
+  SportsActivityLocation), FAQPage, Course; plus per-page **BreadcrumbList**
+  and **Service** / **Article** / **Event** on the relevant routes
+- Per-page metadata via `lib/seo.ts` (`pageMeta`): unique title, description,
+  Open Graph, Twitter card, canonical
+- Dynamic Open Graph image (`/opengraph-image`)
+- `sitemap.xml` (all static routes + dynamic service/blog/event slugs) and
+  `robots.txt` (generated)
 
 **Performance** is largely automatic on this stack: `next/font` (no layout
 shift), static prerendering, route prefetching, and Vercel's CDN/edge caching.
@@ -182,17 +187,26 @@ Real photography from the academy is wired in via `next/image` (sources live in
 
 ```
 app/
-  layout.tsx          fonts + metadata + viewport/theme-color
-  page.tsx            section assembly (fetches CMS-or-fallback)
-  globals.css         tokens + base styles
-  error.tsx           route error boundary  ·  global-error.tsx (root)
-  manifest.ts         PWA web-app manifest
-  api/contact/route.ts    Brevo handler (rate-limited + honeypot)
+  layout.tsx              fonts, metadata base, global chrome (nav/footer/cursor/…)
+  page.tsx                home — landing with curated section previews + CTAs
+  about/ services/ pricing/ schedule/ trainers/ gallery/
+  blog/ events/ contact/ privacy/ terms/        one route per folder (page.tsx)
+  services/[slug]/ blog/[slug]/ events/[slug]/   dynamic detail routes (SSG)
+  not-found.tsx           404  ·  error.tsx (route boundary)  ·  global-error.tsx
+  globals.css             tokens + base styles
+  manifest.ts sitemap.ts robots.ts              PWA manifest + generated SEO files
+  api/contact/route.ts    Brevo handler (rate-limited, honeypot, body-size guard)
   api/subscribe/route.ts  newsletter → Brevo contact
-components/            Hero, Nav, Disciplines, Schedule, … (one per section)
+components/
+  layout/   PageHeader, Breadcrumbs, PreviewSection
+  ui/       CtaLink, EmptyState, SectionHeading
+  cards/    ServiceCard, TrainerCard
+  *.tsx     section + chrome components (Nav, Footer, Disciplines, Schedule, …)
 lib/
-  content.ts          content source of truth / CMS fallback
-  sanity.ts           Sanity client + safe fetch
+  content.ts          content source of truth / CMS fallback + slug helpers
+  nav.ts              navigation single source of truth (primary / footer / legal)
+  seo.ts              pageMeta() per-page metadata builder
+  sanity.ts           Sanity client + safe fetch (fetchOrFallback)
   rate-limit.ts       in-memory fixed-window limiter (API abuse guard)
   validation.ts       shared input validators  ·  links.ts (waHref)
   recommend.ts        plan-recommendation logic (pure, tested)

@@ -2,14 +2,19 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useInView } from "framer-motion";
+import { disciplines, schedule } from "@/lib/content";
 
 type Stat = { value: number; suffix: string; label: string };
 
+// Derived from real content — no fabricated figures.
+const weeklyClasses = Object.values(schedule).flat().length;
+const daysAWeek = Object.keys(schedule).length;
+
 const stats: Stat[] = [
-  { value: 200, suffix: "+", label: "Members transformed" },
-  { value: 6,   suffix: "+", label: "Disciplines taught" },
-  { value: 3,   suffix: "",  label: "Batches daily" },
-  { value: 2,   suffix: "+", label: "Years of practice" },
+  { value: disciplines.length, suffix: "", label: "Disciplines taught" },
+  { value: weeklyClasses, suffix: "", label: "Classes a week" },
+  { value: 3, suffix: "", label: "Daily batches" },
+  { value: daysAWeek, suffix: "", label: "Days a week" },
 ];
 
 function Counter({ value, suffix }: { value: number; suffix: string }) {

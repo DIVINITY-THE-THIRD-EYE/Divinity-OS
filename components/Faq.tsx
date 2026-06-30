@@ -5,21 +5,30 @@ import { AnimatePresence, m } from "framer-motion";
 import Reveal from "./Reveal";
 import { faqs } from "@/lib/content";
 
-export default function Faq() {
+export default function Faq({
+  limit,
+  showHeading = true,
+}: {
+  limit?: number;
+  showHeading?: boolean;
+}) {
   const [open, setOpen] = useState<number | null>(0);
+  const items = limit ? faqs.slice(0, limit) : faqs;
 
   return (
     <section id="faq" className="bg-bone px-6 py-28 text-ink md:px-10 md:py-40">
       <div className="mx-auto max-w-4xl">
-        <Reveal className="mb-14">
-          <p className="eyebrow mb-6 text-ember-deep">Before you begin</p>
-          <h2 className="font-display text-[clamp(38px,5.5vw,72px)] font-light leading-none tracking-tight">
-            Questions, <em className="text-ember-deep">answered.</em>
-          </h2>
-        </Reveal>
+        {showHeading && (
+          <Reveal className="mb-14">
+            <p className="eyebrow mb-6 text-ember-deep">Before you begin</p>
+            <h2 className="font-display text-[clamp(38px,5.5vw,72px)] font-light leading-none tracking-tight">
+              Questions, <em className="text-ember-deep">answered.</em>
+            </h2>
+          </Reveal>
+        )}
 
         <div>
-          {faqs.map((f, i) => {
+          {items.map((f, i) => {
             const isOpen = open === i;
             return (
               <Reveal key={i} delay={i * 0.04}>

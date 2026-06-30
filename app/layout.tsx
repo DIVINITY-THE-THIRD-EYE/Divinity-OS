@@ -3,6 +3,16 @@ import { Cormorant, Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
 import { site } from "@/lib/content";
 import JsonLd from "@/components/JsonLd";
 import MotionProvider from "@/components/MotionProvider";
+import Ambient from "@/components/Ambient";
+import ScrollProgress from "@/components/ScrollProgress";
+import SmoothScroll from "@/components/SmoothScroll";
+import Cursor from "@/components/Cursor";
+import CommandPalette from "@/components/CommandPalette";
+import PromoBar from "@/components/PromoBar";
+import Nav from "@/components/Nav";
+import Footer from "@/components/Footer";
+import WhatsAppFab from "@/components/WhatsAppFab";
+import StickyCta from "@/components/StickyCta";
 import "./globals.css";
 
 const display = Cormorant({
@@ -85,7 +95,21 @@ export default function RootLayout({
           Skip to content
         </a>
         <JsonLd />
-        <MotionProvider>{children}</MotionProvider>
+        <MotionProvider>
+          <Ambient />
+          <ScrollProgress />
+          <SmoothScroll />
+          <Cursor />
+          <CommandPalette />
+          <PromoBar />
+          <Nav />
+          <main id="main-content" tabIndex={-1} className="outline-none">
+            {children}
+          </main>
+          <Footer />
+          <WhatsAppFab />
+          <StickyCta />
+        </MotionProvider>
       </body>
     </html>
   );

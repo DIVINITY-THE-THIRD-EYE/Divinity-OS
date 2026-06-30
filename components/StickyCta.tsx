@@ -1,12 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { m, AnimatePresence } from "framer-motion";
 import { waHref } from "@/lib/links";
 
 const whatsappHref = waHref("Namaste — I'd like to book a first class at Divinity.");
 
 export default function StickyCta() {
+  const pathname = usePathname();
   const [visible, setVisible] = useState(false);
   const [pastContact, setPastContact] = useState(false);
 
@@ -18,13 +21,17 @@ export default function StickyCta() {
       setVisible(y > window.innerHeight * 0.6);
       setPastContact(y + window.innerHeight > contactTop);
     };
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Don't show the "Book a class" bar on the contact page itself.
+  const onContact = pathname === "/contact";
+
   return (
     <AnimatePresence>
-      {visible && !pastContact && (
+      {visible && !pastContact && !onContact && (
         <m.div
           initial={{ y: 80, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -40,12 +47,12 @@ export default function StickyCta() {
           >
             WhatsApp
           </a>
-          <a
-            href="#contact"
+          <Link
+            href="/contact"
             className="flex-1 bg-ember py-4 text-center font-mono text-[11px] uppercase tracking-wide text-void"
           >
             Book a class
-          </a>
+          </Link>
         </m.div>
       )}
     </AnimatePresence>

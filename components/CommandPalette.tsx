@@ -1,49 +1,64 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, m } from "framer-motion";
 import { site } from "@/lib/content";
+import { navItems } from "@/lib/nav";
 import { waHref } from "@/lib/links";
 import { trapTab } from "@/lib/focus-trap";
 
 type Item = {
   label: string;
   hint: string;
-  kind: "section" | "link";
+  kind: "route" | "link";
   target: string;
 };
 
 const ITEMS: Item[] = [
-  { label: "Academy", hint: "About Divinity", kind: "section", target: "#about" },
-  { label: "Disciplines", hint: "What we practice", kind: "section", target: "#disciplines" },
-  { label: "The space", hint: "Inside the studio", kind: "section", target: "#space" },
-  { label: "The path", hint: "Align · Awaken · Ascend", kind: "section", target: "#method" },
-  { label: "Schedule", hint: "Weekly rhythm", kind: "section", target: "#schedule" },
-  { label: "Membership", hint: "Plans & pricing", kind: "section", target: "#membership" },
-  { label: "Questions", hint: "FAQ", kind: "section", target: "#faq" },
-  { label: "Begin", hint: "Send an enquiry", kind: "section", target: "#contact" },
+  { label: "Home", hint: "Return home", kind: "route", target: "/" },
+  ...navItems.map((n): Item => ({
+    label: n.label,
+    hint: hintFor(n.href),
+    kind: "route",
+    target: n.href,
+  })),
   { label: "WhatsApp", hint: "Chat with us now", kind: "link", target: waHref() },
   { label: "Instagram", hint: "Follow the practice", kind: "link", target: site.instagram },
 ];
 
-function navigate(item: Item) {
-  if (item.kind === "link") {
-    window.open(item.target, "_blank", "noopener,noreferrer");
-    return;
-  }
-  // Re-use the Lenis anchor handler by clicking a real link
-  const a = document.createElement("a");
-  a.href = item.target;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
+function hintFor(href: string): string {
+  const map: Record<string, string> = {
+    "/about": "Our story & founder",
+    "/services": "What we practice",
+    "/schedule": "Weekly rhythm",
+    "/pricing": "Plans & membership",
+    "/trainers": "Meet the team",
+    "/gallery": "Inside the studio",
+    "/blog": "Journal & guides",
+    "/events": "Workshops & retreats",
+    "/contact": "Send an enquiry",
+  };
+  return map[href] ?? "Open page";
 }
 
 export default function CommandPalette() {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const [active, setActive] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  // Remember what had focus before opening so it can be restored on close.
+  const lastFocused = useRef<HTMLElement | null>(null);
+
+  const go = (item: Item) => {
+    setOpen(false);
+    if (item.kind === "link") {
+      window.open(item.target, "_blank", "noopener,noreferrer");
+    } else {
+      router.push(item.target);
+    }
+  };
 
   const results = useMemo(() => {
     const s = q.trim().toLowerCase();
@@ -67,11 +82,16 @@ export default function CommandPalette() {
   }, []);
 
   useEffect(() => {
-    let tid: any;
+    let tid: ReturnType<typeof setTimeout> | undefined;
     if (open) {
+      lastFocused.current = document.activeElement as HTMLElement | null;
       setQ("");
       setActive(0);
       tid = setTimeout(() => inputRef.current?.focus(), 40);
+    } else {
+      // Return focus to whatever was focused when the palette was opened
+      // (e.g. the ⌘K button), so keyboard users don't lose their place.
+      lastFocused.current?.focus?.();
     }
     return () => clearTimeout(tid);
   }, [open]);
@@ -92,8 +112,7 @@ export default function CommandPalette() {
       setActive((a) => Math.max(a - 1, 0));
     } else if (e.key === "Enter" && results[active]) {
       e.preventDefault();
-      navigate(results[active]);
-      setOpen(false);
+      go(results[active]);
     }
   };
 
@@ -141,10 +160,7 @@ export default function CommandPalette() {
                 <li key={item.label}>
                   <button
                     onMouseEnter={() => setActive(i)}
-                    onClick={() => {
-                      navigate(item);
-                      setOpen(false);
-                    }}
+                    onClick={() => go(item)}
                     className={`flex w-full items-center justify-between px-4 py-3 text-left transition-colors ${
                       i === active ? "bg-ember/10" : ""
                     }`}

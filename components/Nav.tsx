@@ -2,57 +2,44 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, m } from "framer-motion";
 import { site } from "@/lib/content";
+import { navItems, primaryNav } from "@/lib/nav";
 import { trapTab } from "@/lib/focus-trap";
 import Magnetic from "./Magnetic";
-
-const links = [
-  { href: "#about", label: "Academy", id: "about" },
-  { href: "#disciplines", label: "Practice", id: "disciplines" },
-  { href: "#space", label: "The space", id: "space" },
-  { href: "#schedule", label: "Schedule", id: "schedule" },
-  { href: "#membership", label: "Membership", id: "membership" },
-];
 
 function openPalette() {
   window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }));
 }
 
 export default function Nav() {
+  const pathname = usePathname();
   const [solid, setSolid] = useState(false);
   const [open, setOpen] = useState(false);
-  const [active, setActive] = useState<string>("");
   const menuBtnRef = useRef<HTMLButtonElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
 
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");
+
   useEffect(() => {
     const onScroll = () => setSolid(window.scrollY > 64);
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Close the mobile menu whenever the route changes.
   useEffect(() => {
-    const sections = links
-      .map((l) => document.getElementById(l.id))
-      .filter(Boolean) as HTMLElement[];
-    const obs = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) setActive(e.target.id);
-        });
-      },
-      { rootMargin: "-45% 0px -50% 0px" }
-    );
-    sections.forEach((s) => obs.observe(s));
-    return () => obs.disconnect();
-  }, []);
+    setOpen(false);
+  }, [pathname]);
 
-  // Mobile menu: close on Escape, lock background scroll, and manage focus
-  // (move into the dialog on open, return to the trigger on close).
+  // Mobile menu: close on Escape, lock background scroll, manage focus.
   useEffect(() => {
     if (!open) return;
-    const trigger = menuBtnRef.current; // capture for the cleanup (stable node)
+    const trigger = menuBtnRef.current;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false);
     };
@@ -78,7 +65,7 @@ export default function Nav() {
             : "py-6"
         }`}
       >
-        <a href="#top" className="group flex items-center gap-2.5" aria-label={`${site.full} — home`}>
+        <Link href="/" className="group flex items-center gap-2.5" aria-label={`${site.full} — home`}>
           <Image
             src={site.logoMark}
             alt=""
@@ -91,19 +78,20 @@ export default function Nav() {
             {site.name}
             <span className="text-mist"> — the third eye</span>
           </span>
-        </a>
+        </Link>
 
-        <div className="hidden items-center gap-9 md:flex">
-          {links.map((l) => (
-            <a
+        <div className="hidden items-center gap-7 lg:flex">
+          {primaryNav.map((l) => (
+            <Link
               key={l.href}
               href={l.href}
+              aria-current={isActive(l.href) ? "page" : undefined}
               className={`font-mono text-[11px] uppercase tracking-wide transition-colors hover:text-ember ${
-                active === l.id ? "text-ember" : "text-mist"
+                isActive(l.href) ? "text-ember" : "text-mist"
               }`}
             >
               {l.label}
-            </a>
+            </Link>
           ))}
           <button
             onClick={openPalette}
@@ -113,19 +101,19 @@ export default function Nav() {
             <span className="kbd">⌘K</span>
           </button>
           <Magnetic>
-            <a
-              href="#contact"
+            <Link
+              href="/contact"
               className="border border-ember px-5 py-2 font-mono text-[11px] uppercase tracking-wide text-ember transition-colors hover:bg-ember hover:text-void"
             >
               Begin
-            </a>
+            </Link>
           </Magnetic>
         </div>
 
         <button
           ref={menuBtnRef}
           onClick={() => setOpen(true)}
-          className="font-mono text-[11px] uppercase tracking-wide text-bone md:hidden"
+          className="font-mono text-[11px] uppercase tracking-wide text-bone lg:hidden"
           aria-label="Open menu"
           aria-expanded={open}
           aria-controls="mobile-menu"
@@ -145,7 +133,7 @@ export default function Nav() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[400] flex flex-col items-center justify-center gap-8 bg-void/95 backdrop-blur-lg md:hidden"
+            className="fixed inset-0 z-[400] flex flex-col items-center justify-center gap-6 overflow-y-auto bg-void/95 px-6 py-24 backdrop-blur-lg lg:hidden"
           >
             <button
               ref={closeBtnRef}
@@ -155,19 +143,37 @@ export default function Nav() {
             >
               Close
             </button>
-            {[...links, { href: "#contact", label: "Begin", id: "contact" }].map((l, i) => (
-              <m.a
+            {navItems.map((l, i) => (
+              <m.div
                 key={l.href}
-                href={l.href}
-                onClick={() => setOpen(false)}
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.06 * i }}
-                className="font-display text-4xl font-light text-bone"
+                transition={{ delay: 0.04 * i }}
               >
-                {l.label}
-              </m.a>
+                <Link
+                  href={l.href}
+                  aria-current={isActive(l.href) ? "page" : undefined}
+                  className={`font-display text-3xl font-light ${
+                    isActive(l.href) ? "text-ember" : "text-bone"
+                  }`}
+                >
+                  {l.label}
+                </Link>
+              </m.div>
             ))}
+            <m.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.04 * navItems.length }}
+              className="mt-2"
+            >
+              <Link
+                href="/contact"
+                className="border border-ember px-7 py-3 font-mono text-[11px] uppercase tracking-wide text-ember"
+              >
+                Begin
+              </Link>
+            </m.div>
           </m.div>
         )}
       </AnimatePresence>

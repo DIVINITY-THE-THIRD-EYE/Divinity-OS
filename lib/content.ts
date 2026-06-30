@@ -252,23 +252,82 @@ export const studioGallery: GalleryShot[] = [
   { src: "/studio/yc_5.webp", alt: "Blocks, bolsters and props for supported practice", w: 4000, h: 6000 },
 ];
 
-export const testimonials: Testimonial[] = [
+// Real member stories only. Empty until verified testimonials are collected —
+// the UI shows a polished "coming soon" state rather than fabricated quotes.
+export const testimonials: Testimonial[] = [];
+
+// ── Routing / slugs ───────────────────────────────────────────────
+/** URL-safe slug from any title (used for /services/[slug] etc.). */
+export function slugify(input: string): string {
+  return input
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+export const disciplineSlug = (d: Discipline) => slugify(d.title);
+export const getDisciplineBySlug = (slug: string) =>
+  disciplines.find((d) => disciplineSlug(d) === slug);
+
+// ── Trainers ──────────────────────────────────────────────────────
+// Add real teachers here as bios are confirmed. The Trainers page renders
+// whatever exists and shows an empty state for the rest — never fabricated.
+export type Trainer = {
+  name: string;
+  role: string;
+  image?: string;
+  bio: string;
+  focus?: string[];
+};
+
+export const trainers: Trainer[] = [
   {
-    quote:
-      "I came for fitness and found something deeper. My back pain is gone — but more than that, I sleep, I breathe, I feel steady.",
-    name: "Priya Sharma",
-    meta: "Member · 8 months",
-  },
-  {
-    quote:
-      "The therapeutic practice was built around my surgery history. They listened to my body, my limits, my goals. I have never felt so cared for.",
-    name: "Arun Kapoor",
-    meta: "Member · 1 year",
-  },
-  {
-    quote:
-      "Sachin sir teaches with such patience. The diet, the lifestyle guidance — it all connects. This is not a gym. It is a place to become well.",
-    name: "Meera Nair",
-    meta: "Member · 6 months",
+    name: site.founder,
+    role: site.founderRole,
+    image: site.founderImage,
+    bio: "Sachin Rajvanshi founded Divinity to bring breath-led yoga, fitness and therapeutic practice together under one roof in Lucknow — meeting each student where they are and guiding them, patiently, toward where they wish to be.",
+    focus: ["Hatha & Vinyasa", "Pranayama", "Therapeutic yoga"],
   },
 ];
+
+// ── Blog ──────────────────────────────────────────────────────────
+// CMS-ready. Empty by design — the /blog routes render an empty state until
+// real articles are published. No placeholder posts.
+export type Post = {
+  slug: string;
+  title: string;
+  excerpt: string;
+  body: string;
+  date: string; // ISO
+  author: string;
+  cover?: string;
+  tags?: string[];
+};
+
+export const posts: Post[] = [];
+export const getPostBySlug = (slug: string) => posts.find((p) => p.slug === slug);
+
+// ── Events ────────────────────────────────────────────────────────
+// CMS-ready. Empty by design — the /events routes render an empty state.
+export type EventItem = {
+  slug: string;
+  title: string;
+  summary: string;
+  body: string;
+  date: string; // ISO start
+  endDate?: string;
+  location: string;
+  cover?: string;
+};
+
+export const events: EventItem[] = [];
+export const getEventBySlug = (slug: string) => events.find((e) => e.slug === slug);
+
+/** Upcoming events, soonest first (today onward). */
+export const upcomingEvents = () => {
+  const now = Date.now();
+  return events
+    .filter((e) => new Date(e.date).getTime() >= now)
+    .sort((a, b) => +new Date(a.date) - +new Date(b.date));
+};

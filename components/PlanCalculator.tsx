@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { AnimatePresence, m } from "framer-motion";
 import Reveal from "./Reveal";
 import { plans } from "@/lib/content";
@@ -129,12 +130,12 @@ export default function PlanCalculator() {
             </div>
 
             <div className="relative mt-8 flex flex-col gap-3">
-              <a
-                href="#contact"
+              <Link
+                href="/contact"
                 className="block bg-ember py-3.5 text-center font-mono text-[11px] uppercase tracking-wide text-void transition-colors hover:bg-ember-pale"
               >
                 Enquire about {plan.name}
-              </a>
+              </Link>
               <a
                 href={wa}
                 target="_blank"

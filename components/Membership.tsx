@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import Reveal from "./Reveal";
 import { payment, type Plan } from "@/lib/content";
 
@@ -57,12 +58,12 @@ export default function Membership({ plans }: { plans: Plan[] }) {
                 </ul>
               </div>
 
-              <a
-                href="#contact"
+              <Link
+                href="/contact"
                 className="relative mt-10 block bg-ember py-4 text-center font-mono text-[11px] uppercase tracking-wide text-void transition-colors hover:bg-ember-pale"
               >
                 Become a Devotee
-              </a>
+              </Link>
             </div>
           </Reveal>
 
@@ -70,9 +71,9 @@ export default function Membership({ plans }: { plans: Plan[] }) {
           <Reveal delay={0.1}>
             <div className="flex h-full flex-col">
               {rest.map((p) => (
-                <a
+                <Link
                   key={p.name}
-                  href="#contact"
+                  href="/contact"
                   data-hover
                   className="grid flex-1 grid-cols-1 items-center gap-2 border-t border-[var(--line-light)] py-7 transition-[padding] duration-300 last:border-b hover:pl-4 md:grid-cols-[1fr_auto] md:gap-6"
                 >
@@ -88,7 +89,7 @@ export default function Membership({ plans }: { plans: Plan[] }) {
                       /{p.cadence.replace("per ", "")}
                     </span>
                   </div>
-                </a>
+                </Link>
               ))}
             </div>
           </Reveal>

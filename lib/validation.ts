@@ -17,3 +17,15 @@ export function asString(value: unknown): string {
 export function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
+
+/**
+ * Early-reject oversized request bodies by their declared Content-Length, before
+ * `req.json()` buffers the whole stream into memory. A spoofed/absent header
+ * (e.g. chunked encoding) simply falls through to the per-field length guards,
+ * so this is defense-in-depth, not the only limit. Default cap is generous
+ * versus the largest legitimate payload (a ~4KB message + a few short fields).
+ */
+export function declaredBodyTooLarge(req: Request, maxBytes = 16_384): boolean {
+  const len = Number(req.headers.get("content-length"));
+  return Number.isFinite(len) && len > maxBytes;
+}

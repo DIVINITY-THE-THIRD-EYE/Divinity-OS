@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { rateLimit, clientIp, sweep } from "@/lib/rate-limit";
-import { isEmail, asString, isPlainObject } from "@/lib/validation";
+import { isEmail, asString, isPlainObject, declaredBodyTooLarge } from "@/lib/validation";
 
 export const runtime = "nodejs";
 
@@ -13,6 +13,11 @@ export async function POST(req: Request) {
       { error: "Too many requests. Please wait a moment and try again." },
       { status: 429, headers: { "Retry-After": String(limit.retryAfter) } }
     );
+  }
+
+  // Reject oversized bodies before buffering the stream into memory.
+  if (declaredBodyTooLarge(req)) {
+    return NextResponse.json({ error: "That request is too large." }, { status: 413 });
   }
 
   let body: unknown;

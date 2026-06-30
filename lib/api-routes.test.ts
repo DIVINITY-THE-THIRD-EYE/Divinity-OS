@@ -10,6 +10,20 @@ function makeReq(url: string, body: unknown, ip = "t-" + Math.random()) {
   });
 }
 
+// A request whose declared Content-Length exceeds the route cap, so the body is
+// rejected before it is buffered/parsed.
+function makeOversizedReq(url: string, ip = "big-" + Math.random()) {
+  return new Request(url, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-forwarded-for": ip,
+      "content-length": "50000",
+    },
+    body: JSON.stringify({ email: "x@e.com" }),
+  });
+}
+
 const contact = (body: unknown, ip?: string) =>
   contactPOST(makeReq("http://localhost/api/contact", body, ip));
 const subscribe = (body: unknown, ip?: string) =>
@@ -38,6 +52,11 @@ describe("POST /api/contact", () => {
 
   it("rejects oversized payloads with 413", async () => {
     const res = await contact({ name: "X", email: "x@e.com", message: "a".repeat(5000) });
+    expect(res.status).toBe(413);
+  });
+
+  it("rejects an oversized declared Content-Length with 413 (before parsing)", async () => {
+    const res = await contactPOST(makeOversizedReq("http://localhost/api/contact"));
     expect(res.status).toBe(413);
   });
 
@@ -75,6 +94,11 @@ describe("POST /api/subscribe", () => {
 
   it("rejects an invalid email with 422", async () => {
     expect((await subscribe({ email: "nope" })).status).toBe(422);
+  });
+
+  it("rejects an oversized declared Content-Length with 413 (before parsing)", async () => {
+    const res = await subscribePOST(makeOversizedReq("http://localhost/api/subscribe"));
+    expect(res.status).toBe(413);
   });
 
   it("rejects null / array bodies with 400 (no 500)", async () => {
