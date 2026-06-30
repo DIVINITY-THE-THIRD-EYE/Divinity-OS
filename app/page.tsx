@@ -19,6 +19,7 @@ import Disciplines from "@/components/Disciplines";
 import Method from "@/components/Method";
 import Gallery from "@/components/Gallery";
 import Membership from "@/components/Membership";
+import TrustBadges from "@/components/TrustBadges";
 import Newsletter from "@/components/Newsletter";
 import Voices from "@/components/Voices";
 import Faq from "@/components/Faq";
@@ -92,6 +93,9 @@ export default async function Home() {
           See all plans & the plan finder
         </CtaLink>
       </div>
+
+      {/* Trust / assurance band */}
+      <TrustBadges />
 
       <Newsletter />
 

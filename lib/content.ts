@@ -59,6 +59,49 @@ export const payment = {
   note: "Scan with any UPI app — GPay, PhonePe, Paytm — then share a screenshot to confirm your enrolment.",
 };
 
+// Trust signals / assurance badges. Keep these TRUTHFUL — each one below is
+// grounded in a real fact already on this site (verified UPI flow, the founder,
+// small batches, a registered LLP, privacy-by-design). Edit freely, but don't
+// invent certifications the academy doesn't actually hold.
+export type Assurance = {
+  icon: "shield" | "guide" | "users" | "lock" | "spark" | "badge";
+  title: string;
+  detail: string;
+};
+
+export const assurances: Assurance[] = [
+  {
+    icon: "shield",
+    title: "Secure UPI payments",
+    detail: "Every payment is verified by our team and a receipt is issued — no hidden auto-charges.",
+  },
+  {
+    icon: "guide",
+    title: "Guided by the founder",
+    detail: `Personal guidance from ${site.founder} and our instructors, not a faceless app.`,
+  },
+  {
+    icon: "users",
+    title: "Small, focused batches",
+    detail: "Dawn, midday and dusk batches are kept small so you get real, hands-on attention.",
+  },
+  {
+    icon: "lock",
+    title: "Your data stays private",
+    detail: "Health and contact details are access-controlled and never sold or shared.",
+  },
+  {
+    icon: "spark",
+    title: "Risk-free first week",
+    detail: "Begin your practice with a ₹99 first week before you commit to a plan.",
+  },
+  {
+    icon: "badge",
+    title: "A registered academy",
+    detail: "Run by Amaratv Krishi LLP, serving Lucknow since 2024.",
+  },
+];
+
 // Practice words for the kinetic marquee (a little Sanskrit, on theme)
 export const mantra = [
   "Breathe",

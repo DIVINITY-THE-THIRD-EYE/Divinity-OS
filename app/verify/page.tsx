@@ -1,0 +1,36 @@
+import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
+import { site } from "@/lib/content";
+import PageHeader from "@/components/layout/PageHeader";
+import VerifyForm from "@/components/VerifyForm";
+
+export const metadata: Metadata = pageMeta({
+  title: "Verify a Certificate",
+  description: `Confirm the authenticity of a certificate issued by ${site.full}.`,
+  path: "/verify",
+});
+
+export default function VerifyPage() {
+  return (
+    <>
+      <PageHeader
+        eyebrow="Trust & authenticity"
+        title="Verify a"
+        titleAccent="certificate."
+        intro="Each certificate Divinity issues carries a unique code. Enter it below to confirm it's genuine."
+        trail={[{ label: "Verify", href: "/verify" }]}
+      />
+      <section className="bg-void px-6 py-16 md:px-10 md:py-24">
+        <VerifyForm />
+        <p className="mx-auto mt-10 max-w-md text-center font-body text-[13px] leading-relaxed text-mist">
+          The code is printed on the certificate (format <span className="font-mono text-bone">DIV-XXXX-XXXX</span>).
+          If you can&apos;t verify it online, please{" "}
+          <a href="/contact" className="text-ember underline-offset-4 hover:underline">
+            contact the academy
+          </a>{" "}
+          with the code.
+        </p>
+      </section>
+    </>
+  );
+}
