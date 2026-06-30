@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/theme_provider.dart';
 import '../../features/attendance/presentation/check_in_screen.dart';
 import '../../features/auth/presentation/auth_provider.dart';
+import '../../features/certificates/presentation/certificates_screen.dart';
 import '../../features/home/presentation/student_home_screen.dart';
 import '../../features/leave/presentation/leave_request_screen.dart';
 import '../../features/payments/presentation/payments_screen.dart';
@@ -30,6 +31,7 @@ class _StudentShellState extends ConsumerState<StudentShell> {
     _Tab(label: 'Leaves', icon: Icons.event_busy_outlined),
     _Tab(label: 'Payments', icon: Icons.account_balance_wallet_outlined),
     _Tab(label: 'Profile', icon: Icons.person_outline),
+    _Tab(label: 'Certificates', icon: Icons.workspace_premium_outlined),
   ];
 
   static int _targetToIndex(String target) => switch (target) {
@@ -83,6 +85,7 @@ class _StudentShellState extends ConsumerState<StudentShell> {
           const MyLeaveScreen(),
           const PaymentsScreen(),
           const ProfileScreen(),
+          const CertificatesScreen(),
         ],
       ),
       bottomNavigationBar: NavigationBar(

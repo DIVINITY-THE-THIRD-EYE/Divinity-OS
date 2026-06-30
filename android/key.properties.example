@@ -1,0 +1,10 @@
+# Android release signing — TEMPLATE.
+# Copy this file to `key.properties` (same folder) and fill in real values.
+# `key.properties` and the keystore (*.jks / *.keystore) are git-ignored on
+# purpose — NEVER commit them. See SIGNING.md to generate the keystore.
+
+storePassword=your-keystore-password
+keyPassword=your-key-password
+keyAlias=upload
+# Path to the keystore, relative to the android/app directory (or absolute).
+storeFile=upload-keystore.jks

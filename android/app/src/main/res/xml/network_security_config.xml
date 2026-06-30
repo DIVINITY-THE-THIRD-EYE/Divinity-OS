@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Network security policy for the Divinity app.
+
+  Enforces encrypted (TLS/HTTPS) connections for ALL production traffic.
+  Supabase and Firebase are HTTPS-only, so the app never needs cleartext in
+  production. The single exception below permits cleartext to a *local* dev
+  backend (Android emulator host 10.0.2.2 / localhost) so developers can point
+  the app at a locally-run Supabase stack without weakening release security.
+
+  ── A note on certificate pinning (deliberately NOT enabled) ─────────────────
+  We do not pin Supabase/Firebase leaf certificates. Those are managed services
+  that rotate their TLS certificates on their own schedule; a pinned client would
+  hard-fail ("brick") the moment they rotate, with no server-side fix possible.
+  If pinning is ever required (e.g. a compliance mandate), pin a long-lived
+  backup/intermediate CA, ship multiple pins + an expiry, and gate it behind a
+  remote kill-switch so a bad pin can be disabled without an app-store release.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+
+    <!-- Local development backends only. -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">10.0.2.2</domain>
+        <domain includeSubdomains="true">localhost</domain>
+        <domain includeSubdomains="true">127.0.0.1</domain>
+    </domain-config>
+</network-security-config>
