@@ -180,8 +180,90 @@ class _FiltersBottomSheet extends ConsumerWidget {
                 ],
               ),
               const SizedBox(height: 16),
-              // Date Range pickers
-              Text('Date Range', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey)),
+              // Date Range presets & pickers
+              Text('Date Presets', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey)),
+              const SizedBox(height: 8),
+              Builder(
+                builder: (ctx) {
+                  final now = DateTime.now();
+                  final today = DateTime(now.year, now.month, now.day);
+                  
+                  bool isPresetSelected(int days) {
+                    if (filters.startDate == null || filters.endDate == null) return false;
+                    final start = DateTime(filters.startDate!.year, filters.startDate!.month, filters.startDate!.day);
+                    final end = DateTime(filters.endDate!.year, filters.endDate!.month, filters.endDate!.day);
+                    return end.difference(start).inDays == days && end.difference(today).inDays.abs() <= 1;
+                  }
+
+                  bool isThisMonthSelected() {
+                    if (filters.startDate == null || filters.endDate == null) return false;
+                    final start = DateTime(filters.startDate!.year, filters.startDate!.month, filters.startDate!.day);
+                    return start.year == now.year && start.month == now.month && filters.endDate!.year == now.year && filters.endDate!.month == now.month;
+                  }
+
+                  bool isThisYearSelected() {
+                    if (filters.startDate == null || filters.endDate == null) return false;
+                    final start = DateTime(filters.startDate!.year, filters.startDate!.month, filters.startDate!.day);
+                    return start.year == now.year && start.month == 1 && start.day == 1 && filters.endDate!.year == now.year && filters.endDate!.month == now.month;
+                  }
+
+                  return Wrap(
+                    spacing: 8,
+                    children: [
+                      ChoiceChip(
+                        label: const Text('7 Days', style: TextStyle(fontSize: 11)),
+                        selected: isPresetSelected(7),
+                        onSelected: (selected) {
+                          if (selected) {
+                            final end = DateTime.now();
+                            final start = DateTime(end.year, end.month, end.day).subtract(const Duration(days: 7));
+                            notifier.setStartDate(start);
+                            notifier.setEndDate(end);
+                          }
+                        },
+                      ),
+                      ChoiceChip(
+                        label: const Text('30 Days', style: TextStyle(fontSize: 11)),
+                        selected: isPresetSelected(30),
+                        onSelected: (selected) {
+                          if (selected) {
+                            final end = DateTime.now();
+                            final start = DateTime(end.year, end.month, end.day).subtract(const Duration(days: 30));
+                            notifier.setStartDate(start);
+                            notifier.setEndDate(end);
+                          }
+                        },
+                      ),
+                      ChoiceChip(
+                        label: const Text('This Month', style: TextStyle(fontSize: 11)),
+                        selected: isThisMonthSelected(),
+                        onSelected: (selected) {
+                          if (selected) {
+                            final end = DateTime.now();
+                            final start = DateTime(end.year, end.month);
+                            notifier.setStartDate(start);
+                            notifier.setEndDate(end);
+                          }
+                        },
+                      ),
+                      ChoiceChip(
+                        label: const Text('This Year', style: TextStyle(fontSize: 11)),
+                        selected: isThisYearSelected(),
+                        onSelected: (selected) {
+                          if (selected) {
+                            final end = DateTime.now();
+                            final start = DateTime(end.year);
+                            notifier.setStartDate(start);
+                            notifier.setEndDate(end);
+                          }
+                        },
+                      ),
+                    ],
+                  );
+                },
+              ),
+              const SizedBox(height: 12),
+              Text('Custom Range', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey)),
               const SizedBox(height: 8),
               Row(
                 children: [

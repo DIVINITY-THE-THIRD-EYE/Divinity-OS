@@ -10,7 +10,7 @@ class MockReportsRepository extends Mock implements ReportsRepository {}
 ReportsData _fakeReportsData() {
   return ReportsData(
     attendance: AttendanceReport(
-      dailyAttendance: [DailyTrend(date: DateTime(2026, 6, 1), value: 5)],
+      dailyAttendance: [DailyTrend(date: DateTime(2026, 6), value: 5)],
       monthlyAttendance: [MonthlyTrend(month: DateTime(2026, 6), value: 100)],
       perBatchAttendance: {'Morning Yoga': 85.0},
       perTrainerAttendance: {'Trainer A': 90.0},
@@ -26,7 +26,7 @@ ReportsData _fakeReportsData() {
       ],
     ),
     revenue: RevenueReport(
-      dailyRevenue: [DailyTrend(date: DateTime(2026, 6, 1), value: 1500)],
+      dailyRevenue: [DailyTrend(date: DateTime(2026, 6), value: 1500)],
       monthlyRevenue: [MonthlyTrend(month: DateTime(2026, 6), value: 45000)],
       yearlyRevenue: [MonthlyTrend(month: DateTime(2026), value: 500000)],
       outstandingFees: 2000.0,
@@ -97,12 +97,12 @@ void main() {
       expect(filters.isEmpty, true);
 
       filters = filters.copyWith(
-        startDate: () => DateTime(2026, 6, 1),
+        startDate: () => DateTime(2026, 6),
         trainerId: () => 'trainer_123',
       );
 
       expect(filters.isEmpty, false);
-      expect(filters.startDate, DateTime(2026, 6, 1));
+      expect(filters.startDate, DateTime(2026, 6));
       expect(filters.trainerId, 'trainer_123');
       expect(filters.batchId, null);
     });

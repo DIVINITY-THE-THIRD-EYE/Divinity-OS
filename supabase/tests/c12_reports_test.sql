@@ -10,7 +10,7 @@
 -- ─────────────────────────────────────────────────────────────────────────────
 
 begin;
-select plan(7);
+select plan(10);
 
 -- ── Fixtures ─────────────────────────────────────────────────────────────────
 insert into auth.users (id, email) values
@@ -97,6 +97,30 @@ select is(
   (select count(*)::int from public.payments where student_id = '11111111-1111-1111-1111-111111111111'),
   1,
   'C12.7 Admin can read any student payment records'
+);
+-- ── Test 8: Student cannot run get_reports_data ───────────────────────────────
+select pg_temp.act_as('11111111-1111-1111-1111-111111111111');
+select throws_ok(
+  $$ select public.get_reports_data() $$,
+  '42501',
+  null,
+  'C12.8 Student is blocked from calling get_reports_data'
+);
+
+-- ── Test 9: Trainer cannot run get_reports_data ───────────────────────────────
+select pg_temp.act_as('33333333-3333-3333-3333-333333333333');
+select throws_ok(
+  $$ select public.get_reports_data() $$,
+  '42501',
+  null,
+  'C12.9 Trainer is blocked from calling get_reports_data'
+);
+
+-- ── Test 10: Admin can run get_reports_data ──────────────────────────────────
+select pg_temp.act_as('44444444-4444-4444-4444-444444444444');
+select lives_ok(
+  $$ select public.get_reports_data() $$,
+  'C12.10 Admin can successfully call get_reports_data'
 );
 
 select * from finish();

@@ -19,7 +19,7 @@ ReportsData _fakeData() {
   return ReportsData(
     attendance: AttendanceReport(
       dailyAttendance: [
-        DailyTrend(date: DateTime(2026, 6, 1), value: 5),
+        DailyTrend(date: DateTime(2026, 6), value: 5),
         DailyTrend(date: DateTime(2026, 6, 2), value: 7),
       ],
       monthlyAttendance: [MonthlyTrend(month: DateTime(2026, 6), value: 100)],
@@ -37,7 +37,7 @@ ReportsData _fakeData() {
       ],
     ),
     revenue: RevenueReport(
-      dailyRevenue: [DailyTrend(date: DateTime(2026, 6, 1), value: 1500)],
+      dailyRevenue: [DailyTrend(date: DateTime(2026, 6), value: 1500)],
       monthlyRevenue: [MonthlyTrend(month: DateTime(2026, 6), value: 45000)],
       yearlyRevenue: [MonthlyTrend(month: DateTime(2026), value: 500000)],
       outstandingFees: 2000.0,
