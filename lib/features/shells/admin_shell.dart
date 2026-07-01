@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/theme_provider.dart';
 import '../../features/admissions/presentation/leads_screen.dart';
+import '../../features/analytics/presentation/reports_screen.dart';
 import '../../features/auth/presentation/auth_provider.dart';
 import '../../features/batches/presentation/admin_batches_screen.dart';
 import '../../features/dashboard/presentation/admin_dashboard_screen.dart';
@@ -32,6 +33,7 @@ class _AdminShellState extends ConsumerState<AdminShell> {
     _Tab(label: 'Students', icon: Icons.people_outline),
     _Tab(label: 'Leaves', icon: Icons.event_busy_outlined),
     _Tab(label: 'Batches', icon: Icons.groups_outlined),
+    _Tab(label: 'Reports', icon: Icons.analytics_outlined),
   ];
 
   static int _targetToIndex(String target) => switch (target) {
@@ -40,6 +42,7 @@ class _AdminShellState extends ConsumerState<AdminShell> {
         'students' => 3,
         'leaves' => 4,
         'batches' => 5,
+        'reports' => 6,
         _ => 0,
       };
 
@@ -103,6 +106,7 @@ class _AdminShellState extends ConsumerState<AdminShell> {
           StudentsScreen(),
           LeaveApprovalScreen(),
           AdminBatchesScreen(),
+          ReportsScreen(),
         ],
       ),
       bottomNavigationBar: NavigationBar(

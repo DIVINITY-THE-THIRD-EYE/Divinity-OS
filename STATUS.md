@@ -1,27 +1,18 @@
 # DIVINITY BUILD STATUS
-Session completed: 16 — Module 11 production audit (issues found & fixed)
+Session completed: 17 — Module 15 production implementation
 Date: 2026-07-01
 
-## Done this session (Session 16 — Module 11 audit)
+## Done this session (Session 17 — Module 15 Reports & Analytics)
 
-Full pre-approval production audit of Events. Every item verified against the live
-DB/code, not assumed. Three issues found and fixed:
+Built Module 15 – Reports & Analytics from stubs into a production-ready feature.
+- **Domain Layer:** Built `ReportFilters` and computed report groups (`AttendanceReport`, `RevenueReport`, `MembershipReport`, `StudentReport`, `TrainerReportItem`, `EventReportItem`, `HolidayReportItem`).
+- **Repository Layer:** Built `SupabaseReportsRepository` with parallel query calls (`Future.wait`) and robust in-memory aggregations to support flexible multi-filter combinations without N+1 queries.
+- **State Management:** Integrated Riverpod state notifier provider for reports filtering and future provider for analytics loading.
+- **Visual Dashboard UI:** Implemented a beautiful, tabbed reports view inside the admin panel with daily/monthly fl_chart line/bar trends, low attendance lists, and quick-alert FCM warning overrides.
+- **CSV Data Export:** Created `ReportsExportUtils` leveraging StringBuffer and native sharing for Attendance, Revenue, Memberships, Students, Events, and Trainers reports.
+- **DB Security & pgTAP:** Created pgTAP test `c12_reports_test.sql` to verify RLS privacy boundaries on payments and attendance.
 
-- **Concurrent-registration capacity bypass (critical).** Capacity was enforced only
-  by a non-locking RLS `count(*)`; proven live that two simultaneous transactions both
-  registered for a capacity-1 event (2 rows). Fixed with a BEFORE INSERT
-  `enforce_event_capacity` trigger that row-locks the event (`FOR UPDATE`) and re-checks
-  via `event_is_full`. Re-proven: the second concurrent insert is now rejected; count = 1.
-- **Migration idempotency.** Added `drop policy if exists` guards so 027 re-applies cleanly.
-- **Placeholder/dead code.** Removed never-populated `ends_at` + `cover_image_url` columns
-  (+ Dart) and the unused `Event.isPast` getter.
-
-Verified clean (no change needed): RLS on both tables; least-privilege policies; all three
-SECURITY DEFINER functions have fixed `search_path`; no trigger recursion; FK SET NULL/CASCADE
-(no orphans); all join/lookup indexes present; counts correct after delete; publish notifies
-exactly once (no re-notify on edits); UTC throughout.
-
-Gates: `flutter analyze` clean · Flutter 231/231 · pgTAP 81/81. **Module 11 is production-ready.**
+Gates: `flutter analyze` clean · Flutter 243/243 · pgTAP 88/88. **Module 15 is production-ready.**
 
 ## Previous session (15 — Events)
 
