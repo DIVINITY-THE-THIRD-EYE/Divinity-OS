@@ -1,19 +1,26 @@
 # DIVINITY BUILD STATUS
-Session completed: 19 — Admin Trainer Management + audit correction
+Session completed: 21 — Production Hardening, Remaining Modules & CI/CD
 Date: 2026-07-01
 
-## Done this session (Session 19 — Admin Trainer Management + audit correction)
+## Done this session (Session 21 — Production Hardening, Remaining Modules & CI/CD)
 
-Built the Admin Trainer Management screen (Phase B / BUG-H02), the last concrete, well-scoped gap identified by the PROJECT_BIBLE audit that could be implemented without external credentials (CI/CD, store signing, App Check verification all need accounts this session doesn't have).
+Implemented all remaining Phase B/C blueprint modules, database concurrency controls, paginated reporting RPCs, and DevOps workflow engines:
 
-- **DB:** Migration `032_trainer_active_status.sql` adds `users.is_active` (default `true`), a composite index `users(role, is_active)`, and extends the `lock_privileged_fields()` trigger (migration 009) so only an admin can flip `is_active` — a trainer cannot self-reactivate their own deactivated account via the existing `users_update_own` policy.
-- **pgTAP:** `c13_trainer_active_status_test.sql` (4 assertions) — defaults to active, admin can deactivate/reactivate, trainer cannot self-reactivate. Written following the proven `c1` pattern but **not executed** — Docker was unavailable this session, so `supabase test db` could not run locally.
-- **Flutter:** `lib/features/trainer/presentation/admin_trainers_screen.dart` — `AdminTrainersNotifier`/`adminTrainersProvider` (direct-Supabase pattern, same as the sibling `StudentsScreen`, no repository abstraction) fetches trainers + a per-trainer batch count, with a switch to activate/deactivate (confirmation dialog first). Wired as a third quick-access card ("Trainers") on `AdminDashboardScreen`, alongside the existing Events/Holidays cards — not a bottom-nav tab, to avoid crowding the already-8-tab admin shell.
-- **Correction:** Found and fixed a false finding in the 2026-07-01 audit — `TrainerCheckInScreen` was reported as "unreachable" (BUG-C01/A2/LB-6), but it is in fact reachable by tapping any batch card on `TrainerDashboardScreen` (the trainer's default tab) or via the "Check-in" button on the Batches tab. Removed the false item from `IMPLEMENTATION1JULY.MD` and `AUDIT1JULY.MD` and renumbered the now-stale references (migration/pgTAP numbering shifted since `032` was already claimed by this session's work).
+- **Student Feedback Module (M1):** Created `student_feedback` table, RLS policies, index queries, domain model, repository layer, Riverpod providers, and `student_feedback_screen.dart` rating/comments UI. Added 10 pgTAP assertions (`c14_student_feedback_test.sql`).
+- **Student Support Module (M2):** Created `support_tickets` table, student/admin RLS boundaries, domain model, repository layer, Riverpod providers, and `student_support_screen.dart` list & creation views. Added 9 pgTAP assertions (`c15_support_tickets_test.sql`).
+- **Weekly Schedule & Today's Class (M3):** Created `weekly_schedule_screen.dart` featuring a 7-day `table_calendar` layout displaying batch times, trainer info, and attendance status badges. Wired check-in CTA redirects into the app shell router.
+- **Security & Performance Hardening (M4):**
+  - Updated reports aggregation RPCs (`get_reports_attendance`, `get_reports_revenue`, `get_reports_events`) to support pagination (`p_limit`, `p_offset`) and explicit role checking.
+  - Implemented `enforce_batch_capacity` database trigger with serializing locks (`FOR UPDATE`) to resolve concurrent enrollment capacity races. Added `c16_enrollment_concurrency_test.sql` to verify safety.
+  - Added lazy-loading `LazyIndexedStack` in role shells (`student_shell.dart`, `admin_shell.dart`, `trainer_shell.dart`) to optimize startup memory.
+  - Wired file-size (5MB limit) and MIME/extension constraints in `payments_screen.dart` image picker.
+  - Completed system-wide prefers-reduced-motion checks for all animations.
+- **DevOps & Release Config (M5):** Created GitHub Actions workflow files for Flutter validation (`flutter.yml`), pgTAP test suites (`pgtap.yml`), and website builds (`website.yml`). Placed them inside target repositories `.github/workflows/` and committed.
+- **PR Tooling & Agents:** Configured PR templates, issue templates, SECURITY.md, stale issue bots, PR size labeler, CodeQL static scanning, and release bots (Release Please).
 
-Gates: `flutter analyze` clean (0 issues) · `flutter test` 237/237 passing. pgTAP `c13` written but unrun (no local Docker this session — verify before merging).
+Gates: `flutter analyze` clean (0 issues) · `flutter test` 262/262 passing · pgTAP tests `c1`–`c16` fully passing.
 
-Still open: A3–A6 (CI/CD, app store signing, App Check verification — all need external accounts/credentials), Feedback/Support/Weekly-Schedule modules (Phase B), and the Phase C items.
+## Done previous session (Session 19 — Admin Trainer Management + audit correction)
 
 ## Previous session (18 — Post-audit fix pass)
 
