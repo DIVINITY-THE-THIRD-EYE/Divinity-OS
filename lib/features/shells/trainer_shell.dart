@@ -11,6 +11,7 @@ import '../../features/therapeutic_logs/presentation/therapeutic_logs_screen.dar
 import '../../features/trainer/presentation/trainer_dashboard_screen.dart';
 import '../../features/workouts/presentation/trainer_workouts_screen.dart';
 import '../../services/fcm_provider.dart';
+import '../../shared/widgets/lazy_indexed_stack.dart';
 import '../../shared/widgets/notification_bell.dart';
 import '../../shared/widgets/third_eye_icon.dart';
 
@@ -77,7 +78,7 @@ class _TrainerShellState extends ConsumerState<TrainerShell> {
           ),
         ],
       ),
-      body: IndexedStack(
+      body: LazyIndexedStack(
         index: _index,
         children: [
           const TrainerDashboardScreen(),

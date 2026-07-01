@@ -69,6 +69,18 @@ class _ShimmerLoadingState extends State<ShimmerLoading>
     final baseColor = isDark
         ? AppColors.surfaceDark
         : AppColors.surfaceAltLight;
+
+    if (MediaQuery.of(context).disableAnimations) {
+      return Container(
+        width: widget.width,
+        height: widget.height,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(widget.borderRadius),
+          color: baseColor,
+        ),
+      );
+    }
+
     final highlightColor = isDark
         ? AppColors.borderDark
         : AppColors.borderLight;

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../shared/widgets/loading_widget.dart' show ChakraLoader;
 import '../../../shared/widgets/trust_badges.dart';
 import '../domain/certificate.dart';
 import 'certificate_provider.dart';
@@ -18,7 +19,7 @@ class CertificatesScreen extends ConsumerWidget {
 
     return Scaffold(
       body: certsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: ChakraLoader()),
         error: (e, _) => Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,

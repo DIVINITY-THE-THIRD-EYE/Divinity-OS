@@ -154,10 +154,13 @@ class SupabasePaymentRepository implements PaymentRepository {
     await _client.storage.from('payment_screenshots').uploadBinary(
           path,
           bytes as dynamic,
-          fileOptions: const FileOptions(
-            upsert: true,
-          ),
+          fileOptions: const FileOptions(upsert: true),
         );
-    return _client.storage.from('payment_screenshots').getPublicUrl(path);
+    // Return a 10-year signed URL so the bucket can be set to private in
+    // Supabase Storage settings (LB-5). The URL is stored in payments.screenshot_url
+    // and is only accessible by the holder, unlike a public URL.
+    return _client.storage
+        .from('payment_screenshots')
+        .createSignedUrl(path, 315360000); // 10 years
   }
 }

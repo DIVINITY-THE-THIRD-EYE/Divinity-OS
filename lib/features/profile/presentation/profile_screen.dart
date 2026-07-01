@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../features/auth/presentation/auth_provider.dart';
 import '../../../shared/widgets/loading_widget.dart';
@@ -96,6 +98,26 @@ class _ProfileBody extends ConsumerWidget {
         ),
         const SizedBox(height: 16),
         _InfoSection(
+          title: 'Support & Feedback',
+          children: [
+            ListTile(
+              dense: true,
+              leading: Icon(Icons.rate_review_outlined, size: 20, color: Theme.of(context).colorScheme.onSurfaceVariant),
+              title: const Text('My Feedback'),
+              trailing: Icon(Icons.chevron_right, size: 16, color: Theme.of(context).colorScheme.primary),
+              onTap: () => context.push(Routes.feedback),
+            ),
+            ListTile(
+              dense: true,
+              leading: Icon(Icons.help_outline, size: 20, color: Theme.of(context).colorScheme.onSurfaceVariant),
+              title: const Text('Help & Support'),
+              trailing: Icon(Icons.chevron_right, size: 16, color: Theme.of(context).colorScheme.primary),
+              onTap: () => context.push(Routes.support),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        _InfoSection(
           title: 'Emergency Contact',
           action: TextButton.icon(
             icon: const Icon(Icons.edit_outlined, size: 16),
@@ -136,6 +158,16 @@ class _ProfileBody extends ConsumerWidget {
           ),
         ],
         const SizedBox(height: 24),
+        OutlinedButton.icon(
+          icon: const Icon(Icons.lock_reset_outlined),
+          label: const Text('Change Password'),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: cs.primary,
+            side: BorderSide(color: cs.primary.withValues(alpha: 0.4)),
+          ),
+          onPressed: () => context.push(Routes.resetPassword),
+        ),
+        const SizedBox(height: 12),
         OutlinedButton.icon(
           icon: const Icon(Icons.logout_outlined),
           label: const Text('Sign out'),

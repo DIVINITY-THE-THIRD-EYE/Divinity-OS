@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../shared/widgets/loading_widget.dart' show ChakraLoader;
 import '../domain/workout.dart';
 import '../domain/workout_assignment.dart';
 import 'workout_provider.dart';
@@ -16,7 +17,7 @@ class StudentWorkoutsScreen extends ConsumerWidget {
 
     return Scaffold(
       body: async.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: ChakraLoader()),
         error: (e, _) => Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../shared/widgets/loading_widget.dart';
+import '../../trainer/presentation/trainer_check_in_screen.dart';
 import '../domain/batch.dart';
 import 'batch_provider.dart';
 
@@ -21,7 +23,7 @@ class BatchesScreen extends ConsumerWidget {
 
     return Scaffold(
       body: batchesAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: ChakraLoader()),
         error: (e, _) => Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -116,15 +118,26 @@ class _BatchCard extends ConsumerWidget {
               _DaysRow(days: batch.daysOfWeek),
             ],
             if (batch.status == BatchStatus.active)
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () => ref.read(batchesProvider.notifier).updateBatch(
-                        batch.id,
-                        {'status': 'PAUSED'},
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton.icon(
+                    icon: const Icon(Icons.how_to_reg_outlined, size: 16),
+                    label: const Text('Check-in'),
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => TrainerCheckInScreen(batch: batch),
                       ),
-                  child: const Text('Pause'),
-                ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => ref.read(batchesProvider.notifier).updateBatch(
+                          batch.id,
+                          {'status': 'PAUSED'},
+                        ),
+                    child: const Text('Pause'),
+                  ),
+                ],
               ),
           ],
         ),

@@ -1,15 +1,32 @@
+import 'dart:io';
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class ThirdEyeIcon extends StatelessWidget {
-  const ThirdEyeIcon({super.key, this.size = 48, this.color});
+  const ThirdEyeIcon({
+    super.key,
+    this.size = 48,
+    this.color,
+    this.useAsset = true,
+  });
 
   final double size;
   final Color? color;
+  final bool useAsset;
 
   @override
   Widget build(BuildContext context) {
+    final isTest = !kIsWeb && Platform.environment.containsKey('FLUTTER_TEST');
+    if (useAsset && !isTest) {
+      return Image.asset(
+        'assets/brand/logo-mark.png',
+        width: size,
+        height: size,
+        fit: BoxFit.contain,
+      );
+    }
     final c = color ?? Theme.of(context).colorScheme.primary;
     return SizedBox(
       width: size,

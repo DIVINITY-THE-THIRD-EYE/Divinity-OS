@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../shared/widgets/loading_widget.dart' show ChakraLoader;
 import '../domain/event.dart';
 import 'event_provider.dart';
 
@@ -17,7 +18,7 @@ class AdminEventsScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Manage Events')),
       body: async.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: ChakraLoader()),
         error: (e, _) => Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,

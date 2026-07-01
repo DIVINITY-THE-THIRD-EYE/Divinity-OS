@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../shared/widgets/loading_widget.dart' show ChakraLoader;
 import '../../shared/students_screen.dart' show studentsProvider;
 import '../domain/therapeutic_log.dart';
 import 'therapeutic_log_provider.dart';
@@ -15,7 +16,7 @@ class TherapeuticLogsScreen extends ConsumerWidget {
 
     return Scaffold(
       body: logsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: ChakraLoader()),
         error: (e, _) => Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,

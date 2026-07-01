@@ -22,6 +22,12 @@ final studentCertificatesProvider =
   return ref.watch(certificateRepositoryProvider).fetchForStudent(studentId);
 });
 
+/// All certificates with student names (admin only).
+final allCertificatesProvider =
+    FutureProvider<List<Map<String, dynamic>>>((ref) async {
+  return ref.watch(certificateRepositoryProvider).fetchAllWithStudentNames();
+});
+
 /// Issue-certificate action (trainer/admin).
 class IssueCertificateNotifier extends AutoDisposeAsyncNotifier<void> {
   @override

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../shared/widgets/loading_widget.dart' show ChakraLoader;
 import '../../profile/domain/user_profile.dart';
 import '../../profile/presentation/profile_provider.dart';
 import '../domain/payment_record.dart';
@@ -19,13 +20,13 @@ class PaymentsScreen extends ConsumerWidget {
     final tt = Theme.of(context).textTheme;
 
     return profileAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const Center(child: ChakraLoader()),
       error: (e, _) => Center(child: Text('Error: $e')),
       data: (profile) {
         final planStatus = profile.planStatus.toUpperCase();
         
         return paymentsAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const Center(child: ChakraLoader()),
           error: (e, _) => Center(child: Text('Error: $e')),
           data: (payments) {
             final hasPending = planStatus == 'PENDING_ADMIN' || planStatus == 'PENDING_TRAINER';
@@ -426,6 +427,11 @@ class _UploadPaymentSheetState extends ConsumerState<_UploadPaymentSheet> {
     super.dispose();
   }
 
+  // Allowed screenshot MIME types / extensions for payment receipts.
+  static const _allowedExtensions = {'jpg', 'jpeg', 'png', 'webp'};
+  // Maximum allowed upload size: 5 MB.
+  static const _maxFileSizeBytes = 5 * 1024 * 1024;
+
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final source = await showDialog<ImageSource>(
@@ -449,9 +455,39 @@ class _UploadPaymentSheetState extends ConsumerState<_UploadPaymentSheet> {
       source: source,
       imageQuality: 70, // Compresses image to save bandwidth/storage
     );
-    if (image != null) {
-      setState(() => _pickedImage = image);
+    if (image == null) return;
+
+    // Validate file type.
+    final ext = image.name.split('.').last.toLowerCase();
+    if (!_allowedExtensions.contains(ext)) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Invalid file type. Please upload a JPG, PNG, or WebP image.',
+            ),
+          ),
+        );
+      }
+      return;
     }
+
+    // Validate file size.
+    final bytes = await image.readAsBytes();
+    if (bytes.length > _maxFileSizeBytes) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Image is too large. Please upload a file smaller than 5 MB.',
+            ),
+          ),
+        );
+      }
+      return;
+    }
+
+    setState(() => _pickedImage = image);
   }
 
   Future<void> _submit() async {
@@ -466,7 +502,34 @@ class _UploadPaymentSheetState extends ConsumerState<_UploadPaymentSheet> {
     setState(() => _submitting = true);
     try {
       final bytes = await _pickedImage!.readAsBytes();
-      final ext = _pickedImage!.name.split('.').last;
+
+      // Defense-in-depth: re-validate extension and size at submission time.
+      final ext = _pickedImage!.name.split('.').last.toLowerCase();
+      if (!_allowedExtensions.contains(ext)) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Invalid file type. Please upload a JPG, PNG, or WebP image.',
+              ),
+            ),
+          );
+        }
+        return;
+      }
+      if (bytes.length > _maxFileSizeBytes) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Image is too large. Please upload a file smaller than 5 MB.',
+              ),
+            ),
+          );
+        }
+        return;
+      }
+
       final filename = '${DateTime.now().millisecondsSinceEpoch}.$ext';
       final amount = double.parse(_amountCtrl.text.trim());
 
@@ -587,8 +650,10 @@ class _UploadPaymentSheetState extends ConsumerState<_UploadPaymentSheet> {
                         width: 140,
                         height: 140,
                         color: Colors.white,
-                        child: const Center(
-                          child: Icon(Icons.qr_code_2, size: 120, color: Colors.black),
+                        padding: const EdgeInsets.all(8),
+                        child: Image.asset(
+                          'assets/payment-qr.png',
+                          fit: BoxFit.contain,
                         ),
                       ),
                       const SizedBox(height: 12),

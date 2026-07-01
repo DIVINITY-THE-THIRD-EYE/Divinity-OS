@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/constants/app_constants.dart';
@@ -26,6 +27,14 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen> {
   bool _submitting = false;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(geolocationProvider.notifier).requestAndFetch();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final todayAsync = ref.watch(todayAttendanceProvider);
     final batchAsync = ref.watch(activeBatchProvider);
@@ -37,6 +46,16 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _DateCard(),
+          const SizedBox(height: 12),
+          ElevatedButton.icon(
+            key: const Key('weekly_schedule_btn'),
+            onPressed: () => context.push('/schedule'),
+            icon: const Icon(Icons.calendar_month_outlined),
+            label: const Text('Weekly Schedule'),
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+            ),
+          ),
           const SizedBox(height: 16),
           todayAsync.when(
             loading: () => const Center(child: ChakraLoader()),
@@ -90,9 +109,6 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen> {
 
     // 2. Mock-location deterrent (Android-only; isMocked is always false on
     // iOS). Excluded in debug builds so emulators/QA devices are not blocked.
-    // Client-side only — a modified client can bypass this; it stops the casual
-    // fake-GPS case, not a determined attacker. Trainer confirmation and the
-    // server-side geofence (check_in RPC) are the real integrity controls.
     if (!kDebugMode &&
         defaultTargetPlatform == TargetPlatform.android &&
         pos.isMocked) {
@@ -108,8 +124,7 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen> {
       return;
     }
 
-    // 3. Optional fast-fail hint (server is authoritative; avoids a round-trip
-    // when obviously out of range).
+    // 3. Fast-fail hint
     if (batch != null) {
       final lat = (batch['location_lat'] as num?)?.toDouble();
       final lng = (batch['location_lng'] as num?)?.toDouble();
@@ -249,20 +264,39 @@ class _CheckInCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final alreadyPresent = todayRecord?.status == AttendanceStatus.present;
 
-    String? distanceLabel;
-    if (position != null && batch != null) {
-      final lat = (batch!['location_lat'] as num?)?.toDouble();
-      final lng = (batch!['location_lng'] as num?)?.toDouble();
-      if (lat != null && lng != null) {
-        final radius = (batch!['radius_meters'] as num?)?.toDouble()
-            ?? AppConstants.geofenceDefaultRadius;
-        final dist = Geolocator.distanceBetween(
-          position!.latitude, position!.longitude, lat, lng,
-        );
-        distanceLabel =
-            '${dist.toStringAsFixed(0)} m from ${batch!['name'] ?? 'centre'} (radius ${radius.toStringAsFixed(0)} m)';
-      }
+    if (batch == null) return const SizedBox.shrink();
+
+    final lat = (batch!['location_lat'] as num?)?.toDouble();
+    final lng = (batch!['location_lng'] as num?)?.toDouble();
+    final radius = (batch!['radius_meters'] as num?)?.toDouble() ??
+        AppConstants.geofenceDefaultRadius;
+    final trainerName = batch!['users']?['name'] ?? 'Not assigned';
+    final scheduleTime = batch!['schedule_time'] ?? 'No time set';
+
+    double? distance;
+    bool isWithinGeofence = false;
+
+    if (position != null && lat != null && lng != null) {
+      distance = Geolocator.distanceBetween(
+        position!.latitude,
+        position!.longitude,
+        lat,
+        lng,
+      );
+      isWithinGeofence = distance <= radius;
     }
+
+    final String distanceText;
+    if (position == null) {
+      distanceText = 'Distance: Unknown (Locating device...)';
+    } else {
+      distanceText = 'Distance: ${distance?.toStringAsFixed(0) ?? '0'} meters (limit: ${radius.toStringAsFixed(0)} meters)';
+    }
+
+    final bool canCheckIn = !alreadyPresent &&
+        !isLoading &&
+        position != null &&
+        isWithinGeofence;
 
     return Card(
       color: AppColors.accentViolet.withValues(alpha: 0.1),
@@ -271,19 +305,72 @@ class _CheckInCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (batch != null)
-              Text(
-                'Batch: ${batch!['name'] ?? 'Unnamed'} · ${batch!['schedule_time'] ?? ''}',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            if (distanceLabel != null) ...[
+            Text(
+              "Today's Class",
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.accentViolet,
+                  ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Batch: ${batch!['name'] ?? 'Unnamed'}',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                const Icon(Icons.access_time, size: 16, color: Colors.grey),
+                const SizedBox(width: 6),
+                Text('Time: $scheduleTime'),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                const Icon(Icons.person_outline, size: 16, color: Colors.grey),
+                const SizedBox(width: 6),
+                Text('Trainer: $trainerName'),
+              ],
+            ),
+            if (lat != null && lng != null) ...[
               const SizedBox(height: 4),
-              Text(distanceLabel,
-                  style: Theme.of(context).textTheme.bodySmall),
+              Row(
+                children: [
+                  const Icon(Icons.pin_drop_outlined, size: 16, color: Colors.grey),
+                  const SizedBox(width: 6),
+                  Text('Location: Lat ${lat.toStringAsFixed(4)}, Lng ${lng.toStringAsFixed(4)}'),
+                ],
+              ),
             ],
             const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: isWithinGeofence
+                    ? AppColors.success.withValues(alpha: 0.1)
+                    : AppColors.error.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: isWithinGeofence ? AppColors.success : AppColors.error,
+                ),
+              ),
+              child: Text(
+                distanceText,
+                style: TextStyle(
+                  color: isWithinGeofence ? AppColors.success : AppColors.error,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 12),
             FilledButton.icon(
-              onPressed: alreadyPresent || isLoading ? null : onCheckIn,
+              key: const Key('check_in_now_btn'),
+              onPressed: canCheckIn ? onCheckIn : null,
               icon: isLoading
                   ? const SizedBox(
                       width: 18,

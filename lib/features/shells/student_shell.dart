@@ -13,6 +13,7 @@ import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/transformation/presentation/third_eye_dashboard_screen.dart';
 import '../../features/workouts/presentation/student_workouts_screen.dart';
 import '../../services/fcm_provider.dart';
+import '../../shared/widgets/lazy_indexed_stack.dart';
 import '../../shared/widgets/notification_bell.dart';
 import '../../shared/widgets/third_eye_icon.dart';
 
@@ -44,6 +45,7 @@ class _StudentShellState extends ConsumerState<StudentShell> {
         'leaves' => 4,
         'payments' => 5,
         'profile' => 6,
+        'certificates' => 7,
         _ => 0,
       };
 
@@ -98,7 +100,7 @@ class _StudentShellState extends ConsumerState<StudentShell> {
           ),
         ],
       ),
-      body: IndexedStack(
+      body: LazyIndexedStack(
         index: _index,
         children: [
           const StudentHomeScreen(),

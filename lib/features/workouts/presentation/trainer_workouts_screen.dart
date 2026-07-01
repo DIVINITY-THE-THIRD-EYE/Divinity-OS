@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../shared/widgets/loading_widget.dart' show ChakraLoader;
 import '../../batches/domain/batch.dart';
 import '../../batches/presentation/batch_provider.dart';
 import '../data/workout_repository.dart';
@@ -18,7 +19,7 @@ class TrainerWorkoutsScreen extends ConsumerWidget {
 
     return Scaffold(
       body: workoutsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: ChakraLoader()),
         error: (e, _) => _ErrorView(
           message: 'Failed to load workouts: $e',
           onRetry: () => ref.read(trainerWorkoutsProvider.notifier).refresh(),

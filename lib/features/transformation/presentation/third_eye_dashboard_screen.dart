@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../shared/widgets/loading_widget.dart' show ChakraLoader;
+import '../../../shared/widgets/spring_tap.dart';
 import '../domain/transformation_score.dart';
 import 'transformation_provider.dart';
 
@@ -33,6 +34,8 @@ class ThirdEyeDashboardScreen extends ConsumerWidget {
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
               children: [
                 _HeaderCard(score: latest.score),
+                const SizedBox(height: 16),
+                _AiCoachEntrypointCard(score: latest),
                 const SizedBox(height: 16),
                 _RadarChartCard(
                   consistency: latest.consistency,
@@ -591,6 +594,246 @@ class _EmptyTransformationState extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// ── AI Wellness Coach Card ───────────────────────────────────────────────────
+
+class _AiCoachEntrypointCard extends StatelessWidget {
+  const _AiCoachEntrypointCard({required this.score});
+  final TransformationScore score;
+
+  @override
+  Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return SpringTap(
+      semanticsLabel: 'Consult AI Wellness Coach',
+      onTap: () {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (context) => _AiWellnessCoachBottomSheet(score: score),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: isDark
+                ? [AppColors.accentGold.withValues(alpha: 0.25), AppColors.accentViolet.withValues(alpha: 0.15)]
+                : [AppColors.accentViolet.withValues(alpha: 0.15), AppColors.accentGold.withValues(alpha: 0.25)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isDark ? AppColors.borderDark : AppColors.borderLight,
+          ),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'AI WELLNESS COACH',
+                    style: tt.labelSmall?.copyWith(
+                      color: AppColors.accentGold,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Get Coach Insights',
+                    style: tt.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? AppColors.textDark : AppColors.textLight,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Receive calm, actionable advice to balance your practice based on your current score.',
+                    style: tt.bodySmall?.copyWith(
+                      color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 16),
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: isDark ? AppColors.bgDark.withValues(alpha: 0.5) : AppColors.bgLight,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: AppColors.accentGold.withValues(alpha: 0.4),
+                  width: 1.5,
+                ),
+              ),
+              child: const Center(
+                child: Text(
+                  '✨',
+                  style: TextStyle(fontSize: 24),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── AI Wellness Coach Bottom Sheet ───────────────────────────────────────────
+
+class _AiWellnessCoachBottomSheet extends ConsumerWidget {
+  const _AiWellnessCoachBottomSheet({required this.score});
+  final TransformationScore score;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final insightAsync = ref.watch(aiWellnessInsightProvider(score));
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final tt = Theme.of(context).textTheme;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.bgDark : AppColors.bgLight,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        border: Border(
+          top: BorderSide(
+            color: isDark ? AppColors.borderDark : AppColors.borderLight,
+            width: 1.5,
+          ),
+        ),
+      ),
+      padding: EdgeInsets.only(
+        top: 16,
+        left: 20,
+        right: 20,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Drag handle
+          Center(
+            child: Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: isDark ? AppColors.borderDark : AppColors.borderLight,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Title row
+          Row(
+            children: [
+              Text(
+                '👁 AI Wellness Insight',
+                style: tt.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? AppColors.textDark : AppColors.textLight,
+                ),
+              ),
+              const Spacer(),
+              IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          ),
+          const Divider(height: 24),
+          // Content
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.5,
+            ),
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: insightAsync.when(
+                loading: () => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 40),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const ChakraLoader(size: 56),
+                      const SizedBox(height: 20),
+                      Text(
+                        'Divinity is reading your energy...',
+                        style: tt.bodyMedium?.copyWith(
+                          color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                error: (error, stack) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 40),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.error_outline, size: 48, color: AppColors.error),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Unable to connect to the AI Coach.',
+                        style: tt.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? AppColors.textDark : AppColors.textLight,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Please verify your network connection or ensure your coach integration credentials are valid.',
+                        textAlign: TextAlign.center,
+                        style: tt.bodyMedium?.copyWith(
+                          color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                data: (insight) => Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Text(
+                    insight,
+                    style: tt.bodyMedium?.copyWith(
+                      height: 1.5,
+                      color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Action button
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.accentViolet,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text('Acknowledge & Balance'),
+          ),
+        ],
       ),
     );
   }

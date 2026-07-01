@@ -1,6 +1,7 @@
 import 'package:divinity_app/features/transformation/data/transformation_repository.dart';
 import 'package:divinity_app/features/transformation/domain/transformation_score.dart';
 import 'package:divinity_app/features/transformation/presentation/transformation_provider.dart';
+import 'package:divinity_app/services/ai_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -8,6 +9,7 @@ import 'package:mocktail/mocktail.dart';
 // ── Mock ─────────────────────────────────────────────────────────────────────
 
 class MockTransformationRepository extends Mock implements TransformationRepository {}
+class MockAiService extends Mock implements AiService {}
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -127,6 +129,37 @@ void main() {
           .saveScore(score);
 
       verify(() => mockRepo.setWeeklyScore(score)).called(1);
+    });
+  });
+
+  group('aiWellnessInsightProvider', () {
+    late MockAiService mockAiService;
+    late ProviderContainer container;
+
+    setUp(() {
+      mockAiService = MockAiService();
+      container = ProviderContainer(
+        overrides: [
+          aiServiceProvider.overrideWithValue(mockAiService),
+        ],
+      );
+    });
+
+    tearDown(() => container.dispose());
+
+    test('calls generateWellnessInsight with correct prompt and returns result', () async {
+      final score = _fakeScore();
+
+      const expectedPrompt =
+          "My consistency is 8.0, intensity is 7.5, mindfulness is 9.0, recovery is 8.5. Give me calm, actionable advice to balance my practice. Overall Third Eye Score is 8.25.";
+
+      when(() => mockAiService.generateWellnessInsight(expectedPrompt))
+          .thenAnswer((_) async => "Mocked insight: stay mindful and rest.");
+
+      final insightFuture = container.read(aiWellnessInsightProvider(score).future);
+
+      await expectLater(insightFuture, completion("Mocked insight: stay mindful and rest."));
+      verify(() => mockAiService.generateWellnessInsight(expectedPrompt)).called(1);
     });
   });
 }

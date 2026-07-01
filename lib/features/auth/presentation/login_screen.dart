@@ -7,6 +7,8 @@ import '../../../shared/widgets/third_eye_icon.dart';
 import '../domain/auth_state.dart' as app_auth;
 import 'auth_provider.dart';
 
+enum LoginView { providers, emailSignIn, phoneSignIn, signUp }
+
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
@@ -15,28 +17,57 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
+  LoginView _view = LoginView.providers;
   final _formKey = GlobalKey<FormState>();
+
+  // Controllers
+  final _emailCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
+  final _nameCtrl = TextEditingController();
+  final _confirmPasswordCtrl = TextEditingController();
+
   bool _obscurePassword = true;
-  bool _otpMode = false;
+  bool _phoneOtpMode = false;
 
   @override
   void dispose() {
+    _emailCtrl.dispose();
     _phoneCtrl.dispose();
     _passwordCtrl.dispose();
+    _nameCtrl.dispose();
+    _confirmPasswordCtrl.dispose();
     super.dispose();
   }
 
   Future<void> _submit() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
+
+    final email = _emailCtrl.text.trim();
+    final password = _passwordCtrl.text;
     final phone = '+91${_phoneCtrl.text.trim()}';
-    if (_otpMode) {
-      await ref.read(authStateProvider.notifier).sendOtp(phone: phone);
-    } else {
-      await ref.read(authStateProvider.notifier).signInWithPhone(
-            phone: phone,
-            password: _passwordCtrl.text,
+    final name = _nameCtrl.text.trim();
+
+    if (_view == LoginView.emailSignIn) {
+      await ref.read(authStateProvider.notifier).signInWithEmail(
+            email: email,
+            password: password,
+          );
+    } else if (_view == LoginView.phoneSignIn) {
+      if (_phoneOtpMode) {
+        await ref.read(authStateProvider.notifier).sendOtp(phone: phone);
+      } else {
+        await ref.read(authStateProvider.notifier).signInWithPhone(
+              phone: phone,
+              password: password,
+            );
+      }
+    } else if (_view == LoginView.signUp) {
+      await ref.read(authStateProvider.notifier).signUpWithEmail(
+            email: email,
+            password: password,
+            name: name,
+            phone: _phoneCtrl.text.trim().isNotEmpty ? phone : null,
           );
     }
   }
@@ -102,11 +133,34 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
+  String? _validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Enter your password';
+    }
+    if (value.length < 8) {
+      return 'Password must be at least 8 characters';
+    }
+    if (!value.contains(RegExp(r'[A-Z]'))) {
+      return 'Must contain at least one uppercase letter';
+    }
+    if (!value.contains(RegExp(r'[a-z]'))) {
+      return 'Must contain at least one lowercase letter';
+    }
+    if (!value.contains(RegExp(r'[0-9]'))) {
+      return 'Must contain at least one number';
+    }
+    if (!value.contains(RegExp(r'[!@#\$&*~]'))) {
+      return 'Must contain at least one special character (!@#\$&*~)';
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authStateProvider);
     final isLoading = authState is app_auth.AuthLoading;
     final error = authState is app_auth.AuthError ? authState.message : null;
+    final config = ref.watch(authConfigProvider);
 
     return Scaffold(
       body: Stack(
@@ -116,31 +170,349 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             child: Center(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(24),
-                child: _LoginCard(
-                  formKey: _formKey,
-                  phoneCtrl: _phoneCtrl,
-                  passwordCtrl: _passwordCtrl,
-                  obscurePassword: _obscurePassword,
-                  otpMode: _otpMode,
-                  isLoading: isLoading,
-                  error: error,
-                  onTogglePassword: () =>
-                      setState(() => _obscurePassword = !_obscurePassword),
-                  onToggleOtpMode: () =>
-                      setState(() => _otpMode = !_otpMode),
-                  onForgotPassword: _showForgotPasswordDialog,
-                  onSubmit: _submit,
+                child: Container(
+                  constraints: const BoxConstraints(maxWidth: 420),
+                  padding: const EdgeInsets.all(32),
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceDark,
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: AppColors.borderDark),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.accentViolet.withValues(alpha: 0.15),
+                        blurRadius: 40,
+                        spreadRadius: -8,
+                      ),
+                    ],
+                  ),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const ThirdEyeIcon(size: 56, color: AppColors.accentViolet),
+                        const SizedBox(height: 16),
+                        Text('Divinity', style: Theme.of(context).textTheme.headlineMedium),
+                        Text(
+                          'THE THIRD EYE',
+                          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                                color: AppColors.accentViolet,
+                                letterSpacing: 4,
+                              ),
+                        ),
+                        const SizedBox(height: 32),
+                        if (error != null) ...[
+                          _ErrorBanner(message: error),
+                          const SizedBox(height: 16),
+                        ],
+                        _buildContent(config, isLoading),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
           if (isLoading)
-            LoadingOverlay(
-              message: _otpMode ? 'Sending OTP…' : 'Signing in…',
+            const LoadingOverlay(
+              message: 'Connecting…',
             ),
         ],
       ),
     );
+  }
+
+  Widget _buildContent(AuthConfig config, bool isLoading) {
+    final tt = Theme.of(context).textTheme;
+
+    switch (_view) {
+      case LoginView.providers:
+        return Column(
+          children: [
+            if (config.enableGoogleSignIn) ...[
+              OutlinedButton(
+                onPressed: () => ref.read(authStateProvider.notifier).signInWithGoogle(),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  side: const BorderSide(color: AppColors.borderDark),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  backgroundColor: AppColors.surfaceDark,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.network(
+                      'https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.png',
+                      height: 18,
+                      errorBuilder: (context, error, stackTrace) => const Icon(Icons.g_mobiledata, size: 18),
+                    ),
+                    const SizedBox(width: 12),
+                    Text('Continue with Google', style: tt.titleSmall),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
+            if (config.enableAppleSignIn && Theme.of(context).platform == TargetPlatform.iOS) ...[
+              OutlinedButton(
+                onPressed: () => ref.read(authStateProvider.notifier).signInWithApple(),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  side: const BorderSide(color: AppColors.borderDark),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  backgroundColor: AppColors.surfaceDark,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.apple, size: 18, color: Colors.white),
+                    const SizedBox(width: 12),
+                    Text('Continue with Apple', style: tt.titleSmall),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
+            if (config.enableEmailPassword) ...[
+              OutlinedButton(
+                onPressed: () => setState(() => _view = LoginView.emailSignIn),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  side: const BorderSide(color: AppColors.borderDark),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  backgroundColor: AppColors.surfaceDark,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.email_outlined, size: 18, color: Colors.white),
+                    const SizedBox(width: 12),
+                    Text('Continue with Email', style: tt.titleSmall),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
+            if (config.enablePhoneOtp) ...[
+              OutlinedButton(
+                onPressed: () => setState(() => _view = LoginView.phoneSignIn),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  side: const BorderSide(color: AppColors.borderDark),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  backgroundColor: AppColors.surfaceDark,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.phone_outlined, size: 18, color: Colors.white),
+                    const SizedBox(width: 12),
+                    Text('Continue with Phone', style: tt.titleSmall),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
+            const SizedBox(height: 16),
+            if (config.enableEmailPassword) ...[
+              TextButton(
+                onPressed: () => setState(() => _view = LoginView.signUp),
+                child: Text(
+                  'Create Account',
+                  style: tt.bodyMedium?.copyWith(color: AppColors.accentViolet, fontWeight: FontWeight.bold),
+                ),
+              ),
+              const SizedBox(height: 4),
+              TextButton(
+                onPressed: _showForgotPasswordDialog,
+                child: Text(
+                  'Forgot Password?',
+                  style: tt.bodySmall?.copyWith(color: AppColors.textSecondaryDark),
+                ),
+              ),
+            ]
+          ],
+        );
+
+      case LoginView.emailSignIn:
+        return Column(
+          children: [
+            TextFormField(
+              controller: _emailCtrl,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(
+                labelText: 'Email Address',
+                prefixIcon: Icon(Icons.email_outlined),
+              ),
+              validator: (v) => (v == null || v.isEmpty || !v.contains('@')) ? 'Enter a valid email address' : null,
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _passwordCtrl,
+              obscureText: _obscurePassword,
+              decoration: InputDecoration(
+                labelText: 'Password',
+                prefixIcon: const Icon(Icons.lock_outline),
+                suffixIcon: IconButton(
+                  icon: Icon(_obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 20),
+                  onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                ),
+              ),
+              validator: (v) => (v == null || v.isEmpty) ? 'Enter your password' : null,
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: isLoading ? null : _submit,
+                child: const Text('Sign In'),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: () => setState(() => _view = LoginView.providers),
+              child: const Text('Use another sign-in method'),
+            ),
+          ],
+        );
+
+      case LoginView.phoneSignIn:
+        return Column(
+          children: [
+            TextFormField(
+              controller: _phoneCtrl,
+              keyboardType: TextInputType.phone,
+              maxLength: 10,
+              decoration: const InputDecoration(
+                labelText: 'Phone Number',
+                prefixText: '+91 ',
+                prefixIcon: Icon(Icons.phone_android_outlined),
+                counterText: '',
+              ),
+              validator: (v) => (v == null || v.length != 10) ? 'Enter a valid 10-digit number' : null,
+            ),
+            if (!_phoneOtpMode) ...[
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _passwordCtrl,
+                obscureText: _obscurePassword,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  prefixIcon: const Icon(Icons.lock_outline),
+                  suffixIcon: IconButton(
+                    icon: Icon(_obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 20),
+                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                  ),
+                ),
+                validator: (v) => (v == null || v.isEmpty) ? 'Enter your password' : null,
+              ),
+            ],
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  onPressed: () => setState(() => _phoneOtpMode = !_phoneOtpMode),
+                  child: Text(_phoneOtpMode ? 'Use password instead' : 'Use OTP instead'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: isLoading ? null : _submit,
+                child: Text(_phoneOtpMode ? 'Send OTP' : 'Sign In'),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: () => setState(() => _view = LoginView.providers),
+              child: const Text('Use another sign-in method'),
+            ),
+          ],
+        );
+
+      case LoginView.signUp:
+        return Column(
+          children: [
+            TextFormField(
+              controller: _nameCtrl,
+              keyboardType: TextInputType.name,
+              decoration: const InputDecoration(
+                labelText: 'Full Name',
+                prefixIcon: Icon(Icons.person_outline),
+              ),
+              validator: (v) => (v == null || v.trim().isEmpty) ? 'Enter your full name' : null,
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _emailCtrl,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(
+                labelText: 'Email Address',
+                prefixIcon: Icon(Icons.email_outlined),
+              ),
+              validator: (v) => (v == null || v.isEmpty || !v.contains('@')) ? 'Enter a valid email address' : null,
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _phoneCtrl,
+              keyboardType: TextInputType.phone,
+              maxLength: 10,
+              decoration: const InputDecoration(
+                labelText: 'Phone Number (Optional)',
+                prefixText: '+91 ',
+                prefixIcon: Icon(Icons.phone_android_outlined),
+                counterText: '',
+              ),
+              validator: (v) {
+                if (v != null && v.isNotEmpty && v.length != 10) {
+                  return 'Enter a valid 10-digit number';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _passwordCtrl,
+              obscureText: _obscurePassword,
+              decoration: InputDecoration(
+                labelText: 'Password',
+                prefixIcon: const Icon(Icons.lock_outline),
+                suffixIcon: IconButton(
+                  icon: Icon(_obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 20),
+                  onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                ),
+              ),
+              validator: _validatePassword,
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _confirmPasswordCtrl,
+              obscureText: _obscurePassword,
+              decoration: const InputDecoration(
+                labelText: 'Confirm Password',
+                prefixIcon: Icon(Icons.lock_reset_outlined),
+              ),
+              validator: (v) => (v != _passwordCtrl.text) ? 'Passwords do not match' : null,
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: isLoading ? null : _submit,
+                child: const Text('Create Account'),
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: () => setState(() => _view = LoginView.providers),
+              child: const Text('Already have an account? Sign In'),
+            ),
+          ],
+        );
+    }
   }
 }
 
@@ -155,151 +527,6 @@ class _Background extends StatelessWidget {
           colors: [
             Color(0xFF1E1740),
             AppColors.bgDark,
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _LoginCard extends StatelessWidget {
-  const _LoginCard({
-    required this.formKey,
-    required this.phoneCtrl,
-    required this.passwordCtrl,
-    required this.obscurePassword,
-    required this.otpMode,
-    required this.isLoading,
-    required this.onTogglePassword,
-    required this.onToggleOtpMode,
-    required this.onForgotPassword,
-    required this.onSubmit,
-    this.error,
-  });
-
-  final GlobalKey<FormState> formKey;
-  final TextEditingController phoneCtrl;
-  final TextEditingController passwordCtrl;
-  final bool obscurePassword;
-  final bool otpMode;
-  final bool isLoading;
-  final VoidCallback onTogglePassword;
-  final VoidCallback onToggleOtpMode;
-  final VoidCallback onForgotPassword;
-  final VoidCallback onSubmit;
-  final String? error;
-
-  @override
-  Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
-    return Container(
-      constraints: const BoxConstraints(maxWidth: 420),
-      padding: const EdgeInsets.all(32),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceDark,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.borderDark),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.accentViolet.withValues(alpha: 0.15),
-            blurRadius: 40,
-            spreadRadius: -8,
-          ),
-        ],
-      ),
-      child: Form(
-        key: formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const ThirdEyeIcon(size: 56, color: AppColors.accentViolet),
-            const SizedBox(height: 16),
-            Text('Divinity', style: tt.headlineMedium),
-            Text(
-              'THE THIRD EYE',
-              style: tt.labelMedium?.copyWith(
-                color: AppColors.accentViolet,
-                letterSpacing: 4,
-              ),
-            ),
-            const SizedBox(height: 32),
-            if (error != null) ...[
-              _ErrorBanner(message: error!),
-              const SizedBox(height: 16),
-            ],
-            TextFormField(
-              controller: phoneCtrl,
-              keyboardType: TextInputType.phone,
-              maxLength: 10,
-              decoration: const InputDecoration(
-                labelText: 'Phone Number',
-                prefixText: '+91 ',
-                counterText: '',
-              ),
-              validator: (v) {
-                if (v == null || v.length != 10) {
-                  return 'Enter a valid 10-digit number';
-                }
-                return null;
-              },
-            ),
-            if (!otpMode) ...[
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: passwordCtrl,
-                obscureText: obscurePassword,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      obscurePassword
-                          ? Icons.visibility_off_outlined
-                          : Icons.visibility_outlined,
-                      size: 20,
-                    ),
-                    onPressed: onTogglePassword,
-                  ),
-                ),
-                validator: (v) =>
-                    (v == null || v.isEmpty) ? 'Enter your password' : null,
-              ),
-              const SizedBox(height: 8),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: onForgotPassword,
-                  child: Text(
-                    'Forgot Password?',
-                    style: tt.bodySmall?.copyWith(
-                      color: AppColors.accentViolet,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: isLoading ? null : onSubmit,
-                child: Text(otpMode ? 'Send OTP' : 'Sign In'),
-              ),
-            ),
-            // OTP login option is disabled for the closed beta (relying on password login)
-            /*
-            const SizedBox(height: 12),
-            TextButton(
-              onPressed: isLoading ? null : onToggleOtpMode,
-              child: Text(
-                otpMode
-                    ? 'Sign in with password instead'
-                    : 'Sign in with OTP instead',
-                style: tt.bodySmall?.copyWith(
-                  color: AppColors.accentViolet,
-                ),
-              ),
-            ),
-            */
           ],
         ),
       ),
@@ -327,10 +554,7 @@ class _ErrorBanner extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall
-                  ?.copyWith(color: AppColors.error),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.error),
             ),
           ),
         ],

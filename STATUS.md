@@ -1,8 +1,38 @@
 # DIVINITY BUILD STATUS
-Session completed: 17 — Module 15 production implementation
+Session completed: 19 — Admin Trainer Management + audit correction
 Date: 2026-07-01
 
-## Done this session (Session 17 — Module 15 Reports & Analytics)
+## Done this session (Session 19 — Admin Trainer Management + audit correction)
+
+Built the Admin Trainer Management screen (Phase B / BUG-H02), the last concrete, well-scoped gap identified by the PROJECT_BIBLE audit that could be implemented without external credentials (CI/CD, store signing, App Check verification all need accounts this session doesn't have).
+
+- **DB:** Migration `032_trainer_active_status.sql` adds `users.is_active` (default `true`), a composite index `users(role, is_active)`, and extends the `lock_privileged_fields()` trigger (migration 009) so only an admin can flip `is_active` — a trainer cannot self-reactivate their own deactivated account via the existing `users_update_own` policy.
+- **pgTAP:** `c13_trainer_active_status_test.sql` (4 assertions) — defaults to active, admin can deactivate/reactivate, trainer cannot self-reactivate. Written following the proven `c1` pattern but **not executed** — Docker was unavailable this session, so `supabase test db` could not run locally.
+- **Flutter:** `lib/features/trainer/presentation/admin_trainers_screen.dart` — `AdminTrainersNotifier`/`adminTrainersProvider` (direct-Supabase pattern, same as the sibling `StudentsScreen`, no repository abstraction) fetches trainers + a per-trainer batch count, with a switch to activate/deactivate (confirmation dialog first). Wired as a third quick-access card ("Trainers") on `AdminDashboardScreen`, alongside the existing Events/Holidays cards — not a bottom-nav tab, to avoid crowding the already-8-tab admin shell.
+- **Correction:** Found and fixed a false finding in the 2026-07-01 audit — `TrainerCheckInScreen` was reported as "unreachable" (BUG-C01/A2/LB-6), but it is in fact reachable by tapping any batch card on `TrainerDashboardScreen` (the trainer's default tab) or via the "Check-in" button on the Batches tab. Removed the false item from `IMPLEMENTATION1JULY.MD` and `AUDIT1JULY.MD` and renumbered the now-stale references (migration/pgTAP numbering shifted since `032` was already claimed by this session's work).
+
+Gates: `flutter analyze` clean (0 issues) · `flutter test` 237/237 passing. pgTAP `c13` written but unrun (no local Docker this session — verify before merging).
+
+Still open: A3–A6 (CI/CD, app store signing, App Check verification — all need external accounts/credentials), Feedback/Support/Weekly-Schedule modules (Phase B), and the Phase C items.
+
+## Previous session (18 — Post-audit fix pass)
+
+Addressed the Phase A critical items and several launch blockers surfaced by the 2026-07-01 audit/implementation-gap review.
+
+- **A1 (Security):** Removed `.env` / `flutter_dotenv` from the app entirely. `pubspec.yaml` no longer bundles `.env` as an asset. Secrets (`SUPABASE_URL`, `SUPABASE_ANON_KEY`) are now read in `main.dart` via `String.fromEnvironment`, injected at build time with `--dart-define-from-file=dart_defines.json`. `dart_defines.json.example` is committed as a template; the real file is gitignored.
+- **A7 (Docs):** Updated `PROJECT_BIBLE/ARCHITECTURE_COMPLIANCE.md` to reflect 15/16 modules built.
+- **A8 (Admin/Certificates):** Built `AdminCertificatesScreen` (issue/revoke/list with copy-to-clipboard codes), wired as a new "Certs" tab in `admin_shell.dart`; added `fetchAllWithStudentNames`/`revoke` to the certificate repository.
+- **A9 (Admin/UX):** Added an Events/Holidays quick-access row to the top of the admin dashboard so they're discoverable beyond the small AppBar icons.
+- **LB-9 (Security):** Fixed the over-broad `library_books` UPDATE RLS policy (migration 030) — previously any authenticated user could update any row.
+- **LB-5 (Security):** Payment screenshots now use `createSignedUrl` instead of `getPublicUrl`; added migration 031 with storage RLS policies scoped to owner/admin/trainer.
+- **LB-8 (Performance):** Migration 029 adds the missing indexes on `leads.pipeline_status`, `leave_requests.student_id`, `therapeutic_logs.student_id`, `transformation_scores.student_id`, plus two composite indexes.
+- **BUG-M01 / C13 (UI consistency):** Swapped `CircularProgressIndicator` → `ChakraLoader` for all full-screen loading states across the remaining 14 screens (small inline/tile spinners intentionally left as-is).
+
+Gates: `flutter pub get` clean · `flutter analyze` clean (0 issues).
+
+Still open going into the next session: A2 (wire `TrainerCheckInScreen` into `trainer_shell.dart`), A3–A6 (CI/CD, app store signing, App Check verification), and the Phase B modules (Feedback, Support, Weekly Schedule, Admin Trainer Management).
+
+## Previous session (17 — Module 15 Reports & Analytics)
 
 Built Module 15 – Reports & Analytics from stubs into a production-ready feature.
 - **Domain Layer:** Built `ReportFilters` and computed report groups (`AttendanceReport`, `RevenueReport`, `MembershipReport`, `StudentReport`, `TrainerReportItem`, `EventReportItem`, `HolidayReportItem`).

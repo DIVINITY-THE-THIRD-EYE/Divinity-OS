@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../shared/widgets/loading_widget.dart' show ChakraLoader;
 import '../domain/payment_record.dart';
 import 'payment_provider.dart';
 import 'record_payment_sheet.dart';
@@ -45,7 +46,7 @@ class AdminPaymentsScreen extends ConsumerWidget {
 
     return Scaffold(
       body: async.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: ChakraLoader()),
         error: (e, _) => Center(child: Text('Error: $e')),
         data: (payments) {
           if (payments.isEmpty) {

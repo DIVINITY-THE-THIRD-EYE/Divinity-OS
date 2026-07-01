@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../services/analytics_service.dart';
+import '../../../shared/widgets/loading_widget.dart';
 import '../../attendance/data/attendance_repository.dart';
 import '../../attendance/domain/attendance_record.dart';
 import '../../auth/presentation/auth_provider.dart';
@@ -140,7 +141,7 @@ class _TrainerCheckInScreenState
         ),
       ),
       body: enrolledAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: ChakraLoader()),
         error: (e, _) => Center(child: Text('Error: $e')),
         data: (enrolled) {
           if (enrolled.isEmpty) {
@@ -165,7 +166,7 @@ class _TrainerCheckInScreenState
           }
 
           return todayAsync.when(
-            loading: () => const Center(child: CircularProgressIndicator()),
+            loading: () => const Center(child: ChakraLoader()),
             error: (e, _) => Center(child: Text('Error: $e')),
             data: (todayMap) {
               final rows = _mergeRows(enrolled, todayMap);

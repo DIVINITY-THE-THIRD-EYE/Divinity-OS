@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../shared/widgets/loading_widget.dart' show ChakraLoader;
 import '../../auth/domain/auth_state.dart';
 import '../../auth/presentation/auth_provider.dart';
 import '../domain/lead.dart';
@@ -29,7 +30,7 @@ class LeadsScreen extends ConsumerWidget {
 
     return Scaffold(
       body: leadsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: ChakraLoader()),
         error: (e, _) => Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -367,7 +368,7 @@ class _ConvertToMemberSheet extends ConsumerStatefulWidget {
 
 class _ConvertToMemberSheetState
     extends ConsumerState<_ConvertToMemberSheet> {
-  final _phoneCtrl = TextEditingController();
+  final _searchCtrl = TextEditingController();
   bool _searching = false;
   bool _converting = false;
   Map<String, dynamic>? _foundUser;
@@ -376,16 +377,20 @@ class _ConvertToMemberSheetState
   @override
   void initState() {
     super.initState();
-    _phoneCtrl.text = widget.lead.phone ?? '';
+    // Default to searching by phone if available, else email
+    _searchCtrl.text = widget.lead.phone ?? widget.lead.email ?? '';
   }
 
   @override
   void dispose() {
-    _phoneCtrl.dispose();
+    _searchCtrl.dispose();
     super.dispose();
   }
 
   Future<void> _searchUser() async {
+    final queryText = _searchCtrl.text.trim();
+    if (queryText.isEmpty) return;
+
     setState(() {
       _searching = true;
       _foundUser = null;
@@ -393,14 +398,24 @@ class _ConvertToMemberSheetState
     });
     try {
       final client = ref.read(supabaseClientProvider);
-      final row = await client
-          .from('users')
-          .select('id, name, phone, plan_status')
-          .eq('phone', _phoneCtrl.text.trim())
-          .maybeSingle();
+      var builder = client.from('users').select('id, name, phone, email, plan_status');
+      
+      final isUuid = RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$').hasMatch(queryText);
+      final isEmail = queryText.contains('@');
+
+      if (isUuid) {
+        builder = builder.eq('id', queryText);
+      } else if (isEmail) {
+        builder = builder.eq('email', queryText);
+      } else {
+        final cleanPhone = queryText.replaceAll(RegExp(r'\D'), '');
+        builder = builder.or('phone.eq.$queryText,phone.eq.+91$queryText,phone.eq.$cleanPhone,phone.eq.+91$cleanPhone');
+      }
+
+      final row = await builder.maybeSingle();
       setState(() {
         _foundUser = row;
-        if (row == null) _searchError = 'No registered user with that phone.';
+        if (row == null) _searchError = 'No registered user matching that identifier.';
       });
     } catch (e) {
       setState(() => _searchError = e.toString());
@@ -451,8 +466,8 @@ class _ConvertToMemberSheetState
             Text('Admit ${widget.lead.name}', style: tt.headlineSmall),
             const SizedBox(height: 8),
             Text(
-              'Find their registered account by phone number, then link '
-              'and activate their membership.',
+              'Find their registered account by email, phone, or member ID, '
+              'then link and activate their membership.',
               style: tt.bodyMedium?.copyWith(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
@@ -462,11 +477,11 @@ class _ConvertToMemberSheetState
               children: [
                 Expanded(
                   child: TextField(
-                    controller: _phoneCtrl,
-                    keyboardType: TextInputType.phone,
+                    controller: _searchCtrl,
+                    keyboardType: TextInputType.text,
                     decoration: const InputDecoration(
-                      labelText: 'Phone number',
-                      prefixIcon: Icon(Icons.phone_outlined),
+                      labelText: 'Email, Phone, or Member ID',
+                      prefixIcon: Icon(Icons.search_outlined),
                     ),
                   ),
                 ),
@@ -538,9 +553,14 @@ class _ConvertToMemberSheetState
                             _foundUser!['name'] as String? ?? 'User found',
                             style: tt.titleSmall,
                           ),
+                          const SizedBox(height: 4),
                           Text(
-                            _foundUser!['phone'] as String? ?? '',
+                            '${_foundUser!['email'] ?? 'No email'} • ${_foundUser!['phone'] ?? 'No phone'}',
                             style: tt.bodySmall,
+                          ),
+                          Text(
+                            'ID: ${_foundUser!['id']}',
+                            style: tt.bodySmall?.copyWith(fontSize: 11),
                           ),
                         ],
                       ),

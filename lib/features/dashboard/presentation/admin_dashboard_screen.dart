@@ -6,8 +6,11 @@ import 'package:intl/intl.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../shared/widgets/loading_widget.dart';
 import '../../auth/presentation/auth_provider.dart' show supabaseClientProvider;
+import '../../events/presentation/admin_events_screen.dart';
+import '../../holidays/presentation/holidays_screen.dart';
 import '../../notifications/domain/app_notification.dart' show NotificationKind;
 import '../../notifications/presentation/notification_provider.dart' show notificationRepositoryProvider;
+import '../../trainer/presentation/admin_trainers_screen.dart';
 import '../domain/dashboard_stats.dart';
 import 'dashboard_provider.dart';
 
@@ -60,6 +63,8 @@ class _DashboardBody extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        _QuickAccessRow(),
+        const SizedBox(height: 16),
         _StatGrid(stats: stats),
         const SizedBox(height: 24),
         _ChartSection(
@@ -76,6 +81,95 @@ class _DashboardBody extends StatelessWidget {
         const SizedBox(height: 16),
         const _AdminActionsCard(),
       ],
+    );
+  }
+}
+
+// ── Quick-access row (Events / Holidays) ─────────────────────────────────────
+
+class _QuickAccessRow extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: _QuickTile(
+            icon: Icons.celebration_outlined,
+            label: 'Events',
+            color: AppColors.accentViolet,
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                  builder: (_) => const AdminEventsScreen()),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _QuickTile(
+            icon: Icons.event_outlined,
+            label: 'Holidays',
+            color: AppColors.accentGold,
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const HolidaysScreen()),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _QuickTile(
+            icon: Icons.badge_outlined,
+            label: 'Trainers',
+            color: AppColors.success,
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                  builder: (_) => const AdminTrainersScreen()),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _QuickTile extends StatelessWidget {
+  const _QuickTile({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+          child: Row(
+            children: [
+              Icon(icon, color: color, size: 22),
+              const SizedBox(width: 10),
+              Text(
+                label,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: color,
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+              const Spacer(),
+              Icon(Icons.chevron_right, size: 18,
+                  color: color.withValues(alpha: 0.6)),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

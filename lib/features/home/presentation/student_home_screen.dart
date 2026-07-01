@@ -3,8 +3,11 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../shared/widgets/loading_widget.dart';
 import '../domain/home_data.dart';
 import 'home_provider.dart';
+import 'weather_provider.dart';
+import 'widgets/weather_widget.dart';
 
 class StudentHomeScreen extends ConsumerWidget {
   const StudentHomeScreen({super.key});
@@ -13,7 +16,7 @@ class StudentHomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(homeDataProvider);
     return async.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const Center(child: ChakraLoader()),
       error: (e, _) => Center(child: Text('Error: $e')),
       data: (data) => _HomeBody(data: data, ref: ref),
     );
@@ -28,7 +31,10 @@ class _HomeBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
-      onRefresh: () => ref.refresh(homeDataProvider.future),
+      onRefresh: () => Future.wait([
+        ref.refresh(homeDataProvider.future),
+        ref.read(weatherNotifierProvider.notifier).fetchWeather(force: true),
+      ]),
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
         children: [
@@ -41,6 +47,8 @@ class _HomeBody extends StatelessWidget {
           _StreakCard(streak: data.streak),
           const SizedBox(height: 16),
           const _QuoteCard(),
+          const SizedBox(height: 16),
+          const WeatherWidget(),
           const SizedBox(height: 24),
           if (data.upcomingClasses.length > 1) ...[
             const _SectionHeader(title: 'Other Upcoming Classes'),
@@ -141,19 +149,38 @@ class _NextClassBanner extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: AppColors.accentViolet.withValues(alpha: 0.2),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.notifications_active_outlined,
-              color: AppColors.accentViolet,
-              size: 20,
-            ),
-          ).animate(onPlay: (controller) => controller.repeat(reverse: true))
-           .scaleXY(begin: 0.9, end: 1.1, duration: 1200.ms, curve: Curves.easeInOut),
+          MediaQuery.of(context).disableAnimations
+              ? Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.accentViolet.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.notifications_active_outlined,
+                    color: AppColors.accentViolet,
+                    size: 20,
+                  ),
+                )
+              : Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.accentViolet.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.notifications_active_outlined,
+                    color: AppColors.accentViolet,
+                    size: 20,
+                  ),
+                )
+                  .animate(
+                      onPlay: (controller) => controller.repeat(reverse: true))
+                  .scaleXY(
+                      begin: 0.9,
+                      end: 1.1,
+                      duration: 1200.ms,
+                      curve: Curves.easeInOut),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -214,9 +241,17 @@ class _StreakCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(
-              child: const Text('🔥', style: TextStyle(fontSize: 26))
-                  .animate(onPlay: (controller) => controller.repeat(reverse: true))
-                  .scaleXY(begin: 0.85, end: 1.15, duration: 1000.ms, curve: Curves.easeInOut),
+              child: MediaQuery.of(context).disableAnimations
+                  ? const Text('🔥', style: TextStyle(fontSize: 26))
+                  : const Text('🔥', style: TextStyle(fontSize: 26))
+                      .animate(
+                          onPlay: (controller) =>
+                              controller.repeat(reverse: true))
+                      .scaleXY(
+                          begin: 0.85,
+                          end: 1.15,
+                          duration: 1000.ms,
+                          curve: Curves.easeInOut),
             ),
           ),
           const SizedBox(width: 16),

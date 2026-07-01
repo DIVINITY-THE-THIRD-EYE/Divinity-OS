@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../shared/widgets/loading_widget.dart' show ChakraLoader;
 import '../../attendance/data/attendance_repository.dart';
 import '../../auth/presentation/auth_provider.dart';
 import '../../batches/domain/batch.dart';
@@ -18,7 +19,7 @@ class TrainerDashboardScreen extends ConsumerWidget {
     final tt = Theme.of(context).textTheme;
 
     return batchesAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const Center(child: ChakraLoader()),
       error: (e, _) => Center(child: Text('Error: $e')),
       data: (batches) {
         // Filter to only this trainer's batches.

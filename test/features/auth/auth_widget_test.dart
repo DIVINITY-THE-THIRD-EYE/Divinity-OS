@@ -3,6 +3,7 @@ import 'package:divinity_app/features/auth/data/auth_repository.dart';
 import 'package:divinity_app/features/auth/domain/auth_state.dart' as app_auth;
 import 'package:divinity_app/features/auth/presentation/auth_provider.dart';
 import 'package:divinity_app/features/auth/presentation/login_screen.dart';
+import 'package:divinity_app/features/auth/presentation/onboarding/steps/step_consent.dart';
 import 'package:divinity_app/features/auth/presentation/otp_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,6 +19,25 @@ class _FakeAuthRepository implements AuthRepository {
   @override
   Stream<AuthLifecycleEvent> authEvents() =>
       const Stream<AuthLifecycleEvent>.empty();
+
+  @override
+  Future<void> signInWithEmail({
+    required String email,
+    required String password,
+  }) async {}
+
+  @override
+  Future<void> signUpWithEmail({
+    required String email,
+    required String password,
+    Map<String, dynamic>? metaData,
+  }) async {}
+
+  @override
+  Future<void> signInWithGoogle() async {}
+
+  @override
+  Future<void> signInWithApple() async {}
 
   @override
   Future<void> signInWithPhone({
@@ -78,62 +98,53 @@ Widget _wrap(Widget child) {
 
 void main() {
   group('LoginScreen', () {
-    testWidgets('renders phone field and password field', (tester) async {
+    testWidgets('renders provider buttons by default', (tester) async {
       await tester.pumpWidget(_wrap(const LoginScreen()));
+      await tester.pump();
+
+      expect(find.text('Continue with Google'), findsOneWidget);
+      expect(find.text('Continue with Email'), findsOneWidget);
+      expect(find.text('Continue with Phone'), findsOneWidget);
+      expect(find.text('Create Account'), findsOneWidget);
+    });
+
+    testWidgets('toggles to Email Sign In form', (tester) async {
+      await tester.pumpWidget(_wrap(const LoginScreen()));
+      await tester.pump();
+
+      await tester.tap(find.text('Continue with Email'));
+      await tester.pump();
+
+      expect(find.text('Email Address'), findsOneWidget);
+      expect(find.text('Password'), findsOneWidget);
+      expect(find.text('Sign In'), findsOneWidget);
+      expect(find.text('Use another sign-in method'), findsOneWidget);
+    });
+
+    testWidgets('toggles to Phone Sign In form', (tester) async {
+      await tester.pumpWidget(_wrap(const LoginScreen()));
+      await tester.pump();
+
+      await tester.tap(find.text('Continue with Phone'));
       await tester.pump();
 
       expect(find.text('Phone Number'), findsOneWidget);
-      expect(find.text('Password'), findsOneWidget);
       expect(find.text('Sign In'), findsOneWidget);
+      expect(find.text('Use OTP instead'), findsOneWidget);
+      expect(find.text('Use another sign-in method'), findsOneWidget);
     });
 
-    /*
-    testWidgets('shows OTP toggle text button', (tester) async {
+    testWidgets('validates empty email on email sign-in submit', (tester) async {
       await tester.pumpWidget(_wrap(const LoginScreen()));
       await tester.pump();
 
-      expect(find.text('Sign in with OTP instead'), findsOneWidget);
-    });
-
-    testWidgets('switches to OTP mode on toggle tap', (tester) async {
-      await tester.pumpWidget(_wrap(const LoginScreen()));
-      await tester.pump();
-
-      await tester.tap(find.text('Sign in with OTP instead'));
-      await tester.pump();
-
-      // Password field disappears; button label changes
-      expect(find.text('Password'), findsNothing);
-      expect(find.text('Send OTP'), findsOneWidget);
-      expect(find.text('Sign in with password instead'), findsOneWidget);
-    });
-    */
-
-    testWidgets('validates empty phone on submit', (tester) async {
-      await tester.pumpWidget(_wrap(const LoginScreen()));
+      await tester.tap(find.text('Continue with Email'));
       await tester.pump();
 
       await tester.tap(find.text('Sign In'));
       await tester.pump();
 
-      expect(find.text('Enter a valid 10-digit number'), findsOneWidget);
-    });
-
-    testWidgets('validates empty password on submit', (tester) async {
-      await tester.pumpWidget(_wrap(const LoginScreen()));
-      await tester.pump();
-
-      await tester.enterText(
-        find.byWidgetPredicate(
-          (w) => w is TextFormField,
-          description: 'first field',
-        ).first,
-        '9876543210',
-      );
-      await tester.tap(find.text('Sign In'));
-      await tester.pump();
-
-      expect(find.text('Enter your password'), findsOneWidget);
+      expect(find.text('Enter a valid email address'), findsOneWidget);
     });
 
     testWidgets('shows Divinity branding', (tester) async {
@@ -174,6 +185,54 @@ void main() {
       await tester.pump();
 
       expect(find.text('+919876543210'), findsOneWidget);
+    });
+  });
+
+  group('StepConsent', () {
+    testWidgets('renders title, text and bullet points', (tester) async {
+      bool consent = false;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: StepConsent(
+              consent: consent,
+              onConsentChanged: (v) => consent = v,
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text('Data privacy & consent'), findsOneWidget);
+      expect(find.textContaining('DPDP Act Compliance'), findsOneWidget);
+      expect(find.textContaining('Location coordinates to verify presence'), findsOneWidget);
+    });
+
+    testWidgets('taps checkbox and invokes onConsentChanged', (tester) async {
+      bool consent = false;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: StatefulBuilder(
+              builder: (context, setState) => StepConsent(
+                consent: consent,
+                onConsentChanged: (v) {
+                  setState(() => consent = v);
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      final checkbox = find.byType(Checkbox);
+      expect(checkbox, findsOneWidget);
+
+      await tester.tap(checkbox);
+      await tester.pump();
+
+      expect(consent, isTrue);
     });
   });
 }

@@ -42,7 +42,7 @@ void main() {
   setUpAll(() {
     registerFallbackValue(NotificationKind.general);
     registerFallbackValue(PostgresChangeEvent.all);
-    registerFallbackValue(PostgresChangeFilter(
+    registerFallbackValue(const PostgresChangeFilter(
       type: PostgresChangeFilterType.eq,
       column: 'user_id',
       value: 'user-1',

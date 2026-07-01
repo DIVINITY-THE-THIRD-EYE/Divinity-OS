@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../services/analytics_service.dart';
+import '../../../shared/widgets/loading_widget.dart' show ChakraLoader;
 import '../../auth/presentation/auth_provider.dart';
 import '../../shared/students_screen.dart';
 import '../domain/batch.dart';
@@ -30,7 +31,7 @@ class AdminBatchesScreen extends ConsumerWidget {
 
     return Scaffold(
       body: batchesAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: ChakraLoader()),
         error: (e, _) => Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -797,7 +798,7 @@ class _EnrolSheet extends ConsumerWidget {
           const Divider(height: 1),
           Expanded(
             child: enrollmentsAsync.when(
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () => const Center(child: ChakraLoader()),
               error: (e, _) => Center(child: Text('Error: $e')),
               data: (enrollments) => enrollments.isEmpty
                   ? Center(

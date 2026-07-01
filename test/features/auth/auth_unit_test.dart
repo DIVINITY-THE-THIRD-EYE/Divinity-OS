@@ -181,6 +181,47 @@ void main() {
     });
   });
 
+  group('AuthNotifier — signInWithEmail', () {
+    test('transitions to AuthAuthenticated on success', () async {
+      final n = await buildNotifier(repo);
+
+      final user = MockUser();
+      when(() => user.id).thenReturn('uid-3');
+      when(() => repo.signInWithEmail(
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+          )).thenAnswer((_) async {});
+      when(() => repo.currentUser).thenReturn(user);
+      when(() => repo.fetchProfile('uid-3'))
+          .thenAnswer((_) async => activeProfile(role: 'TRAINER'));
+
+      await n.signInWithEmail(email: 'trainer@divinity.com', password: 'secret');
+
+      expect(n.state, isA<app_auth.AuthAuthenticated>());
+      expect(
+        (n.state as app_auth.AuthAuthenticated).role,
+        app_auth.UserRole.trainer,
+      );
+    });
+
+    test('sets AuthError on AuthException', () async {
+      final n = await buildNotifier(repo);
+
+      when(() => repo.signInWithEmail(
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+          )).thenThrow(const AuthException('Invalid login credentials'));
+
+      await n.signInWithEmail(email: 'trainer@divinity.com', password: 'wrong');
+
+      expect(n.state, isA<app_auth.AuthError>());
+      expect(
+        (n.state as app_auth.AuthError).message,
+        contains('Invalid login'),
+      );
+    });
+  });
+
   group('AuthNotifier — signInWithPhone', () {
     test('transitions to AuthAuthenticated on success', () async {
       final n = await buildNotifier(repo);

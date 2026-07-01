@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Domain-level auth lifecycle events, decoupled from Supabase's AuthChangeEvent
@@ -18,6 +19,10 @@ abstract interface class AuthRepository {
   /// (token-refresh failure, sign-out on another device, user updates).
   Stream<AuthLifecycleEvent> authEvents();
 
+  Future<void> signInWithEmail({required String email, required String password});
+  Future<void> signUpWithEmail({required String email, required String password, Map<String, dynamic>? metaData});
+  Future<void> signInWithGoogle();
+  Future<void> signInWithApple();
   Future<void> signInWithPhone({required String phone, required String password});
   Future<void> signInWithOtp({required String phone});
   Future<void> verifyOtp({required String phone, required String token});
@@ -53,6 +58,43 @@ class SupabaseAuthRepository implements AuthRepository {
         _ => AuthLifecycleEvent.tokenRefreshed,
       };
     });
+  }
+
+  @override
+  Future<void> signInWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    await _client.auth.signInWithPassword(email: email, password: password);
+  }
+
+  @override
+  Future<void> signUpWithEmail({
+    required String email,
+    required String password,
+    Map<String, dynamic>? metaData,
+  }) async {
+    await _client.auth.signUp(
+      email: email,
+      password: password,
+      data: metaData,
+    );
+  }
+
+  @override
+  Future<void> signInWithGoogle() async {
+    await _client.auth.signInWithOAuth(
+      OAuthProvider.google,
+      redirectTo: kIsWeb ? null : 'io.supabase.divinity://login-callback',
+    );
+  }
+
+  @override
+  Future<void> signInWithApple() async {
+    await _client.auth.signInWithOAuth(
+      OAuthProvider.apple,
+      redirectTo: kIsWeb ? null : 'io.supabase.divinity://login-callback',
+    );
   }
 
   @override

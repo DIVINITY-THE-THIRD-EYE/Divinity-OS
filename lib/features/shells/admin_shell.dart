@@ -6,6 +6,7 @@ import '../../features/admissions/presentation/leads_screen.dart';
 import '../../features/analytics/presentation/reports_screen.dart';
 import '../../features/auth/presentation/auth_provider.dart';
 import '../../features/batches/presentation/admin_batches_screen.dart';
+import '../../features/certificates/presentation/admin_certificates_screen.dart';
 import '../../features/dashboard/presentation/admin_dashboard_screen.dart';
 import '../../features/events/presentation/admin_events_screen.dart';
 import '../../features/holidays/presentation/holidays_screen.dart';
@@ -13,6 +14,7 @@ import '../../features/leave/presentation/leave_approval_screen.dart';
 import '../../features/payments/presentation/admin_payments_screen.dart';
 import '../../features/shared/students_screen.dart';
 import '../../services/fcm_provider.dart';
+import '../../shared/widgets/lazy_indexed_stack.dart';
 import '../../shared/widgets/notification_bell.dart';
 import '../../shared/widgets/third_eye_icon.dart';
 
@@ -33,6 +35,7 @@ class _AdminShellState extends ConsumerState<AdminShell> {
     _Tab(label: 'Students', icon: Icons.people_outline),
     _Tab(label: 'Leaves', icon: Icons.event_busy_outlined),
     _Tab(label: 'Batches', icon: Icons.groups_outlined),
+    _Tab(label: 'Certs', icon: Icons.workspace_premium_outlined),
     _Tab(label: 'Reports', icon: Icons.analytics_outlined),
   ];
 
@@ -42,14 +45,27 @@ class _AdminShellState extends ConsumerState<AdminShell> {
         'students' => 3,
         'leaves' => 4,
         'batches' => 5,
-        'reports' => 6,
+        'certificates' => 6,
+        'reports' => 7,
         _ => 0,
       };
 
   @override
   Widget build(BuildContext context) {
     ref.listen<AsyncValue<String>>(fcmNotificationTapProvider, (_, next) {
-      next.whenData((target) => setState(() => _index = _targetToIndex(target)));
+      next.whenData((target) {
+        if (target == 'events') {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(builder: (_) => const AdminEventsScreen()),
+          );
+        } else if (target == 'holidays') {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(builder: (_) => const HolidaysScreen()),
+          );
+        } else {
+          setState(() => _index = _targetToIndex(target));
+        }
+      });
     });
     final themeMode = ref.watch(themeModeProvider);
     return Scaffold(
@@ -97,7 +113,7 @@ class _AdminShellState extends ConsumerState<AdminShell> {
           ),
         ],
       ),
-      body: IndexedStack(
+      body: LazyIndexedStack(
         index: _index,
         children: const [
           AdminDashboardScreen(),
@@ -106,6 +122,7 @@ class _AdminShellState extends ConsumerState<AdminShell> {
           StudentsScreen(),
           LeaveApprovalScreen(),
           AdminBatchesScreen(),
+          AdminCertificatesScreen(),
           ReportsScreen(),
         ],
       ),

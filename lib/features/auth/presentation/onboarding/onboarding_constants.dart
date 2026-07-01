@@ -1,4 +1,4 @@
-const int kOnboardingTotalSteps = 5;
+const int kOnboardingTotalSteps = 6;
 
 const List<String> kGenderOptions = [
   'MALE',

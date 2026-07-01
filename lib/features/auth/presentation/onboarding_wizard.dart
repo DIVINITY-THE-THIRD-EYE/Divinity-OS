@@ -7,6 +7,7 @@ import '../domain/auth_state.dart' as app_auth;
 import 'auth_provider.dart';
 import 'onboarding/onboarding_constants.dart';
 import 'onboarding/steps/step_age_gender.dart';
+import 'onboarding/steps/step_consent.dart';
 import 'onboarding/steps/step_emergency_contact.dart';
 import 'onboarding/steps/step_goal.dart';
 import 'onboarding/steps/step_health.dart';
@@ -44,6 +45,9 @@ class _OnboardingWizardState extends ConsumerState<OnboardingWizard> {
 
   // Step 5 — goal
   String? _goal;
+
+  // Step 6 — data consent
+  bool _consent = false;
 
   @override
   void dispose() {
@@ -129,6 +133,15 @@ class _OnboardingWizardState extends ConsumerState<OnboardingWizard> {
         if (_goal == null) {
           messenger.showSnackBar(
             const SnackBar(content: Text('Please select a primary goal.')),
+          );
+          return false;
+        }
+      case 5:
+        if (!_consent) {
+          messenger.showSnackBar(
+            const SnackBar(
+              content: Text('Please consent to our data policy to complete onboarding.'),
+            ),
           );
           return false;
         }
@@ -226,6 +239,10 @@ class _OnboardingWizardState extends ConsumerState<OnboardingWizard> {
                   StepGoal(
                     goal: _goal,
                     onGoal: (v) => setState(() => _goal = v),
+                  ),
+                  StepConsent(
+                    consent: _consent,
+                    onConsentChanged: (v) => setState(() => _consent = v),
                   ),
                 ],
               ),

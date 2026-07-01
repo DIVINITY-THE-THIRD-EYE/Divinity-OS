@@ -121,7 +121,7 @@ class SupabaseAttendanceRepository implements AttendanceRepository {
     // Returns the batch row for the student's first enrollment that has a location.
     final rows = await _client
         .from('enrollments')
-        .select('batch_id, batches(id, name, location_lat, location_lng, radius_meters, schedule_time)')
+        .select('batch_id, batches(id, name, location_lat, location_lng, radius_meters, schedule_time, days_of_week, trainer_id, users(name))')
         .eq('student_id', studentId)
         .limit(1);
     final list = rows as List<dynamic>;

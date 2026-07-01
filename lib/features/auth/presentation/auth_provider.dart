@@ -1,11 +1,51 @@
 import 'dart:async';
 
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../services/analytics_service.dart';
 import '../data/auth_repository.dart';
 import '../domain/auth_state.dart' as app_auth;
+
+// ── Auth Config ──────────────────────────────────────────────────────────────
+
+class AuthConfig {
+  const AuthConfig({
+    required this.enableEmailPassword,
+    required this.enableGoogleSignIn,
+    required this.enableAppleSignIn,
+    required this.enablePhoneOtp,
+    required this.enableAnonymous,
+  });
+
+  final bool enableEmailPassword;
+  final bool enableGoogleSignIn;
+  final bool enableAppleSignIn;
+  final bool enablePhoneOtp;
+  final bool enableAnonymous;
+}
+
+final authConfigProvider = Provider<AuthConfig>((ref) {
+  try {
+    final rc = FirebaseRemoteConfig.instance;
+    return AuthConfig(
+      enableEmailPassword: rc.getBool('auth_enable_email'),
+      enableGoogleSignIn: rc.getBool('auth_enable_google'),
+      enableAppleSignIn: rc.getBool('auth_enable_apple'),
+      enablePhoneOtp: rc.getBool('auth_enable_phone'),
+      enableAnonymous: rc.getBool('auth_enable_anonymous'),
+    );
+  } catch (_) {
+    return const AuthConfig(
+      enableEmailPassword: true,
+      enableGoogleSignIn: true,
+      enableAppleSignIn: true,
+      enablePhoneOtp: true,
+      enableAnonymous: false,
+    );
+  }
+});
 
 // ── Supabase client provider ─────────────────────────────────────────────────
 
@@ -171,6 +211,86 @@ class AuthNotifier extends StateNotifier<app_auth.AuthState> {
       await _resolveUserState(currentState.user);
     } catch (e) {
       state = app_auth.AuthError(e.toString());
+    }
+  }
+
+  Future<void> signInWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    _handlingLocal = true;
+    state = app_auth.AuthLoading();
+    try {
+      await _repo.signInWithEmail(email: email, password: password);
+      final user = _repo.currentUser;
+      if (user != null) await _resolveUserState(user);
+    } on AuthException catch (e) {
+      state = app_auth.AuthError(e.message);
+    } catch (e) {
+      state = app_auth.AuthError('Unexpected error. Please try again.');
+    } finally {
+      _handlingLocal = false;
+    }
+  }
+
+  Future<void> signUpWithEmail({
+    required String email,
+    required String password,
+    required String name,
+    String? phone,
+  }) async {
+    _handlingLocal = true;
+    state = app_auth.AuthLoading();
+    try {
+      await _repo.signUpWithEmail(
+        email: email,
+        password: password,
+        metaData: {
+          'name': name,
+          if (phone != null && phone.isNotEmpty) 'phone': phone,
+        },
+      );
+      final user = _repo.currentUser;
+      if (user != null) {
+        await _resolveUserState(user);
+      } else {
+        // Verification email sent, require verification
+        state = app_auth.AuthUnauthenticated();
+      }
+    } on AuthException catch (e) {
+      state = app_auth.AuthError(e.message);
+    } catch (e) {
+      state = app_auth.AuthError('Unexpected error. Please try again.');
+    } finally {
+      _handlingLocal = false;
+    }
+  }
+
+  Future<void> signInWithGoogle() async {
+    _handlingLocal = true;
+    state = app_auth.AuthLoading();
+    try {
+      await _repo.signInWithGoogle();
+    } on AuthException catch (e) {
+      state = app_auth.AuthError(e.message);
+    } catch (e) {
+      state = app_auth.AuthError('Google sign-in failed. Please try again.');
+    } finally {
+      _handlingLocal = false;
+    }
+  }
+
+  Future<void> signInWithApple() async {
+    _handlingLocal = true;
+    state = app_auth.AuthLoading();
+    try {
+      await _repo.signInWithApple();
+    } on AuthException catch (e) {
+      state = app_auth.AuthError(e.message);
+    } catch (e) {
+      state = app_auth.AuthError('Apple sign-in failed. Please try again.');
+    } finally {
+      _handlingLocal = false;
     }
   }
 
