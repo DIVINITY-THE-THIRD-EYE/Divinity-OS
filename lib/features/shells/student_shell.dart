@@ -5,6 +5,7 @@ import '../../core/theme/theme_provider.dart';
 import '../../features/attendance/presentation/check_in_screen.dart';
 import '../../features/auth/presentation/auth_provider.dart';
 import '../../features/certificates/presentation/certificates_screen.dart';
+import '../../features/events/presentation/student_events_screen.dart';
 import '../../features/home/presentation/student_home_screen.dart';
 import '../../features/leave/presentation/leave_request_screen.dart';
 import '../../features/payments/presentation/payments_screen.dart';
@@ -46,10 +47,23 @@ class _StudentShellState extends ConsumerState<StudentShell> {
         _ => 0,
       };
 
+  void _openEvents() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => const StudentEventsScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     ref.listen<AsyncValue<String>>(fcmNotificationTapProvider, (_, next) {
-      next.whenData((target) => setState(() => _index = _targetToIndex(target)));
+      next.whenData((target) {
+        // Events open as a pushed screen (not a bottom-nav tab).
+        if (target == 'events') {
+          _openEvents();
+        } else {
+          setState(() => _index = _targetToIndex(target));
+        }
+      });
     });
     final themeMode = ref.watch(themeModeProvider);
     return Scaffold(
@@ -63,6 +77,11 @@ class _StudentShellState extends ConsumerState<StudentShell> {
         ),
         actions: [
           const NotificationBell(),
+          IconButton(
+            icon: const Icon(Icons.celebration_outlined),
+            tooltip: 'Events',
+            onPressed: _openEvents,
+          ),
           IconButton(
             icon: Icon(
               themeMode == ThemeMode.dark

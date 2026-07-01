@@ -6,6 +6,7 @@ import '../../features/admissions/presentation/leads_screen.dart';
 import '../../features/auth/presentation/auth_provider.dart';
 import '../../features/batches/presentation/admin_batches_screen.dart';
 import '../../features/dashboard/presentation/admin_dashboard_screen.dart';
+import '../../features/events/presentation/admin_events_screen.dart';
 import '../../features/holidays/presentation/holidays_screen.dart';
 import '../../features/leave/presentation/leave_approval_screen.dart';
 import '../../features/payments/presentation/admin_payments_screen.dart';
@@ -59,6 +60,15 @@ class _AdminShellState extends ConsumerState<AdminShell> {
         ),
         actions: [
           const NotificationBell(),
+          IconButton(
+            icon: const Icon(Icons.celebration_outlined),
+            tooltip: 'Events',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const AdminEventsScreen(),
+              ),
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.event_outlined),
             tooltip: 'Holidays',
