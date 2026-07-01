@@ -33,9 +33,7 @@ class Event {
     this.description,
     this.location,
     required this.startsAt,
-    this.endsAt,
     this.capacity,
-    this.coverImageUrl,
     required this.status,
     this.createdBy,
     this.registrationCount = 0,
@@ -48,9 +46,7 @@ class Event {
   final String? description;
   final String? location;
   final DateTime startsAt;
-  final DateTime? endsAt;
   final int? capacity;
-  final String? coverImageUrl;
   final EventStatus status;
   final String? createdBy;
   final int registrationCount;
@@ -58,8 +54,6 @@ class Event {
   final DateTime createdAt;
 
   bool get isFull => capacity != null && registrationCount >= capacity!;
-
-  bool get isPast => startsAt.isBefore(DateTime.now());
 
   int? get seatsLeft =>
       capacity == null ? null : (capacity! - registrationCount).clamp(0, capacity!);
@@ -100,11 +94,7 @@ class Event {
       description: m['description'] as String?,
       location: m['location'] as String?,
       startsAt: DateTime.parse(m['starts_at'] as String),
-      endsAt: m['ends_at'] == null
-          ? null
-          : DateTime.parse(m['ends_at'] as String),
       capacity: (m['capacity'] as num?)?.toInt(),
-      coverImageUrl: m['cover_image_url'] as String?,
       status: EventStatus.fromString(m['status'] as String? ?? 'PUBLISHED'),
       createdBy: m['created_by'] as String?,
       registrationCount: count,
@@ -120,10 +110,7 @@ class Event {
         if (location != null && location!.trim().isNotEmpty)
           'location': location!.trim(),
         'starts_at': startsAt.toUtc().toIso8601String(),
-        if (endsAt != null) 'ends_at': endsAt!.toUtc().toIso8601String(),
         if (capacity != null) 'capacity': capacity,
-        if (coverImageUrl != null && coverImageUrl!.trim().isNotEmpty)
-          'cover_image_url': coverImageUrl!.trim(),
         'status': status.wire,
       };
 }

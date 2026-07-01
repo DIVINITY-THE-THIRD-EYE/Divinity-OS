@@ -8,7 +8,7 @@
 --   - Publishing an event notifies students.
 
 begin;
-select plan(10);
+select plan(11);
 
 -- ── Fixtures ─────────────────────────────────────────────────────────────────
 insert into auth.users (id, email) values
@@ -102,12 +102,14 @@ select lives_ok(
 );
 
 -- ── 9. A second student cannot register once full ────────────────────────────
+-- Capacity is enforced by the concurrency-safe BEFORE INSERT trigger, which
+-- raises check_violation (23514), not the RLS insufficient_privilege (42501).
 select pg_temp.act_as('55555555-5555-5555-5555-555555555555');
 select throws_ok(
   $$ insert into public.event_registrations (event_id, student_id)
      values ('bbbbbbbb-0000-0000-0000-000000000003',
              '55555555-5555-5555-5555-555555555555') $$,
-  '42501',
+  '23514',
   null,
   'C11.9 registration is blocked once an event is at capacity'
 );
@@ -120,6 +122,20 @@ select is(
        and metadata->>'action' = 'event_published'),
   2,
   'C11.10 students are notified when events are published (2 published)'
+);
+
+-- ── 11. Cancelling frees a seat (counts correct after delete) ────────────────
+-- student1 cancels their seat on the capacity-1 event; student2 can now take it.
+delete from public.event_registrations
+  where event_id = 'bbbbbbbb-0000-0000-0000-000000000003'
+    and student_id = '11111111-1111-1111-1111-111111111111';
+
+select pg_temp.act_as('55555555-5555-5555-5555-555555555555');
+select lives_ok(
+  $$ insert into public.event_registrations (event_id, student_id)
+     values ('bbbbbbbb-0000-0000-0000-000000000003',
+             '55555555-5555-5555-5555-555555555555') $$,
+  'C11.11 cancelling a registration frees the seat for another student'
 );
 
 select * from finish();

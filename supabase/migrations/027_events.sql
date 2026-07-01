@@ -13,20 +13,17 @@
 
 -- ── events ────────────────────────────────────────────────────────────────────
 create table if not exists public.events (
-  id              uuid primary key default gen_random_uuid(),
-  title           text not null check (char_length(trim(title)) > 0),
-  description     text,
-  location        text,
-  starts_at       timestamptz not null,
-  ends_at         timestamptz,
-  capacity        integer check (capacity is null or capacity > 0),
-  cover_image_url text,
-  status          text not null default 'PUBLISHED'
-                    check (status in ('DRAFT', 'PUBLISHED', 'CANCELLED')),
-  created_by      uuid references public.users(id) on delete set null,
-  created_at      timestamptz not null default now(),
-  updated_at      timestamptz not null default now(),
-  constraint events_time_order check (ends_at is null or ends_at >= starts_at)
+  id           uuid primary key default gen_random_uuid(),
+  title        text not null check (char_length(trim(title)) > 0),
+  description  text,
+  location     text,
+  starts_at    timestamptz not null,
+  capacity     integer check (capacity is null or capacity > 0),
+  status       text not null default 'PUBLISHED'
+                 check (status in ('DRAFT', 'PUBLISHED', 'CANCELLED')),
+  created_by   uuid references public.users(id) on delete set null,
+  created_at   timestamptz not null default now(),
+  updated_at   timestamptz not null default now()
 );
 
 create index if not exists events_starts_at_idx on public.events(starts_at);
@@ -77,27 +74,35 @@ alter table public.events              enable row level security;
 alter table public.event_registrations enable row level security;
 
 -- events: everyone authenticated sees PUBLISHED; admins see all statuses.
+drop policy if exists "events_select" on public.events;
 create policy "events_select" on public.events
   for select using (
     status = 'PUBLISHED' or public.is_admin(auth.uid())
   );
 
+drop policy if exists "events_insert_admin" on public.events;
 create policy "events_insert_admin" on public.events
   for insert with check (public.is_admin(auth.uid()));
 
+drop policy if exists "events_update_admin" on public.events;
 create policy "events_update_admin" on public.events
   for update using (public.is_admin(auth.uid()));
 
+drop policy if exists "events_delete_admin" on public.events;
 create policy "events_delete_admin" on public.events
   for delete using (public.is_admin(auth.uid()));
 
 -- event_registrations: a student sees their own; admins see all.
+drop policy if exists "event_registrations_select" on public.event_registrations;
 create policy "event_registrations_select" on public.event_registrations
   for select using (
     student_id = auth.uid() or public.is_admin(auth.uid())
   );
 
--- A student may register themselves for a PUBLISHED, non-full event.
+-- A student may register themselves for a PUBLISHED event. Capacity is enforced
+-- by the concurrency-safe BEFORE INSERT trigger below (a non-locking check here
+-- would be bypassable by simultaneous transactions).
+drop policy if exists "event_registrations_insert" on public.event_registrations;
 create policy "event_registrations_insert" on public.event_registrations
   for insert with check (
     student_id = auth.uid()
@@ -105,14 +110,42 @@ create policy "event_registrations_insert" on public.event_registrations
       select 1 from public.events e
       where e.id = event_registrations.event_id and e.status = 'PUBLISHED'
     )
-    and not public.event_is_full(event_id)
   );
 
 -- Students may cancel their own registration; admins may remove any.
+drop policy if exists "event_registrations_delete" on public.event_registrations;
 create policy "event_registrations_delete" on public.event_registrations
   for delete using (
     student_id = auth.uid() or public.is_admin(auth.uid())
   );
+
+-- ── Capacity enforcement (concurrency-safe) ───────────────────────────────────
+-- A non-locking capacity check is bypassable: two simultaneous transactions each
+-- read the pre-insert count and both succeed. This BEFORE INSERT trigger takes a
+-- row lock on the parent event (FOR UPDATE), which serializes registrations for
+-- the same event — the second transaction blocks until the first commits, then
+-- re-counts and is correctly rejected.
+create or replace function public.enforce_event_capacity()
+returns trigger
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+begin
+  -- Serialize concurrent registrations for this event.
+  perform 1 from public.events where id = new.event_id for update;
+  if public.event_is_full(new.event_id) then
+    raise exception 'Event % is at capacity', new.event_id
+      using errcode = '23514';  -- check_violation
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists event_registrations_capacity on public.event_registrations;
+create trigger event_registrations_capacity
+  before insert on public.event_registrations
+  for each row execute function public.enforce_event_capacity();
 
 -- ── Notification on publish ───────────────────────────────────────────────────
 -- Notify every student when an event becomes PUBLISHED (on insert as PUBLISHED

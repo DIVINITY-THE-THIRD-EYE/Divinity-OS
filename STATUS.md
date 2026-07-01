@@ -1,8 +1,31 @@
 # DIVINITY BUILD STATUS
-Session completed: 15 — Module 11 Events (production-complete)
+Session completed: 16 — Module 11 production audit (issues found & fixed)
 Date: 2026-07-01
 
-## Done this session (Session 15 — Events)
+## Done this session (Session 16 — Module 11 audit)
+
+Full pre-approval production audit of Events. Every item verified against the live
+DB/code, not assumed. Three issues found and fixed:
+
+- **Concurrent-registration capacity bypass (critical).** Capacity was enforced only
+  by a non-locking RLS `count(*)`; proven live that two simultaneous transactions both
+  registered for a capacity-1 event (2 rows). Fixed with a BEFORE INSERT
+  `enforce_event_capacity` trigger that row-locks the event (`FOR UPDATE`) and re-checks
+  via `event_is_full`. Re-proven: the second concurrent insert is now rejected; count = 1.
+- **Migration idempotency.** Added `drop policy if exists` guards so 027 re-applies cleanly.
+- **Placeholder/dead code.** Removed never-populated `ends_at` + `cover_image_url` columns
+  (+ Dart) and the unused `Event.isPast` getter.
+
+Verified clean (no change needed): RLS on both tables; least-privilege policies; all three
+SECURITY DEFINER functions have fixed `search_path`; no trigger recursion; FK SET NULL/CASCADE
+(no orphans); all join/lookup indexes present; counts correct after delete; publish notifies
+exactly once (no re-notify on edits); UTC throughout.
+
+Gates: `flutter analyze` clean · Flutter 231/231 · pgTAP 81/81. **Module 11 is production-ready.**
+
+## Previous session (15 — Events)
+
+### Done (Session 15 — Events)
 
 Built module 11 of the 16-module blueprint end-to-end on the existing architecture.
 The Next.js `/events` marketing pages are untouched — this is the operational app store.
