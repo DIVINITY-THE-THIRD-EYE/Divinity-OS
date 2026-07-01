@@ -50,7 +50,9 @@ locally:
 | `ANDROID_STORE_PASSWORD` | ✅ set |
 | `ANDROID_KEY_PASSWORD` | ✅ set (same value as store password — PKCS12 keystores only support one) |
 | `ANDROID_KEY_ALIAS` | ✅ set — `divinity-upload` |
-| `SUPABASE_ACCESS_TOKEN` | ❌ **still missing** — needed by `supabase-deploy.yml` to auto-push migrations/functions on push to `main`. The CLI is authenticated locally (via someone running `supabase login` in a terminal), but that session token isn't retrievable in plaintext to hand to GitHub Actions. Generate a fresh one at https://supabase.com/dashboard/account/tokens and run `gh secret set SUPABASE_ACCESS_TOKEN --repo DIVINITY-THE-THIRD-EYE/Divinity-OS` (or paste it to whoever's driving this to run that). The workflow skips cleanly without it — nothing breaks in the meantime, migrations/functions just won't auto-deploy on push yet. |
+| `SUPABASE_ACCESS_TOKEN` | ✅ set — verified valid (`supabase projects list` succeeds with it), and `supabase-deploy.yml` was manually triggered (`gh workflow run`) and **completed successfully end-to-end**: linked the project, pushed migrations, deployed the Edge Function, all green. |
+
+**All 8 secrets are set and the full CI/CD pipeline is verified working, not just configured.** Every push to `main` touching `supabase/migrations/**` or `supabase/functions/**` now auto-deploys to production.
 
 The local `flutter-app/.env` (gitignored) has been updated to the real
 project's URL/anon key, replacing the old dead `wimjviyvtgkfmlesxted` values.
@@ -104,8 +106,13 @@ needed until that secret exists, or if you want to push out-of-band.
 
 ## Remaining open items
 
-1. `SUPABASE_ACCESS_TOKEN` GitHub Secret (see table above).
-2. `CERT_VERIFY_ENDPOINT` on Vercel (website project).
-3. A4/A5 (Play Store / App Store signing) — the Android keystore secrets are
-   in place, but there's still no Play Console app / Apple Developer account
-   connected; CI can build a signed AAB, it just has nowhere to upload it yet.
+1. `CERT_VERIFY_ENDPOINT` on Vercel (website project) — value is in the
+   table above.
+2. A4/A5 (Play Store / App Store signing) — the Android keystore secrets are
+   in place and CI can build a signed AAB, but there's still no Play Console
+   app / Apple Developer account connected to actually publish it.
+
+Supabase itself is fully wired: real project connected, migrations synced,
+RLS verified live, Edge Function deployed, one live security bug (public
+storage bucket) fixed, and the deploy pipeline proven working via an actual
+GitHub Actions run.
