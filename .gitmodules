@@ -1,0 +1,8 @@
+[submodule "divinity_flutter"]
+	path = divinity_flutter
+	url = git@github.com:divinitythethirdeye-ux/Divinity-App.git
+	branch = feature/trust-certificates
+[submodule "divinity-third-eye/divinity"]
+	path = divinity-third-eye/divinity
+	url = git@github.com:divinitythethirdeye-ux/Divinity-Website.git
+	branch = feature/trust-certificates
