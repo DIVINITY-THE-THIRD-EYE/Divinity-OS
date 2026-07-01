@@ -1,0 +1,65 @@
+# Labeler config — maps file path globs to PR labels.
+# The labels must exist in the repo (create them in GitHub Issues > Labels).
+
+database:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'supabase/migrations/**'
+      - 'supabase/tests/**'
+
+security:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'supabase/tests/**'
+      - 'android/app/build.gradle.kts'
+      - '.github/workflows/codeql.yml'
+
+flutter:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'lib/**'
+      - 'test/**'
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+
+ui:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'lib/**/*_screen.dart'
+      - 'lib/**/*_widget.dart'
+      - 'lib/**/widgets/**'
+      - 'lib/**/presentation/**'
+
+tests:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'test/**'
+      - 'integration_test/**'
+      - 'supabase/tests/**'
+
+ci:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '.github/**'
+
+android:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'android/**'
+
+ios:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'ios/**'
+
+dependencies:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'pubspec.yaml'
+      - 'pubspec.lock'
+
+documentation:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**.md'
+      - 'STATUS.md'
