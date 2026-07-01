@@ -1,8 +1,29 @@
 # DIVINITY BUILD STATUS
-Session completed: 22 — CI/CD verification & environment setup
+Session completed: 23 — Cert verification, Android keystore, pushed to origin
 Date: 2026-07-02
 
-## Done this session (Session 22 — CI/CD verification & environment setup)
+## Done this session (Session 23 — Cert verification, Android keystore, pushed to origin)
+
+- **LB-3 resolved:** Built `supabase/functions/verify-certificate/index.ts` — a public, PII-safe Supabase Edge Function backing the website's `/verify` page. Takes `?code=DIV-XXXX-XXXX`, returns `{valid, holder, programme, issuedOn}`; `holder` is masked to first-name + last-initial (e.g. "Priya S.") — never phone/email/full profile. Deployed with `--no-verify-jwt` so the public website can call it without a Supabase key. Verified locally end-to-end via `supabase functions serve` against the local stack: bad-format code → graceful message, unknown code → `{valid:false}`, a real inserted-then-deleted test certificate → correct masked response.
+  - **Still needed from you:** run `supabase functions deploy verify-certificate --no-verify-jwt` (needs a linked Supabase project + `supabase login`), then set `CERT_VERIFY_ENDPOINT` on the website's Vercel project to `https://<project-ref>.supabase.co/functions/v1/verify-certificate`.
+- **Android upload keystore generated** (A4, self-serviceable — no external account needed): `keytool -genkeypair`, PKCS12, RSA 2048, 30-year validity, alias `divinity-upload`. **Found and replaced a different, unexplained keystore already at `android/app/upload-keystore.jks` (dated 2026-06-21, password unknown, no session had ever recorded A4 as done)** — confirmed with you this app was never submitted to Play Console, so it was safe to replace. `android/key.properties` written to match (`storeFile=upload-keystore.jks`, resolved by Gradle relative to `android/app/`, not `android/` — the first attempt put the file one directory too high and failed). PKCS12 keystores use one password for both store and key — an initial `keyPassword` distinct from `storePassword` silently failed at build time (`Given final block not properly padded`); both are now set equal, matching what `keytool` actually enforced. **Verified end-to-end: `flutter build appbundle --release --dart-define-from-file=dart_defines.json.example` produces a real signed `app-release.aab` (62MB) with no signing errors.** Neither `.jks` nor `key.properties` is committed (both gitignored) — handed off out-of-band. **You must store the `.jks` file and its password somewhere durable (password manager) — if lost, you cannot update the app on Play Store under the same signing identity ever again.**
+- **Pushed to GitHub:** both repos' local commits (dart-format/lint fixes, STATUS.md updates, the website `ci.yml` removal, and this session's edge function) are now on `origin/feature/trust-certificates` for `Divinity-App` and `Divinity-Website`.
+
+### Full data/decision list still needed (nothing else can be self-served this session)
+
+| # | Item | Why it can't be self-served |
+|---|---|---|
+| 1 | GitHub Secrets: `SUPABASE_URL`, `SUPABASE_ANON_KEY` (production project, both repos) | Requires the actual production Supabase project's keys — not something to generate |
+| 2 | GitHub Secrets: `ANDROID_KEYSTORE_BASE64`, `ANDROID_STORE_PASSWORD`, `ANDROID_KEY_PASSWORD`, `ANDROID_KEY_ALIAS` | Values exist (generated this session) but only you can paste them into GitHub repo settings — no API access to do this from here |
+| 3 | Apple Developer Program membership + a Mac with Xcode | iOS signing (A5) fundamentally cannot be done from Windows without a paid Apple Developer account and Xcode |
+| 4 | Firebase console confirmation that App Check (Play Integrity / App Attest) is actively enforced in production, not just configured | Requires Firebase console access this session doesn't have |
+| 5 | Razorpay decision: implement for real (needs Razorpay API keys), or remove the dead `RAZORPAY` option from the domain model/DB check constraint | A business/product decision, not something to infer |
+| 6 | `supabase login` + linked project ref, to actually run `supabase functions deploy` | Needed to deploy the new edge function; local testing already done |
+| 7 | Firebase Storage rules for non-payment buckets (avatars etc.) — LB-6 | Could write these myself if given the actual bucket names/paths in use, or Firebase console read access to confirm current state first |
+
+Gates: `flutter analyze` clean · pushed to `origin/feature/trust-certificates` on both repos.
+
+## Done previous session (Session 22 — CI/CD verification & environment setup)
 
 Docker Desktop was installed but not running; started it and used the resulting local Supabase stack to actually verify — rather than assume — everything Session 21 claimed.
 
