@@ -10,6 +10,7 @@ import '../../features/leave/presentation/leave_request_screen.dart';
 import '../../features/payments/presentation/payments_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/transformation/presentation/third_eye_dashboard_screen.dart';
+import '../../features/workouts/presentation/student_workouts_screen.dart';
 import '../../services/fcm_provider.dart';
 import '../../shared/widgets/notification_bell.dart';
 import '../../shared/widgets/third_eye_icon.dart';
@@ -27,6 +28,7 @@ class _StudentShellState extends ConsumerState<StudentShell> {
   static const _tabs = [
     _Tab(label: 'Home', icon: Icons.home_outlined),
     _Tab(label: 'Third Eye', icon: Icons.self_improvement_outlined),
+    _Tab(label: 'Workouts', icon: Icons.fitness_center_outlined),
     _Tab(label: 'Attendance', icon: Icons.check_circle_outline),
     _Tab(label: 'Leaves', icon: Icons.event_busy_outlined),
     _Tab(label: 'Payments', icon: Icons.account_balance_wallet_outlined),
@@ -36,10 +38,11 @@ class _StudentShellState extends ConsumerState<StudentShell> {
 
   static int _targetToIndex(String target) => switch (target) {
         'thirdeye' => 1,
-        'attendance' => 2,
-        'leaves' => 3,
-        'payments' => 4,
-        'profile' => 5,
+        'workouts' => 2,
+        'attendance' => 3,
+        'leaves' => 4,
+        'payments' => 5,
+        'profile' => 6,
         _ => 0,
       };
 
@@ -81,6 +84,7 @@ class _StudentShellState extends ConsumerState<StudentShell> {
         children: [
           const StudentHomeScreen(),
           const ThirdEyeDashboardScreen(),
+          const StudentWorkoutsScreen(),
           const CheckInScreen(),
           const MyLeaveScreen(),
           const PaymentsScreen(),
