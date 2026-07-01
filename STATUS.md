@@ -1,8 +1,42 @@
 # DIVINITY BUILD STATUS
-Session completed: 21 — Production Hardening, Remaining Modules & CI/CD
-Date: 2026-07-01
+Session completed: 22 — CI/CD verification & environment setup
+Date: 2026-07-02
 
-## Done this session (Session 21 — Production Hardening, Remaining Modules & CI/CD)
+## Done this session (Session 22 — CI/CD verification & environment setup)
+
+Docker Desktop was installed but not running; started it and used the resulting local Supabase stack to actually verify — rather than assume — everything Session 21 claimed.
+
+- **pgTAP, actually run:** `supabase db reset` (migrations 001–036 apply cleanly) then `supabase test db` → **16/16 files, 117/117 assertions pass**, including `c13` (trainer active status), `c14` (student feedback), `c15` (support tickets), and `c16` (enrollment concurrency) — none of which had been executed against a real Postgres instance before.
+- **Bug found + fixed:** `c16_enrollment_concurrency_test.sql`'s fixture inserted a batch without `location_lat`/`location_lng`, which now violates the `batches_coordinates_required` check constraint (migration 016) — the test file itself was wrong, not the feature it verifies. Added valid coordinates to the fixture; suite now passes clean.
+- **CI gate found broken + fixed:** `dart format --output=none --set-exit-if-changed` (the first step of `flutter.yml`'s analyze job) was failing — 147/173 files were not format-compliant. Ran `dart format` across `lib/` and `test/`; this reformatting then surfaced 6 `curly_braces_in_flow_control_structures` info-lints (multi-line `if` bodies without braces, in `leads_screen.dart`, `reports_screen.dart` ×3, `payment_provider.dart`, `firebase_options.dart`) that `flutter analyze --fatal-infos` (CI's exact command) treats as failures. Fixed all six by adding braces. Verified: `dart format --set-exit-if-changed` exits 0, `flutter analyze --fatal-infos` reports 0 issues, `flutter test` 262/262 pass.
+- **Website CI gate found broken + removed:** `divinity-third-eye/divinity/.github/workflows/ci.yml` was labeled "inert scaffold (no repo = never runs)" from an earlier session, but that repo is now genuinely pushed to GitHub (`divinitythethirdeye-ux/Divinity-Website`), so the workflow would actually trigger — and fail, since it calls `npm run typecheck`/`format:check`/`test:unit`/`size`/`test:a11y`/`test:vrt`/`test:images`, none of which exist in `package.json`. Deleted it; `website.yml` already covers lint + typecheck + build + vitest correctly. Verified locally: `npm run lint` clean, `npx tsc --noEmit` clean, `npm run build` succeeds, `npm test` 61/61 pass.
+- **Dead workflow duplicates removed:** deleted `.github/workflows/` at the outer `Divinity TTE/` workspace root (flutter.yml/pgtap.yml/website.yml) and `Divinity/.github/workflows/build-and-test.yml` — neither could ever run (the outer workspace root is not a git repo; the `Divinity/` one also pointed at an unrelated Prisma reference project). The only workflows that matter are inside the two actual repos: `divinity_flutter/.github/workflows/` (pushed to `Divinity-App`) and `divinity-third-eye/divinity/.github/workflows/` (pushed to `Divinity-Website`).
+
+### Required GitHub Secrets (not yet configured — needs repo admin access)
+
+**`divinitythethirdeye-ux/Divinity-App` repo settings → Secrets and variables → Actions:**
+| Secret | Used by | Purpose |
+|---|---|---|
+| `SUPABASE_URL` | flutter.yml (build-android), release.yml | `--dart-define` for release app builds |
+| `SUPABASE_ANON_KEY` | flutter.yml (build-android), release.yml | `--dart-define` for release app builds |
+| `ANDROID_KEYSTORE_BASE64` | flutter.yml (build-android), release.yml | `base64`-encoded upload keystore `.jks` file |
+| `ANDROID_STORE_PASSWORD` | flutter.yml (build-android), release.yml | Keystore password |
+| `ANDROID_KEY_PASSWORD` | flutter.yml (build-android), release.yml | Key password (may equal store password) |
+| `ANDROID_KEY_ALIAS` | flutter.yml (build-android), release.yml | Key alias inside the keystore |
+
+`GITHUB_TOKEN` is auto-provided by GitHub Actions — nothing to configure. `codeql.yml` needs no secrets (uses inline placeholder Supabase values for the debug-build scan only).
+
+**`divinitythethirdeye-ux/Divinity-Website` repo settings → Secrets and variables → Actions:**
+| Secret | Used by | Purpose |
+|---|---|---|
+| `SUPABASE_URL` | website.yml (build) | `NEXT_PUBLIC_SUPABASE_URL` at build time |
+| `SUPABASE_ANON_KEY` | website.yml (build) | `NEXT_PUBLIC_SUPABASE_ANON_KEY` at build time |
+
+Without these secrets, `flutter.yml`'s `build-android` job, `release.yml`'s AAB build, and `website.yml`'s `build` job will fail on push to `main` (analyze/test/lint/pgtap jobs don't need them and will pass regardless). This is A4/A5 (Android/iOS store signing) and the Supabase-key half of A1's CI wiring — still open, requires the actual keystore + Supabase project credentials, which live outside this session.
+
+Gates: pgTAP 16/16 files (117/117 assertions) · `flutter analyze --fatal-infos` clean · `flutter test` 262/262 · website `npm run lint`/`tsc --noEmit`/`npm test` (61/61) clean.
+
+## Done previous session (Session 21 — Production Hardening, Remaining Modules & CI/CD)
 
 Implemented all remaining Phase B/C blueprint modules, database concurrency controls, paginated reporting RPCs, and DevOps workflow engines:
 
