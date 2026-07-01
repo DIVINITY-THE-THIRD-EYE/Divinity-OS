@@ -27,14 +27,14 @@ class AppUser {
   final DateTime createdAt;
 
   factory AppUser.fromMap(Map<String, dynamic> m) => AppUser(
-        id: m['id'] as String,
-        name: m['name'] as String? ?? 'Unnamed',
-        phone: m['phone'] as String?,
-        email: m['email'] as String?,
-        planStatus: m['plan_status'] as String? ?? 'UNPAID',
-        role: m['role'] as String? ?? 'STUDENT',
-        createdAt: DateTime.parse(m['created_at'] as String),
-      );
+    id: m['id'] as String,
+    name: m['name'] as String? ?? 'Unnamed',
+    phone: m['phone'] as String?,
+    email: m['email'] as String?,
+    planStatus: m['plan_status'] as String? ?? 'UNPAID',
+    role: m['role'] as String? ?? 'STUDENT',
+    createdAt: DateTime.parse(m['created_at'] as String),
+  );
 }
 
 // ── Provider ──────────────────────────────────────────────────────────────────
@@ -61,29 +61,32 @@ class StudentsNotifier extends AsyncNotifier<List<AppUser>> {
   }
 
   Future<void> activatePlan(String userId) async {
-    await ref.read(supabaseClientProvider).from('users').update({
-      'plan_status': 'ACTIVE',
-    }).eq('id', userId);
+    await ref
+        .read(supabaseClientProvider)
+        .from('users')
+        .update({'plan_status': 'ACTIVE'})
+        .eq('id', userId);
     state = AsyncData(
       (state.value ?? [])
-          .map((u) => u.id == userId
-              ? AppUser(
-                  id: u.id,
-                  name: u.name,
-                  phone: u.phone,
-                  email: u.email,
-                  planStatus: 'ACTIVE',
-                  role: u.role,
-                  createdAt: u.createdAt,
-                )
-              : u)
+          .map(
+            (u) => u.id == userId
+                ? AppUser(
+                    id: u.id,
+                    name: u.name,
+                    phone: u.phone,
+                    email: u.email,
+                    planStatus: 'ACTIVE',
+                    role: u.role,
+                    createdAt: u.createdAt,
+                  )
+                : u,
+          )
           .toList(),
     );
   }
 }
 
-final studentsProvider =
-    AsyncNotifierProvider<StudentsNotifier, List<AppUser>>(
+final studentsProvider = AsyncNotifierProvider<StudentsNotifier, List<AppUser>>(
   StudentsNotifier.new,
 );
 
@@ -129,10 +132,10 @@ class _StudentTile extends ConsumerWidget {
       onTap: isPending
           ? null
           : () => Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => StudentProgressDetailScreen(student: user),
-                ),
+              MaterialPageRoute<void>(
+                builder: (_) => StudentProgressDetailScreen(student: user),
               ),
+            ),
       leading: CircleAvatar(child: Text(user.name[0].toUpperCase())),
       title: Text(user.name),
       subtitle: Text(user.phone ?? user.email ?? '—'),
@@ -158,12 +161,12 @@ class _StudentTile extends ConsumerWidget {
   }
 
   Color _planColor(String status) => switch (status.toUpperCase()) {
-        'ACTIVE' => Colors.green,
-        'PENDING_ADMIN' || 'PENDING_TRAINER' => Colors.orange,
-        'PAUSED' => Colors.blue,
-        'EXPIRED' => Colors.grey,
-        _ => Colors.grey,
-      };
+    'ACTIVE' => Colors.green,
+    'PENDING_ADMIN' || 'PENDING_TRAINER' => Colors.orange,
+    'PAUSED' => Colors.blue,
+    'EXPIRED' => Colors.grey,
+    _ => Colors.grey,
+  };
 
   Future<void> _confirmActivate(BuildContext context, WidgetRef ref) async {
     final ok = await showDialog<bool>(
@@ -173,11 +176,13 @@ class _StudentTile extends ConsumerWidget {
         content: Text('Activate plan for ${user.name}?'),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel')),
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
           FilledButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text('Activate')),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Activate'),
+          ),
         ],
       ),
     );
@@ -191,8 +196,9 @@ class _StudentTile extends ConsumerWidget {
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text('Error: $e')));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Error: $e')));
         }
       }
     }

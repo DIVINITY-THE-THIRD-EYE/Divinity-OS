@@ -26,7 +26,9 @@ class MyFeedbackNotifier extends AsyncNotifier<List<StudentFeedback>> {
   }) async {
     final uid = ref.read(currentUserIdProvider);
     if (uid == null) return;
-    final created = await ref.read(feedbackRepositoryProvider).submitFeedback(
+    final created = await ref
+        .read(feedbackRepositoryProvider)
+        .submitFeedback(
           studentId: uid,
           trainerId: trainerId,
           batchId: batchId,
@@ -39,8 +41,8 @@ class MyFeedbackNotifier extends AsyncNotifier<List<StudentFeedback>> {
 
 final myFeedbackProvider =
     AsyncNotifierProvider<MyFeedbackNotifier, List<StudentFeedback>>(
-  MyFeedbackNotifier.new,
-);
+      MyFeedbackNotifier.new,
+    );
 
 // ── All feedback (Admin view) ────────────────────────────────────────────────
 
@@ -60,12 +62,13 @@ class AllFeedbackNotifier extends AsyncNotifier<List<StudentFeedback>> {
 
 final allFeedbackProvider =
     AsyncNotifierProvider<AllFeedbackNotifier, List<StudentFeedback>>(
-  AllFeedbackNotifier.new,
-);
+      AllFeedbackNotifier.new,
+    );
 
 // ── Batch feedback (Trainer view) ────────────────────────────────────────────
 
-class BatchFeedbackNotifier extends FamilyAsyncNotifier<List<StudentFeedback>, String> {
+class BatchFeedbackNotifier
+    extends FamilyAsyncNotifier<List<StudentFeedback>, String> {
   @override
   Future<List<StudentFeedback>> build(String arg) {
     return ref.read(feedbackRepositoryProvider).fetchBatchFeedback(arg);
@@ -80,6 +83,8 @@ class BatchFeedbackNotifier extends FamilyAsyncNotifier<List<StudentFeedback>, S
 }
 
 final batchFeedbackProvider =
-    AsyncNotifierProviderFamily<BatchFeedbackNotifier, List<StudentFeedback>, String>(
-  BatchFeedbackNotifier.new,
-);
+    AsyncNotifierProviderFamily<
+      BatchFeedbackNotifier,
+      List<StudentFeedback>,
+      String
+    >(BatchFeedbackNotifier.new);

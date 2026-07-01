@@ -25,16 +25,16 @@ class WorkoutExercise {
   final int position;
 
   factory WorkoutExercise.fromMap(Map<String, dynamic> m) => WorkoutExercise(
-        id: m['id'] as String,
-        workoutId: m['workout_id'] as String,
-        name: m['name'] as String,
-        sets: (m['sets'] as num?)?.toInt(),
-        reps: (m['reps'] as num?)?.toInt(),
-        durationSec: (m['duration_sec'] as num?)?.toInt(),
-        restSec: (m['rest_sec'] as num?)?.toInt(),
-        notes: m['notes'] as String?,
-        position: (m['position'] as num?)?.toInt() ?? 0,
-      );
+    id: m['id'] as String,
+    workoutId: m['workout_id'] as String,
+    name: m['name'] as String,
+    sets: (m['sets'] as num?)?.toInt(),
+    reps: (m['reps'] as num?)?.toInt(),
+    durationSec: (m['duration_sec'] as num?)?.toInt(),
+    restSec: (m['rest_sec'] as num?)?.toInt(),
+    notes: m['notes'] as String?,
+    position: (m['position'] as num?)?.toInt() ?? 0,
+  );
 
   /// Human-readable prescription, e.g. "3 × 12  ·  rest 30s" or "45s hold".
   String get prescription {
@@ -74,10 +74,11 @@ class Workout {
 
   factory Workout.fromMap(Map<String, dynamic> m) {
     final trainerRow = m['trainer'] as Map<String, dynamic>?;
-    final rawExercises = (m['workout_exercises'] as List<dynamic>? ?? [])
-        .map((e) => WorkoutExercise.fromMap(e as Map<String, dynamic>))
-        .toList()
-      ..sort((a, b) => a.position.compareTo(b.position));
+    final rawExercises =
+        (m['workout_exercises'] as List<dynamic>? ?? [])
+            .map((e) => WorkoutExercise.fromMap(e as Map<String, dynamic>))
+            .toList()
+          ..sort((a, b) => a.position.compareTo(b.position));
     return Workout(
       id: m['id'] as String,
       trainerId: m['trainer_id'] as String,

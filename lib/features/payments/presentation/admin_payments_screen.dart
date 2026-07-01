@@ -26,17 +26,18 @@ class AdminPaymentsScreen extends ConsumerWidget {
       final date = DateFormat('yyyy-MM-dd').format(p.paidAt);
       final name = (p.studentName ?? p.studentId).replaceAll(',', ' ');
       final ref = (p.referenceNumber ?? '').replaceAll(',', ' ');
-      buf.writeln('$date,$name,${p.amount},${p.method.label},${p.status.label},$ref');
+      buf.writeln(
+        '$date,$name,${p.amount},${p.method.label},${p.status.label},$ref',
+      );
     }
     final dir = await getTemporaryDirectory();
     final stamp = DateFormat('yyyyMMdd_HHmm').format(DateTime.now());
     final file = File('${dir.path}/payments_$stamp.csv');
     await file.writeAsString(buf.toString());
     if (!context.mounted) return;
-    await Share.shareXFiles(
-      [XFile(file.path, mimeType: 'text/csv')],
-      subject: 'Divinity Payments Export $stamp',
-    );
+    await Share.shareXFiles([
+      XFile(file.path, mimeType: 'text/csv'),
+    ], subject: 'Divinity Payments Export $stamp');
   }
 
   @override
@@ -54,15 +55,20 @@ class AdminPaymentsScreen extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.receipt_long_outlined,
-                      size: 64,
-                      color: AppColors.accentViolet.withValues(alpha: 0.4)),
+                  Icon(
+                    Icons.receipt_long_outlined,
+                    size: 64,
+                    color: AppColors.accentViolet.withValues(alpha: 0.4),
+                  ),
                   const SizedBox(height: 16),
                   Text('No payments recorded yet', style: tt.headlineSmall),
                   const SizedBox(height: 8),
-                  Text('Tap + to record a fee payment.',
-                      style: tt.bodyMedium
-                          ?.copyWith(color: AppColors.textSecondaryDark)),
+                  Text(
+                    'Tap + to record a fee payment.',
+                    style: tt.bodyMedium?.copyWith(
+                      color: AppColors.textSecondaryDark,
+                    ),
+                  ),
                 ],
               ),
             );
@@ -73,8 +79,7 @@ class AdminPaymentsScreen extends ConsumerWidget {
               .fold(0.0, (sum, p) => sum + p.amount);
 
           return RefreshIndicator(
-            onRefresh: () =>
-                ref.read(allPaymentsProvider.notifier).refresh(),
+            onRefresh: () => ref.read(allPaymentsProvider.notifier).refresh(),
             child: CustomScrollView(
               slivers: [
                 SliverToBoxAdapter(
@@ -85,22 +90,23 @@ class AdminPaymentsScreen extends ConsumerWidget {
                         padding: const EdgeInsets.all(20),
                         child: Row(
                           children: [
-                            Icon(Icons.account_balance_outlined,
-                                color: Theme.of(context).colorScheme.primary,
-                                size: 32),
+                            Icon(
+                              Icons.account_balance_outlined,
+                              color: Theme.of(context).colorScheme.primary,
+                              size: 32,
+                            ),
                             const SizedBox(width: 16),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Total Collected',
-                                      style: tt.bodySmall),
+                                  Text('Total Collected', style: tt.bodySmall),
                                   Text(
                                     '₹${totalCollected.toStringAsFixed(0)}',
                                     style: tt.headlineMedium?.copyWith(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primary,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -139,11 +145,11 @@ class AdminPaymentsScreen extends ConsumerWidget {
   }
 
   Future<void> _showRecordSheet(BuildContext context) => showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        useSafeArea: true,
-        builder: (_) => const RecordPaymentSheet(),
-      );
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    builder: (_) => const RecordPaymentSheet(),
+  );
 }
 
 class _PaymentRow extends ConsumerWidget {
@@ -192,22 +198,26 @@ class _PaymentRow extends ConsumerWidget {
           ),
         ),
         title: Text(payment.studentName ?? payment.studentId.substring(0, 8)),
-        subtitle:
-            Text('${payment.amountLabel} · ${payment.method.label} · ${payment.dateLabel}'),
+        subtitle: Text(
+          '${payment.amountLabel} · ${payment.method.label} · ${payment.dateLabel}',
+        ),
         trailing: Wrap(
           crossAxisAlignment: WrapCrossAlignment.center,
           spacing: 8,
           children: [
             Chip(
-              label: Text(statusLabel,
-                  style: tt.labelSmall?.copyWith(color: statusColor)),
+              label: Text(
+                statusLabel,
+                style: tt.labelSmall?.copyWith(color: statusColor),
+              ),
               side: BorderSide(color: statusColor.withValues(alpha: 0.3)),
               backgroundColor: statusColor.withValues(alpha: 0.1),
               visualDensity: VisualDensity.compact,
               padding: EdgeInsets.zero,
               labelPadding: const EdgeInsets.symmetric(horizontal: 8),
             ),
-            if (payment.status == PaymentStatus.pending && !payment.adminApproved)
+            if (payment.status == PaymentStatus.pending &&
+                !payment.adminApproved)
               const Icon(Icons.chevron_right, size: 20, color: Colors.grey),
           ],
         ),
@@ -223,7 +233,8 @@ class _PaymentDetailsDialog extends ConsumerStatefulWidget {
   final PaymentRecord payment;
 
   @override
-  ConsumerState<_PaymentDetailsDialog> createState() => _PaymentDetailsDialogState();
+  ConsumerState<_PaymentDetailsDialog> createState() =>
+      _PaymentDetailsDialogState();
 }
 
 class _PaymentDetailsDialogState extends ConsumerState<_PaymentDetailsDialog> {
@@ -251,7 +262,9 @@ class _PaymentDetailsDialogState extends ConsumerState<_PaymentDetailsDialog> {
 
     setState(() => _verifying = true);
     try {
-      await ref.read(allPaymentsProvider.notifier).verifyPayment(
+      await ref
+          .read(allPaymentsProvider.notifier)
+          .verifyPayment(
             paymentId: widget.payment.id,
             studentId: widget.payment.studentId,
             status: PaymentStatus.paid,
@@ -268,9 +281,9 @@ class _PaymentDetailsDialogState extends ConsumerState<_PaymentDetailsDialog> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _verifying = false);
@@ -282,9 +295,14 @@ class _PaymentDetailsDialogState extends ConsumerState<_PaymentDetailsDialog> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Reject Payment?'),
-        content: const Text('Are you sure you want to mark this transaction request as failed?'),
+        content: const Text(
+          'Are you sure you want to mark this transaction request as failed?',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
@@ -298,7 +316,9 @@ class _PaymentDetailsDialogState extends ConsumerState<_PaymentDetailsDialog> {
 
     setState(() => _verifying = true);
     try {
-      await ref.read(allPaymentsProvider.notifier).verifyPayment(
+      await ref
+          .read(allPaymentsProvider.notifier)
+          .verifyPayment(
             paymentId: widget.payment.id,
             studentId: widget.payment.studentId,
             status: PaymentStatus.failed,
@@ -311,9 +331,9 @@ class _PaymentDetailsDialogState extends ConsumerState<_PaymentDetailsDialog> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _verifying = false);
@@ -325,7 +345,7 @@ class _PaymentDetailsDialogState extends ConsumerState<_PaymentDetailsDialog> {
     final tt = Theme.of(context).textTheme;
     final colors = Theme.of(context).colorScheme;
     final p = widget.payment;
-    
+
     final String statusLabel;
     final Color statusColor;
     if (p.status == PaymentStatus.pending) {
@@ -373,8 +393,10 @@ class _PaymentDetailsDialogState extends ConsumerState<_PaymentDetailsDialog> {
               children: [
                 Text('Payment Details', style: tt.titleLarge),
                 Chip(
-                  label: Text(statusLabel,
-                      style: tt.labelSmall?.copyWith(color: statusColor)),
+                  label: Text(
+                    statusLabel,
+                    style: tt.labelSmall?.copyWith(color: statusColor),
+                  ),
                   side: BorderSide(color: statusColor.withValues(alpha: 0.3)),
                   backgroundColor: statusColor.withValues(alpha: 0.1),
                   visualDensity: VisualDensity.compact,
@@ -387,13 +409,21 @@ class _PaymentDetailsDialogState extends ConsumerState<_PaymentDetailsDialog> {
             _detailRow('Amount', p.amountLabel, tt),
             _detailRow('Payment Method', p.method.label, tt),
             if (p.referenceNumber != null)
-              _detailRow('Transaction UTR', p.referenceNumber!, tt, copyable: true),
+              _detailRow(
+                'Transaction UTR',
+                p.referenceNumber!,
+                tt,
+                copyable: true,
+              ),
             _detailRow('Date', p.dateLabel, tt),
             if (p.notes != null) _detailRow('Notes', p.notes!, tt),
 
             if (p.screenshotUrl != null) ...[
               const SizedBox(height: 20),
-              Text('Receipt Screenshot', style: tt.bodySmall?.copyWith(color: AppColors.accentGold)),
+              Text(
+                'Receipt Screenshot',
+                style: tt.bodySmall?.copyWith(color: AppColors.accentGold),
+              ),
               const SizedBox(height: 8),
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
@@ -412,7 +442,11 @@ class _PaymentDetailsDialogState extends ConsumerState<_PaymentDetailsDialog> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.broken_image_outlined, size: 48, color: Colors.grey),
+                          Icon(
+                            Icons.broken_image_outlined,
+                            size: 48,
+                            color: Colors.grey,
+                          ),
                           SizedBox(height: 8),
                           Text('Failed to load receipt image'),
                         ],
@@ -461,7 +495,12 @@ class _PaymentDetailsDialogState extends ConsumerState<_PaymentDetailsDialog> {
     );
   }
 
-  Widget _detailRow(String label, String value, TextTheme tt, {bool copyable = false}) {
+  Widget _detailRow(
+    String label,
+    String value,
+    TextTheme tt, {
+    bool copyable = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Column(

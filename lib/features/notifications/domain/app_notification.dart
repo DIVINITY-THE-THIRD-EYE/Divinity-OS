@@ -9,22 +9,22 @@ enum NotificationKind {
   attendance;
 
   static NotificationKind fromString(String v) => switch (v.toUpperCase()) {
-        'LEAVE_APPROVED' => NotificationKind.leaveApproved,
-        'LEAVE_REJECTED' => NotificationKind.leaveRejected,
-        'PAYMENT_DUE' => NotificationKind.paymentDue,
-        'BATCH_UPDATE' => NotificationKind.batchUpdate,
-        'ATTENDANCE' => NotificationKind.attendance,
-        _ => NotificationKind.general,
-      };
+    'LEAVE_APPROVED' => NotificationKind.leaveApproved,
+    'LEAVE_REJECTED' => NotificationKind.leaveRejected,
+    'PAYMENT_DUE' => NotificationKind.paymentDue,
+    'BATCH_UPDATE' => NotificationKind.batchUpdate,
+    'ATTENDANCE' => NotificationKind.attendance,
+    _ => NotificationKind.general,
+  };
 
   String get dbValue => switch (this) {
-        NotificationKind.general => 'GENERAL',
-        NotificationKind.leaveApproved => 'LEAVE_APPROVED',
-        NotificationKind.leaveRejected => 'LEAVE_REJECTED',
-        NotificationKind.paymentDue => 'PAYMENT_DUE',
-        NotificationKind.batchUpdate => 'BATCH_UPDATE',
-        NotificationKind.attendance => 'ATTENDANCE',
-      };
+    NotificationKind.general => 'GENERAL',
+    NotificationKind.leaveApproved => 'LEAVE_APPROVED',
+    NotificationKind.leaveRejected => 'LEAVE_REJECTED',
+    NotificationKind.paymentDue => 'PAYMENT_DUE',
+    NotificationKind.batchUpdate => 'BATCH_UPDATE',
+    NotificationKind.attendance => 'ATTENDANCE',
+  };
 }
 
 class AppNotification {
@@ -49,27 +49,26 @@ class AppNotification {
   final DateTime createdAt;
 
   factory AppNotification.fromMap(Map<String, dynamic> m) => AppNotification(
-        id: m['id'] as String,
-        userId: m['user_id'] as String,
-        kind: NotificationKind.fromString(
-            m['kind'] as String? ?? 'GENERAL'),
-        title: m['title'] as String,
-        body: m['body'] as String?,
-        isRead: m['is_read'] as bool? ?? false,
-        metadata: m['metadata'] as Map<String, dynamic>?,
-        createdAt: DateTime.parse(m['created_at'] as String),
-      );
+    id: m['id'] as String,
+    userId: m['user_id'] as String,
+    kind: NotificationKind.fromString(m['kind'] as String? ?? 'GENERAL'),
+    title: m['title'] as String,
+    body: m['body'] as String?,
+    isRead: m['is_read'] as bool? ?? false,
+    metadata: m['metadata'] as Map<String, dynamic>?,
+    createdAt: DateTime.parse(m['created_at'] as String),
+  );
 
   AppNotification copyWith({bool? isRead}) => AppNotification(
-        id: id,
-        userId: userId,
-        kind: kind,
-        title: title,
-        body: body,
-        isRead: isRead ?? this.isRead,
-        metadata: metadata,
-        createdAt: createdAt,
-      );
+    id: id,
+    userId: userId,
+    kind: kind,
+    title: title,
+    body: body,
+    isRead: isRead ?? this.isRead,
+    metadata: metadata,
+    createdAt: createdAt,
+  );
 
   String get timeLabel {
     final now = DateTime.now();

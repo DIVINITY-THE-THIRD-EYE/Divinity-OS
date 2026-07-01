@@ -16,8 +16,9 @@ class LeaveApprovalScreen extends ConsumerWidget {
       loading: () => const Center(child: ChakraLoader()),
       error: (e, _) => Center(child: Text('Error: $e')),
       data: (requests) {
-        final pending =
-            requests.where((r) => r.status == LeaveStatus.pending).toList();
+        final pending = requests
+            .where((r) => r.status == LeaveStatus.pending)
+            .toList();
         if (pending.isEmpty) {
           return const Center(child: Text('No pending leave requests.'));
         }
@@ -45,8 +46,7 @@ class _LeaveApprovalTile extends ConsumerWidget {
         children: [
           Text(request.dateRangeLabel),
           if (request.reason != null)
-            Text(request.reason!,
-                style: Theme.of(context).textTheme.bodySmall),
+            Text(request.reason!, style: Theme.of(context).textTheme.bodySmall),
         ],
       ),
       isThreeLine: request.reason != null,
@@ -62,7 +62,9 @@ class _LeaveApprovalTile extends ConsumerWidget {
                 context,
                 ref,
                 'Approve this leave request?',
-                () => ref.read(pendingLeaveProvider.notifier).approve(request.id, approvedBy: uid),
+                () => ref
+                    .read(pendingLeaveProvider.notifier)
+                    .approve(request.id, approvedBy: uid),
               );
             },
           ),
@@ -75,7 +77,9 @@ class _LeaveApprovalTile extends ConsumerWidget {
                 context,
                 ref,
                 'Reject this leave request?',
-                () => ref.read(pendingLeaveProvider.notifier).reject(request.id, approvedBy: uid),
+                () => ref
+                    .read(pendingLeaveProvider.notifier)
+                    .reject(request.id, approvedBy: uid),
               );
             },
           ),
@@ -96,11 +100,13 @@ class _LeaveApprovalTile extends ConsumerWidget {
         content: Text(message),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel')),
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
           FilledButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text('Confirm')),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Confirm'),
+          ),
         ],
       ),
     );
@@ -109,8 +115,9 @@ class _LeaveApprovalTile extends ConsumerWidget {
         await action();
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text('Error: $e')));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Error: $e')));
         }
       }
     }

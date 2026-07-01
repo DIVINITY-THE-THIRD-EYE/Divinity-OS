@@ -24,13 +24,16 @@ class PaymentsScreen extends ConsumerWidget {
       error: (e, _) => Center(child: Text('Error: $e')),
       data: (profile) {
         final planStatus = profile.planStatus.toUpperCase();
-        
+
         return paymentsAsync.when(
           loading: () => const Center(child: ChakraLoader()),
           error: (e, _) => Center(child: Text('Error: $e')),
           data: (payments) {
-            final hasPending = planStatus == 'PENDING_ADMIN' || planStatus == 'PENDING_TRAINER';
-            final isUnpaidOrExpired = planStatus == 'UNPAID' || planStatus == 'EXPIRED';
+            final hasPending =
+                planStatus == 'PENDING_ADMIN' ||
+                planStatus == 'PENDING_TRAINER';
+            final isUnpaidOrExpired =
+                planStatus == 'UNPAID' || planStatus == 'EXPIRED';
 
             return CustomScrollView(
               slivers: [
@@ -76,16 +79,21 @@ class PaymentsScreen extends ConsumerWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.receipt_long_outlined,
-                              size: 64,
-                              color: AppColors.accentViolet.withValues(alpha: 0.4)),
+                          Icon(
+                            Icons.receipt_long_outlined,
+                            size: 64,
+                            color: AppColors.accentViolet.withValues(
+                              alpha: 0.4,
+                            ),
+                          ),
                           const SizedBox(height: 16),
                           Text('No payments yet', style: tt.headlineSmall),
                           const SizedBox(height: 8),
                           Text(
                             'Your fee receipts will appear here.',
-                            style: tt.bodyMedium
-                                ?.copyWith(color: AppColors.textSecondaryDark),
+                            style: tt.bodyMedium?.copyWith(
+                              color: AppColors.textSecondaryDark,
+                            ),
                           ),
                         ],
                       ),
@@ -112,16 +120,20 @@ class _SummaryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
     final colors = Theme.of(context).colorScheme;
-    final label =
-        currency == 'INR' ? '₹${totalPaid.toStringAsFixed(0)}' : '$totalPaid';
+    final label = currency == 'INR'
+        ? '₹${totalPaid.toStringAsFixed(0)}'
+        : '$totalPaid';
 
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Row(
           children: [
-            Icon(Icons.account_balance_wallet_outlined,
-                color: colors.primary, size: 32),
+            Icon(
+              Icons.account_balance_wallet_outlined,
+              color: colors.primary,
+              size: 32,
+            ),
             const SizedBox(width: 16),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -166,15 +178,19 @@ class _PaymentTile extends StatelessWidget {
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: colors.primaryContainer,
-          child: Icon(_methodIcon(payment.method),
-              color: colors.primary, size: 20),
+          child: Icon(
+            _methodIcon(payment.method),
+            color: colors.primary,
+            size: 20,
+          ),
         ),
         title: Text(payment.amountLabel, style: tt.titleMedium),
-        subtitle:
-            Text('${payment.method.label} · ${payment.dateLabel}'),
+        subtitle: Text('${payment.method.label} · ${payment.dateLabel}'),
         trailing: Chip(
-          label: Text(payment.status.label,
-              style: tt.labelSmall?.copyWith(color: statusColor)),
+          label: Text(
+            payment.status.label,
+            style: tt.labelSmall?.copyWith(color: statusColor),
+          ),
           side: BorderSide(color: statusColor.withValues(alpha: 0.3)),
           backgroundColor: statusColor.withValues(alpha: 0.1),
           visualDensity: VisualDensity.compact,
@@ -186,11 +202,11 @@ class _PaymentTile extends StatelessWidget {
   }
 
   IconData _methodIcon(PaymentMethod m) => switch (m) {
-        PaymentMethod.cash => Icons.money_outlined,
-        PaymentMethod.upi => Icons.qr_code_outlined,
-        PaymentMethod.bankTransfer => Icons.account_balance_outlined,
-        PaymentMethod.razorpay => Icons.payment_outlined,
-      };
+    PaymentMethod.cash => Icons.money_outlined,
+    PaymentMethod.upi => Icons.qr_code_outlined,
+    PaymentMethod.bankTransfer => Icons.account_balance_outlined,
+    PaymentMethod.razorpay => Icons.payment_outlined,
+  };
 }
 
 // ── Unpaid / Renewal Card ─────────────────────────────────────────────────────
@@ -225,14 +241,20 @@ class _UnpaidRenewalCard extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.accentViolet.withValues(alpha: 0.3)),
+        border: Border.all(
+          color: AppColors.accentViolet.withValues(alpha: 0.3),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(Icons.warning_amber_rounded, color: AppColors.accentGold, size: 28),
+              const Icon(
+                Icons.warning_amber_rounded,
+                color: AppColors.accentGold,
+                size: 28,
+              ),
               const SizedBox(width: 12),
               Text(
                 isExpired ? 'Membership Expired' : 'No Active Membership',
@@ -259,7 +281,9 @@ class _UnpaidRenewalCard extends StatelessWidget {
                 foregroundColor: Colors.white,
               ),
               icon: const Icon(Icons.payment_outlined),
-              label: Text(isExpired ? 'Renew Pass' : 'Pay & Activate Membership'),
+              label: Text(
+                isExpired ? 'Renew Pass' : 'Pay & Activate Membership',
+              ),
               onPressed: () => _openPaymentSheet(context),
             ),
           ),
@@ -309,7 +333,10 @@ class _PendingVerificationCard extends StatelessWidget {
               const SizedBox(
                 width: 20,
                 height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.accentGold),
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: AppColors.accentGold,
+                ),
               ),
               const SizedBox(width: 12),
               Text(
@@ -356,11 +383,15 @@ class _Stepper extends StatelessWidget {
                   radius: 12,
                   backgroundColor: isDone
                       ? Colors.green
-                      : (isCurrent ? AppColors.accentGold : Colors.grey.shade800),
+                      : (isCurrent
+                            ? AppColors.accentGold
+                            : Colors.grey.shade800),
                   child: isDone
                       ? const Icon(Icons.check, size: 14, color: Colors.white)
-                      : Text('${stepIdx + 1}',
-                          style: tt.labelSmall?.copyWith(color: Colors.white)),
+                      : Text(
+                          '${stepIdx + 1}',
+                          style: tt.labelSmall?.copyWith(color: Colors.white),
+                        ),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -393,7 +424,8 @@ class _UploadPaymentSheet extends ConsumerStatefulWidget {
   const _UploadPaymentSheet();
 
   @override
-  ConsumerState<_UploadPaymentSheet> createState() => _UploadPaymentSheetState();
+  ConsumerState<_UploadPaymentSheet> createState() =>
+      _UploadPaymentSheetState();
 }
 
 class _UploadPaymentSheetState extends ConsumerState<_UploadPaymentSheet> {
@@ -401,13 +433,13 @@ class _UploadPaymentSheetState extends ConsumerState<_UploadPaymentSheet> {
   final _amountCtrl = TextEditingController();
   final _refCtrl = TextEditingController();
   final _notesCtrl = TextEditingController();
-  
+
   final List<YogaPlan> _plans = const [
     YogaPlan('Monthly Yoga Pass', 2000, '30 Days'),
     YogaPlan('Quarterly Alignment Pass', 5000, '90 Days'),
     YogaPlan('Annual Transformation Pass', 18000, '365 Days'),
   ];
-  
+
   YogaPlan? _selectedPlan;
   XFile? _pickedImage;
   bool _submitting = false;
@@ -533,11 +565,15 @@ class _UploadPaymentSheetState extends ConsumerState<_UploadPaymentSheet> {
       final filename = '${DateTime.now().millisecondsSinceEpoch}.$ext';
       final amount = double.parse(_amountCtrl.text.trim());
 
-      await ref.read(myPaymentsProvider.notifier).submitManualPayment(
+      await ref
+          .read(myPaymentsProvider.notifier)
+          .submitManualPayment(
             amount: amount,
             method: PaymentMethod.upi,
             referenceNumber: _refCtrl.text.trim(),
-            notes: _notesCtrl.text.trim().isEmpty ? null : _notesCtrl.text.trim(),
+            notes: _notesCtrl.text.trim().isEmpty
+                ? null
+                : _notesCtrl.text.trim(),
             filename: filename,
             bytes: bytes.toList(),
           );
@@ -546,16 +582,18 @@ class _UploadPaymentSheetState extends ConsumerState<_UploadPaymentSheet> {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Payment registered successfully! Admin will verify soon.'),
+            content: Text(
+              'Payment registered successfully! Admin will verify soon.',
+            ),
             backgroundColor: Colors.green,
           ),
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Submission failed: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Submission failed: $e')));
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -567,7 +605,9 @@ class _UploadPaymentSheetState extends ConsumerState<_UploadPaymentSheet> {
     final tt = Theme.of(context).textTheme;
 
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: DraggableScrollableSheet(
         initialChildSize: 0.85,
         maxChildSize: 0.95,
@@ -603,10 +643,14 @@ class _UploadPaymentSheetState extends ConsumerState<_UploadPaymentSheet> {
                     prefixIcon: Icon(Icons.card_membership_outlined),
                   ),
                   items: _plans
-                      .map((p) => DropdownMenuItem(
-                            value: p,
-                            child: Text('${p.name} (₹${p.price.toStringAsFixed(0)})'),
-                          ))
+                      .map(
+                        (p) => DropdownMenuItem(
+                          value: p,
+                          child: Text(
+                            '${p.name} (₹${p.price.toStringAsFixed(0)})',
+                          ),
+                        ),
+                      )
                       .toList(),
                   onChanged: (p) {
                     if (p != null) {
@@ -637,13 +681,17 @@ class _UploadPaymentSheetState extends ConsumerState<_UploadPaymentSheet> {
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.03),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.07),
+                    ),
                   ),
                   child: Column(
                     children: [
                       Text(
                         'Scan UPI QR to Pay',
-                        style: tt.bodySmall?.copyWith(color: AppColors.accentGold),
+                        style: tt.bodySmall?.copyWith(
+                          color: AppColors.accentGold,
+                        ),
                       ),
                       const SizedBox(height: 12),
                       Container(
@@ -688,7 +736,9 @@ class _UploadPaymentSheetState extends ConsumerState<_UploadPaymentSheet> {
                         color: _pickedImage != null
                             ? AppColors.accentViolet.withValues(alpha: 0.5)
                             : Colors.white.withValues(alpha: 0.1),
-                        style: _pickedImage != null ? BorderStyle.solid : BorderStyle.solid,
+                        style: _pickedImage != null
+                            ? BorderStyle.solid
+                            : BorderStyle.solid,
                       ),
                     ),
                     child: _pickedImage != null
@@ -696,11 +746,16 @@ class _UploadPaymentSheetState extends ConsumerState<_UploadPaymentSheet> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Icon(Icons.check_circle_outline, color: Colors.green),
+                                const Icon(
+                                  Icons.check_circle_outline,
+                                  color: Colors.green,
+                                ),
                                 const SizedBox(width: 8),
                                 Text(
                                   'Screenshot Selected',
-                                  style: tt.bodyMedium?.copyWith(color: Colors.green),
+                                  style: tt.bodyMedium?.copyWith(
+                                    color: Colors.green,
+                                  ),
                                 ),
                               ],
                             ),
@@ -708,10 +763,22 @@ class _UploadPaymentSheetState extends ConsumerState<_UploadPaymentSheet> {
                         : Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(Icons.cloud_upload_outlined, size: 36, color: Colors.grey),
+                              const Icon(
+                                Icons.cloud_upload_outlined,
+                                size: 36,
+                                color: Colors.grey,
+                              ),
                               const SizedBox(height: 8),
-                              Text('Upload Payment Screenshot', style: tt.bodyMedium),
-                              Text('JPEG, PNG receipts only', style: tt.bodySmall?.copyWith(color: Colors.grey)),
+                              Text(
+                                'Upload Payment Screenshot',
+                                style: tt.bodyMedium,
+                              ),
+                              Text(
+                                'JPEG, PNG receipts only',
+                                style: tt.bodySmall?.copyWith(
+                                  color: Colors.grey,
+                                ),
+                              ),
                             ],
                           ),
                   ),
@@ -760,7 +827,10 @@ class _UploadPaymentSheetState extends ConsumerState<_UploadPaymentSheet> {
                     child: _submitting
                         ? const SizedBox.square(
                             dimension: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
                           )
                         : const Text('Submit Payment'),
                   ),

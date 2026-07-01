@@ -78,8 +78,8 @@ final authRepositoryProvider = Provider<AuthRepository>(
 
 final authStateProvider =
     StateNotifierProvider<AuthNotifier, app_auth.AuthState>(
-  (ref) => AuthNotifier(ref.watch(authRepositoryProvider)),
-);
+      (ref) => AuthNotifier(ref.watch(authRepositoryProvider)),
+    );
 
 class AuthNotifier extends StateNotifier<app_auth.AuthState> {
   AuthNotifier(this._repo) : super(app_auth.AuthInitial()) {
@@ -325,10 +325,7 @@ class AuthNotifier extends StateNotifier<app_auth.AuthState> {
     }
   }
 
-  Future<void> verifyOtp({
-    required String phone,
-    required String token,
-  }) async {
+  Future<void> verifyOtp({required String phone, required String token}) async {
     _handlingLocal = true;
     state = app_auth.AuthLoading();
     try {

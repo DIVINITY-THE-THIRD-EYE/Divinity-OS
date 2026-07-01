@@ -22,15 +22,15 @@ class ExerciseDraft {
   final String? notes;
 
   Map<String, dynamic> toRow(String workoutId, int position) => {
-        'workout_id': workoutId,
-        'name': name,
-        if (sets != null) 'sets': sets,
-        if (reps != null) 'reps': reps,
-        if (durationSec != null) 'duration_sec': durationSec,
-        if (restSec != null) 'rest_sec': restSec,
-        if (notes != null && notes!.trim().isNotEmpty) 'notes': notes!.trim(),
-        'position': position,
-      };
+    'workout_id': workoutId,
+    'name': name,
+    if (sets != null) 'sets': sets,
+    if (reps != null) 'reps': reps,
+    if (durationSec != null) 'duration_sec': durationSec,
+    if (restSec != null) 'rest_sec': restSec,
+    if (notes != null && notes!.trim().isNotEmpty) 'notes': notes!.trim(),
+    'position': position,
+  };
 }
 
 abstract interface class WorkoutRepository {
@@ -141,15 +141,17 @@ class SupabaseWorkoutRepository implements WorkoutRepository {
     required String batchId,
     required String assignedBy,
   }) async {
-    await _client.from('workout_assignments').upsert(
-      {
-        'workout_id': workoutId,
-        'batch_id': batchId,
-        'assigned_by': assignedBy,
-      },
-      onConflict: 'workout_id,batch_id',
-      ignoreDuplicates: true,
-    );
+    await _client
+        .from('workout_assignments')
+        .upsert(
+          {
+            'workout_id': workoutId,
+            'batch_id': batchId,
+            'assigned_by': assignedBy,
+          },
+          onConflict: 'workout_id,batch_id',
+          ignoreDuplicates: true,
+        );
   }
 
   @override
@@ -184,10 +186,12 @@ class SupabaseWorkoutRepository implements WorkoutRepository {
         )
         .order('assigned_at', ascending: false);
     return (rows as List<dynamic>)
-        .map((r) => WorkoutAssignment.fromMap(
-              r as Map<String, dynamic>,
-              currentStudentId: studentId,
-            ))
+        .map(
+          (r) => WorkoutAssignment.fromMap(
+            r as Map<String, dynamic>,
+            currentStudentId: studentId,
+          ),
+        )
         .toList();
   }
 
@@ -197,14 +201,11 @@ class SupabaseWorkoutRepository implements WorkoutRepository {
     required String studentId,
     String? notes,
   }) async {
-    await _client.from('workout_completions').upsert(
-      {
-        'assignment_id': assignmentId,
-        'student_id': studentId,
-        if (notes != null && notes.trim().isNotEmpty) 'notes': notes.trim(),
-      },
-      onConflict: 'assignment_id,student_id',
-    );
+    await _client.from('workout_completions').upsert({
+      'assignment_id': assignmentId,
+      'student_id': studentId,
+      if (notes != null && notes.trim().isNotEmpty) 'notes': notes.trim(),
+    }, onConflict: 'assignment_id,student_id');
   }
 
   @override

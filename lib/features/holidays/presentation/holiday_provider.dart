@@ -24,17 +24,17 @@ class HolidayNotifier extends AsyncNotifier<List<Holiday>> {
     final holiday = await ref
         .read(holidayRepositoryProvider)
         .addHoliday(date: date, name: name);
-    state = AsyncData([...state.value ?? [], holiday]
-      ..sort((a, b) => a.date.compareTo(b.date)));
+    state = AsyncData(
+      [...state.value ?? [], holiday]..sort((a, b) => a.date.compareTo(b.date)),
+    );
   }
 
   Future<void> remove(String id) async {
     await ref.read(holidayRepositoryProvider).deleteHoliday(id);
-    state = AsyncData(
-      (state.value ?? []).where((h) => h.id != id).toList(),
-    );
+    state = AsyncData((state.value ?? []).where((h) => h.id != id).toList());
   }
 }
 
-final holidaysProvider =
-    AsyncNotifierProvider<HolidayNotifier, List<Holiday>>(HolidayNotifier.new);
+final holidaysProvider = AsyncNotifierProvider<HolidayNotifier, List<Holiday>>(
+  HolidayNotifier.new,
+);

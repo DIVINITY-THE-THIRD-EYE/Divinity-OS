@@ -25,7 +25,9 @@ class MyLeaveNotifier extends AsyncNotifier<List<LeaveRequest>> {
   }) async {
     final uid = ref.read(currentUserIdProvider);
     if (uid == null) return;
-    final created = await ref.read(leaveRepositoryProvider).submitRequest(
+    final created = await ref
+        .read(leaveRepositoryProvider)
+        .submitRequest(
           studentId: uid,
           startDate: startDate,
           endDate: endDate,
@@ -37,8 +39,8 @@ class MyLeaveNotifier extends AsyncNotifier<List<LeaveRequest>> {
 
 final myLeaveProvider =
     AsyncNotifierProvider<MyLeaveNotifier, List<LeaveRequest>>(
-  MyLeaveNotifier.new,
-);
+      MyLeaveNotifier.new,
+    );
 
 // ── Pending requests (trainer/admin view) ─────────────────────────────────────
 
@@ -77,5 +79,5 @@ class PendingLeaveNotifier extends AsyncNotifier<List<LeaveRequest>> {
 
 final pendingLeaveProvider =
     AsyncNotifierProvider<PendingLeaveNotifier, List<LeaveRequest>>(
-  PendingLeaveNotifier.new,
-);
+      PendingLeaveNotifier.new,
+    );

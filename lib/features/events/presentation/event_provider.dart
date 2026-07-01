@@ -42,8 +42,8 @@ class StudentEventsNotifier extends AsyncNotifier<List<Event>> {
 
 final studentEventsProvider =
     AsyncNotifierProvider<StudentEventsNotifier, List<Event>>(
-  StudentEventsNotifier.new,
-);
+      StudentEventsNotifier.new,
+    );
 
 // ── Admin: all events (any status) ───────────────────────────────────────────
 
@@ -62,14 +62,16 @@ class AdminEventsNotifier extends AsyncNotifier<List<Event>> {
   Future<void> create(Event draft) async {
     final uid = ref.read(currentUserIdProvider);
     if (uid == null) return;
-    final created =
-        await ref.read(eventRepositoryProvider).createEvent(draft, createdBy: uid);
+    final created = await ref
+        .read(eventRepositoryProvider)
+        .createEvent(draft, createdBy: uid);
     state = AsyncData([created, ...state.value ?? []]);
   }
 
   Future<void> edit(String id, Event draft) async {
-    final updated =
-        await ref.read(eventRepositoryProvider).updateEvent(id, draft);
+    final updated = await ref
+        .read(eventRepositoryProvider)
+        .updateEvent(id, draft);
     state = AsyncData([
       for (final e in state.value ?? []) e.id == id ? updated : e,
     ]);
@@ -83,5 +85,5 @@ class AdminEventsNotifier extends AsyncNotifier<List<Event>> {
 
 final adminEventsProvider =
     AsyncNotifierProvider<AdminEventsNotifier, List<Event>>(
-  AdminEventsNotifier.new,
-);
+      AdminEventsNotifier.new,
+    );

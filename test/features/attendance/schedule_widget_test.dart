@@ -24,9 +24,7 @@ void main() {
         currentUserIdProvider.overrideWithValue('student-1'),
         attendanceRepositoryProvider.overrideWithValue(mockAttendanceRepo),
       ],
-      child: const MaterialApp(
-        home: WeeklyScheduleScreen(),
-      ),
+      child: const MaterialApp(home: WeeklyScheduleScreen()),
     );
   }
 
@@ -51,13 +49,12 @@ void main() {
       'location_lat': 12.9716,
       'location_lng': 77.5946,
       'radius_meters': 100,
-      'users': {
-        'name': 'Trainer Guru',
-      }
+      'users': {'name': 'Trainer Guru'},
     };
 
-    when(() => mockAttendanceRepo.fetchActiveBatch('student-1'))
-        .thenAnswer((_) async => mockBatch);
+    when(
+      () => mockAttendanceRepo.fetchActiveBatch('student-1'),
+    ).thenAnswer((_) async => mockBatch);
 
     final todayNormalized = DateTime(today.year, today.month, today.day);
 
@@ -69,11 +66,12 @@ void main() {
         date: todayNormalized,
         status: AttendanceStatus.present,
         markedBy: MarkedBy.student,
-      )
+      ),
     ];
 
-    when(() => mockAttendanceRepo.fetchHistory('student-1'))
-        .thenAnswer((_) async => mockHistory);
+    when(
+      () => mockAttendanceRepo.fetchHistory('student-1'),
+    ).thenAnswer((_) async => mockHistory);
 
     await tester.pumpWidget(createWidgetUnderTest());
     await tester.pump();

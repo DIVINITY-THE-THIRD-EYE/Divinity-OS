@@ -49,21 +49,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final name = _nameCtrl.text.trim();
 
     if (_view == LoginView.emailSignIn) {
-      await ref.read(authStateProvider.notifier).signInWithEmail(
-            email: email,
-            password: password,
-          );
+      await ref
+          .read(authStateProvider.notifier)
+          .signInWithEmail(email: email, password: password);
     } else if (_view == LoginView.phoneSignIn) {
       if (_phoneOtpMode) {
         await ref.read(authStateProvider.notifier).sendOtp(phone: phone);
       } else {
-        await ref.read(authStateProvider.notifier).signInWithPhone(
-              phone: phone,
-              password: password,
-            );
+        await ref
+            .read(authStateProvider.notifier)
+            .signInWithPhone(phone: phone, password: password);
       }
     } else if (_view == LoginView.signUp) {
-      await ref.read(authStateProvider.notifier).signUpWithEmail(
+      await ref
+          .read(authStateProvider.notifier)
+          .signUpWithEmail(
             email: email,
             password: password,
             name: name,
@@ -93,9 +93,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 TextFormField(
                   controller: emailCtrl,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    labelText: 'Email Address',
-                  ),
+                  decoration: const InputDecoration(labelText: 'Email Address'),
                   validator: (v) {
                     if (v == null || v.isEmpty || !v.contains('@')) {
                       return 'Enter a valid email address';
@@ -190,12 +188,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const ThirdEyeIcon(size: 56, color: AppColors.accentViolet),
+                        const ThirdEyeIcon(
+                          size: 56,
+                          color: AppColors.accentViolet,
+                        ),
                         const SizedBox(height: 16),
-                        Text('Divinity', style: Theme.of(context).textTheme.headlineMedium),
+                        Text(
+                          'Divinity',
+                          style: Theme.of(context).textTheme.headlineMedium,
+                        ),
                         Text(
                           'THE THIRD EYE',
-                          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          style: Theme.of(context).textTheme.labelMedium
+                              ?.copyWith(
                                 color: AppColors.accentViolet,
                                 letterSpacing: 4,
                               ),
@@ -213,10 +218,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
             ),
           ),
-          if (isLoading)
-            const LoadingOverlay(
-              message: 'Connecting…',
-            ),
+          if (isLoading) const LoadingOverlay(message: 'Connecting…'),
         ],
       ),
     );
@@ -231,11 +233,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           children: [
             if (config.enableGoogleSignIn) ...[
               OutlinedButton(
-                onPressed: () => ref.read(authStateProvider.notifier).signInWithGoogle(),
+                onPressed: () =>
+                    ref.read(authStateProvider.notifier).signInWithGoogle(),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   side: const BorderSide(color: AppColors.borderDark),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   backgroundColor: AppColors.surfaceDark,
                 ),
                 child: Row(
@@ -244,7 +249,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     Image.network(
                       'https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.png',
                       height: 18,
-                      errorBuilder: (context, error, stackTrace) => const Icon(Icons.g_mobiledata, size: 18),
+                      errorBuilder: (context, error, stackTrace) =>
+                          const Icon(Icons.g_mobiledata, size: 18),
                     ),
                     const SizedBox(width: 12),
                     Text('Continue with Google', style: tt.titleSmall),
@@ -253,13 +259,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               const SizedBox(height: 12),
             ],
-            if (config.enableAppleSignIn && Theme.of(context).platform == TargetPlatform.iOS) ...[
+            if (config.enableAppleSignIn &&
+                Theme.of(context).platform == TargetPlatform.iOS) ...[
               OutlinedButton(
-                onPressed: () => ref.read(authStateProvider.notifier).signInWithApple(),
+                onPressed: () =>
+                    ref.read(authStateProvider.notifier).signInWithApple(),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   side: const BorderSide(color: AppColors.borderDark),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   backgroundColor: AppColors.surfaceDark,
                 ),
                 child: Row(
@@ -279,13 +289,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   side: const BorderSide(color: AppColors.borderDark),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   backgroundColor: AppColors.surfaceDark,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.email_outlined, size: 18, color: Colors.white),
+                    const Icon(
+                      Icons.email_outlined,
+                      size: 18,
+                      color: Colors.white,
+                    ),
                     const SizedBox(width: 12),
                     Text('Continue with Email', style: tt.titleSmall),
                   ],
@@ -299,13 +315,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   side: const BorderSide(color: AppColors.borderDark),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   backgroundColor: AppColors.surfaceDark,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.phone_outlined, size: 18, color: Colors.white),
+                    const Icon(
+                      Icons.phone_outlined,
+                      size: 18,
+                      color: Colors.white,
+                    ),
                     const SizedBox(width: 12),
                     Text('Continue with Phone', style: tt.titleSmall),
                   ],
@@ -319,7 +341,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 onPressed: () => setState(() => _view = LoginView.signUp),
                 child: Text(
                   'Create Account',
-                  style: tt.bodyMedium?.copyWith(color: AppColors.accentViolet, fontWeight: FontWeight.bold),
+                  style: tt.bodyMedium?.copyWith(
+                    color: AppColors.accentViolet,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               const SizedBox(height: 4),
@@ -327,10 +352,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 onPressed: _showForgotPasswordDialog,
                 child: Text(
                   'Forgot Password?',
-                  style: tt.bodySmall?.copyWith(color: AppColors.textSecondaryDark),
+                  style: tt.bodySmall?.copyWith(
+                    color: AppColors.textSecondaryDark,
+                  ),
                 ),
               ),
-            ]
+            ],
           ],
         );
 
@@ -344,7 +371,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 labelText: 'Email Address',
                 prefixIcon: Icon(Icons.email_outlined),
               ),
-              validator: (v) => (v == null || v.isEmpty || !v.contains('@')) ? 'Enter a valid email address' : null,
+              validator: (v) => (v == null || v.isEmpty || !v.contains('@'))
+                  ? 'Enter a valid email address'
+                  : null,
             ),
             const SizedBox(height: 16),
             TextFormField(
@@ -354,11 +383,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 labelText: 'Password',
                 prefixIcon: const Icon(Icons.lock_outline),
                 suffixIcon: IconButton(
-                  icon: Icon(_obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 20),
-                  onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                  icon: Icon(
+                    _obscurePassword
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined,
+                    size: 20,
+                  ),
+                  onPressed: () =>
+                      setState(() => _obscurePassword = !_obscurePassword),
                 ),
               ),
-              validator: (v) => (v == null || v.isEmpty) ? 'Enter your password' : null,
+              validator: (v) =>
+                  (v == null || v.isEmpty) ? 'Enter your password' : null,
             ),
             const SizedBox(height: 24),
             SizedBox(
@@ -389,7 +425,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 prefixIcon: Icon(Icons.phone_android_outlined),
                 counterText: '',
               ),
-              validator: (v) => (v == null || v.length != 10) ? 'Enter a valid 10-digit number' : null,
+              validator: (v) => (v == null || v.length != 10)
+                  ? 'Enter a valid 10-digit number'
+                  : null,
             ),
             if (!_phoneOtpMode) ...[
               const SizedBox(height: 16),
@@ -400,11 +438,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   labelText: 'Password',
                   prefixIcon: const Icon(Icons.lock_outline),
                   suffixIcon: IconButton(
-                    icon: Icon(_obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 20),
-                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                      size: 20,
+                    ),
+                    onPressed: () =>
+                        setState(() => _obscurePassword = !_obscurePassword),
                   ),
                 ),
-                validator: (v) => (v == null || v.isEmpty) ? 'Enter your password' : null,
+                validator: (v) =>
+                    (v == null || v.isEmpty) ? 'Enter your password' : null,
               ),
             ],
             const SizedBox(height: 16),
@@ -412,8 +457,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 TextButton(
-                  onPressed: () => setState(() => _phoneOtpMode = !_phoneOtpMode),
-                  child: Text(_phoneOtpMode ? 'Use password instead' : 'Use OTP instead'),
+                  onPressed: () =>
+                      setState(() => _phoneOtpMode = !_phoneOtpMode),
+                  child: Text(
+                    _phoneOtpMode ? 'Use password instead' : 'Use OTP instead',
+                  ),
                 ),
               ],
             ),
@@ -443,7 +491,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 labelText: 'Full Name',
                 prefixIcon: Icon(Icons.person_outline),
               ),
-              validator: (v) => (v == null || v.trim().isEmpty) ? 'Enter your full name' : null,
+              validator: (v) => (v == null || v.trim().isEmpty)
+                  ? 'Enter your full name'
+                  : null,
             ),
             const SizedBox(height: 16),
             TextFormField(
@@ -453,7 +503,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 labelText: 'Email Address',
                 prefixIcon: Icon(Icons.email_outlined),
               ),
-              validator: (v) => (v == null || v.isEmpty || !v.contains('@')) ? 'Enter a valid email address' : null,
+              validator: (v) => (v == null || v.isEmpty || !v.contains('@'))
+                  ? 'Enter a valid email address'
+                  : null,
             ),
             const SizedBox(height: 16),
             TextFormField(
@@ -481,8 +533,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 labelText: 'Password',
                 prefixIcon: const Icon(Icons.lock_outline),
                 suffixIcon: IconButton(
-                  icon: Icon(_obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 20),
-                  onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                  icon: Icon(
+                    _obscurePassword
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined,
+                    size: 20,
+                  ),
+                  onPressed: () =>
+                      setState(() => _obscurePassword = !_obscurePassword),
                 ),
               ),
               validator: _validatePassword,
@@ -495,7 +553,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 labelText: 'Confirm Password',
                 prefixIcon: Icon(Icons.lock_reset_outlined),
               ),
-              validator: (v) => (v != _passwordCtrl.text) ? 'Passwords do not match' : null,
+              validator: (v) =>
+                  (v != _passwordCtrl.text) ? 'Passwords do not match' : null,
             ),
             const SizedBox(height: 24),
             SizedBox(
@@ -524,10 +583,7 @@ class _Background extends StatelessWidget {
         gradient: RadialGradient(
           center: Alignment(0, -0.3),
           radius: 1.2,
-          colors: [
-            Color(0xFF1E1740),
-            AppColors.bgDark,
-          ],
+          colors: [Color(0xFF1E1740), AppColors.bgDark],
         ),
       ),
     );
@@ -554,7 +610,9 @@ class _ErrorBanner extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.error),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: AppColors.error),
             ),
           ),
         ],

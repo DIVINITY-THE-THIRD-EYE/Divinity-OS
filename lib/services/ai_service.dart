@@ -10,11 +10,12 @@ class AiService {
   /// by fetching them from Firebase Remote Config variables.
   Future<String> generateWellnessInsight(String userPrompt) async {
     // 1. Fetch server-configured parameters
-    final modelName = _remoteConfig.getString('ai_model_name').isNotEmpty 
-        ? _remoteConfig.getString('ai_model_name') 
+    final modelName = _remoteConfig.getString('ai_model_name').isNotEmpty
+        ? _remoteConfig.getString('ai_model_name')
         : 'gemini-1.5-flash';
-    
-    final systemInstruction = _remoteConfig.getString('ai_system_instruction').isNotEmpty
+
+    final systemInstruction =
+        _remoteConfig.getString('ai_system_instruction').isNotEmpty
         ? _remoteConfig.getString('ai_system_instruction')
         : 'You are Divinity, a helpful and calm wellness academy coach.';
 
@@ -31,9 +32,7 @@ class AiService {
       );
 
       // 3. Submit client prompt to Gemini API via secure proxy
-      final response = await model.generateContent([
-        Content.text(userPrompt),
-      ]);
+      final response = await model.generateContent([Content.text(userPrompt)]);
 
       return response.text ?? 'No insight generated.';
     } catch (e) {

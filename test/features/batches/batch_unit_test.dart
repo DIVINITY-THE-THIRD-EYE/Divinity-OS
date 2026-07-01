@@ -15,16 +15,15 @@ Batch _fakeBatch({
   String id = 'b-1',
   String name = 'Morning Yoga',
   BatchStatus status = BatchStatus.active,
-}) =>
-    Batch(
-      id: id,
-      name: name,
-      scheduleTime: '06:00',
-      daysOfWeek: const ['MON', 'WED', 'FRI'],
-      capacity: 20,
-      status: status,
-      createdAt: DateTime(2026),
-    );
+}) => Batch(
+  id: id,
+  name: name,
+  scheduleTime: '06:00',
+  daysOfWeek: const ['MON', 'WED', 'FRI'],
+  capacity: 20,
+  status: status,
+  createdAt: DateTime(2026),
+);
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
@@ -146,9 +145,7 @@ void main() {
     setUp(() {
       mockRepo = MockBatchRepository();
       container = ProviderContainer(
-        overrides: [
-          batchRepositoryProvider.overrideWithValue(mockRepo),
-        ],
+        overrides: [batchRepositoryProvider.overrideWithValue(mockRepo)],
       );
     });
 
@@ -169,12 +166,9 @@ void main() {
       await container.read(batchesProvider.future);
 
       final newBatch = _fakeBatch(id: 'b-3', name: 'Power Yoga');
-      when(() => mockRepo.createBatch(any()))
-          .thenAnswer((_) async => newBatch);
+      when(() => mockRepo.createBatch(any())).thenAnswer((_) async => newBatch);
 
-      await container
-          .read(batchesProvider.notifier)
-          .createBatch(newBatch);
+      await container.read(batchesProvider.notifier).createBatch(newBatch);
 
       final updated = container.read(batchesProvider).value!;
       expect(updated.length, 2);
@@ -187,12 +181,13 @@ void main() {
       await container.read(batchesProvider.future);
 
       final paused = _fakeBatch(status: BatchStatus.paused);
-      when(() => mockRepo.updateBatch('b-1', any()))
-          .thenAnswer((_) async => paused);
+      when(
+        () => mockRepo.updateBatch('b-1', any()),
+      ).thenAnswer((_) async => paused);
 
-      await container
-          .read(batchesProvider.notifier)
-          .updateBatch('b-1', {'status': 'PAUSED'});
+      await container.read(batchesProvider.notifier).updateBatch('b-1', {
+        'status': 'PAUSED',
+      });
 
       final updated = container.read(batchesProvider).value!;
       expect(updated.first.status, BatchStatus.paused);

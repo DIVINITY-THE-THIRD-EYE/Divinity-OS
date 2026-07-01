@@ -7,25 +7,25 @@ enum PaymentStatus {
   refunded;
 
   static PaymentStatus fromString(String v) => switch (v.toUpperCase()) {
-        'PAID' => PaymentStatus.paid,
-        'FAILED' => PaymentStatus.failed,
-        'REFUNDED' => PaymentStatus.refunded,
-        _ => PaymentStatus.pending,
-      };
+    'PAID' => PaymentStatus.paid,
+    'FAILED' => PaymentStatus.failed,
+    'REFUNDED' => PaymentStatus.refunded,
+    _ => PaymentStatus.pending,
+  };
 
   String get dbValue => switch (this) {
-        PaymentStatus.pending => 'PENDING',
-        PaymentStatus.paid => 'PAID',
-        PaymentStatus.failed => 'FAILED',
-        PaymentStatus.refunded => 'REFUNDED',
-      };
+    PaymentStatus.pending => 'PENDING',
+    PaymentStatus.paid => 'PAID',
+    PaymentStatus.failed => 'FAILED',
+    PaymentStatus.refunded => 'REFUNDED',
+  };
 
   String get label => switch (this) {
-        PaymentStatus.pending => 'Pending',
-        PaymentStatus.paid => 'Paid',
-        PaymentStatus.failed => 'Failed',
-        PaymentStatus.refunded => 'Refunded',
-      };
+    PaymentStatus.pending => 'Pending',
+    PaymentStatus.paid => 'Paid',
+    PaymentStatus.failed => 'Failed',
+    PaymentStatus.refunded => 'Refunded',
+  };
 }
 
 enum PaymentMethod {
@@ -35,25 +35,25 @@ enum PaymentMethod {
   razorpay;
 
   static PaymentMethod fromString(String v) => switch (v.toUpperCase()) {
-        'UPI' => PaymentMethod.upi,
-        'BANK_TRANSFER' => PaymentMethod.bankTransfer,
-        'RAZORPAY' => PaymentMethod.razorpay,
-        _ => PaymentMethod.cash,
-      };
+    'UPI' => PaymentMethod.upi,
+    'BANK_TRANSFER' => PaymentMethod.bankTransfer,
+    'RAZORPAY' => PaymentMethod.razorpay,
+    _ => PaymentMethod.cash,
+  };
 
   String get dbValue => switch (this) {
-        PaymentMethod.cash => 'CASH',
-        PaymentMethod.upi => 'UPI',
-        PaymentMethod.bankTransfer => 'BANK_TRANSFER',
-        PaymentMethod.razorpay => 'RAZORPAY',
-      };
+    PaymentMethod.cash => 'CASH',
+    PaymentMethod.upi => 'UPI',
+    PaymentMethod.bankTransfer => 'BANK_TRANSFER',
+    PaymentMethod.razorpay => 'RAZORPAY',
+  };
 
   String get label => switch (this) {
-        PaymentMethod.cash => 'Cash',
-        PaymentMethod.upi => 'UPI',
-        PaymentMethod.bankTransfer => 'Bank Transfer',
-        PaymentMethod.razorpay => 'Razorpay',
-      };
+    PaymentMethod.cash => 'Cash',
+    PaymentMethod.upi => 'UPI',
+    PaymentMethod.bankTransfer => 'Bank Transfer',
+    PaymentMethod.razorpay => 'Razorpay',
+  };
 }
 
 class PaymentRecord {
@@ -107,7 +107,8 @@ class PaymentRecord {
       amount: (m['amount'] as num).toDouble(),
       currency: m['currency'] as String? ?? 'INR',
       method: PaymentMethod.fromString(
-          m['payment_method'] as String? ?? 'CASH'),
+        m['payment_method'] as String? ?? 'CASH',
+      ),
       status: PaymentStatus.fromString(m['status'] as String? ?? 'PAID'),
       referenceNumber: m['reference_number'] as String?,
       notes: m['notes'] as String?,
@@ -115,7 +116,8 @@ class PaymentRecord {
       razorpayOrderId: m['razorpay_order_id'] as String?,
       razorpayPaymentId: m['razorpay_payment_id'] as String?,
       paidAt: DateTime.parse(
-          m['paid_at'] as String? ?? DateTime.now().toIso8601String()),
+        m['paid_at'] as String? ?? DateTime.now().toIso8601String(),
+      ),
       createdAt: DateTime.parse(m['created_at'] as String),
       adminApproved: m['admin_approved'] as bool? ?? false,
       receiptGivenByTrainer: m['receipt_given_by_trainer'] as bool? ?? false,
@@ -125,9 +127,11 @@ class PaymentRecord {
     );
   }
 
-  String get amountLabel =>
-      NumberFormat.currency(locale: 'en_IN', symbol: '₹', decimalDigits: 0)
-          .format(amount);
+  String get amountLabel => NumberFormat.currency(
+    locale: 'en_IN',
+    symbol: '₹',
+    decimalDigits: 0,
+  ).format(amount);
 
   String get dateLabel => DateFormat('dd MMM yyyy').format(paidAt);
 }

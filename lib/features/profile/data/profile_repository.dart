@@ -24,10 +24,7 @@ class SupabaseProfileRepository implements ProfileRepository {
 
   @override
   Future<void> updateName(String userId, String name) async {
-    await _client
-        .from('users')
-        .update({'name': name.trim()})
-        .eq('id', userId);
+    await _client.from('users').update({'name': name.trim()}).eq('id', userId);
   }
 
   @override
@@ -36,9 +33,12 @@ class SupabaseProfileRepository implements ProfileRepository {
     required String name,
     required String phone,
   }) async {
-    await _client.from('users').update({
-      'emergency_contact_name': name.trim(),
-      'emergency_contact_phone': phone.trim(),
-    }).eq('id', userId);
+    await _client
+        .from('users')
+        .update({
+          'emergency_contact_name': name.trim(),
+          'emergency_contact_phone': phone.trim(),
+        })
+        .eq('id', userId);
   }
 }

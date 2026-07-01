@@ -20,8 +20,8 @@ class WeatherNotifier extends StateNotifier<AsyncValue<WeatherData>> {
     if (force) {
       // If we already have data, preserve it in the state so the UI can display it
       // during the refresh indicator loading phase, rather than flashing a blank screen.
-      state = state.hasValue 
-          ? AsyncValue.data(state.value!).copyWithPrevious(state) 
+      state = state.hasValue
+          ? AsyncValue.data(state.value!).copyWithPrevious(state)
           : const AsyncValue.loading();
     }
 
@@ -35,7 +35,9 @@ class WeatherNotifier extends StateNotifier<AsyncValue<WeatherData>> {
 }
 
 final weatherNotifierProvider =
-    StateNotifierProvider.autoDispose<WeatherNotifier, AsyncValue<WeatherData>>((ref) {
-  final repository = ref.watch(weatherRepositoryProvider);
-  return WeatherNotifier(repository);
-});
+    StateNotifierProvider.autoDispose<WeatherNotifier, AsyncValue<WeatherData>>(
+      (ref) {
+        final repository = ref.watch(weatherRepositoryProvider);
+        return WeatherNotifier(repository);
+      },
+    );

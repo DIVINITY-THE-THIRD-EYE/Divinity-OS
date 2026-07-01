@@ -33,8 +33,9 @@ class PendingApprovalScreen extends ConsumerWidget {
                   const SizedBox(height: 12),
                   Text(
                     'Your account is being reviewed.\nYour trainer will activate it shortly.',
-                    style: tt.bodyMedium
-                        ?.copyWith(color: AppColors.textSecondaryDark),
+                    style: tt.bodyMedium?.copyWith(
+                      color: AppColors.textSecondaryDark,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 40),

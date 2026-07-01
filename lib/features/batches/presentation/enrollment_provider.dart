@@ -8,8 +8,7 @@ final enrollmentRepositoryProvider = Provider<EnrollmentRepository>(
   (ref) => SupabaseEnrollmentRepository(ref.watch(supabaseClientProvider)),
 );
 
-class EnrollmentNotifier
-    extends FamilyAsyncNotifier<List<Enrollment>, String> {
+class EnrollmentNotifier extends FamilyAsyncNotifier<List<Enrollment>, String> {
   @override
   Future<List<Enrollment>> build(String batchId) =>
       ref.read(enrollmentRepositoryProvider).fetchByBatch(batchId);
@@ -23,11 +22,9 @@ class EnrollmentNotifier
 
   Future<void> enroll(String studentId) async {
     final uid = ref.read(currentUserIdProvider)!;
-    await ref.read(enrollmentRepositoryProvider).enroll(
-          studentId: studentId,
-          batchId: arg,
-          assignedBy: uid,
-        );
+    await ref
+        .read(enrollmentRepositoryProvider)
+        .enroll(studentId: studentId, batchId: arg, assignedBy: uid);
     await refresh();
   }
 
@@ -39,7 +36,7 @@ class EnrollmentNotifier
   }
 }
 
-final batchEnrollmentsProvider = AsyncNotifierProvider.family<
-    EnrollmentNotifier, List<Enrollment>, String>(
-  EnrollmentNotifier.new,
-);
+final batchEnrollmentsProvider =
+    AsyncNotifierProvider.family<EnrollmentNotifier, List<Enrollment>, String>(
+      EnrollmentNotifier.new,
+    );

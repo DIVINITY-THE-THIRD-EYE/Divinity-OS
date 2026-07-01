@@ -33,20 +33,16 @@ class BatchesScreen extends ConsumerWidget {
               const Text('Failed to load batches'),
               const SizedBox(height: 8),
               TextButton(
-                onPressed: () =>
-                    ref.read(batchesProvider.notifier).refresh(),
+                onPressed: () => ref.read(batchesProvider.notifier).refresh(),
                 child: const Text('Retry'),
               ),
             ],
           ),
         ),
         data: (batches) => batches.isEmpty
-            ? _EmptyState(
-                onAdd: () => _showCreateSheet(context, ref),
-              )
+            ? _EmptyState(onAdd: () => _showCreateSheet(context, ref))
             : RefreshIndicator(
-                onRefresh: () =>
-                    ref.read(batchesProvider.notifier).refresh(),
+                onRefresh: () => ref.read(batchesProvider.notifier).refresh(),
                 child: ListView.separated(
                   padding: const EdgeInsets.all(16),
                   itemCount: batches.length,
@@ -95,9 +91,7 @@ class _BatchCard extends ConsumerWidget {
           children: [
             Row(
               children: [
-                Expanded(
-                  child: Text(batch.name, style: tt.titleMedium),
-                ),
+                Expanded(child: Text(batch.name, style: tt.titleMedium)),
                 _StatusChip(status: batch.status, color: statusColor),
               ],
             ),
@@ -131,10 +125,9 @@ class _BatchCard extends ConsumerWidget {
                     ),
                   ),
                   TextButton(
-                    onPressed: () => ref.read(batchesProvider.notifier).updateBatch(
-                          batch.id,
-                          {'status': 'PAUSED'},
-                        ),
+                    onPressed: () => ref
+                        .read(batchesProvider.notifier)
+                        .updateBatch(batch.id, {'status': 'PAUSED'}),
                     child: const Text('Pause'),
                   ),
                 ],
@@ -268,9 +261,9 @@ class _CreateBatchSheetState extends ConsumerState<_CreateBatchSheet> {
   Future<void> _save() async {
     final name = _nameCtrl.text.trim();
     if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Batch name is required.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Batch name is required.')));
       return;
     }
     final capacity = int.tryParse(_capacityCtrl.text.trim()) ?? 20;
@@ -290,9 +283,9 @@ class _CreateBatchSheetState extends ConsumerState<_CreateBatchSheet> {
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _saving = false);

@@ -19,11 +19,21 @@ abstract interface class AuthRepository {
   /// (token-refresh failure, sign-out on another device, user updates).
   Stream<AuthLifecycleEvent> authEvents();
 
-  Future<void> signInWithEmail({required String email, required String password});
-  Future<void> signUpWithEmail({required String email, required String password, Map<String, dynamic>? metaData});
+  Future<void> signInWithEmail({
+    required String email,
+    required String password,
+  });
+  Future<void> signUpWithEmail({
+    required String email,
+    required String password,
+    Map<String, dynamic>? metaData,
+  });
   Future<void> signInWithGoogle();
   Future<void> signInWithApple();
-  Future<void> signInWithPhone({required String phone, required String password});
+  Future<void> signInWithPhone({
+    required String phone,
+    required String password,
+  });
   Future<void> signInWithOtp({required String phone});
   Future<void> verifyOtp({required String phone, required String token});
   Future<void> signOut();
@@ -31,7 +41,10 @@ abstract interface class AuthRepository {
   Future<void> updateProfile(String userId, Map<String, dynamic> data);
   Future<void> sendPasswordResetEmail(String email);
   Future<void> updatePassword(String newPassword);
-  RealtimeChannel subscribeToUserProfile(String userId, void Function(Map<String, dynamic> record) callback);
+  RealtimeChannel subscribeToUserProfile(
+    String userId,
+    void Function(Map<String, dynamic> record) callback,
+  );
   Future<void> unsubscribeFromChannel(RealtimeChannel channel);
 }
 
@@ -74,11 +87,7 @@ class SupabaseAuthRepository implements AuthRepository {
     required String password,
     Map<String, dynamic>? metaData,
   }) async {
-    await _client.auth.signUp(
-      email: email,
-      password: password,
-      data: metaData,
-    );
+    await _client.auth.signUp(email: email, password: password, data: metaData);
   }
 
   @override
@@ -111,15 +120,8 @@ class SupabaseAuthRepository implements AuthRepository {
   }
 
   @override
-  Future<void> verifyOtp({
-    required String phone,
-    required String token,
-  }) async {
-    await _client.auth.verifyOTP(
-      phone: phone,
-      token: token,
-      type: OtpType.sms,
-    );
+  Future<void> verifyOtp({required String phone, required String token}) async {
+    await _client.auth.verifyOTP(phone: phone, token: token, type: OtpType.sms);
   }
 
   @override
@@ -137,10 +139,19 @@ class SupabaseAuthRepository implements AuthRepository {
   // PENDING_ADMIN) are rejected here AND server-side by the 009 trigger.
   // Defense-in-depth, not the sole control.
   static const _selfEditableColumns = <String>{
-    'name', 'age', 'gender',
-    'emergency_contact_name', 'emergency_contact_phone',
-    'primary_goal', 'injuries', 'medical_conditions', 'lifestyle_activity',
-    'avatar_url', 'fcm_token', 'onboarding_complete', 'plan_status',
+    'name',
+    'age',
+    'gender',
+    'emergency_contact_name',
+    'emergency_contact_phone',
+    'primary_goal',
+    'injuries',
+    'medical_conditions',
+    'lifestyle_activity',
+    'avatar_url',
+    'fcm_token',
+    'onboarding_complete',
+    'plan_status',
   };
 
   @override
@@ -168,13 +179,14 @@ class SupabaseAuthRepository implements AuthRepository {
 
   @override
   Future<void> updatePassword(String newPassword) async {
-    await _client.auth.updateUser(
-      UserAttributes(password: newPassword),
-    );
+    await _client.auth.updateUser(UserAttributes(password: newPassword));
   }
 
   @override
-  RealtimeChannel subscribeToUserProfile(String userId, void Function(Map<String, dynamic> record) callback) {
+  RealtimeChannel subscribeToUserProfile(
+    String userId,
+    void Function(Map<String, dynamic> record) callback,
+  ) {
     final channel = _client.channel('public:users:id=eq.$userId');
     channel.onPostgresChanges(
       event: PostgresChangeEvent.update,

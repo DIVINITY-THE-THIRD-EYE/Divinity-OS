@@ -8,7 +8,9 @@ import 'package:mocktail/mocktail.dart';
 
 // ── Mock ─────────────────────────────────────────────────────────────────────
 
-class MockTransformationRepository extends Mock implements TransformationRepository {}
+class MockTransformationRepository extends Mock
+    implements TransformationRepository {}
+
 class MockAiService extends Mock implements AiService {}
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -21,19 +23,18 @@ TransformationScore _fakeScore({
   double mindfulness = 9.0,
   double recovery = 8.5,
   double score = 8.25,
-}) =>
-    TransformationScore(
-      id: id,
-      studentId: studentId,
-      recordedBy: 'trainer-1',
-      consistency: consistency,
-      intensity: intensity,
-      mindfulness: mindfulness,
-      recovery: recovery,
-      score: score,
-      weekStartDate: DateTime(2026, 6, 15),
-      createdAt: DateTime(2026, 6, 15, 12),
-    );
+}) => TransformationScore(
+  id: id,
+  studentId: studentId,
+  recordedBy: 'trainer-1',
+  consistency: consistency,
+  intensity: intensity,
+  mindfulness: mindfulness,
+  recovery: recovery,
+  score: score,
+  weekStartDate: DateTime(2026, 6, 15),
+  createdAt: DateTime(2026, 6, 15, 12),
+);
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
@@ -139,27 +140,36 @@ void main() {
     setUp(() {
       mockAiService = MockAiService();
       container = ProviderContainer(
-        overrides: [
-          aiServiceProvider.overrideWithValue(mockAiService),
-        ],
+        overrides: [aiServiceProvider.overrideWithValue(mockAiService)],
       );
     });
 
     tearDown(() => container.dispose());
 
-    test('calls generateWellnessInsight with correct prompt and returns result', () async {
-      final score = _fakeScore();
+    test(
+      'calls generateWellnessInsight with correct prompt and returns result',
+      () async {
+        final score = _fakeScore();
 
-      const expectedPrompt =
-          "My consistency is 8.0, intensity is 7.5, mindfulness is 9.0, recovery is 8.5. Give me calm, actionable advice to balance my practice. Overall Third Eye Score is 8.25.";
+        const expectedPrompt =
+            "My consistency is 8.0, intensity is 7.5, mindfulness is 9.0, recovery is 8.5. Give me calm, actionable advice to balance my practice. Overall Third Eye Score is 8.25.";
 
-      when(() => mockAiService.generateWellnessInsight(expectedPrompt))
-          .thenAnswer((_) async => "Mocked insight: stay mindful and rest.");
+        when(
+          () => mockAiService.generateWellnessInsight(expectedPrompt),
+        ).thenAnswer((_) async => "Mocked insight: stay mindful and rest.");
 
-      final insightFuture = container.read(aiWellnessInsightProvider(score).future);
+        final insightFuture = container.read(
+          aiWellnessInsightProvider(score).future,
+        );
 
-      await expectLater(insightFuture, completion("Mocked insight: stay mindful and rest."));
-      verify(() => mockAiService.generateWellnessInsight(expectedPrompt)).called(1);
-    });
+        await expectLater(
+          insightFuture,
+          completion("Mocked insight: stay mindful and rest."),
+        );
+        verify(
+          () => mockAiService.generateWellnessInsight(expectedPrompt),
+        ).called(1);
+      },
+    );
   });
 }

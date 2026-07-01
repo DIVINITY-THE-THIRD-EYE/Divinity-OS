@@ -9,8 +9,7 @@ final profileRepositoryProvider = Provider<ProfileRepository>(
   (ref) => SupabaseProfileRepository(ref.watch(supabaseClientProvider)),
 );
 
-final myProfileProvider =
-    AsyncNotifierProvider<MyProfileNotifier, UserProfile>(
+final myProfileProvider = AsyncNotifierProvider<MyProfileNotifier, UserProfile>(
   MyProfileNotifier.new,
 );
 
@@ -55,12 +54,10 @@ class MyProfileNotifier extends AsyncNotifier<UserProfile> {
       final today = DateTime.now();
       final todayStr = DateFormat('yyyy-MM-dd').format(today);
 
-      await ref.read(supabaseClientProvider)
+      await ref
+          .read(supabaseClientProvider)
           .from('users')
-          .update({
-            'plan_status': 'PAUSED',
-            'pause_start_date': todayStr,
-          })
+          .update({'plan_status': 'PAUSED', 'pause_start_date': todayStr})
           .eq('id', userId);
 
       return ref.read(profileRepositoryProvider).fetchProfile(userId);
@@ -73,8 +70,11 @@ class MyProfileNotifier extends AsyncNotifier<UserProfile> {
 
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
-      final profile = await ref.read(profileRepositoryProvider).fetchProfile(userId);
-      if (profile.planStatus.toUpperCase() != 'PAUSED' || profile.pauseStartDate == null) {
+      final profile = await ref
+          .read(profileRepositoryProvider)
+          .fetchProfile(userId);
+      if (profile.planStatus.toUpperCase() != 'PAUSED' ||
+          profile.pauseStartDate == null) {
         return profile;
       }
 
@@ -91,7 +91,8 @@ class MyProfileNotifier extends AsyncNotifier<UserProfile> {
 
       final newExpStr = DateFormat('yyyy-MM-dd').format(newExpiration);
 
-      await ref.read(supabaseClientProvider)
+      await ref
+          .read(supabaseClientProvider)
           .from('users')
           .update({
             'plan_status': 'ACTIVE',

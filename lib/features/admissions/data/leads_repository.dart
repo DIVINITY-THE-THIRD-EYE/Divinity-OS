@@ -82,10 +82,10 @@ class SupabaseLeadsRepository implements LeadsRepository {
 
   @override
   Future<Lead> convertToMember(String leadId, String userId) async {
-    final data = await _client.rpc('convert_lead_to_member', params: {
-      'p_lead_id': leadId,
-      'p_user_id': userId,
-    });
+    final data = await _client.rpc(
+      'convert_lead_to_member',
+      params: {'p_lead_id': leadId, 'p_user_id': userId},
+    );
     final map = data is List
         ? (data.first as Map<String, dynamic>)
         : (data as Map<String, dynamic>);

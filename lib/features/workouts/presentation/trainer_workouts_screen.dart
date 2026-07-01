@@ -67,11 +67,16 @@ class _WorkoutCard extends ConsumerWidget {
         child: ExpansionTile(
           leading: CircleAvatar(
             backgroundColor: AppColors.accentViolet.withValues(alpha: 0.12),
-            child: const Icon(Icons.fitness_center,
-                color: AppColors.accentViolet, size: 20),
+            child: const Icon(
+              Icons.fitness_center,
+              color: AppColors.accentViolet,
+              size: 20,
+            ),
           ),
-          title: Text(workout.title,
-              style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+          title: Text(
+            workout.title,
+            style: tt.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+          ),
           subtitle: Text(
             '${workout.exerciseCount} exercise'
             '${workout.exerciseCount == 1 ? '' : 's'} · ${workout.dateLabel}',
@@ -92,8 +97,7 @@ class _WorkoutCard extends ConsumerWidget {
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.chevron_right, size: 18),
                 title: Text(e.name),
-                subtitle:
-                    e.prescription.isEmpty ? null : Text(e.prescription),
+                subtitle: e.prescription.isEmpty ? null : Text(e.prescription),
               ),
             ),
             const Divider(),
@@ -102,10 +106,15 @@ class _WorkoutCard extends ConsumerWidget {
               children: [
                 TextButton.icon(
                   onPressed: () => _confirmDelete(context, ref),
-                  icon: const Icon(Icons.delete_outline,
-                      size: 18, color: Colors.red),
-                  label:
-                      const Text('Delete', style: TextStyle(color: Colors.red)),
+                  icon: const Icon(
+                    Icons.delete_outline,
+                    size: 18,
+                    color: Colors.red,
+                  ),
+                  label: const Text(
+                    'Delete',
+                    style: TextStyle(color: Colors.red),
+                  ),
                 ),
                 const SizedBox(width: 8),
                 FilledButton.icon(
@@ -126,8 +135,10 @@ class _WorkoutCard extends ConsumerWidget {
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Delete Workout'),
-        content: Text('Delete "${workout.title}"? This also removes it from '
-            'any batch it was assigned to.'),
+        content: Text(
+          'Delete "${workout.title}"? This also removes it from '
+          'any batch it was assigned to.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -146,8 +157,9 @@ class _WorkoutCard extends ConsumerWidget {
         await ref.read(trainerWorkoutsProvider.notifier).remove(workout.id);
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text('Error: $e')));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Error: $e')));
         }
       }
     }
@@ -179,16 +191,16 @@ class _AssignSheetState extends ConsumerState<_AssignSheet> {
 
   Future<void> _assign() async {
     if (_batchId == null) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Select a batch.')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Select a batch.')));
       return;
     }
     setState(() => _saving = true);
     try {
-      await ref.read(trainerWorkoutsProvider.notifier).assign(
-            workoutId: widget.workout.id,
-            batchId: _batchId!,
-          );
+      await ref
+          .read(trainerWorkoutsProvider.notifier)
+          .assign(workoutId: widget.workout.id, batchId: _batchId!);
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
@@ -197,8 +209,9 @@ class _AssignSheetState extends ConsumerState<_AssignSheet> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -210,7 +223,9 @@ class _AssignSheetState extends ConsumerState<_AssignSheet> {
     final tt = Theme.of(context).textTheme;
     final batchesAsync = ref.watch(batchesProvider);
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
         child: Column(
@@ -219,8 +234,10 @@ class _AssignSheetState extends ConsumerState<_AssignSheet> {
           children: [
             Text('Assign "${widget.workout.title}"', style: tt.headlineSmall),
             const SizedBox(height: 8),
-            Text('Every student enrolled in the batch receives it.',
-                style: tt.bodyMedium),
+            Text(
+              'Every student enrolled in the batch receives it.',
+              style: tt.bodyMedium,
+            ),
             const SizedBox(height: 24),
             batchesAsync.when(
               loading: () => const LinearProgressIndicator(minHeight: 2),
@@ -241,10 +258,12 @@ class _AssignSheetState extends ConsumerState<_AssignSheet> {
                   ),
                   hint: const Text('Select batch'),
                   items: active
-                      .map((b) => DropdownMenuItem(
-                            value: b.id,
-                            child: Text('${b.name} · ${b.scheduleTime}'),
-                          ))
+                      .map(
+                        (b) => DropdownMenuItem(
+                          value: b.id,
+                          child: Text('${b.name} · ${b.scheduleTime}'),
+                        ),
+                      )
                       .toList(),
                   onChanged: (v) => setState(() => _batchId = v),
                 );
@@ -298,11 +317,11 @@ class _ExerciseRow {
   bool get isBlank => nameCtrl.text.trim().isEmpty;
 
   ExerciseDraft toDraft() => ExerciseDraft(
-        name: nameCtrl.text.trim(),
-        sets: int.tryParse(setsCtrl.text.trim()),
-        reps: int.tryParse(repsCtrl.text.trim()),
-        restSec: int.tryParse(restCtrl.text.trim()),
-      );
+    name: nameCtrl.text.trim(),
+    sets: int.tryParse(setsCtrl.text.trim()),
+    reps: int.tryParse(repsCtrl.text.trim()),
+    restSec: int.tryParse(restCtrl.text.trim()),
+  );
 }
 
 class _WorkoutEditorScreenState extends ConsumerState<_WorkoutEditorScreen> {
@@ -334,12 +353,15 @@ class _WorkoutEditorScreenState extends ConsumerState<_WorkoutEditorScreen> {
   Future<void> _save() async {
     final title = _titleCtrl.text.trim();
     if (title.isEmpty) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Title is required.')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Title is required.')));
       return;
     }
-    final drafts =
-        _rows.where((r) => !r.isBlank).map((r) => r.toDraft()).toList();
+    final drafts = _rows
+        .where((r) => !r.isBlank)
+        .map((r) => r.toDraft())
+        .toList();
     if (drafts.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Add at least one exercise.')),
@@ -348,16 +370,15 @@ class _WorkoutEditorScreenState extends ConsumerState<_WorkoutEditorScreen> {
     }
     setState(() => _saving = true);
     try {
-      await ref.read(trainerWorkoutsProvider.notifier).create(
-            title: title,
-            description: _descCtrl.text,
-            exercises: drafts,
-          );
+      await ref
+          .read(trainerWorkoutsProvider.notifier)
+          .create(title: title, description: _descCtrl.text, exercises: drafts);
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -406,7 +427,11 @@ class _WorkoutEditorScreenState extends ConsumerState<_WorkoutEditorScreen> {
       ),
       bottomNavigationBar: Padding(
         padding: EdgeInsets.fromLTRB(
-            20, 8, 20, 8 + MediaQuery.of(context).padding.bottom),
+          20,
+          8,
+          20,
+          8 + MediaQuery.of(context).padding.bottom,
+        ),
         child: SizedBox(
           height: 48,
           child: FilledButton(
@@ -469,10 +494,10 @@ class _WorkoutEditorScreenState extends ConsumerState<_WorkoutEditorScreen> {
   }
 
   Widget _numField(TextEditingController ctrl, String label) => TextField(
-        controller: ctrl,
-        keyboardType: TextInputType.number,
-        decoration: InputDecoration(labelText: label, isDense: true),
-      );
+    controller: ctrl,
+    keyboardType: TextInputType.number,
+    decoration: InputDecoration(labelText: label, isDense: true),
+  );
 }
 
 // ── Shared small widgets ──────────────────────────────────────────────────────
@@ -488,13 +513,18 @@ class _EmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.fitness_center,
-              size: 72, color: AppColors.accentViolet.withValues(alpha: 0.3)),
+          Icon(
+            Icons.fitness_center,
+            size: 72,
+            color: AppColors.accentViolet.withValues(alpha: 0.3),
+          ),
           const SizedBox(height: 16),
           Text('No workouts yet', style: tt.titleMedium),
           const SizedBox(height: 8),
-          Text('Create a plan and assign it to your batches.',
-              style: tt.bodyMedium),
+          Text(
+            'Create a plan and assign it to your batches.',
+            style: tt.bodyMedium,
+          ),
           const SizedBox(height: 24),
           FilledButton.icon(
             onPressed: onAdd,

@@ -54,16 +54,21 @@ class _LeaveRequestSheetState extends ConsumerState<LeaveRequestSheet> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     if (_startDate == null || _endDate == null) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Please select dates.')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please select dates.')));
       return;
     }
     setState(() => _loading = true);
     try {
-      await ref.read(myLeaveProvider.notifier).submit(
+      await ref
+          .read(myLeaveProvider.notifier)
+          .submit(
             startDate: _startDate!,
             endDate: _endDate!,
-            reason: _reasonCtrl.text.trim().isEmpty ? null : _reasonCtrl.text.trim(),
+            reason: _reasonCtrl.text.trim().isEmpty
+                ? null
+                : _reasonCtrl.text.trim(),
           );
       if (mounted) {
         try {
@@ -76,8 +81,9 @@ class _LeaveRequestSheetState extends ConsumerState<LeaveRequestSheet> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -89,7 +95,10 @@ class _LeaveRequestSheetState extends ConsumerState<LeaveRequestSheet> {
     final fmt = DateFormat('dd MMM yyyy');
     return Padding(
       padding: EdgeInsets.fromLTRB(
-        20, 20, 20, MediaQuery.of(context).viewInsets.bottom + 20,
+        20,
+        20,
+        20,
+        MediaQuery.of(context).viewInsets.bottom + 20,
       ),
       child: Form(
         key: _formKey,
@@ -97,8 +106,10 @@ class _LeaveRequestSheetState extends ConsumerState<LeaveRequestSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text('Request Leave',
-                style: Theme.of(context).textTheme.titleLarge),
+            Text(
+              'Request Leave',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
             const SizedBox(height: 20),
             Row(
               children: [
@@ -131,7 +142,9 @@ class _LeaveRequestSheetState extends ConsumerState<LeaveRequestSheet> {
             const SizedBox(height: 20),
             FilledButton(
               onPressed: _loading ? null : _submit,
-              child: _loading ? const ChakraLoader(size: 20) : const Text('Submit Request'),
+              child: _loading
+                  ? const ChakraLoader(size: 20)
+                  : const Text('Submit Request'),
             ),
           ],
         ),
@@ -153,22 +166,22 @@ class _DatePickerField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: InputDecorator(
-          decoration: InputDecoration(
-            labelText: label,
-            border: const OutlineInputBorder(),
-            suffixIcon: const Icon(Icons.calendar_month_outlined),
-          ),
-          child: Text(
-            value ?? 'Select',
-            style: value == null
-                ? const TextStyle(color: AppColors.textSecondaryDark)
-                : null,
-          ),
-        ),
-      );
+    onTap: onTap,
+    borderRadius: BorderRadius.circular(8),
+    child: InputDecorator(
+      decoration: InputDecoration(
+        labelText: label,
+        border: const OutlineInputBorder(),
+        suffixIcon: const Icon(Icons.calendar_month_outlined),
+      ),
+      child: Text(
+        value ?? 'Select',
+        style: value == null
+            ? const TextStyle(color: AppColors.textSecondaryDark)
+            : null,
+      ),
+    ),
+  );
 }
 
 // ── Student leave history (full screen, used in student shell) ────────────────
@@ -221,14 +234,14 @@ class _LeaveTile extends StatelessWidget {
   }
 
   Color _statusColor(LeaveStatus s) => switch (s) {
-        LeaveStatus.approved => Colors.green,
-        LeaveStatus.rejected => Colors.red,
-        LeaveStatus.pending => Colors.orange,
-      };
+    LeaveStatus.approved => Colors.green,
+    LeaveStatus.rejected => Colors.red,
+    LeaveStatus.pending => Colors.orange,
+  };
 
   IconData _statusIcon(LeaveStatus s) => switch (s) {
-        LeaveStatus.approved => Icons.check_circle_outline,
-        LeaveStatus.rejected => Icons.cancel_outlined,
-        LeaveStatus.pending => Icons.hourglass_empty,
-      };
+    LeaveStatus.approved => Icons.check_circle_outline,
+    LeaveStatus.rejected => Icons.cancel_outlined,
+    LeaveStatus.pending => Icons.hourglass_empty,
+  };
 }

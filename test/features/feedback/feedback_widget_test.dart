@@ -15,7 +15,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockFeedbackRepository extends Mock implements FeedbackRepository {}
+
 class MockHomeRepository extends Mock implements HomeRepository {}
+
 class MockBatchRepository extends Mock implements BatchRepository {}
 
 void main() {
@@ -41,15 +43,14 @@ void main() {
         homeRepositoryProvider.overrideWithValue(mockHomeRepo),
         batchRepositoryProvider.overrideWithValue(mockBatchRepo),
       ],
-      child: const MaterialApp(
-        home: StudentFeedbackScreen(),
-      ),
+      child: const MaterialApp(home: StudentFeedbackScreen()),
     );
   }
 
   testWidgets('displays empty state when no feedback exists', (tester) async {
-    when(() => mockFeedbackRepo.fetchMyFeedback('student-1'))
-        .thenAnswer((_) async => []);
+    when(
+      () => mockFeedbackRepo.fetchMyFeedback('student-1'),
+    ).thenAnswer((_) async => []);
 
     await tester.pumpWidget(createWidgetUnderTest());
     await tester.pump();
@@ -71,8 +72,9 @@ void main() {
       ),
     ];
 
-    when(() => mockFeedbackRepo.fetchMyFeedback('student-1'))
-        .thenAnswer((_) async => feedbackList);
+    when(
+      () => mockFeedbackRepo.fetchMyFeedback('student-1'),
+    ).thenAnswer((_) async => feedbackList);
 
     await tester.pumpWidget(createWidgetUnderTest());
     await tester.pump();
@@ -83,9 +85,12 @@ void main() {
     expect(find.text('Trainer: Guru Dev'), findsOneWidget);
   });
 
-  testWidgets('opens submission form and submits valid feedback', (tester) async {
-    when(() => mockFeedbackRepo.fetchMyFeedback('student-1'))
-        .thenAnswer((_) async => []);
+  testWidgets('opens submission form and submits valid feedback', (
+    tester,
+  ) async {
+    when(
+      () => mockFeedbackRepo.fetchMyFeedback('student-1'),
+    ).thenAnswer((_) async => []);
     when(() => mockHomeRepo.fetchHomeData('student-1')).thenAnswer(
       (_) async => HomeData(
         firstName: 'Arjun',
@@ -150,13 +155,15 @@ void main() {
       batchName: 'Morning Yoga',
       trainerName: 'Guru Dev',
     );
-    when(() => mockFeedbackRepo.submitFeedback(
-          studentId: 'student-1',
-          batchId: 'batch-123',
-          rating: 4,
-          comments: 'Amazing teacher!',
-          trainerId: any(named: 'trainerId'),
-        )).thenAnswer((_) async => submittedFb);
+    when(
+      () => mockFeedbackRepo.submitFeedback(
+        studentId: 'student-1',
+        batchId: 'batch-123',
+        rating: 4,
+        comments: 'Amazing teacher!',
+        trainerId: any(named: 'trainerId'),
+      ),
+    ).thenAnswer((_) async => submittedFb);
 
     // Tap submit button
     await tester.tap(find.text('Submit Feedback').last);

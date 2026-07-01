@@ -38,13 +38,11 @@ class _RoleShellState extends ConsumerState<RoleShell> {
     final authState = ref.watch(authStateProvider);
     return switch (authState) {
       AuthAuthenticated(:final role) => switch (role) {
-          UserRole.admin => const AdminShell(),
-          UserRole.trainer => const TrainerShell(),
-          UserRole.student => const StudentShell(),
-        },
-      _ => const Scaffold(
-          body: Center(child: ChakraLoader()),
-        ),
+        UserRole.admin => const AdminShell(),
+        UserRole.trainer => const TrainerShell(),
+        UserRole.student => const StudentShell(),
+      },
+      _ => const Scaffold(body: Center(child: ChakraLoader())),
     };
   }
 }

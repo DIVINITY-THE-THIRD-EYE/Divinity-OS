@@ -35,5 +35,6 @@ class BatchNotifier extends AsyncNotifier<List<Batch>> {
   }
 }
 
-final batchesProvider =
-    AsyncNotifierProvider<BatchNotifier, List<Batch>>(BatchNotifier.new);
+final batchesProvider = AsyncNotifierProvider<BatchNotifier, List<Batch>>(
+  BatchNotifier.new,
+);

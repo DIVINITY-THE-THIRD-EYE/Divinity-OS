@@ -13,59 +13,72 @@ class SupabaseReportsRepository implements ReportsRepository {
   Future<ReportsData> fetchReports(ReportFilters filters) async {
     try {
       // Call the server-side aggregator RPC
-      final dynamic rawData = await _client.rpc('get_reports_data', params: {
-        if (filters.startDate != null) 'p_start_date': filters.startDate!.toIso8601String(),
-        if (filters.endDate != null) 'p_end_date': filters.endDate!.toIso8601String(),
-        if (filters.trainerId != null) 'p_trainer_id': filters.trainerId,
-        if (filters.batchId != null) 'p_batch_id': filters.batchId,
-        if (filters.membershipPlan != null) 'p_plan': filters.membershipPlan,
-        if (filters.studentStatus != null) 'p_status': filters.studentStatus,
-        if (filters.eventId != null) 'p_event_id': filters.eventId,
-      });
+      final dynamic rawData = await _client.rpc(
+        'get_reports_data',
+        params: {
+          if (filters.startDate != null)
+            'p_start_date': filters.startDate!.toIso8601String(),
+          if (filters.endDate != null)
+            'p_end_date': filters.endDate!.toIso8601String(),
+          if (filters.trainerId != null) 'p_trainer_id': filters.trainerId,
+          if (filters.batchId != null) 'p_batch_id': filters.batchId,
+          if (filters.membershipPlan != null) 'p_plan': filters.membershipPlan,
+          if (filters.studentStatus != null) 'p_status': filters.studentStatus,
+          if (filters.eventId != null) 'p_event_id': filters.eventId,
+        },
+      );
 
       final data = rawData as Map<String, dynamic>;
 
       // A. Parse Attendance Report
       final attData = data['attendance'] as Map<String, dynamic>;
-      
-      final dailyAttendance = (attData['dailyAttendance'] as List<dynamic>).map((e) {
-        final m = e as Map<String, dynamic>;
-        return DailyTrend(
-          date: DateTime.parse(m['date'] as String),
-          value: (m['value'] as num).toDouble(),
-        );
-      }).toList();
 
-      final monthlyAttendance = (attData['monthlyAttendance'] as List<dynamic>).map((e) {
-        final m = e as Map<String, dynamic>;
-        return MonthlyTrend(
-          month: DateTime.parse(m['month'] as String),
-          value: (m['value'] as num).toDouble(),
-        );
-      }).toList();
+      final dailyAttendance = (attData['dailyAttendance'] as List<dynamic>).map(
+        (e) {
+          final m = e as Map<String, dynamic>;
+          return DailyTrend(
+            date: DateTime.parse(m['date'] as String),
+            value: (m['value'] as num).toDouble(),
+          );
+        },
+      ).toList();
 
-      final perBatchAttendance = (attData['perBatchAttendance'] as Map<String, dynamic>).map(
-        (key, value) => MapEntry(key, (value as num).toDouble()),
-      );
+      final monthlyAttendance = (attData['monthlyAttendance'] as List<dynamic>)
+          .map((e) {
+            final m = e as Map<String, dynamic>;
+            return MonthlyTrend(
+              month: DateTime.parse(m['month'] as String),
+              value: (m['value'] as num).toDouble(),
+            );
+          })
+          .toList();
 
-      final perTrainerAttendance = (attData['perTrainerAttendance'] as Map<String, dynamic>).map(
-        (key, value) => MapEntry(key, (value as num).toDouble()),
-      );
+      final perBatchAttendance =
+          (attData['perBatchAttendance'] as Map<String, dynamic>).map(
+            (key, value) => MapEntry(key, (value as num).toDouble()),
+          );
 
-      final studentAttendancePercentage = (attData['studentAttendancePercentage'] as Map<String, dynamic>).map(
-        (key, value) => MapEntry(key, (value as num).toDouble()),
-      );
+      final perTrainerAttendance =
+          (attData['perTrainerAttendance'] as Map<String, dynamic>).map(
+            (key, value) => MapEntry(key, (value as num).toDouble()),
+          );
 
-      final lowAttendanceAlerts = (attData['lowAttendanceAlerts'] as List<dynamic>).map((e) {
-        final m = e as Map<String, dynamic>;
-        return LowAttendanceAlert(
-          studentId: m['student_id'] as String,
-          studentName: m['student_name'] as String,
-          attendanceRate: (m['attendance_rate'] as num).toDouble(),
-          totalClasses: m['total_classes'] as int,
-          attendedClasses: m['attended_classes'] as int,
-        );
-      }).toList();
+      final studentAttendancePercentage =
+          (attData['studentAttendancePercentage'] as Map<String, dynamic>).map(
+            (key, value) => MapEntry(key, (value as num).toDouble()),
+          );
+
+      final lowAttendanceAlerts =
+          (attData['lowAttendanceAlerts'] as List<dynamic>).map((e) {
+            final m = e as Map<String, dynamic>;
+            return LowAttendanceAlert(
+              studentId: m['student_id'] as String,
+              studentName: m['student_name'] as String,
+              attendanceRate: (m['attendance_rate'] as num).toDouble(),
+              totalClasses: m['total_classes'] as int,
+              attendedClasses: m['attended_classes'] as int,
+            );
+          }).toList();
 
       final attendanceReport = AttendanceReport(
         dailyAttendance: dailyAttendance,
@@ -87,7 +100,9 @@ class SupabaseReportsRepository implements ReportsRepository {
         );
       }).toList();
 
-      final monthlyRevenue = (revData['monthlyRevenue'] as List<dynamic>).map((e) {
+      final monthlyRevenue = (revData['monthlyRevenue'] as List<dynamic>).map((
+        e,
+      ) {
         final m = e as Map<String, dynamic>;
         return MonthlyTrend(
           month: DateTime.parse(m['month'] as String),
@@ -95,7 +110,9 @@ class SupabaseReportsRepository implements ReportsRepository {
         );
       }).toList();
 
-      final yearlyRevenue = (revData['yearlyRevenue'] as List<dynamic>).map((e) {
+      final yearlyRevenue = (revData['yearlyRevenue'] as List<dynamic>).map((
+        e,
+      ) {
         final m = e as Map<String, dynamic>;
         return MonthlyTrend(
           month: DateTime.parse(m['month'] as String),
@@ -103,13 +120,13 @@ class SupabaseReportsRepository implements ReportsRepository {
         );
       }).toList();
 
-      final membershipSales = (revData['membershipSales'] as Map<String, dynamic>).map(
-        (key, value) => MapEntry(key, value as int),
-      );
+      final membershipSales =
+          (revData['membershipSales'] as Map<String, dynamic>).map(
+            (key, value) => MapEntry(key, value as int),
+          );
 
-      final revenueByPlan = (revData['revenueByPlan'] as Map<String, dynamic>).map(
-        (key, value) => MapEntry(key, (value as num).toDouble()),
-      );
+      final revenueByPlan = (revData['revenueByPlan'] as Map<String, dynamic>)
+          .map((key, value) => MapEntry(key, (value as num).toDouble()));
 
       final revenueReport = RevenueReport(
         dailyRevenue: dailyRevenue,
@@ -125,13 +142,15 @@ class SupabaseReportsRepository implements ReportsRepository {
       // C. Parse Membership Report
       final memData = data['membership'] as Map<String, dynamic>;
 
-      final membershipGrowth = (memData['membershipGrowth'] as List<dynamic>).map((e) {
-        final m = e as Map<String, dynamic>;
-        return MonthlyTrend(
-          month: DateTime.parse(m['month'] as String),
-          value: (m['value'] as num).toDouble(),
-        );
-      }).toList();
+      final membershipGrowth = (memData['membershipGrowth'] as List<dynamic>)
+          .map((e) {
+            final m = e as Map<String, dynamic>;
+            return MonthlyTrend(
+              month: DateTime.parse(m['month'] as String),
+              value: (m['value'] as num).toDouble(),
+            );
+          })
+          .toList();
 
       final membershipReport = MembershipReport(
         activeMemberships: memData['activeMemberships'] as int,
@@ -145,7 +164,9 @@ class SupabaseReportsRepository implements ReportsRepository {
       // D. Parse Student Report
       final studData = data['students'] as Map<String, dynamic>;
 
-      final studentGrowth = (studData['studentGrowth'] as List<dynamic>).map((e) {
+      final studentGrowth = (studData['studentGrowth'] as List<dynamic>).map((
+        e,
+      ) {
         final m = e as Map<String, dynamic>;
         return MonthlyTrend(
           month: DateTime.parse(m['month'] as String),
@@ -153,9 +174,10 @@ class SupabaseReportsRepository implements ReportsRepository {
         );
       }).toList();
 
-      final genderDistribution = (studData['genderDistribution'] as Map<String, dynamic>).map(
-        (key, value) => MapEntry(key, value as int),
-      );
+      final genderDistribution =
+          (studData['genderDistribution'] as Map<String, dynamic>).map(
+            (key, value) => MapEntry(key, value as int),
+          );
 
       final studentReport = StudentReport(
         totalStudents: studData['totalStudents'] as int,

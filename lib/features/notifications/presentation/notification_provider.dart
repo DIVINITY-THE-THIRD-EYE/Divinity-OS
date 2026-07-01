@@ -6,8 +6,7 @@ import '../data/notification_repository.dart';
 import '../domain/app_notification.dart';
 
 final notificationRepositoryProvider = Provider<NotificationRepository>(
-  (ref) =>
-      SupabaseNotificationRepository(ref.watch(supabaseClientProvider)),
+  (ref) => SupabaseNotificationRepository(ref.watch(supabaseClientProvider)),
 );
 
 class MyNotificationsNotifier extends AsyncNotifier<List<AppNotification>> {
@@ -38,18 +37,13 @@ class MyNotificationsNotifier extends AsyncNotifier<List<AppNotification>> {
       client.removeChannel(channel);
     });
 
-    return ref
-        .read(notificationRepositoryProvider)
-        .fetchMyNotifications(uid);
+    return ref.read(notificationRepositoryProvider).fetchMyNotifications(uid);
   }
 
   Future<void> markRead(String id) async {
-    final updated =
-        await ref.read(notificationRepositoryProvider).markRead(id);
+    final updated = await ref.read(notificationRepositoryProvider).markRead(id);
     state = AsyncData(
-      (state.value ?? [])
-          .map((n) => n.id == updated.id ? updated : n)
-          .toList(),
+      (state.value ?? []).map((n) => n.id == updated.id ? updated : n).toList(),
     );
   }
 
@@ -67,17 +61,15 @@ class MyNotificationsNotifier extends AsyncNotifier<List<AppNotification>> {
     if (uid == null) return;
     state = const AsyncLoading();
     state = await AsyncValue.guard(
-      () => ref
-          .read(notificationRepositoryProvider)
-          .fetchMyNotifications(uid),
+      () => ref.read(notificationRepositoryProvider).fetchMyNotifications(uid),
     );
   }
 }
 
 final myNotificationsProvider =
     AsyncNotifierProvider<MyNotificationsNotifier, List<AppNotification>>(
-  MyNotificationsNotifier.new,
-);
+      MyNotificationsNotifier.new,
+    );
 
 /// Derived count of unread notifications — cheap, no extra fetch.
 final unreadCountProvider = Provider<int>((ref) {

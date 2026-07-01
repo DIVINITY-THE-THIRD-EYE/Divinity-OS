@@ -23,14 +23,12 @@ class SupabaseHomeRepository implements HomeRepository {
   @override
   Future<HomeData> fetchHomeData(String userId) async {
     final results = await Future.wait<dynamic>([
-      _client
-          .from('users')
-          .select('name')
-          .eq('id', userId)
-          .single(),
+      _client.from('users').select('name').eq('id', userId).single(),
       _client
           .from('enrollments')
-          .select('batch_id, batches(id, name, schedule_time, days_of_week, trainer_id, users(name))')
+          .select(
+            'batch_id, batches(id, name, schedule_time, days_of_week, trainer_id, users(name))',
+          )
           .eq('student_id', userId),
       _client
           .from('attendance')
@@ -91,9 +89,11 @@ class SupabaseHomeRepository implements HomeRepository {
       final batch = e['batches'] as Map<String, dynamic>?;
       if (batch == null) continue;
 
-      final daysOfWeek = (batch['days_of_week'] as List<dynamic>?)
-          ?.map((d) => d as String)
-          .toList() ?? [];
+      final daysOfWeek =
+          (batch['days_of_week'] as List<dynamic>?)
+              ?.map((d) => d as String)
+              .toList() ??
+          [];
       if (daysOfWeek.isEmpty) continue;
 
       final trainerRow = batch['users'] as Map<String, dynamic>?;
@@ -114,13 +114,15 @@ class SupabaseHomeRepository implements HomeRepository {
 
       if (nextDate == null) continue;
 
-      classes.add(UpcomingClass(
-        batchId: batch['id'] as String,
-        batchName: batch['name'] as String,
-        scheduleTime: batch['schedule_time'] as String? ?? '',
-        nextDate: nextDate,
-        trainerName: trainerName,
-      ));
+      classes.add(
+        UpcomingClass(
+          batchId: batch['id'] as String,
+          batchName: batch['name'] as String,
+          scheduleTime: batch['schedule_time'] as String? ?? '',
+          nextDate: nextDate,
+          trainerName: trainerName,
+        ),
+      );
     }
 
     classes.sort((a, b) {
@@ -138,35 +140,35 @@ class SupabaseHomeRepository implements HomeRepository {
       final date = DateTime.parse(r['date'] as String);
       return switch (status) {
         'PRESENT' => ActivityItem(
-            date: date,
-            label: 'Attended class',
-            icon: '✅',
-            isPositive: true,
-          ),
+          date: date,
+          label: 'Attended class',
+          icon: '✅',
+          isPositive: true,
+        ),
         'EXCUSED' => ActivityItem(
-            date: date,
-            label: 'Excused absence',
-            icon: '📋',
-            isPositive: true,
-          ),
+          date: date,
+          label: 'Excused absence',
+          icon: '📋',
+          isPositive: true,
+        ),
         'ON_LEAVE' => ActivityItem(
-            date: date,
-            label: 'On leave',
-            icon: '🏖',
-            isPositive: true,
-          ),
+          date: date,
+          label: 'On leave',
+          icon: '🏖',
+          isPositive: true,
+        ),
         'HOLIDAY' => ActivityItem(
-            date: date,
-            label: 'Holiday',
-            icon: '🎉',
-            isPositive: true,
-          ),
+          date: date,
+          label: 'Holiday',
+          icon: '🎉',
+          isPositive: true,
+        ),
         _ => ActivityItem(
-            date: date,
-            label: 'Absent',
-            icon: '❌',
-            isPositive: false,
-          ),
+          date: date,
+          label: 'Absent',
+          icon: '❌',
+          isPositive: false,
+        ),
       };
     }).toList();
   }

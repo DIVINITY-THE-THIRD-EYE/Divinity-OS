@@ -52,12 +52,14 @@ class StepConsent extends StatelessWidget {
                 ),
                 const _BulletPoint(
                   icon: Icons.location_on_outlined,
-                  text: 'Location coordinates to verify presence during geofenced check-ins.',
+                  text:
+                      'Location coordinates to verify presence during geofenced check-ins.',
                 ),
                 const SizedBox(height: 8),
                 const _BulletPoint(
                   icon: Icons.health_and_safety_outlined,
-                  text: 'Medical conditions or physical injuries to customize your therapeutic and diet plans.',
+                  text:
+                      'Medical conditions or physical injuries to customize your therapeutic and diet plans.',
                 ),
               ],
             ),
@@ -71,10 +73,14 @@ class StepConsent extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: consent ? cs.primary : cs.outline.withValues(alpha: 0.4),
+                  color: consent
+                      ? cs.primary
+                      : cs.outline.withValues(alpha: 0.4),
                   width: consent ? 2 : 1,
                 ),
-                color: consent ? cs.primary.withValues(alpha: 0.08) : Colors.transparent,
+                color: consent
+                    ? cs.primary.withValues(alpha: 0.08)
+                    : Colors.transparent,
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,

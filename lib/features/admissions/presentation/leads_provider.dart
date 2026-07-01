@@ -12,8 +12,7 @@ class LeadsNotifier extends AsyncNotifier<List<Lead>> {
   @override
   Future<List<Lead>> build() => _load();
 
-  Future<List<Lead>> _load() =>
-      ref.read(leadsRepositoryProvider).fetchLeads();
+  Future<List<Lead>> _load() => ref.read(leadsRepositoryProvider).fetchLeads();
 
   Future<void> refresh() async {
     state = const AsyncLoading();
@@ -28,7 +27,9 @@ class LeadsNotifier extends AsyncNotifier<List<Lead>> {
     String? notes,
     required String createdBy,
   }) async {
-    final lead = await ref.read(leadsRepositoryProvider).createLead(
+    final lead = await ref
+        .read(leadsRepositoryProvider)
+        .createLead(
           name: name,
           phone: phone,
           email: email,
@@ -40,14 +41,16 @@ class LeadsNotifier extends AsyncNotifier<List<Lead>> {
   }
 
   Future<void> advancePipeline(String id, LeadStatus newStatus) async {
-    final updated =
-        await ref.read(leadsRepositoryProvider).advancePipeline(id, newStatus);
+    final updated = await ref
+        .read(leadsRepositoryProvider)
+        .advancePipeline(id, newStatus);
     _replaceLead(updated);
   }
 
   Future<void> updateNotes(String id, String notes) async {
-    final updated =
-        await ref.read(leadsRepositoryProvider).updateNotes(id, notes);
+    final updated = await ref
+        .read(leadsRepositoryProvider)
+        .updateNotes(id, notes);
     _replaceLead(updated);
   }
 
@@ -67,12 +70,11 @@ class LeadsNotifier extends AsyncNotifier<List<Lead>> {
 
   void _replaceLead(Lead updated) {
     state = AsyncData(
-      (state.value ?? [])
-          .map((l) => l.id == updated.id ? updated : l)
-          .toList(),
+      (state.value ?? []).map((l) => l.id == updated.id ? updated : l).toList(),
     );
   }
 }
 
-final leadsProvider =
-    AsyncNotifierProvider<LeadsNotifier, List<Lead>>(LeadsNotifier.new);
+final leadsProvider = AsyncNotifierProvider<LeadsNotifier, List<Lead>>(
+  LeadsNotifier.new,
+);

@@ -11,7 +11,8 @@ class WeeklyScheduleScreen extends ConsumerStatefulWidget {
   const WeeklyScheduleScreen({super.key});
 
   @override
-  ConsumerState<WeeklyScheduleScreen> createState() => _WeeklyScheduleScreenState();
+  ConsumerState<WeeklyScheduleScreen> createState() =>
+      _WeeklyScheduleScreenState();
 }
 
 class _WeeklyScheduleScreenState extends ConsumerState<WeeklyScheduleScreen> {
@@ -42,9 +43,7 @@ class _WeeklyScheduleScreenState extends ConsumerState<WeeklyScheduleScreen> {
     final historyAsync = ref.watch(attendanceHistoryProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Weekly Schedule'),
-      ),
+      appBar: AppBar(title: const Text('Weekly Schedule')),
       body: activeBatchAsync.when(
         loading: () => const Center(child: ChakraLoader()),
         error: (err, _) => Center(child: Text('Error loading schedule: $err')),
@@ -61,7 +60,8 @@ class _WeeklyScheduleScreenState extends ConsumerState<WeeklyScheduleScreen> {
             );
           }
 
-          final daysOfWeek = (batch['days_of_week'] as List<dynamic>?)
+          final daysOfWeek =
+              (batch['days_of_week'] as List<dynamic>?)
                   ?.map((d) => d.toString().toUpperCase())
                   .toList() ??
               [];
@@ -194,7 +194,8 @@ class _ClassDetailsCard extends StatelessWidget {
       statusLabel = record!.status.label;
       statusColor = switch (record!.status) {
         AttendanceStatus.present => AppColors.success,
-        AttendanceStatus.excused || AttendanceStatus.onLeave => AppColors.warning,
+        AttendanceStatus.excused ||
+        AttendanceStatus.onLeave => AppColors.warning,
         AttendanceStatus.holiday => Colors.blue,
         AttendanceStatus.cancelled => Colors.grey,
         AttendanceStatus.absent => AppColors.error,
@@ -202,7 +203,11 @@ class _ClassDetailsCard extends StatelessWidget {
     } else {
       final now = DateTime.now();
       final today = DateTime(now.year, now.month, now.day);
-      final sel = DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
+      final sel = DateTime(
+        selectedDate.year,
+        selectedDate.month,
+        selectedDate.day,
+      );
       if (sel.isAfter(today)) {
         statusLabel = 'Scheduled';
         statusColor = Colors.blue;
@@ -231,7 +236,10 @@ class _ClassDetailsCard extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: statusColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12),

@@ -6,18 +6,18 @@ enum LeaveStatus {
   rejected;
 
   static LeaveStatus fromString(String v) => switch (v.toUpperCase()) {
-        'APPROVED' => LeaveStatus.approved,
-        'REJECTED' => LeaveStatus.rejected,
-        _ => LeaveStatus.pending,
-      };
+    'APPROVED' => LeaveStatus.approved,
+    'REJECTED' => LeaveStatus.rejected,
+    _ => LeaveStatus.pending,
+  };
 
   String get dbValue => name.toUpperCase();
 
   String get label => switch (this) {
-        LeaveStatus.pending => 'Pending',
-        LeaveStatus.approved => 'Approved',
-        LeaveStatus.rejected => 'Rejected',
-      };
+    LeaveStatus.pending => 'Pending',
+    LeaveStatus.approved => 'Approved',
+    LeaveStatus.rejected => 'Rejected',
+  };
 }
 
 class LeaveRequest {

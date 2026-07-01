@@ -19,15 +19,14 @@ TherapeuticLog _fakeLog({
   String? studentName = 'Arjun Patel',
   String trainerId = 'trainer-1',
   String note = 'Good progress today.',
-}) =>
-    TherapeuticLog.fromMap({
-      'id': id,
-      'student_id': studentId,
-      'trainer_id': trainerId,
-      'student': {'name': studentName},
-      'note': note,
-      'created_at': '2026-06-16T10:00:00.000Z',
-    });
+}) => TherapeuticLog.fromMap({
+  'id': id,
+  'student_id': studentId,
+  'trainer_id': trainerId,
+  'student': {'name': studentName},
+  'note': note,
+  'created_at': '2026-06-16T10:00:00.000Z',
+});
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
@@ -83,8 +82,9 @@ void main() {
     tearDown(() => container.dispose());
 
     test('loads logs by trainer on build', () async {
-      when(() => mockRepo.fetchByTrainer(any()))
-          .thenAnswer((_) async => [_fakeLog()]);
+      when(
+        () => mockRepo.fetchByTrainer(any()),
+      ).thenAnswer((_) async => [_fakeLog()]);
 
       final result = await container.read(trainerLogsProvider.future);
       expect(result.length, 1);
@@ -92,21 +92,23 @@ void main() {
     });
 
     test('add prepends new log to list', () async {
-      when(() => mockRepo.fetchByTrainer(any()))
-          .thenAnswer((_) async => [_fakeLog()]);
+      when(
+        () => mockRepo.fetchByTrainer(any()),
+      ).thenAnswer((_) async => [_fakeLog()]);
       await container.read(trainerLogsProvider.future);
 
       final newLog = _fakeLog(id: 'log-2', note: 'Improving stamina.');
-      when(() => mockRepo.addLog(
-            studentId: any(named: 'studentId'),
-            trainerId: any(named: 'trainerId'),
-            note: any(named: 'note'),
-          )).thenAnswer((_) async => newLog);
+      when(
+        () => mockRepo.addLog(
+          studentId: any(named: 'studentId'),
+          trainerId: any(named: 'trainerId'),
+          note: any(named: 'note'),
+        ),
+      ).thenAnswer((_) async => newLog);
 
-      await container.read(trainerLogsProvider.notifier).add(
-            studentId: 'student-1',
-            note: 'Improving stamina.',
-          );
+      await container
+          .read(trainerLogsProvider.notifier)
+          .add(studentId: 'student-1', note: 'Improving stamina.');
 
       final state = container.read(trainerLogsProvider).value!;
       expect(state.first.id, 'log-2');
@@ -114,8 +116,9 @@ void main() {
     });
 
     test('remove deletes log from list', () async {
-      when(() => mockRepo.fetchByTrainer(any()))
-          .thenAnswer((_) async => [_fakeLog()]);
+      when(
+        () => mockRepo.fetchByTrainer(any()),
+      ).thenAnswer((_) async => [_fakeLog()]);
       await container.read(trainerLogsProvider.future);
 
       when(() => mockRepo.deleteLog(any())).thenAnswer((_) async {});

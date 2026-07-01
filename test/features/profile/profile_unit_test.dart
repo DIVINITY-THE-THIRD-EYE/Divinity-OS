@@ -20,17 +20,16 @@ UserProfile _fakeProfile({
   String role = 'STUDENT',
   int currentStreak = 5,
   int maxStreak = 14,
-}) =>
-    UserProfile(
-      id: id,
-      name: name,
-      phone: '+919876543210',
-      role: role,
-      planStatus: planStatus,
-      currentStreak: currentStreak,
-      maxStreak: maxStreak,
-      createdAt: DateTime(2026, 1, 15),
-    );
+}) => UserProfile(
+  id: id,
+  name: name,
+  phone: '+919876543210',
+  role: role,
+  planStatus: planStatus,
+  currentStreak: currentStreak,
+  maxStreak: maxStreak,
+  createdAt: DateTime(2026, 1, 15),
+);
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
@@ -170,24 +169,30 @@ void main() {
     tearDown(() => container.dispose());
 
     test('loads profile on build', () async {
-      when(() => mockRepo.fetchProfile('user-1'))
-          .thenAnswer((_) async => _fakeProfile());
+      when(
+        () => mockRepo.fetchProfile('user-1'),
+      ).thenAnswer((_) async => _fakeProfile());
 
       final profile = await container.read(myProfileProvider.future);
       expect(profile.name, 'Priya Kapoor');
     });
 
     test('updateName calls repository and reloads', () async {
-      when(() => mockRepo.fetchProfile('user-1'))
-          .thenAnswer((_) async => _fakeProfile());
+      when(
+        () => mockRepo.fetchProfile('user-1'),
+      ).thenAnswer((_) async => _fakeProfile());
       await container.read(myProfileProvider.future);
 
-      when(() => mockRepo.updateName('user-1', 'Priya Sharma'))
-          .thenAnswer((_) async {});
-      when(() => mockRepo.fetchProfile('user-1'))
-          .thenAnswer((_) async => _fakeProfile(name: 'Priya Sharma'));
+      when(
+        () => mockRepo.updateName('user-1', 'Priya Sharma'),
+      ).thenAnswer((_) async {});
+      when(
+        () => mockRepo.fetchProfile('user-1'),
+      ).thenAnswer((_) async => _fakeProfile(name: 'Priya Sharma'));
 
-      await container.read(myProfileProvider.notifier).updateName('Priya Sharma');
+      await container
+          .read(myProfileProvider.notifier)
+          .updateName('Priya Sharma');
 
       final updated = container.read(myProfileProvider).value!;
       expect(updated.name, 'Priya Sharma');
@@ -195,33 +200,37 @@ void main() {
     });
 
     test('updateEmergencyContact calls repository and reloads', () async {
-      when(() => mockRepo.fetchProfile('user-1'))
-          .thenAnswer((_) async => _fakeProfile());
+      when(
+        () => mockRepo.fetchProfile('user-1'),
+      ).thenAnswer((_) async => _fakeProfile());
       await container.read(myProfileProvider.future);
 
-      when(() => mockRepo.updateEmergencyContact(
-            'user-1',
-            name: 'Ravi Kapoor',
-            phone: '+919999999999',
-          )).thenAnswer((_) async {});
-      when(() => mockRepo.fetchProfile('user-1'))
-          .thenAnswer((_) async => _fakeProfile());
+      when(
+        () => mockRepo.updateEmergencyContact(
+          'user-1',
+          name: 'Ravi Kapoor',
+          phone: '+919999999999',
+        ),
+      ).thenAnswer((_) async {});
+      when(
+        () => mockRepo.fetchProfile('user-1'),
+      ).thenAnswer((_) async => _fakeProfile());
 
-      await container.read(myProfileProvider.notifier).updateEmergencyContact(
-            name: 'Ravi Kapoor',
-            phone: '+919999999999',
-          );
+      await container
+          .read(myProfileProvider.notifier)
+          .updateEmergencyContact(name: 'Ravi Kapoor', phone: '+919999999999');
 
-      verify(() => mockRepo.updateEmergencyContact(
-            'user-1',
-            name: 'Ravi Kapoor',
-            phone: '+919999999999',
-          )).called(1);
+      verify(
+        () => mockRepo.updateEmergencyContact(
+          'user-1',
+          name: 'Ravi Kapoor',
+          phone: '+919999999999',
+        ),
+      ).called(1);
     });
 
     test('propagates error on failed fetch', () async {
-      when(() => mockRepo.fetchProfile(any()))
-          .thenThrow(Exception('DB error'));
+      when(() => mockRepo.fetchProfile(any())).thenThrow(Exception('DB error'));
 
       await expectLater(
         container.read(myProfileProvider.future),

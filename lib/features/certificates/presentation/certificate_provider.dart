@@ -19,12 +19,15 @@ final myCertificatesProvider = FutureProvider<List<Certificate>>((ref) async {
 /// Certificates for a given student (used by trainer/admin views).
 final studentCertificatesProvider =
     FutureProvider.family<List<Certificate>, String>((ref, studentId) async {
-  return ref.watch(certificateRepositoryProvider).fetchForStudent(studentId);
-});
+      return ref
+          .watch(certificateRepositoryProvider)
+          .fetchForStudent(studentId);
+    });
 
 /// All certificates with student names (admin only).
-final allCertificatesProvider =
-    FutureProvider<List<Map<String, dynamic>>>((ref) async {
+final allCertificatesProvider = FutureProvider<List<Map<String, dynamic>>>((
+  ref,
+) async {
   return ref.watch(certificateRepositoryProvider).fetchAllWithStudentNames();
 });
 
@@ -45,5 +48,5 @@ class IssueCertificateNotifier extends AutoDisposeAsyncNotifier<void> {
 
 final issueCertificateNotifierProvider =
     AutoDisposeAsyncNotifierProvider<IssueCertificateNotifier, void>(
-  IssueCertificateNotifier.new,
-);
+      IssueCertificateNotifier.new,
+    );

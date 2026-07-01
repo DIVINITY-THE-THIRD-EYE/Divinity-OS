@@ -38,10 +38,9 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
       return;
     }
     setState(() => _error = null);
-    await ref.read(authStateProvider.notifier).verifyOtp(
-          phone: _phone,
-          token: token,
-        );
+    await ref
+        .read(authStateProvider.notifier)
+        .verifyOtp(phone: _phone, token: token);
   }
 
   Future<void> _resend() async {
@@ -54,10 +53,12 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authStateProvider);
     final isLoading = authState is app_auth.AuthLoading;
-    final stateError =
-        authState is app_auth.AuthError ? authState.message : null;
-    final displayPhone =
-        authState is app_auth.AuthOtpSent ? authState.phone : _phone;
+    final stateError = authState is app_auth.AuthError
+        ? authState.message
+        : null;
+    final displayPhone = authState is app_auth.AuthOtpSent
+        ? authState.phone
+        : _phone;
 
     return Scaffold(
       body: Stack(
@@ -74,8 +75,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                   error: stateError ?? _error,
                   onVerify: _verify,
                   onResend: _resend,
-                  onBack: () =>
-                      ref.read(authStateProvider.notifier).signOut(),
+                  onBack: () => ref.read(authStateProvider.notifier).signOut(),
                 ),
               ),
             ),
@@ -148,8 +148,7 @@ class _OtpCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             'We sent a 6-digit code to',
-            style:
-                tt.bodyMedium?.copyWith(color: AppColors.textSecondaryDark),
+            style: tt.bodyMedium?.copyWith(color: AppColors.textSecondaryDark),
             textAlign: TextAlign.center,
           ),
           Text(
@@ -206,16 +205,16 @@ class _OtpCard extends StatelessWidget {
                 onPressed: isLoading ? null : onResend,
                 child: Text(
                   'Resend OTP',
-                  style:
-                      tt.bodySmall?.copyWith(color: AppColors.accentViolet),
+                  style: tt.bodySmall?.copyWith(color: AppColors.accentViolet),
                 ),
               ),
               TextButton(
                 onPressed: isLoading ? null : onBack,
                 child: Text(
                   'Back to Login',
-                  style: tt.bodySmall
-                      ?.copyWith(color: AppColors.textSecondaryDark),
+                  style: tt.bodySmall?.copyWith(
+                    color: AppColors.textSecondaryDark,
+                  ),
                 ),
               ),
             ],
@@ -246,10 +245,9 @@ class _ErrorBanner extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall
-                  ?.copyWith(color: AppColors.error),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: AppColors.error),
             ),
           ),
         ],

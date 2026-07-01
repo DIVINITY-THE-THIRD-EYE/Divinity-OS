@@ -16,14 +16,13 @@ Enrollment _fakeEnrollment({
   String studentId = 's-1',
   String studentName = 'Alice',
   String batchId = 'b-1',
-}) =>
-    Enrollment(
-      id: id,
-      studentId: studentId,
-      studentName: studentName,
-      batchId: batchId,
-      assignedAt: DateTime(2026),
-    );
+}) => Enrollment(
+  id: id,
+  studentId: studentId,
+  studentName: studentName,
+  batchId: batchId,
+  assignedAt: DateTime(2026),
+);
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
@@ -70,9 +69,7 @@ void main() {
     setUp(() {
       mockRepo = MockEnrollmentRepository();
       container = ProviderContainer(
-        overrides: [
-          enrollmentRepositoryProvider.overrideWithValue(mockRepo),
-        ],
+        overrides: [enrollmentRepositoryProvider.overrideWithValue(mockRepo)],
       );
     });
 
@@ -83,11 +80,13 @@ void main() {
         _fakeEnrollment(),
         _fakeEnrollment(id: 'e-2', studentName: 'Charlie'),
       ];
-      when(() => mockRepo.fetchByBatch('b-1'))
-          .thenAnswer((_) async => enrollments);
+      when(
+        () => mockRepo.fetchByBatch('b-1'),
+      ).thenAnswer((_) async => enrollments);
 
-      final state =
-          await container.read(batchEnrollmentsProvider('b-1').future);
+      final state = await container.read(
+        batchEnrollmentsProvider('b-1').future,
+      );
       expect(state.length, 2);
       expect(state.first.studentName, 'Alice');
     });
@@ -97,19 +96,18 @@ void main() {
         _fakeEnrollment(),
         _fakeEnrollment(id: 'e-2', studentId: 's-2', studentName: 'Charlie'),
       ];
-      when(() => mockRepo.fetchByBatch('b-1'))
-          .thenAnswer((_) async => enrollments);
+      when(
+        () => mockRepo.fetchByBatch('b-1'),
+      ).thenAnswer((_) async => enrollments);
       await container.read(batchEnrollmentsProvider('b-1').future);
 
-      when(() => mockRepo.unenroll('e-1'))
-          .thenAnswer((_) async {});
+      when(() => mockRepo.unenroll('e-1')).thenAnswer((_) async {});
 
       await container
           .read(batchEnrollmentsProvider('b-1').notifier)
           .unenroll('e-1');
 
-      final updated =
-          container.read(batchEnrollmentsProvider('b-1')).value!;
+      final updated = container.read(batchEnrollmentsProvider('b-1')).value!;
       expect(updated.length, 1);
       expect(updated.first.studentName, 'Charlie');
     });

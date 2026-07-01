@@ -39,10 +39,7 @@ class FcmService {
     final userId = _client.auth.currentUser?.id;
     if (userId == null) return;
     try {
-      await _client
-          .from('users')
-          .update({'fcm_token': token})
-          .eq('id', userId);
+      await _client.from('users').update({'fcm_token': token}).eq('id', userId);
     } catch (e) {
       debugPrint('[FCM] save token error: $e');
     }

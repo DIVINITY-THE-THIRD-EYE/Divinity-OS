@@ -36,9 +36,11 @@ class AttendanceHistoryScreen extends ConsumerWidget {
         child: Icon(_statusIcon(record.status), color: color, size: 20),
       ),
       title: Text(record.dateLabel),
-      subtitle: Text(record.markedBy == MarkedBy.student
-          ? 'Self check-in'
-          : 'Marked by ${record.markedBy.name}'),
+      subtitle: Text(
+        record.markedBy == MarkedBy.student
+            ? 'Self check-in'
+            : 'Marked by ${record.markedBy.name}',
+      ),
       trailing: Chip(
         label: Text(record.status.label, style: const TextStyle(fontSize: 11)),
         backgroundColor: color.withValues(alpha: 0.12),
@@ -49,20 +51,20 @@ class AttendanceHistoryScreen extends ConsumerWidget {
   }
 
   static Color _statusColor(AttendanceStatus s) => switch (s) {
-        AttendanceStatus.present => Colors.green,
-        AttendanceStatus.absent => Colors.red,
-        AttendanceStatus.excused => Colors.orange,
-        AttendanceStatus.onLeave => Colors.blue,
-        AttendanceStatus.holiday => Colors.purple,
-        AttendanceStatus.cancelled => Colors.grey,
-      };
+    AttendanceStatus.present => Colors.green,
+    AttendanceStatus.absent => Colors.red,
+    AttendanceStatus.excused => Colors.orange,
+    AttendanceStatus.onLeave => Colors.blue,
+    AttendanceStatus.holiday => Colors.purple,
+    AttendanceStatus.cancelled => Colors.grey,
+  };
 
   static IconData _statusIcon(AttendanceStatus s) => switch (s) {
-        AttendanceStatus.present => Icons.check_circle_outline,
-        AttendanceStatus.absent => Icons.cancel_outlined,
-        AttendanceStatus.excused => Icons.info_outline,
-        AttendanceStatus.onLeave => Icons.beach_access_outlined,
-        AttendanceStatus.holiday => Icons.celebration_outlined,
-        AttendanceStatus.cancelled => Icons.do_not_disturb_outlined,
-      };
+    AttendanceStatus.present => Icons.check_circle_outline,
+    AttendanceStatus.absent => Icons.cancel_outlined,
+    AttendanceStatus.excused => Icons.info_outline,
+    AttendanceStatus.onLeave => Icons.beach_access_outlined,
+    AttendanceStatus.holiday => Icons.celebration_outlined,
+    AttendanceStatus.cancelled => Icons.do_not_disturb_outlined,
+  };
 }

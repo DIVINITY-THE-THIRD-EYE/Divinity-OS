@@ -16,10 +16,7 @@ class SupabaseBatchRepository implements BatchRepository {
 
   @override
   Future<List<Batch>> fetchBatches() async {
-    final rows = await _client
-        .from('batches')
-        .select()
-        .order('created_at');
+    final rows = await _client.from('batches').select().order('created_at');
     return (rows as List<dynamic>)
         .map((r) => Batch.fromMap(r as Map<String, dynamic>))
         .toList();

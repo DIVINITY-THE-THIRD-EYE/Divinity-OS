@@ -11,7 +11,9 @@ class SupabaseFeedbackRepository implements FeedbackRepository {
   Future<List<StudentFeedback>> fetchMyFeedback(String studentId) async {
     final rows = await _client
         .from('student_feedback')
-        .select('*, student:users!student_feedback_student_id_fkey(name), trainer:users!student_feedback_trainer_id_fkey(name), batches(name)')
+        .select(
+          '*, student:users!student_feedback_student_id_fkey(name), trainer:users!student_feedback_trainer_id_fkey(name), batches(name)',
+        )
         .eq('student_id', studentId)
         .order('created_at', ascending: false);
     return (rows as List<dynamic>)
@@ -23,7 +25,9 @@ class SupabaseFeedbackRepository implements FeedbackRepository {
   Future<List<StudentFeedback>> fetchAllFeedback() async {
     final rows = await _client
         .from('student_feedback')
-        .select('*, student:users!student_feedback_student_id_fkey(name), trainer:users!student_feedback_trainer_id_fkey(name), batches(name)')
+        .select(
+          '*, student:users!student_feedback_student_id_fkey(name), trainer:users!student_feedback_trainer_id_fkey(name), batches(name)',
+        )
         .order('created_at', ascending: false);
     return (rows as List<dynamic>)
         .map((r) => StudentFeedback.fromMap(r as Map<String, dynamic>))
@@ -34,7 +38,9 @@ class SupabaseFeedbackRepository implements FeedbackRepository {
   Future<List<StudentFeedback>> fetchBatchFeedback(String batchId) async {
     final rows = await _client
         .from('student_feedback')
-        .select('*, student:users!student_feedback_student_id_fkey(name), trainer:users!student_feedback_trainer_id_fkey(name), batches(name)')
+        .select(
+          '*, student:users!student_feedback_student_id_fkey(name), trainer:users!student_feedback_trainer_id_fkey(name), batches(name)',
+        )
         .eq('batch_id', batchId)
         .order('created_at', ascending: false);
     return (rows as List<dynamic>)
@@ -59,7 +65,9 @@ class SupabaseFeedbackRepository implements FeedbackRepository {
           'rating': rating,
           if (comments != null && comments.isNotEmpty) 'comments': comments,
         })
-        .select('*, student:users!student_feedback_student_id_fkey(name), trainer:users!student_feedback_trainer_id_fkey(name), batches(name)')
+        .select(
+          '*, student:users!student_feedback_student_id_fkey(name), trainer:users!student_feedback_trainer_id_fkey(name), batches(name)',
+        )
         .single();
     return StudentFeedback.fromMap(row);
   }

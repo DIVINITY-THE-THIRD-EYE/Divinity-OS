@@ -78,7 +78,8 @@ class TransformationScore {
       'mindfulness': mindfulness,
       'recovery': recovery,
       'score': score,
-      'week_start_date': '${weekStartDate.year.toString().padLeft(4, '0')}-${weekStartDate.month.toString().padLeft(2, '0')}-${weekStartDate.day.toString().padLeft(2, '0')}',
+      'week_start_date':
+          '${weekStartDate.year.toString().padLeft(4, '0')}-${weekStartDate.month.toString().padLeft(2, '0')}-${weekStartDate.day.toString().padLeft(2, '0')}',
       if (createdAt != null) 'created_at': createdAt!.toIso8601String(),
     };
   }

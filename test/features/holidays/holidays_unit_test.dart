@@ -15,13 +15,12 @@ Holiday _fakeHoliday({
   String id = 'h-1',
   String name = 'Diwali',
   String date = '2026-10-20',
-}) =>
-    Holiday.fromMap({
-      'id': id,
-      'date': date,
-      'name': name,
-      'created_at': '2026-06-16T00:00:00.000Z',
-    });
+}) => Holiday.fromMap({
+  'id': id,
+  'date': date,
+  'name': name,
+  'created_at': '2026-06-16T00:00:00.000Z',
+});
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
@@ -67,17 +66,16 @@ void main() {
     setUp(() {
       mockRepo = MockHolidayRepository();
       container = ProviderContainer(
-        overrides: [
-          holidayRepositoryProvider.overrideWithValue(mockRepo),
-        ],
+        overrides: [holidayRepositoryProvider.overrideWithValue(mockRepo)],
       );
     });
 
     tearDown(() => container.dispose());
 
     test('loads holidays on build', () async {
-      when(() => mockRepo.fetchUpcoming())
-          .thenAnswer((_) async => [_fakeHoliday()]);
+      when(
+        () => mockRepo.fetchUpcoming(),
+      ).thenAnswer((_) async => [_fakeHoliday()]);
 
       final result = await container.read(holidaysProvider.future);
       expect(result.length, 1);
@@ -85,20 +83,24 @@ void main() {
     });
 
     test('add inserts and sorts by date', () async {
-      when(() => mockRepo.fetchUpcoming())
-          .thenAnswer((_) async => []);
+      when(() => mockRepo.fetchUpcoming()).thenAnswer((_) async => []);
 
-      final nov = _fakeHoliday(id: 'h-2', name: 'Christmas', date: '2026-12-25');
-      when(() => mockRepo.addHoliday(
-            date: any(named: 'date'),
-            name: any(named: 'name'),
-          )).thenAnswer((_) async => nov);
+      final nov = _fakeHoliday(
+        id: 'h-2',
+        name: 'Christmas',
+        date: '2026-12-25',
+      );
+      when(
+        () => mockRepo.addHoliday(
+          date: any(named: 'date'),
+          name: any(named: 'name'),
+        ),
+      ).thenAnswer((_) async => nov);
 
       await container.read(holidaysProvider.future);
-      await container.read(holidaysProvider.notifier).add(
-            date: DateTime(2026, 12, 25),
-            name: 'Christmas',
-          );
+      await container
+          .read(holidaysProvider.notifier)
+          .add(date: DateTime(2026, 12, 25), name: 'Christmas');
 
       final state = container.read(holidaysProvider).value!;
       expect(state.length, 1);
@@ -106,13 +108,13 @@ void main() {
     });
 
     test('remove deletes holiday from list', () async {
-      when(() => mockRepo.fetchUpcoming())
-          .thenAnswer((_) async => [_fakeHoliday()]);
+      when(
+        () => mockRepo.fetchUpcoming(),
+      ).thenAnswer((_) async => [_fakeHoliday()]);
 
       await container.read(holidaysProvider.future);
 
-      when(() => mockRepo.deleteHoliday(any()))
-          .thenAnswer((_) async {});
+      when(() => mockRepo.deleteHoliday(any())).thenAnswer((_) async {});
 
       await container.read(holidaysProvider.notifier).remove('h-1');
 
@@ -121,13 +123,15 @@ void main() {
     });
 
     test('refresh reloads the list', () async {
-      when(() => mockRepo.fetchUpcoming())
-          .thenAnswer((_) async => [_fakeHoliday()]);
+      when(
+        () => mockRepo.fetchUpcoming(),
+      ).thenAnswer((_) async => [_fakeHoliday()]);
       await container.read(holidaysProvider.future);
 
       final h2 = _fakeHoliday(id: 'h-2', name: 'Holi', date: '2026-03-05');
-      when(() => mockRepo.fetchUpcoming())
-          .thenAnswer((_) async => [_fakeHoliday(), h2]);
+      when(
+        () => mockRepo.fetchUpcoming(),
+      ).thenAnswer((_) async => [_fakeHoliday(), h2]);
       await container.read(holidaysProvider.notifier).refresh();
 
       expect(container.read(holidaysProvider).value!.length, 2);

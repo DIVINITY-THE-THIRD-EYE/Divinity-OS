@@ -94,8 +94,14 @@ class _GreetingCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: isDark
-              ? [AppColors.accentViolet.withValues(alpha: 0.25), AppColors.surfaceDark]
-              : [AppColors.accentGold.withValues(alpha: 0.15), AppColors.surfaceLight],
+              ? [
+                  AppColors.accentViolet.withValues(alpha: 0.25),
+                  AppColors.surfaceDark,
+                ]
+              : [
+                  AppColors.accentGold.withValues(alpha: 0.15),
+                  AppColors.surfaceLight,
+                ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -110,7 +116,9 @@ class _GreetingCard extends StatelessWidget {
           Text(
             '$_greeting,',
             style: tt.bodyMedium?.copyWith(
-              color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+              color: isDark
+                  ? AppColors.textSecondaryDark
+                  : AppColors.textSecondaryLight,
             ),
           ),
           const SizedBox(height: 4),
@@ -119,7 +127,9 @@ class _GreetingCard extends StatelessWidget {
           Text(
             'Stay consistent, stay transformed.',
             style: tt.bodySmall?.copyWith(
-              color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+              color: isDark
+                  ? AppColors.textSecondaryDark
+                  : AppColors.textSecondaryLight,
               fontStyle: FontStyle.italic,
             ),
           ),
@@ -163,24 +173,26 @@ class _NextClassBanner extends StatelessWidget {
                   ),
                 )
               : Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: AppColors.accentViolet.withValues(alpha: 0.2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.notifications_active_outlined,
-                    color: AppColors.accentViolet,
-                    size: 20,
-                  ),
-                )
-                  .animate(
-                      onPlay: (controller) => controller.repeat(reverse: true))
-                  .scaleXY(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppColors.accentViolet.withValues(alpha: 0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.notifications_active_outlined,
+                        color: AppColors.accentViolet,
+                        size: 20,
+                      ),
+                    )
+                    .animate(
+                      onPlay: (controller) => controller.repeat(reverse: true),
+                    )
+                    .scaleXY(
                       begin: 0.9,
                       end: 1.1,
                       duration: 1200.ms,
-                      curve: Curves.easeInOut),
+                      curve: Curves.easeInOut,
+                    ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -244,14 +256,16 @@ class _StreakCard extends StatelessWidget {
               child: MediaQuery.of(context).disableAnimations
                   ? const Text('🔥', style: TextStyle(fontSize: 26))
                   : const Text('🔥', style: TextStyle(fontSize: 26))
-                      .animate(
+                        .animate(
                           onPlay: (controller) =>
-                              controller.repeat(reverse: true))
-                      .scaleXY(
+                              controller.repeat(reverse: true),
+                        )
+                        .scaleXY(
                           begin: 0.85,
                           end: 1.15,
                           duration: 1000.ms,
-                          curve: Curves.easeInOut),
+                          curve: Curves.easeInOut,
+                        ),
             ),
           ),
           const SizedBox(width: 16),
@@ -274,7 +288,9 @@ class _StreakCard extends StatelessWidget {
                       ? 'Show up today to start your streak.'
                       : 'Keep the momentum going.',
                   style: tt.bodySmall?.copyWith(
-                    color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                    color: isDark
+                        ? AppColors.textSecondaryDark
+                        : AppColors.textSecondaryLight,
                   ),
                 ),
               ],
@@ -297,7 +313,7 @@ class _QuoteCard extends StatelessWidget {
       "Consistency is the key to transformation. Show up for yourself today.",
       "Awaken your inner vision. Breathe in energy, breathe out stress.",
       "Your practice is a mirror. What you do on the mat reflects who you are off the mat.",
-      "Transform body, mind, and soul. Every small step counts on the path."
+      "Transform body, mind, and soul. Every small step counts on the path.",
     ];
     final dayIndex = DateTime.now().weekday - 1; // 0 to 6
     return quotes[dayIndex % quotes.length];
@@ -329,7 +345,9 @@ class _QuoteCard extends StatelessWidget {
                 style: tt.labelSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   letterSpacing: 0.5,
-                  color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                  color: isDark
+                      ? AppColors.textSecondaryDark
+                      : AppColors.textSecondaryLight,
                 ),
               ),
             ],
@@ -360,7 +378,9 @@ class _SectionHeader extends StatelessWidget {
     return Text(
       title,
       style: tt.titleSmall?.copyWith(
-        color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+        color: isDark
+            ? AppColors.textSecondaryDark
+            : AppColors.textSecondaryLight,
         letterSpacing: 0.5,
         fontWeight: FontWeight.w600,
       ),
@@ -409,12 +429,17 @@ class _ClassCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(cls.batchName, style: tt.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
+                Text(
+                  cls.batchName,
+                  style: tt.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                ),
                 if (cls.trainerName != null)
                   Text(
                     cls.trainerName!,
                     style: tt.bodySmall?.copyWith(
-                      color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                      color: isDark
+                          ? AppColors.textSecondaryDark
+                          : AppColors.textSecondaryLight,
                     ),
                   ),
               ],
@@ -454,7 +479,9 @@ class _ActivityList extends StatelessWidget {
       decoration: BoxDecoration(
         color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: isDark ? AppColors.borderDark : AppColors.borderLight),
+        border: Border.all(
+          color: isDark ? AppColors.borderDark : AppColors.borderLight,
+        ),
       ),
       child: Column(
         children: [
@@ -475,7 +502,11 @@ class _ActivityList extends StatelessWidget {
 }
 
 class _ActivityRow extends StatelessWidget {
-  const _ActivityRow({required this.item, required this.tt, required this.isDark});
+  const _ActivityRow({
+    required this.item,
+    required this.tt,
+    required this.isDark,
+  });
   final ActivityItem item;
   final TextTheme tt;
   final bool isDark;
@@ -488,13 +519,13 @@ class _ActivityRow extends StatelessWidget {
         children: [
           Text(item.icon, style: const TextStyle(fontSize: 18)),
           const SizedBox(width: 12),
-          Expanded(
-            child: Text(item.label, style: tt.bodyMedium),
-          ),
+          Expanded(child: Text(item.label, style: tt.bodyMedium)),
           Text(
             item.dateLabel,
             style: tt.labelSmall?.copyWith(
-              color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+              color: isDark
+                  ? AppColors.textSecondaryDark
+                  : AppColors.textSecondaryLight,
             ),
           ),
         ],
@@ -511,7 +542,11 @@ class _EmptyState extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 48),
       child: Column(
         children: [
-          Icon(Icons.self_improvement, size: 64, color: AppColors.accentViolet.withValues(alpha: 0.3)),
+          Icon(
+            Icons.self_improvement,
+            size: 64,
+            color: AppColors.accentViolet.withValues(alpha: 0.3),
+          ),
           const SizedBox(height: 16),
           Text('Your journey starts here', style: tt.titleMedium),
           const SizedBox(height: 8),

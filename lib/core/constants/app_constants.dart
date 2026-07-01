@@ -1,7 +1,9 @@
 abstract final class AppConstants {
   // Supabase — loaded from .env at startup
   static const String supabaseUrl = String.fromEnvironment('SUPABASE_URL');
-  static const String supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
+  static const String supabaseAnonKey = String.fromEnvironment(
+    'SUPABASE_ANON_KEY',
+  );
 
   // App
   static const String appName = 'Divinity';

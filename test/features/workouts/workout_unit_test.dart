@@ -13,27 +13,26 @@ Workout _fakeWorkout({
   String id = 'w-1',
   String title = 'Core & Breath',
   int exercises = 2,
-}) =>
-    Workout.fromMap({
-      'id': id,
-      'trainer_id': 'trainer-1',
-      'trainer': {'name': 'Guru'},
-      'title': title,
-      'description': 'Foundational',
-      'created_at': '2026-06-16T10:00:00.000Z',
-      'workout_exercises': [
-        for (var i = 0; i < exercises; i++)
-          {
-            'id': 'e-$i',
-            'workout_id': id,
-            'name': 'Exercise $i',
-            'sets': 3,
-            'reps': 12,
-            'rest_sec': 30,
-            'position': exercises - i, // reversed to test sorting
-          },
-      ],
-    });
+}) => Workout.fromMap({
+  'id': id,
+  'trainer_id': 'trainer-1',
+  'trainer': {'name': 'Guru'},
+  'title': title,
+  'description': 'Foundational',
+  'created_at': '2026-06-16T10:00:00.000Z',
+  'workout_exercises': [
+    for (var i = 0; i < exercises; i++)
+      {
+        'id': 'e-$i',
+        'workout_id': id,
+        'name': 'Exercise $i',
+        'sets': 3,
+        'reps': 12,
+        'rest_sec': 30,
+        'position': exercises - i, // reversed to test sorting
+      },
+  ],
+});
 
 void main() {
   // ── Model parsing ───────────────────────────────────────────────────────────
@@ -119,17 +118,20 @@ void main() {
 
     setUp(() {
       repo = MockWorkoutRepository();
-      container = ProviderContainer(overrides: [
-        currentUserIdProvider.overrideWithValue('trainer-1'),
-        workoutRepositoryProvider.overrideWithValue(repo),
-      ]);
+      container = ProviderContainer(
+        overrides: [
+          currentUserIdProvider.overrideWithValue('trainer-1'),
+          workoutRepositoryProvider.overrideWithValue(repo),
+        ],
+      );
     });
 
     tearDown(() => container.dispose());
 
     test('loads workouts on build', () async {
-      when(() => repo.fetchByTrainer(any()))
-          .thenAnswer((_) async => [_fakeWorkout()]);
+      when(
+        () => repo.fetchByTrainer(any()),
+      ).thenAnswer((_) async => [_fakeWorkout()]);
       final result = await container.read(trainerWorkoutsProvider.future);
       expect(result.length, 1);
       expect(result.first.title, 'Core & Breath');
@@ -140,17 +142,21 @@ void main() {
       await container.read(trainerWorkoutsProvider.future);
 
       final created = _fakeWorkout(id: 'w-2', title: 'Mobility');
-      when(() => repo.createWorkout(
-            trainerId: any(named: 'trainerId'),
-            title: any(named: 'title'),
-            description: any(named: 'description'),
-            exercises: any(named: 'exercises'),
-          )).thenAnswer((_) async => created);
+      when(
+        () => repo.createWorkout(
+          trainerId: any(named: 'trainerId'),
+          title: any(named: 'title'),
+          description: any(named: 'description'),
+          exercises: any(named: 'exercises'),
+        ),
+      ).thenAnswer((_) async => created);
 
-      await container.read(trainerWorkoutsProvider.notifier).create(
-        title: 'Mobility',
-        exercises: const [ExerciseDraft(name: 'Hip opener')],
-      );
+      await container
+          .read(trainerWorkoutsProvider.notifier)
+          .create(
+            title: 'Mobility',
+            exercises: const [ExerciseDraft(name: 'Hip opener')],
+          );
 
       final state = container.read(trainerWorkoutsProvider).value!;
       expect(state.first.id, 'w-2');
@@ -158,8 +164,9 @@ void main() {
     });
 
     test('remove deletes workout from list', () async {
-      when(() => repo.fetchByTrainer(any()))
-          .thenAnswer((_) async => [_fakeWorkout()]);
+      when(
+        () => repo.fetchByTrainer(any()),
+      ).thenAnswer((_) async => [_fakeWorkout()]);
       await container.read(trainerWorkoutsProvider.future);
       when(() => repo.deleteWorkout(any())).thenAnswer((_) async {});
 
@@ -170,21 +177,25 @@ void main() {
     test('assign delegates to repository with trainer id', () async {
       when(() => repo.fetchByTrainer(any())).thenAnswer((_) async => []);
       await container.read(trainerWorkoutsProvider.future);
-      when(() => repo.assignToBatch(
-            workoutId: any(named: 'workoutId'),
-            batchId: any(named: 'batchId'),
-            assignedBy: any(named: 'assignedBy'),
-          )).thenAnswer((_) async {});
+      when(
+        () => repo.assignToBatch(
+          workoutId: any(named: 'workoutId'),
+          batchId: any(named: 'batchId'),
+          assignedBy: any(named: 'assignedBy'),
+        ),
+      ).thenAnswer((_) async {});
 
       await container
           .read(trainerWorkoutsProvider.notifier)
           .assign(workoutId: 'w-1', batchId: 'b-1');
 
-      verify(() => repo.assignToBatch(
-            workoutId: 'w-1',
-            batchId: 'b-1',
-            assignedBy: 'trainer-1',
-          )).called(1);
+      verify(
+        () => repo.assignToBatch(
+          workoutId: 'w-1',
+          batchId: 'b-1',
+          assignedBy: 'trainer-1',
+        ),
+      ).called(1);
     });
   });
 
@@ -205,68 +216,76 @@ void main() {
                   {
                     'student_id': 'student-1',
                     'completed_at': '2026-06-17T07:00:00.000Z',
-                  }
+                  },
                 ]
               : <dynamic>[],
         }, currentStudentId: 'student-1');
 
     setUp(() {
       repo = MockWorkoutRepository();
-      container = ProviderContainer(overrides: [
-        currentUserIdProvider.overrideWithValue('student-1'),
-        workoutRepositoryProvider.overrideWithValue(repo),
-      ]);
+      container = ProviderContainer(
+        overrides: [
+          currentUserIdProvider.overrideWithValue('student-1'),
+          workoutRepositoryProvider.overrideWithValue(repo),
+        ],
+      );
     });
 
     tearDown(() => container.dispose());
 
     test('loads assignments on build', () async {
-      when(() => repo.fetchAssignmentsForStudent(any()))
-          .thenAnswer((_) async => [assignment()]);
+      when(
+        () => repo.fetchAssignmentsForStudent(any()),
+      ).thenAnswer((_) async => [assignment()]);
       final result = await container.read(studentWorkoutsProvider.future);
       expect(result.length, 1);
       expect(result.first.isCompleted, isFalse);
     });
 
     test('toggleComplete marks complete when not done', () async {
-      when(() => repo.fetchAssignmentsForStudent(any()))
-          .thenAnswer((_) async => [assignment()]);
+      when(
+        () => repo.fetchAssignmentsForStudent(any()),
+      ).thenAnswer((_) async => [assignment()]);
       await container.read(studentWorkoutsProvider.future);
-      when(() => repo.markComplete(
-            assignmentId: any(named: 'assignmentId'),
-            studentId: any(named: 'studentId'),
-            notes: any(named: 'notes'),
-          )).thenAnswer((_) async {});
-      when(() => repo.fetchAssignmentsForStudent(any()))
-          .thenAnswer((_) async => [assignment(completed: true)]);
+      when(
+        () => repo.markComplete(
+          assignmentId: any(named: 'assignmentId'),
+          studentId: any(named: 'studentId'),
+          notes: any(named: 'notes'),
+        ),
+      ).thenAnswer((_) async {});
+      when(
+        () => repo.fetchAssignmentsForStudent(any()),
+      ).thenAnswer((_) async => [assignment(completed: true)]);
 
       await container
           .read(studentWorkoutsProvider.notifier)
           .toggleComplete(assignment());
 
-      verify(() => repo.markComplete(
-            assignmentId: 'a-1',
-            studentId: 'student-1',
-          )).called(1);
+      verify(
+        () => repo.markComplete(assignmentId: 'a-1', studentId: 'student-1'),
+      ).called(1);
     });
 
     test('toggleComplete marks incomplete when already done', () async {
-      when(() => repo.fetchAssignmentsForStudent(any()))
-          .thenAnswer((_) async => [assignment(completed: true)]);
+      when(
+        () => repo.fetchAssignmentsForStudent(any()),
+      ).thenAnswer((_) async => [assignment(completed: true)]);
       await container.read(studentWorkoutsProvider.future);
-      when(() => repo.markIncomplete(
-            assignmentId: any(named: 'assignmentId'),
-            studentId: any(named: 'studentId'),
-          )).thenAnswer((_) async {});
+      when(
+        () => repo.markIncomplete(
+          assignmentId: any(named: 'assignmentId'),
+          studentId: any(named: 'studentId'),
+        ),
+      ).thenAnswer((_) async {});
 
       await container
           .read(studentWorkoutsProvider.notifier)
           .toggleComplete(assignment(completed: true));
 
-      verify(() => repo.markIncomplete(
-            assignmentId: 'a-1',
-            studentId: 'student-1',
-          )).called(1);
+      verify(
+        () => repo.markIncomplete(assignmentId: 'a-1', studentId: 'student-1'),
+      ).called(1);
     });
   });
 }

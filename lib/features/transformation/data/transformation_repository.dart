@@ -11,7 +11,9 @@ class SupabaseTransformationRepository implements TransformationRepository {
   final SupabaseClient _client;
 
   @override
-  Future<List<TransformationScore>> fetchScoresForStudent(String studentId) async {
+  Future<List<TransformationScore>> fetchScoresForStudent(
+    String studentId,
+  ) async {
     final rows = await _client
         .from('transformation_scores')
         .select()
@@ -25,9 +27,8 @@ class SupabaseTransformationRepository implements TransformationRepository {
   @override
   Future<void> setWeeklyScore(TransformationScore score) async {
     final map = score.toMap();
-    await _client.from('transformation_scores').upsert(
-          map,
-          onConflict: 'student_id,week_start_date',
-        );
+    await _client
+        .from('transformation_scores')
+        .upsert(map, onConflict: 'student_id,week_start_date');
   }
 }

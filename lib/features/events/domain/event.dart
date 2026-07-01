@@ -6,22 +6,22 @@ enum EventStatus {
   cancelled;
 
   static EventStatus fromString(String v) => switch (v.toUpperCase()) {
-        'DRAFT' => EventStatus.draft,
-        'CANCELLED' => EventStatus.cancelled,
-        _ => EventStatus.published,
-      };
+    'DRAFT' => EventStatus.draft,
+    'CANCELLED' => EventStatus.cancelled,
+    _ => EventStatus.published,
+  };
 
   String get wire => switch (this) {
-        EventStatus.draft => 'DRAFT',
-        EventStatus.published => 'PUBLISHED',
-        EventStatus.cancelled => 'CANCELLED',
-      };
+    EventStatus.draft => 'DRAFT',
+    EventStatus.published => 'PUBLISHED',
+    EventStatus.cancelled => 'CANCELLED',
+  };
 
   String get label => switch (this) {
-        EventStatus.draft => 'Draft',
-        EventStatus.published => 'Published',
-        EventStatus.cancelled => 'Cancelled',
-      };
+    EventStatus.draft => 'Draft',
+    EventStatus.published => 'Published',
+    EventStatus.cancelled => 'Cancelled',
+  };
 }
 
 /// A workshop/seminar/camp. [registrationCount] and [isRegistered] are populated
@@ -55,18 +55,16 @@ class Event {
 
   bool get isFull => capacity != null && registrationCount >= capacity!;
 
-  int? get seatsLeft =>
-      capacity == null ? null : (capacity! - registrationCount).clamp(0, capacity!);
+  int? get seatsLeft => capacity == null
+      ? null
+      : (capacity! - registrationCount).clamp(0, capacity!);
 
   String get whenLabel {
     final d = DateFormat('EEE, d MMM yyyy · h:mm a').format(startsAt.toLocal());
     return d;
   }
 
-  factory Event.fromMap(
-    Map<String, dynamic> m, {
-    String? currentStudentId,
-  }) {
+  factory Event.fromMap(Map<String, dynamic> m, {String? currentStudentId}) {
     // Registration count may arrive as an aggregate list: [{count: n}].
     var count = 0;
     final regsAgg = m['event_registrations'];
@@ -104,13 +102,13 @@ class Event {
   }
 
   Map<String, dynamic> toInsertMap() => {
-        'title': title.trim(),
-        if (description != null && description!.trim().isNotEmpty)
-          'description': description!.trim(),
-        if (location != null && location!.trim().isNotEmpty)
-          'location': location!.trim(),
-        'starts_at': startsAt.toUtc().toIso8601String(),
-        if (capacity != null) 'capacity': capacity,
-        'status': status.wire,
-      };
+    'title': title.trim(),
+    if (description != null && description!.trim().isNotEmpty)
+      'description': description!.trim(),
+    if (location != null && location!.trim().isNotEmpty)
+      'location': location!.trim(),
+    'starts_at': startsAt.toUtc().toIso8601String(),
+    if (capacity != null) 'capacity': capacity,
+    'status': status.wire,
+  };
 }

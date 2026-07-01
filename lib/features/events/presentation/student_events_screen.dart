@@ -95,16 +95,23 @@ class _EventCardState extends ConsumerState<_EventCard> {
             Row(
               children: [
                 CircleAvatar(
-                  backgroundColor:
-                      AppColors.accentViolet.withValues(alpha: 0.12),
-                  child: const Icon(Icons.event,
-                      color: AppColors.accentViolet, size: 20),
+                  backgroundColor: AppColors.accentViolet.withValues(
+                    alpha: 0.12,
+                  ),
+                  child: const Icon(
+                    Icons.event,
+                    color: AppColors.accentViolet,
+                    size: 20,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Text(e.title,
-                      style: tt.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w600)),
+                  child: Text(
+                    e.title,
+                    style: tt.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
                 if (registered)
                   const Chip(
@@ -144,8 +151,7 @@ class _EventCardState extends ConsumerState<_EventCard> {
                           ? const SizedBox(
                               height: 16,
                               width: 16,
-                              child:
-                                  CircularProgressIndicator(strokeWidth: 2),
+                              child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : const Icon(Icons.how_to_reg, size: 18),
                       label: Text(full ? 'Full' : 'Register'),
@@ -170,7 +176,11 @@ class _InfoRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
-          Icon(icon, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
+          Icon(
+            icon,
+            size: 16,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
           const SizedBox(width: 8),
           Expanded(child: Text(text, style: tt.bodySmall)),
         ],
@@ -189,8 +199,11 @@ class _EmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.event_available_outlined,
-              size: 72, color: AppColors.accentViolet.withValues(alpha: 0.3)),
+          Icon(
+            Icons.event_available_outlined,
+            size: 72,
+            color: AppColors.accentViolet.withValues(alpha: 0.3),
+          ),
           const SizedBox(height: 16),
           Text('No upcoming events', style: tt.titleMedium),
           const SizedBox(height: 8),

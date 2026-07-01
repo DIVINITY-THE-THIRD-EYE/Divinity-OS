@@ -8,5 +8,8 @@ abstract interface class SupportRepository {
     required String subject,
     required String description,
   });
-  Future<SupportTicket> updateTicketStatus(String ticketId, SupportTicketStatus status);
+  Future<SupportTicket> updateTicketStatus(
+    String ticketId,
+    SupportTicketStatus status,
+  );
 }

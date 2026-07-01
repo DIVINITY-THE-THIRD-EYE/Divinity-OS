@@ -25,8 +25,8 @@ class _FakeWorkoutRepository implements WorkoutRepository {
 
   @override
   Future<List<WorkoutAssignment>> fetchAssignmentsForStudent(
-          String studentId) async =>
-      forStudent;
+    String studentId,
+  ) async => forStudent;
 
   @override
   Future<Workout> createWorkout({
@@ -34,8 +34,7 @@ class _FakeWorkoutRepository implements WorkoutRepository {
     required String title,
     String? description,
     required List<ExerciseDraft> exercises,
-  }) async =>
-      throw UnimplementedError();
+  }) async => throw UnimplementedError();
 
   @override
   Future<void> deleteWorkout(String workoutId) async {}
@@ -49,8 +48,8 @@ class _FakeWorkoutRepository implements WorkoutRepository {
 
   @override
   Future<List<WorkoutAssignment>> fetchAssignmentsForWorkout(
-          String workoutId) async =>
-      [];
+    String workoutId,
+  ) async => [];
 
   @override
   Future<void> unassign(String assignmentId) async {}
@@ -70,38 +69,38 @@ class _FakeWorkoutRepository implements WorkoutRepository {
 }
 
 Workout _workout() => Workout.fromMap({
-      'id': 'w-1',
-      'trainer_id': 'trainer-1',
-      'title': 'Core & Breath',
-      'description': 'Foundational',
-      'created_at': '2026-06-16T10:00:00.000Z',
-      'workout_exercises': [
-        {
-          'id': 'e-1',
-          'workout_id': 'w-1',
-          'name': 'Cat-Cow',
-          'sets': 3,
-          'reps': 10,
-          'position': 0,
-        },
-      ],
-    });
+  'id': 'w-1',
+  'trainer_id': 'trainer-1',
+  'title': 'Core & Breath',
+  'description': 'Foundational',
+  'created_at': '2026-06-16T10:00:00.000Z',
+  'workout_exercises': [
+    {
+      'id': 'e-1',
+      'workout_id': 'w-1',
+      'name': 'Cat-Cow',
+      'sets': 3,
+      'reps': 10,
+      'position': 0,
+    },
+  ],
+});
 
 WorkoutAssignment _assignment() => WorkoutAssignment.fromMap({
-      'id': 'a-1',
-      'workout_id': 'w-1',
-      'batch_id': 'b-1',
-      'batches': {'name': 'Morning Flow'},
-      'workouts': {
-        'id': 'w-1',
-        'trainer_id': 'trainer-1',
-        'title': 'Core & Breath',
-        'created_at': '2026-06-16T10:00:00.000Z',
-        'workout_exercises': <dynamic>[],
-      },
-      'assigned_at': '2026-06-16T10:00:00.000Z',
-      'workout_completions': <dynamic>[],
-    }, currentStudentId: 'student-1');
+  'id': 'a-1',
+  'workout_id': 'w-1',
+  'batch_id': 'b-1',
+  'batches': {'name': 'Morning Flow'},
+  'workouts': {
+    'id': 'w-1',
+    'trainer_id': 'trainer-1',
+    'title': 'Core & Breath',
+    'created_at': '2026-06-16T10:00:00.000Z',
+    'workout_exercises': <dynamic>[],
+  },
+  'assigned_at': '2026-06-16T10:00:00.000Z',
+  'workout_completions': <dynamic>[],
+}, currentStudentId: 'student-1');
 
 Widget _wrap(Widget child, {required WorkoutRepository repo, String? uid}) {
   return ProviderScope(
@@ -122,8 +121,10 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('No workouts yet'), findsOneWidget);
-      expect(find.widgetWithText(FloatingActionButton, 'New Workout'),
-          findsOneWidget);
+      expect(
+        find.widgetWithText(FloatingActionButton, 'New Workout'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('renders a workout card with exercise count', (tester) async {

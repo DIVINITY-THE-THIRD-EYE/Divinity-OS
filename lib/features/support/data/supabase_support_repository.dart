@@ -49,7 +49,10 @@ class SupabaseSupportRepository implements SupportRepository {
   }
 
   @override
-  Future<SupportTicket> updateTicketStatus(String ticketId, SupportTicketStatus status) async {
+  Future<SupportTicket> updateTicketStatus(
+    String ticketId,
+    SupportTicketStatus status,
+  ) async {
     final row = await _client
         .from('support_tickets')
         .update({'status': status.dbValue})

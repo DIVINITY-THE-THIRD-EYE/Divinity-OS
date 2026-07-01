@@ -51,20 +51,19 @@ Event _event({
   int? capacity,
   int registrationCount = 0,
   bool isRegistered = false,
-}) =>
-    Event.fromMap({
-      'id': id,
-      'title': title,
-      'location': 'Rishikesh',
-      'starts_at': '2026-08-01T06:00:00.000Z',
-      'capacity': capacity,
-      'status': 'PUBLISHED',
-      'created_at': '2026-06-16T10:00:00.000Z',
-      'event_registrations': [
-        {'count': registrationCount}
-      ],
-      'is_registered': isRegistered,
-    });
+}) => Event.fromMap({
+  'id': id,
+  'title': title,
+  'location': 'Rishikesh',
+  'starts_at': '2026-08-01T06:00:00.000Z',
+  'capacity': capacity,
+  'status': 'PUBLISHED',
+  'created_at': '2026-06-16T10:00:00.000Z',
+  'event_registrations': [
+    {'count': registrationCount},
+  ],
+  'is_registered': isRegistered,
+});
 
 Widget _wrap(Widget child, {required EventRepository repo, String uid = 'u'}) {
   return ProviderScope(
@@ -88,8 +87,10 @@ void main() {
 
     testWidgets('renders event with Register CTA', (tester) async {
       await tester.pumpWidget(
-        _wrap(const StudentEventsScreen(),
-            repo: _FakeEventRepository(published: [_event()])),
+        _wrap(
+          const StudentEventsScreen(),
+          repo: _FakeEventRepository(published: [_event()]),
+        ),
       );
       await tester.pumpAndSettle();
       expect(find.text('Sunrise Camp'), findsOneWidget);
@@ -98,9 +99,12 @@ void main() {
 
     testWidgets('shows Full and disables CTA when at capacity', (tester) async {
       await tester.pumpWidget(
-        _wrap(const StudentEventsScreen(),
-            repo: _FakeEventRepository(
-                published: [_event(capacity: 1, registrationCount: 1)])),
+        _wrap(
+          const StudentEventsScreen(),
+          repo: _FakeEventRepository(
+            published: [_event(capacity: 1, registrationCount: 1)],
+          ),
+        ),
       );
       await tester.pumpAndSettle();
       final btn = tester.widget<FilledButton>(
@@ -111,8 +115,10 @@ void main() {
 
     testWidgets('registered event shows Going chip and Cancel', (tester) async {
       await tester.pumpWidget(
-        _wrap(const StudentEventsScreen(),
-            repo: _FakeEventRepository(published: [_event(isRegistered: true)])),
+        _wrap(
+          const StudentEventsScreen(),
+          repo: _FakeEventRepository(published: [_event(isRegistered: true)]),
+        ),
       );
       await tester.pumpAndSettle();
       expect(find.text('Going'), findsOneWidget);
@@ -127,8 +133,10 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(find.text('No events yet'), findsOneWidget);
-      expect(find.widgetWithText(FloatingActionButton, 'New Event'),
-          findsOneWidget);
+      expect(
+        find.widgetWithText(FloatingActionButton, 'New Event'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('renders event with registration count', (tester) async {
@@ -136,7 +144,8 @@ void main() {
         _wrap(
           const AdminEventsScreen(),
           repo: _FakeEventRepository(
-              all: [_event(capacity: 10, registrationCount: 4)]),
+            all: [_event(capacity: 10, registrationCount: 4)],
+          ),
         ),
       );
       await tester.pumpAndSettle();

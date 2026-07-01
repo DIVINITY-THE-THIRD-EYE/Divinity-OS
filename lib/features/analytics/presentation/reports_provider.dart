@@ -43,9 +43,10 @@ class ReportsFilterNotifier extends StateNotifier<ReportFilters> {
   }
 }
 
-final reportsFilterProvider = StateNotifierProvider<ReportsFilterNotifier, ReportFilters>(
-  (ref) => ReportsFilterNotifier(),
-);
+final reportsFilterProvider =
+    StateNotifierProvider<ReportsFilterNotifier, ReportFilters>(
+      (ref) => ReportsFilterNotifier(),
+    );
 
 final reportsDataProvider = FutureProvider<ReportsData>((ref) {
   final filters = ref.watch(reportsFilterProvider);

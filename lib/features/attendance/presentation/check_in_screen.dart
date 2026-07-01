@@ -81,7 +81,10 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen> {
             label: const Text('Request Leave'),
           ),
           const SizedBox(height: 24),
-          const Text('Recent Attendance', style: TextStyle(fontWeight: FontWeight.bold)),
+          const Text(
+            'Recent Attendance',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 8),
           const _RecentList(),
         ],
@@ -94,7 +97,9 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen> {
     final messenger = ScaffoldMessenger.of(context);
 
     // 1. Resolve device location (permission prompt + fix).
-    final error = await ref.read(geolocationProvider.notifier).requestAndFetch();
+    final error = await ref
+        .read(geolocationProvider.notifier)
+        .requestAndFetch();
     if (error != null) {
       messenger.showSnackBar(SnackBar(content: Text(error)));
       return;
@@ -115,12 +120,14 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen> {
       try {
         AnalyticsService.logMockLocationBlocked().ignore();
       } catch (_) {}
-      messenger.showSnackBar(const SnackBar(
-        content: Text(
-          'Mock location detected. Disable fake GPS / developer location '
-          'mocking to check in. Contact your trainer if this is a mistake.',
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Mock location detected. Disable fake GPS / developer location '
+            'mocking to check in. Contact your trainer if this is a mistake.',
+          ),
         ),
-      ));
+      );
       return;
     }
 
@@ -129,16 +136,24 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen> {
       final lat = (batch['location_lat'] as num?)?.toDouble();
       final lng = (batch['location_lng'] as num?)?.toDouble();
       if (lat != null && lng != null) {
-        final radius = (batch['radius_meters'] as num?)?.toDouble()
-            ?? AppConstants.geofenceDefaultRadius;
+        final radius =
+            (batch['radius_meters'] as num?)?.toDouble() ??
+            AppConstants.geofenceDefaultRadius;
         final dist = Geolocator.distanceBetween(
-          pos.latitude, pos.longitude, lat, lng,
+          pos.latitude,
+          pos.longitude,
+          lat,
+          lng,
         );
         if (dist > radius) {
-          messenger.showSnackBar(SnackBar(content: Text(
-            'You are ${dist.toStringAsFixed(0)} m from the centre '
-            '(max ${radius.toStringAsFixed(0)} m).',
-          )));
+          messenger.showSnackBar(
+            SnackBar(
+              content: Text(
+                'You are ${dist.toStringAsFixed(0)} m from the centre '
+                '(max ${radius.toStringAsFixed(0)} m).',
+              ),
+            ),
+          );
           return;
         }
       }
@@ -147,13 +162,15 @@ class _CheckInScreenState extends ConsumerState<CheckInScreen> {
     // 4. Server-validated check-in.
     setState(() => _submitting = true);
     try {
-      final record = await ref.read(todayAttendanceProvider.notifier).checkIn(
+      final record = await ref
+          .read(todayAttendanceProvider.notifier)
+          .checkIn(
             lat: pos.latitude,
             lng: pos.longitude,
             batchId: batch?['id'] as String?,
           );
       if (!mounted) return;
-      
+
       if (record.status == AttendanceStatus.present) {
         messenger.showSnackBar(
           const SnackBar(content: Text('Check-in recorded ✓')),
@@ -268,7 +285,8 @@ class _CheckInCard extends StatelessWidget {
 
     final lat = (batch!['location_lat'] as num?)?.toDouble();
     final lng = (batch!['location_lng'] as num?)?.toDouble();
-    final radius = (batch!['radius_meters'] as num?)?.toDouble() ??
+    final radius =
+        (batch!['radius_meters'] as num?)?.toDouble() ??
         AppConstants.geofenceDefaultRadius;
     final trainerName = batch!['users']?['name'] ?? 'Not assigned';
     final scheduleTime = batch!['schedule_time'] ?? 'No time set';
@@ -290,13 +308,12 @@ class _CheckInCard extends StatelessWidget {
     if (position == null) {
       distanceText = 'Distance: Unknown (Locating device...)';
     } else {
-      distanceText = 'Distance: ${distance?.toStringAsFixed(0) ?? '0'} meters (limit: ${radius.toStringAsFixed(0)} meters)';
+      distanceText =
+          'Distance: ${distance?.toStringAsFixed(0) ?? '0'} meters (limit: ${radius.toStringAsFixed(0)} meters)';
     }
 
-    final bool canCheckIn = !alreadyPresent &&
-        !isLoading &&
-        position != null &&
-        isWithinGeofence;
+    final bool canCheckIn =
+        !alreadyPresent && !isLoading && position != null && isWithinGeofence;
 
     return Card(
       color: AppColors.accentViolet.withValues(alpha: 0.1),
@@ -308,16 +325,16 @@ class _CheckInCard extends StatelessWidget {
             Text(
               "Today's Class",
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.accentViolet,
-                  ),
+                fontWeight: FontWeight.bold,
+                color: AppColors.accentViolet,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
               'Batch: ${batch!['name'] ?? 'Unnamed'}',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
             Row(
@@ -339,9 +356,15 @@ class _CheckInCard extends StatelessWidget {
               const SizedBox(height: 4),
               Row(
                 children: [
-                  const Icon(Icons.pin_drop_outlined, size: 16, color: Colors.grey),
+                  const Icon(
+                    Icons.pin_drop_outlined,
+                    size: 16,
+                    color: Colors.grey,
+                  ),
                   const SizedBox(width: 6),
-                  Text('Location: Lat ${lat.toStringAsFixed(4)}, Lng ${lng.toStringAsFixed(4)}'),
+                  Text(
+                    'Location: Lat ${lat.toStringAsFixed(4)}, Lng ${lng.toStringAsFixed(4)}',
+                  ),
                 ],
               ),
             ],
@@ -376,10 +399,14 @@ class _CheckInCard extends StatelessWidget {
                       width: 18,
                       height: 18,
                       child: CircularProgressIndicator(
-                          strokeWidth: 2, color: Colors.white),
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
                     )
                   : const Icon(Icons.location_on_outlined),
-              label: Text(alreadyPresent ? 'Already Checked In' : 'Check In Now'),
+              label: Text(
+                alreadyPresent ? 'Already Checked In' : 'Check In Now',
+              ),
             ),
           ],
         ),
@@ -407,7 +434,8 @@ class _RecentList extends ConsumerWidget {
           physics: const NeverScrollableScrollPhysics(),
           itemCount: recent.length,
           separatorBuilder: (_, _) => const Divider(height: 1),
-          itemBuilder: (ctx, i) => AttendanceHistoryScreen.buildTile(ctx, recent[i]),
+          itemBuilder: (ctx, i) =>
+              AttendanceHistoryScreen.buildTile(ctx, recent[i]),
         );
       },
     );
@@ -420,10 +448,10 @@ class _ErrorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Card(
-        color: Colors.red.shade50,
-        child: ListTile(
-          leading: const Icon(Icons.error_outline, color: Colors.red),
-          title: Text(message, style: const TextStyle(fontSize: 13)),
-        ),
-      );
+    color: Colors.red.shade50,
+    child: ListTile(
+      leading: const Icon(Icons.error_outline, color: Colors.red),
+      title: Text(message, style: const TextStyle(fontSize: 13)),
+    ),
+  );
 }

@@ -15,17 +15,16 @@ LeaveRequest _fakeRequest({
   String id = 'lr-1',
   LeaveStatus status = LeaveStatus.pending,
   String? studentName,
-}) =>
-    LeaveRequest(
-      id: id,
-      studentId: 'user-1',
-      studentName: studentName,
-      startDate: DateTime(2026, 6, 20),
-      endDate: DateTime(2026, 6, 22),
-      reason: 'Family event',
-      status: status,
-      createdAt: DateTime(2026, 6, 16),
-    );
+}) => LeaveRequest(
+  id: id,
+  studentId: 'user-1',
+  studentName: studentName,
+  startDate: DateTime(2026, 6, 20),
+  endDate: DateTime(2026, 6, 22),
+  reason: 'Family event',
+  status: status,
+  createdAt: DateTime(2026, 6, 16),
+);
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
@@ -122,9 +121,7 @@ void main() {
     setUp(() {
       mockRepo = MockLeaveRepository();
       container = ProviderContainer(
-        overrides: [
-          leaveRepositoryProvider.overrideWithValue(mockRepo),
-        ],
+        overrides: [leaveRepositoryProvider.overrideWithValue(mockRepo)],
       );
     });
 
@@ -132,15 +129,19 @@ void main() {
 
     test('approve updates request status to approved', () async {
       final pending = [_fakeRequest()];
-      when(() => mockRepo.fetchPendingRequests())
-          .thenAnswer((_) async => pending);
+      when(
+        () => mockRepo.fetchPendingRequests(),
+      ).thenAnswer((_) async => pending);
       await container.read(pendingLeaveProvider.future);
 
       final approved = _fakeRequest(status: LeaveStatus.approved);
-      when(() => mockRepo.updateStatus(any(), any(), any()))
-          .thenAnswer((_) async => approved);
+      when(
+        () => mockRepo.updateStatus(any(), any(), any()),
+      ).thenAnswer((_) async => approved);
 
-      await container.read(pendingLeaveProvider.notifier).approve('lr-1', approvedBy: 'admin-1');
+      await container
+          .read(pendingLeaveProvider.notifier)
+          .approve('lr-1', approvedBy: 'admin-1');
 
       final state = container.read(pendingLeaveProvider).value!;
       expect(state.first.status, LeaveStatus.approved);
@@ -148,30 +149,34 @@ void main() {
 
     test('reject updates request status to rejected', () async {
       final pending = [_fakeRequest()];
-      when(() => mockRepo.fetchPendingRequests())
-          .thenAnswer((_) async => pending);
+      when(
+        () => mockRepo.fetchPendingRequests(),
+      ).thenAnswer((_) async => pending);
       await container.read(pendingLeaveProvider.future);
 
       final rejected = _fakeRequest(status: LeaveStatus.rejected);
-      when(() => mockRepo.updateStatus(any(), any(), any()))
-          .thenAnswer((_) async => rejected);
+      when(
+        () => mockRepo.updateStatus(any(), any(), any()),
+      ).thenAnswer((_) async => rejected);
 
-      await container.read(pendingLeaveProvider.notifier).reject('lr-1', approvedBy: 'admin-1');
+      await container
+          .read(pendingLeaveProvider.notifier)
+          .reject('lr-1', approvedBy: 'admin-1');
 
       final state = container.read(pendingLeaveProvider).value!;
       expect(state.first.status, LeaveStatus.rejected);
     });
 
     test('refresh reloads list', () async {
-      when(() => mockRepo.fetchPendingRequests())
-          .thenAnswer((_) async => [_fakeRequest()]);
+      when(
+        () => mockRepo.fetchPendingRequests(),
+      ).thenAnswer((_) async => [_fakeRequest()]);
       await container.read(pendingLeaveProvider.future);
       expect(container.read(pendingLeaveProvider).value!.length, 1);
 
-      when(() => mockRepo.fetchPendingRequests()).thenAnswer((_) async => [
-            _fakeRequest(),
-            _fakeRequest(id: 'lr-2'),
-          ]);
+      when(
+        () => mockRepo.fetchPendingRequests(),
+      ).thenAnswer((_) async => [_fakeRequest(), _fakeRequest(id: 'lr-2')]);
       await container.read(pendingLeaveProvider.notifier).refresh();
       expect(container.read(pendingLeaveProvider).value!.length, 2);
     });
@@ -188,12 +193,14 @@ void main() {
 
     test('submit returns new request', () async {
       final created = _fakeRequest();
-      when(() => mockRepo.submitRequest(
-            studentId: any(named: 'studentId'),
-            startDate: any(named: 'startDate'),
-            endDate: any(named: 'endDate'),
-            reason: any(named: 'reason'),
-          )).thenAnswer((_) async => created);
+      when(
+        () => mockRepo.submitRequest(
+          studentId: any(named: 'studentId'),
+          startDate: any(named: 'startDate'),
+          endDate: any(named: 'endDate'),
+          reason: any(named: 'reason'),
+        ),
+      ).thenAnswer((_) async => created);
 
       final result = await mockRepo.submitRequest(
         studentId: 'user-1',

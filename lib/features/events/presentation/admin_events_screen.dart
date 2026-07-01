@@ -43,8 +43,7 @@ class AdminEventsScreen extends ConsumerWidget {
                 child: ListView.builder(
                   padding: const EdgeInsets.fromLTRB(12, 12, 12, 96),
                   itemCount: events.length,
-                  itemBuilder: (ctx, i) =>
-                      _AdminEventCard(event: events[i]),
+                  itemBuilder: (ctx, i) => _AdminEventCard(event: events[i]),
                 ),
               ),
       ),
@@ -71,10 +70,10 @@ class _AdminEventCard extends ConsumerWidget {
   final Event event;
 
   Color _statusColor() => switch (event.status) {
-        EventStatus.published => Colors.green,
-        EventStatus.draft => Colors.orange,
-        EventStatus.cancelled => Colors.red,
-      };
+    EventStatus.published => Colors.green,
+    EventStatus.draft => Colors.orange,
+    EventStatus.cancelled => Colors.red,
+  };
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -89,19 +88,26 @@ class _AdminEventCard extends ConsumerWidget {
             Row(
               children: [
                 Expanded(
-                  child: Text(event.title,
-                      style: tt.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w600)),
+                  child: Text(
+                    event.title,
+                    style: tt.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: _statusColor().withValues(alpha: 0.14),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Text(event.status.label,
-                      style: tt.labelSmall?.copyWith(color: _statusColor())),
+                  child: Text(
+                    event.status.label,
+                    style: tt.labelSmall?.copyWith(color: _statusColor()),
+                  ),
                 ),
                 PopupMenuButton<String>(
                   onSelected: (v) {
@@ -135,27 +141,31 @@ class _AdminEventCard extends ConsumerWidget {
   }
 
   Widget _line(BuildContext context, IconData icon, String text) => Padding(
-        padding: const EdgeInsets.only(top: 4, right: 8),
-        child: Row(
-          children: [
-            Icon(icon,
-                size: 16,
-                color: Theme.of(context).colorScheme.onSurfaceVariant),
-            const SizedBox(width: 8),
-            Expanded(
-                child: Text(text,
-                    style: Theme.of(context).textTheme.bodySmall)),
-          ],
+    padding: const EdgeInsets.only(top: 4, right: 8),
+    child: Row(
+      children: [
+        Icon(
+          icon,
+          size: 16,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
-      );
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(text, style: Theme.of(context).textTheme.bodySmall),
+        ),
+      ],
+    ),
+  );
 
   Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
     final ok = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Delete Event'),
-        content: Text('Delete "${event.title}"? This removes all '
-            '${event.registrationCount} registration(s).'),
+        content: Text(
+          'Delete "${event.title}"? This removes all '
+          '${event.registrationCount} registration(s).',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -174,8 +184,9 @@ class _AdminEventCard extends ConsumerWidget {
         await ref.read(adminEventsProvider.notifier).remove(event.id);
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text('Error: $e')));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Error: $e')));
         }
       }
     }
@@ -210,8 +221,7 @@ class _EventEditorSheetState extends ConsumerState<_EventEditorSheet> {
     _titleCtrl = TextEditingController(text: e?.title ?? '');
     _descCtrl = TextEditingController(text: e?.description ?? '');
     _locationCtrl = TextEditingController(text: e?.location ?? '');
-    _capacityCtrl =
-        TextEditingController(text: e?.capacity?.toString() ?? '');
+    _capacityCtrl = TextEditingController(text: e?.capacity?.toString() ?? '');
     _startsAt = e?.startsAt;
     _status = e?.status ?? EventStatus.published;
   }
@@ -239,8 +249,15 @@ class _EventEditorSheetState extends ConsumerState<_EventEditorSheet> {
       initialTime: TimeOfDay.fromDateTime(_startsAt ?? now),
     );
     if (time == null) return;
-    setState(() => _startsAt = DateTime(
-        date.year, date.month, date.day, time.hour, time.minute));
+    setState(
+      () => _startsAt = DateTime(
+        date.year,
+        date.month,
+        date.day,
+        time.hour,
+        time.minute,
+      ),
+    );
   }
 
   Future<void> _save() async {
@@ -292,8 +309,7 @@ class _EventEditorSheetState extends ConsumerState<_EventEditorSheet> {
 
   void _snack(String msg) {
     if (mounted) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(msg)));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
     }
   }
 
@@ -302,7 +318,9 @@ class _EventEditorSheetState extends ConsumerState<_EventEditorSheet> {
     final tt = Theme.of(context).textTheme;
     final fmt = DateFormat('EEE, d MMM yyyy · h:mm a');
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
         child: Column(
@@ -333,8 +351,8 @@ class _EventEditorSheetState extends ConsumerState<_EventEditorSheet> {
                   _startsAt != null ? fmt.format(_startsAt!) : 'Select',
                   style: _startsAt == null
                       ? TextStyle(
-                          color:
-                              Theme.of(context).colorScheme.onSurfaceVariant)
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        )
                       : null,
                 ),
               ),
@@ -373,17 +391,20 @@ class _EventEditorSheetState extends ConsumerState<_EventEditorSheet> {
             SegmentedButton<EventStatus>(
               segments: const [
                 ButtonSegment(
-                    value: EventStatus.published,
-                    label: Text('Published'),
-                    icon: Icon(Icons.public)),
+                  value: EventStatus.published,
+                  label: Text('Published'),
+                  icon: Icon(Icons.public),
+                ),
                 ButtonSegment(
-                    value: EventStatus.draft,
-                    label: Text('Draft'),
-                    icon: Icon(Icons.edit_note)),
+                  value: EventStatus.draft,
+                  label: Text('Draft'),
+                  icon: Icon(Icons.edit_note),
+                ),
                 ButtonSegment(
-                    value: EventStatus.cancelled,
-                    label: Text('Cancelled'),
-                    icon: Icon(Icons.cancel_outlined)),
+                  value: EventStatus.cancelled,
+                  label: Text('Cancelled'),
+                  icon: Icon(Icons.cancel_outlined),
+                ),
               ],
               selected: {_status},
               onSelectionChanged: (s) => setState(() => _status = s.first),
@@ -427,8 +448,11 @@ class _EmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.event_outlined,
-              size: 72, color: AppColors.accentViolet.withValues(alpha: 0.3)),
+          Icon(
+            Icons.event_outlined,
+            size: 72,
+            color: AppColors.accentViolet.withValues(alpha: 0.3),
+          ),
           const SizedBox(height: 16),
           Text('No events yet', style: tt.titleMedium),
           const SizedBox(height: 8),

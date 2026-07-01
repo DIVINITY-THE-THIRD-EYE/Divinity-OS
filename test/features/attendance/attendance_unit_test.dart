@@ -14,14 +14,13 @@ class MockAttendanceRepository extends Mock implements AttendanceRepository {}
 AttendanceRecord _fakeRecord({
   AttendanceStatus status = AttendanceStatus.present,
   MarkedBy markedBy = MarkedBy.student,
-}) =>
-    AttendanceRecord(
-      id: 'a-1',
-      studentId: 'user-1',
-      date: DateTime(2026, 6, 16),
-      status: status,
-      markedBy: markedBy,
-    );
+}) => AttendanceRecord(
+  id: 'a-1',
+  studentId: 'user-1',
+  date: DateTime(2026, 6, 16),
+  status: status,
+  markedBy: markedBy,
+);
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
@@ -36,7 +35,9 @@ void main() {
       expect(AttendanceStatus.fromString('ON_LEAVE'), AttendanceStatus.onLeave);
       expect(AttendanceStatus.fromString('HOLIDAY'), AttendanceStatus.holiday);
       expect(
-          AttendanceStatus.fromString('CANCELLED'), AttendanceStatus.cancelled);
+        AttendanceStatus.fromString('CANCELLED'),
+        AttendanceStatus.cancelled,
+      );
     });
 
     test('defaults to absent for unknown', () {
@@ -110,17 +111,16 @@ void main() {
     setUp(() {
       mockRepo = MockAttendanceRepository();
       container = ProviderContainer(
-        overrides: [
-          attendanceRepositoryProvider.overrideWithValue(mockRepo),
-        ],
+        overrides: [attendanceRepositoryProvider.overrideWithValue(mockRepo)],
       );
     });
 
     tearDown(() => container.dispose());
 
     test('loads null when no record today', () async {
-      when(() => mockRepo.fetchTodayRecord(any()))
-          .thenAnswer((_) async => null);
+      when(
+        () => mockRepo.fetchTodayRecord(any()),
+      ).thenAnswer((_) async => null);
 
       // Provider depends on supabaseClientProvider which needs Supabase.
       // We test the repo layer directly instead of the full provider.
@@ -130,8 +130,9 @@ void main() {
 
     test('returns today record when one exists', () async {
       final record = _fakeRecord();
-      when(() => mockRepo.fetchTodayRecord(any()))
-          .thenAnswer((_) async => record);
+      when(
+        () => mockRepo.fetchTodayRecord(any()),
+      ).thenAnswer((_) async => record);
 
       final result = await mockRepo.fetchTodayRecord('user-1');
       expect(result?.status, AttendanceStatus.present);
@@ -139,37 +140,49 @@ void main() {
 
     test('checkIn returns PRESENT record', () async {
       final record = _fakeRecord();
-      when(() => mockRepo.checkIn(
-            lat: any(named: 'lat'),
-            lng: any(named: 'lng'),
-            batchId: any(named: 'batchId'),
-          )).thenAnswer((_) async => record);
+      when(
+        () => mockRepo.checkIn(
+          lat: any(named: 'lat'),
+          lng: any(named: 'lng'),
+          batchId: any(named: 'batchId'),
+        ),
+      ).thenAnswer((_) async => record);
 
-      final result =
-          await mockRepo.checkIn(lat: 26.8467, lng: 80.9462, batchId: 'b-1');
+      final result = await mockRepo.checkIn(
+        lat: 26.8467,
+        lng: 80.9462,
+        batchId: 'b-1',
+      );
       expect(result.status, AttendanceStatus.present);
       expect(result.markedBy, MarkedBy.student);
     });
 
-    test('checkIn surfaces a CheckInException when the server rejects',
-        () async {
-      when(() => mockRepo.checkIn(
+    test(
+      'checkIn surfaces a CheckInException when the server rejects',
+      () async {
+        when(
+          () => mockRepo.checkIn(
             lat: any(named: 'lat'),
             lng: any(named: 'lng'),
             batchId: any(named: 'batchId'),
-          )).thenThrow(CheckInException('outside check-in radius'));
+          ),
+        ).thenThrow(CheckInException('outside check-in radius'));
 
-      expect(
-        () => mockRepo.checkIn(lat: 0, lng: 0, batchId: 'b-1'),
-        throwsA(isA<CheckInException>()),
-      );
-    });
+        expect(
+          () => mockRepo.checkIn(lat: 0, lng: 0, batchId: 'b-1'),
+          throwsA(isA<CheckInException>()),
+        );
+      },
+    );
 
     test('updateStatus changes status on the record', () async {
       final updated = _fakeRecord(
-          status: AttendanceStatus.excused, markedBy: MarkedBy.admin);
-      when(() => mockRepo.updateStatus('a-1', AttendanceStatus.excused))
-          .thenAnswer((_) async => updated);
+        status: AttendanceStatus.excused,
+        markedBy: MarkedBy.admin,
+      );
+      when(
+        () => mockRepo.updateStatus('a-1', AttendanceStatus.excused),
+      ).thenAnswer((_) async => updated);
 
       final result = await mockRepo.updateStatus(
         'a-1',
@@ -200,8 +213,9 @@ void main() {
           markedBy: MarkedBy.system,
         ),
       ];
-      when(() => mockRepo.fetchHistory('user-1'))
-          .thenAnswer((_) async => records);
+      when(
+        () => mockRepo.fetchHistory('user-1'),
+      ).thenAnswer((_) async => records);
 
       final result = await mockRepo.fetchHistory('user-1');
       expect(result.length, 2);

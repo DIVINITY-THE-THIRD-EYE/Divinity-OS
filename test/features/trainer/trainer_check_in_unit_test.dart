@@ -22,11 +22,13 @@ void main() {
     });
 
     test('calls trainerMark with correct params for PRESENT', () async {
-      when(() => mockRepo.trainerMark(
-            studentId: any(named: 'studentId'),
-            batchId: any(named: 'batchId'),
-            status: any(named: 'status'),
-          )).thenAnswer((_) async {});
+      when(
+        () => mockRepo.trainerMark(
+          studentId: any(named: 'studentId'),
+          batchId: any(named: 'batchId'),
+          status: any(named: 'status'),
+        ),
+      ).thenAnswer((_) async {});
 
       await mockRepo.trainerMark(
         studentId: 's-1',
@@ -34,19 +36,23 @@ void main() {
         status: AttendanceStatus.present,
       );
 
-      verify(() => mockRepo.trainerMark(
-            studentId: 's-1',
-            batchId: 'b-1',
-            status: AttendanceStatus.present,
-          )).called(1);
+      verify(
+        () => mockRepo.trainerMark(
+          studentId: 's-1',
+          batchId: 'b-1',
+          status: AttendanceStatus.present,
+        ),
+      ).called(1);
     });
 
     test('calls trainerMark with ON_LEAVE status', () async {
-      when(() => mockRepo.trainerMark(
-            studentId: any(named: 'studentId'),
-            batchId: any(named: 'batchId'),
-            status: any(named: 'status'),
-          )).thenAnswer((_) async {});
+      when(
+        () => mockRepo.trainerMark(
+          studentId: any(named: 'studentId'),
+          batchId: any(named: 'batchId'),
+          status: any(named: 'status'),
+        ),
+      ).thenAnswer((_) async {});
 
       await mockRepo.trainerMark(
         studentId: 's-2',
@@ -54,11 +60,13 @@ void main() {
         status: AttendanceStatus.onLeave,
       );
 
-      verify(() => mockRepo.trainerMark(
-            studentId: 's-2',
-            batchId: 'b-1',
-            status: AttendanceStatus.onLeave,
-          )).called(1);
+      verify(
+        () => mockRepo.trainerMark(
+          studentId: 's-2',
+          batchId: 'b-1',
+          status: AttendanceStatus.onLeave,
+        ),
+      ).called(1);
     });
   });
 

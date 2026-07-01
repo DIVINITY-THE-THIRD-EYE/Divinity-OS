@@ -51,33 +51,45 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Routes.onboarding,
         pageBuilder: (_, s) => AppTransitions.sharedAxisX(
-            child: const OnboardingWizard(), state: s),
+          child: const OnboardingWizard(),
+          state: s,
+        ),
       ),
       // Modal-style routes — slide up
       GoRoute(
         path: Routes.pendingApproval,
         pageBuilder: (_, s) => AppTransitions.slideUp(
-            child: const PendingApprovalScreen(), state: s),
+          child: const PendingApprovalScreen(),
+          state: s,
+        ),
       ),
       GoRoute(
         path: Routes.resetPassword,
         pageBuilder: (_, s) => AppTransitions.sharedAxisX(
-            child: const ResetPasswordScreen(), state: s),
+          child: const ResetPasswordScreen(),
+          state: s,
+        ),
       ),
       GoRoute(
         path: Routes.feedback,
         pageBuilder: (_, s) => AppTransitions.slideUp(
-            child: const StudentFeedbackScreen(), state: s),
+          child: const StudentFeedbackScreen(),
+          state: s,
+        ),
       ),
       GoRoute(
         path: Routes.support,
         pageBuilder: (_, s) => AppTransitions.slideUp(
-            child: const StudentSupportScreen(), state: s),
+          child: const StudentSupportScreen(),
+          state: s,
+        ),
       ),
       GoRoute(
         path: Routes.schedule,
         pageBuilder: (_, s) => AppTransitions.slideUp(
-            child: const WeeklyScheduleScreen(), state: s),
+          child: const WeeklyScheduleScreen(),
+          state: s,
+        ),
       ),
       // Main dashboard — fade through for shell/tab transitions
       GoRoute(
@@ -86,9 +98,8 @@ final routerProvider = Provider<GoRouter>((ref) {
             AppTransitions.fadeThrough(child: const RoleShell(), state: s),
       ),
     ],
-    errorBuilder: (context, state) => Scaffold(
-      body: Center(child: Text('Page not found: ${state.error}')),
-    ),
+    errorBuilder: (context, state) =>
+        Scaffold(body: Center(child: Text('Page not found: ${state.error}'))),
   );
 });
 
@@ -108,10 +119,9 @@ class _RouterNotifier extends ChangeNotifier {
 
     return switch (authState) {
       app_auth.AuthInitial() || app_auth.AuthLoading() => null,
-      app_auth.AuthUnauthenticated() || app_auth.AuthError() =>
-        loc == Routes.login ? null : Routes.login,
-      app_auth.AuthOtpSent() =>
-        loc == Routes.otp ? null : Routes.otp,
+      app_auth.AuthUnauthenticated() ||
+      app_auth.AuthError() => loc == Routes.login ? null : Routes.login,
+      app_auth.AuthOtpSent() => loc == Routes.otp ? null : Routes.otp,
       app_auth.AuthNeedsOnboarding() =>
         loc == Routes.onboarding ? null : Routes.onboarding,
       app_auth.AuthPendingApproval() =>

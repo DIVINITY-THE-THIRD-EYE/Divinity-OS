@@ -4,7 +4,11 @@ import 'package:flutter/foundation.dart'
 
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
-    if (kIsWeb) throw UnsupportedError('Web not configured. Run `flutterfire configure`.');
+    if (kIsWeb) {
+      throw UnsupportedError(
+        'Web not configured. Run `flutterfire configure`.',
+      );
+    }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;

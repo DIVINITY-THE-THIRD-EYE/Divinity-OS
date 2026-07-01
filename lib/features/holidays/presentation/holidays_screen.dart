@@ -36,8 +36,7 @@ class HolidaysScreen extends ConsumerWidget {
         data: (holidays) => holidays.isEmpty
             ? const _EmptyState()
             : RefreshIndicator(
-                onRefresh: () =>
-                    ref.read(holidaysProvider.notifier).refresh(),
+                onRefresh: () => ref.read(holidaysProvider.notifier).refresh(),
                 child: ListView.separated(
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   itemCount: holidays.length,
@@ -85,8 +84,9 @@ class HolidaysScreen extends ConsumerWidget {
         await ref.read(holidaysProvider.notifier).remove(h.id);
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text('Error: $e')));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Error: $e')));
         }
       }
     }
@@ -114,9 +114,11 @@ class _EmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.event_outlined,
-              size: 72,
-              color: AppColors.accentViolet.withValues(alpha: 0.3)),
+          Icon(
+            Icons.event_outlined,
+            size: 72,
+            color: AppColors.accentViolet.withValues(alpha: 0.3),
+          ),
           const SizedBox(height: 16),
           Text('No holidays configured', style: tt.titleMedium),
           const SizedBox(height: 8),
@@ -143,8 +145,7 @@ class _HolidayTile extends StatelessWidget {
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: AppColors.accentViolet.withValues(alpha: 0.12),
-        child:
-            const Icon(Icons.event, color: AppColors.accentViolet, size: 20),
+        child: const Icon(Icons.event, color: AppColors.accentViolet, size: 20),
       ),
       title: Text(holiday.name),
       subtitle: Text('${holiday.dayLabel}, ${holiday.dateLabel}'),
@@ -191,25 +192,26 @@ class _AddHolidaySheetState extends ConsumerState<_AddHolidaySheet> {
   Future<void> _save() async {
     final name = _nameCtrl.text.trim();
     if (name.isEmpty) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Name is required.')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Name is required.')));
       return;
     }
     if (_date == null) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Please select a date.')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please select a date.')));
       return;
     }
     setState(() => _saving = true);
     try {
-      await ref
-          .read(holidaysProvider.notifier)
-          .add(date: _date!, name: name);
+      await ref.read(holidaysProvider.notifier).add(date: _date!, name: name);
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -223,7 +225,8 @@ class _AddHolidaySheetState extends ConsumerState<_AddHolidaySheet> {
 
     return Padding(
       padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom),
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
         child: Column(
@@ -255,7 +258,8 @@ class _AddHolidaySheetState extends ConsumerState<_AddHolidaySheet> {
                   _date != null ? fmt.format(_date!) : 'Select date',
                   style: _date == null
                       ? TextStyle(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant)
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        )
                       : null,
                 ),
               ),

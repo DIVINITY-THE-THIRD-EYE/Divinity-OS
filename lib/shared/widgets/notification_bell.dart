@@ -19,9 +19,9 @@ class NotificationBell extends ConsumerWidget {
         child: const Icon(Icons.notifications_outlined),
       ),
       tooltip: 'Notifications',
-      onPressed: () => Navigator.of(context).push(
-        MaterialPageRoute(builder: (_) => const NotificationsScreen()),
-      ),
+      onPressed: () => Navigator.of(
+        context,
+      ).push(MaterialPageRoute(builder: (_) => const NotificationsScreen())),
     );
   }
 }

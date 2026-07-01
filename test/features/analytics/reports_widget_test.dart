@@ -33,7 +33,7 @@ ReportsData _fakeData() {
           attendanceRate: 60.0,
           totalClasses: 10,
           attendedClasses: 6,
-        )
+        ),
       ],
     ),
     revenue: RevenueReport(
@@ -70,7 +70,7 @@ ReportsData _fakeData() {
         attendanceHandled: 150,
         activeBatchesCount: 2,
         studentCount: 12,
-      )
+      ),
     ],
     events: [
       EventReportItem(
@@ -81,7 +81,7 @@ ReportsData _fakeData() {
         attendanceCount: 15,
         isFull: false,
         isCancelled: false,
-      )
+      ),
     ],
     holidays: [
       HolidayReportItem(
@@ -89,19 +89,15 @@ ReportsData _fakeData() {
         name: 'Independence Day',
         date: DateTime(2026, 8, 15),
         overlapCount: 0,
-      )
+      ),
     ],
-    batches: [
-      const BatchReportItem(id: 'batch_1', name: 'Morning Yoga'),
-    ],
+    batches: [const BatchReportItem(id: 'batch_1', name: 'Morning Yoga')],
   );
 }
 
 Widget _wrap(Widget child, {required ReportsRepository repo}) {
   return ProviderScope(
-    overrides: [
-      reportsRepositoryProvider.overrideWithValue(repo),
-    ],
+    overrides: [reportsRepositoryProvider.overrideWithValue(repo)],
     child: MaterialApp(theme: AppTheme.dark(), home: child),
   );
 }
@@ -129,7 +125,9 @@ void main() {
     expect(find.text('Student Low'), findsOneWidget);
   });
 
-  testWidgets('ReportsScreen tab switching shows correct contents', (tester) async {
+  testWidgets('ReportsScreen tab switching shows correct contents', (
+    tester,
+  ) async {
     final fakeRepo = _FakeReportsRepository(_fakeData());
     await tester.pumpWidget(_wrap(const ReportsScreen(), repo: fakeRepo));
     await tester.pumpAndSettle();

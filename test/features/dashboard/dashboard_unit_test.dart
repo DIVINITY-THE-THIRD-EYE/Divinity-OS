@@ -18,27 +18,26 @@ DashboardStats _fakeStats({
   int activeStudents = 7,
   double totalRevenue = 50000,
   double pendingAmount = 5000,
-}) =>
-    DashboardStats(
-      totalStudents: totalStudents,
-      activeStudents: activeStudents,
-      totalRevenue: totalRevenue,
-      pendingAmount: pendingAmount,
-      monthlyRevenue: List.generate(
-        6,
-        (i) => MonthlyValue(
-          month: DateTime(_now.year, _now.month - 5 + i),
-          value: (i + 1) * 5000,
-        ),
-      ),
-      monthlyEnrolments: List.generate(
-        6,
-        (i) => MonthlyValue(
-          month: DateTime(_now.year, _now.month - 5 + i),
-          value: (i + 1).toDouble(),
-        ),
-      ),
-    );
+}) => DashboardStats(
+  totalStudents: totalStudents,
+  activeStudents: activeStudents,
+  totalRevenue: totalRevenue,
+  pendingAmount: pendingAmount,
+  monthlyRevenue: List.generate(
+    6,
+    (i) => MonthlyValue(
+      month: DateTime(_now.year, _now.month - 5 + i),
+      value: (i + 1) * 5000,
+    ),
+  ),
+  monthlyEnrolments: List.generate(
+    6,
+    (i) => MonthlyValue(
+      month: DateTime(_now.year, _now.month - 5 + i),
+      value: (i + 1).toDouble(),
+    ),
+  ),
+);
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
@@ -100,17 +99,14 @@ void main() {
     setUp(() {
       mockRepo = MockDashboardRepository();
       container = ProviderContainer(
-        overrides: [
-          dashboardRepositoryProvider.overrideWithValue(mockRepo),
-        ],
+        overrides: [dashboardRepositoryProvider.overrideWithValue(mockRepo)],
       );
     });
 
     tearDown(() => container.dispose());
 
     test('loads stats on first read', () async {
-      when(() => mockRepo.fetchStats())
-          .thenAnswer((_) async => _fakeStats());
+      when(() => mockRepo.fetchStats()).thenAnswer((_) async => _fakeStats());
 
       final stats = await container.read(dashboardStatsProvider.future);
       expect(stats.totalStudents, 10);
@@ -118,8 +114,7 @@ void main() {
     });
 
     test('propagates errors from repository', () async {
-      when(() => mockRepo.fetchStats())
-          .thenThrow(Exception('network error'));
+      when(() => mockRepo.fetchStats()).thenThrow(Exception('network error'));
 
       await expectLater(
         container.read(dashboardStatsProvider.future),

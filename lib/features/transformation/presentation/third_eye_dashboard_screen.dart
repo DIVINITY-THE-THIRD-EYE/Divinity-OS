@@ -93,8 +93,14 @@ class _HeaderCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: isDark
-              ? [AppColors.accentViolet.withValues(alpha: 0.25), AppColors.surfaceDark]
-              : [AppColors.accentGold.withValues(alpha: 0.15), AppColors.surfaceLight],
+              ? [
+                  AppColors.accentViolet.withValues(alpha: 0.25),
+                  AppColors.surfaceDark,
+                ]
+              : [
+                  AppColors.accentGold.withValues(alpha: 0.15),
+                  AppColors.surfaceLight,
+                ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -112,7 +118,9 @@ class _HeaderCard extends StatelessWidget {
                 Text(
                   'Third Eye Score',
                   style: tt.bodySmall?.copyWith(
-                    color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                    color: isDark
+                        ? AppColors.textSecondaryDark
+                        : AppColors.textSecondaryLight,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 0.5,
                   ),
@@ -124,13 +132,17 @@ class _HeaderCard extends StatelessWidget {
                       score.toStringAsFixed(1),
                       style: tt.displaySmall?.copyWith(
                         fontWeight: FontWeight.w900,
-                        color: isDark ? AppColors.textDark : AppColors.textLight,
+                        color: isDark
+                            ? AppColors.textDark
+                            : AppColors.textLight,
                       ),
                     ),
                     Text(
                       ' / 10',
                       style: tt.titleLarge?.copyWith(
-                        color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                        color: isDark
+                            ? AppColors.textSecondaryDark
+                            : AppColors.textSecondaryLight,
                         fontWeight: FontWeight.w400,
                       ),
                     ),
@@ -138,15 +150,23 @@ class _HeaderCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: _badgeColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: _badgeColor.withValues(alpha: 0.3)),
+                    border: Border.all(
+                      color: _badgeColor.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Text(
                     _badgeText,
-                    style: tt.labelSmall?.copyWith(color: _badgeColor, fontWeight: FontWeight.bold),
+                    style: tt.labelSmall?.copyWith(
+                      color: _badgeColor,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
@@ -156,9 +176,14 @@ class _HeaderCard extends StatelessWidget {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: isDark ? AppColors.bgDark.withValues(alpha: 0.5) : AppColors.bgLight,
+              color: isDark
+                  ? AppColors.bgDark.withValues(alpha: 0.5)
+                  : AppColors.bgLight,
               shape: BoxShape.circle,
-              border: Border.all(color: _badgeColor.withValues(alpha: 0.4), width: 1.5),
+              border: Border.all(
+                color: _badgeColor.withValues(alpha: 0.4),
+                width: 1.5,
+              ),
             ),
             child: Center(
               child: Text(
@@ -169,7 +194,7 @@ class _HeaderCard extends StatelessWidget {
                     Shadow(
                       color: _badgeColor.withValues(alpha: 0.6),
                       blurRadius: 8,
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -208,11 +233,18 @@ class _RadarChartCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Transformation Balance', style: tt.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+            Text(
+              'Transformation Balance',
+              style: tt.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 4),
             Text(
               'Weekly wellness dimensions balance',
-              style: tt.bodySmall?.copyWith(color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight),
+              style: tt.bodySmall?.copyWith(
+                color: isDark
+                    ? AppColors.textSecondaryDark
+                    : AppColors.textSecondaryLight,
+              ),
             ),
             const SizedBox(height: 24),
             SizedBox(
@@ -237,15 +269,21 @@ class _RadarChartCard extends StatelessWidget {
                   radarBorderData: const BorderSide(color: Colors.transparent),
                   radarShape: RadarShape.circle,
                   gridBorderData: BorderSide(
-                    color: isDark ? AppColors.borderDark : AppColors.borderLight,
+                    color: isDark
+                        ? AppColors.borderDark
+                        : AppColors.borderLight,
                   ),
                   tickBorderData: BorderSide(
-                    color: isDark ? AppColors.borderLightDark : AppColors.borderLightAlt,
+                    color: isDark
+                        ? AppColors.borderLightDark
+                        : AppColors.borderLightAlt,
                     width: 0.5,
                   ),
                   tickCount: 5,
                   ticksTextStyle: TextStyle(
-                    color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
+                    color: isDark
+                        ? AppColors.textMutedDark
+                        : AppColors.textMutedLight,
                     fontSize: 8,
                   ),
                   getTitle: (index, angle) {
@@ -256,16 +294,15 @@ class _RadarChartCard extends StatelessWidget {
                       3 => 'Recovery',
                       _ => '',
                     };
-                    return RadarChartTitle(
-                      text: label,
-                      angle: angle,
-                    );
+                    return RadarChartTitle(text: label, angle: angle);
                   },
                   titlePositionPercentageOffset: 0.15,
                   titleTextStyle: tt.bodySmall?.copyWith(
                     fontWeight: FontWeight.w600,
                     fontSize: 11,
-                    color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                    color: isDark
+                        ? AppColors.textSecondaryDark
+                        : AppColors.textSecondaryLight,
                   ),
                 ),
               ),
@@ -290,7 +327,9 @@ class _TrendChartCard extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
 
     // Show at most 8 latest scores for trend readability
-    final trendScores = scores.length > 8 ? scores.sublist(scores.length - 8) : scores;
+    final trendScores = scores.length > 8
+        ? scores.sublist(scores.length - 8)
+        : scores;
 
     return Card(
       child: Padding(
@@ -298,11 +337,18 @@ class _TrendChartCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Journey Progress', style: tt.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+            Text(
+              'Journey Progress',
+              style: tt.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 4),
             Text(
               'Weekly overall score trend line',
-              style: tt.bodySmall?.copyWith(color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight),
+              style: tt.bodySmall?.copyWith(
+                color: isDark
+                    ? AppColors.textSecondaryDark
+                    : AppColors.textSecondaryLight,
+              ),
             ),
             const SizedBox(height: 24),
             SizedBox(
@@ -327,7 +373,9 @@ class _TrendChartCard extends StatelessWidget {
                               DateFormat('d MMM').format(date),
                               style: TextStyle(
                                 fontSize: 9,
-                                color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                                color: isDark
+                                    ? AppColors.textSecondaryDark
+                                    : AppColors.textSecondaryLight,
                               ),
                             ),
                           );
@@ -344,7 +392,9 @@ class _TrendChartCard extends StatelessWidget {
                               '${value.toInt()}',
                               style: TextStyle(
                                 fontSize: 9,
-                                color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
+                                color: isDark
+                                    ? AppColors.textMutedDark
+                                    : AppColors.textMutedLight,
                               ),
                             );
                           }
@@ -433,7 +483,10 @@ class _MetricsBreakdownCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Dimension Breakdown', style: tt.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+            Text(
+              'Dimension Breakdown',
+              style: tt.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 16),
             _MetricRow(
               title: 'Consistency',
@@ -454,7 +507,8 @@ class _MetricsBreakdownCard extends StatelessWidget {
             _MetricRow(
               title: 'Mindfulness',
               value: mindfulness,
-              description: 'Breath control, stillness, mental awareness, and attention.',
+              description:
+                  'Breath control, stillness, mental awareness, and attention.',
               icon: '🧘',
               color: AppColors.success,
             ),
@@ -462,7 +516,8 @@ class _MetricsBreakdownCard extends StatelessWidget {
             _MetricRow(
               title: 'Recovery',
               value: recovery,
-              description: 'Rest quality, therapeutic response, flexibility & stress relief.',
+              description:
+                  'Rest quality, therapeutic response, flexibility & stress relief.',
               icon: '🏖',
               color: Colors.lightBlue,
             ),
@@ -514,18 +569,21 @@ class _MetricRow extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(title, style: tt.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
+                  Text(
+                    title,
+                    style: tt.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+                  ),
                   Text(
                     '${value.toStringAsFixed(1)} / 10',
-                    style: tt.bodyMedium?.copyWith(fontWeight: FontWeight.w600, color: color),
+                    style: tt.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: color,
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: 2),
-              Text(
-                description,
-                style: tt.bodySmall?.copyWith(fontSize: 11),
-              ),
+              Text(description, style: tt.bodySmall?.copyWith(fontSize: 11)),
               const SizedBox(height: 6),
               ClipRRect(
                 borderRadius: BorderRadius.circular(4),
@@ -574,12 +632,17 @@ class _EmptyTransformationState extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            Text('The Third Eye Journey', style: tt.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+            Text(
+              'The Third Eye Journey',
+              style: tt.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 12),
             Text(
               'Your weekly transformation scores will be displayed here once your trainer records your first evaluation.',
               style: tt.bodyMedium?.copyWith(
-                color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                color: isDark
+                    ? AppColors.textSecondaryDark
+                    : AppColors.textSecondaryLight,
               ),
               textAlign: TextAlign.center,
             ),
@@ -588,7 +651,9 @@ class _EmptyTransformationState extends StatelessWidget {
               'Focus on your consistency, intensity, mindfulness, and recovery to prepare for your assessment.',
               style: tt.bodySmall?.copyWith(
                 fontStyle: FontStyle.italic,
-                color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
+                color: isDark
+                    ? AppColors.textMutedDark
+                    : AppColors.textMutedLight,
               ),
               textAlign: TextAlign.center,
             ),
@@ -625,8 +690,14 @@ class _AiCoachEntrypointCard extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: isDark
-                ? [AppColors.accentGold.withValues(alpha: 0.25), AppColors.accentViolet.withValues(alpha: 0.15)]
-                : [AppColors.accentViolet.withValues(alpha: 0.15), AppColors.accentGold.withValues(alpha: 0.25)],
+                ? [
+                    AppColors.accentGold.withValues(alpha: 0.25),
+                    AppColors.accentViolet.withValues(alpha: 0.15),
+                  ]
+                : [
+                    AppColors.accentViolet.withValues(alpha: 0.15),
+                    AppColors.accentGold.withValues(alpha: 0.25),
+                  ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -661,7 +732,9 @@ class _AiCoachEntrypointCard extends StatelessWidget {
                   Text(
                     'Receive calm, actionable advice to balance your practice based on your current score.',
                     style: tt.bodySmall?.copyWith(
-                      color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                      color: isDark
+                          ? AppColors.textSecondaryDark
+                          : AppColors.textSecondaryLight,
                     ),
                   ),
                 ],
@@ -672,7 +745,9 @@ class _AiCoachEntrypointCard extends StatelessWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: isDark ? AppColors.bgDark.withValues(alpha: 0.5) : AppColors.bgLight,
+                color: isDark
+                    ? AppColors.bgDark.withValues(alpha: 0.5)
+                    : AppColors.bgLight,
                 shape: BoxShape.circle,
                 border: Border.all(
                   color: AppColors.accentGold.withValues(alpha: 0.4),
@@ -680,10 +755,7 @@ class _AiCoachEntrypointCard extends StatelessWidget {
                 ),
               ),
               child: const Center(
-                child: Text(
-                  '✨',
-                  style: TextStyle(fontSize: 24),
-                ),
+                child: Text('✨', style: TextStyle(fontSize: 24)),
               ),
             ),
           ],
@@ -774,7 +846,9 @@ class _AiWellnessCoachBottomSheet extends ConsumerWidget {
                       Text(
                         'Divinity is reading your energy...',
                         style: tt.bodyMedium?.copyWith(
-                          color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                          color: isDark
+                              ? AppColors.textSecondaryDark
+                              : AppColors.textSecondaryLight,
                           fontStyle: FontStyle.italic,
                         ),
                       ),
@@ -786,13 +860,19 @@ class _AiWellnessCoachBottomSheet extends ConsumerWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.error_outline, size: 48, color: AppColors.error),
+                      const Icon(
+                        Icons.error_outline,
+                        size: 48,
+                        color: AppColors.error,
+                      ),
                       const SizedBox(height: 16),
                       Text(
                         'Unable to connect to the AI Coach.',
                         style: tt.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: isDark ? AppColors.textDark : AppColors.textLight,
+                          color: isDark
+                              ? AppColors.textDark
+                              : AppColors.textLight,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -800,7 +880,9 @@ class _AiWellnessCoachBottomSheet extends ConsumerWidget {
                         'Please verify your network connection or ensure your coach integration credentials are valid.',
                         textAlign: TextAlign.center,
                         style: tt.bodyMedium?.copyWith(
-                          color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                          color: isDark
+                              ? AppColors.textSecondaryDark
+                              : AppColors.textSecondaryLight,
                         ),
                       ),
                     ],
@@ -812,7 +894,9 @@ class _AiWellnessCoachBottomSheet extends ConsumerWidget {
                     insight,
                     style: tt.bodyMedium?.copyWith(
                       height: 1.5,
-                      color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                      color: isDark
+                          ? AppColors.textSecondaryDark
+                          : AppColors.textSecondaryLight,
                     ),
                   ),
                 ),

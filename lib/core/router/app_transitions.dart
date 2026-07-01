@@ -32,25 +32,16 @@ abstract final class AppTransitions {
         }
 
         final fadeIn = Tween<double>(begin: 0.0, end: 1.0).animate(
-          CurvedAnimation(
-            parent: animation,
-            curve: AppMotion.standard,
-          ),
+          CurvedAnimation(parent: animation, curve: AppMotion.standard),
         );
 
         final scaleIn = Tween<double>(begin: 0.96, end: 1.0).animate(
-          CurvedAnimation(
-            parent: animation,
-            curve: AppMotion.standard,
-          ),
+          CurvedAnimation(parent: animation, curve: AppMotion.standard),
         );
 
         return FadeTransition(
           opacity: fadeIn,
-          child: ScaleTransition(
-            scale: scaleIn,
-            child: child,
-          ),
+          child: ScaleTransition(scale: scaleIn, child: child),
         );
       },
     );
@@ -74,33 +65,29 @@ abstract final class AppTransitions {
           return child;
         }
 
-        final slideIn = Tween<Offset>(
-          begin: const Offset(0.08, 0), // ~30px on a 375px screen
-          end: Offset.zero,
-        ).animate(
-          CurvedAnimation(
-            parent: animation,
-            curve: AppMotion.decelerate,
-          ),
-        );
+        final slideIn =
+            Tween<Offset>(
+              begin: const Offset(0.08, 0), // ~30px on a 375px screen
+              end: Offset.zero,
+            ).animate(
+              CurvedAnimation(parent: animation, curve: AppMotion.decelerate),
+            );
 
         final fadeIn = Tween<double>(begin: 0.0, end: 1.0).animate(
-          CurvedAnimation(
-            parent: animation,
-            curve: AppMotion.decelerate,
-          ),
+          CurvedAnimation(parent: animation, curve: AppMotion.decelerate),
         );
 
         // Secondary (outgoing page) slides left
-        final slideOut = Tween<Offset>(
-          begin: Offset.zero,
-          end: const Offset(-0.08, 0),
-        ).animate(
-          CurvedAnimation(
-            parent: secondaryAnimation,
-            curve: AppMotion.accelerate,
-          ),
-        );
+        final slideOut =
+            Tween<Offset>(
+              begin: Offset.zero,
+              end: const Offset(-0.08, 0),
+            ).animate(
+              CurvedAnimation(
+                parent: secondaryAnimation,
+                curve: AppMotion.accelerate,
+              ),
+            );
 
         final fadeOut = Tween<double>(begin: 1.0, end: 0.0).animate(
           CurvedAnimation(
@@ -115,10 +102,7 @@ abstract final class AppTransitions {
             opacity: fadeOut,
             child: SlideTransition(
               position: slideIn,
-              child: FadeTransition(
-                opacity: fadeIn,
-                child: child,
-              ),
+              child: FadeTransition(opacity: fadeIn, child: child),
             ),
           ),
         );
@@ -147,26 +131,15 @@ abstract final class AppTransitions {
         final slideIn = Tween<Offset>(
           begin: const Offset(0, 0.12), // ~50px slide
           end: Offset.zero,
-        ).animate(
-          CurvedAnimation(
-            parent: animation,
-            curve: AppMotion.expoOut,
-          ),
-        );
+        ).animate(CurvedAnimation(parent: animation, curve: AppMotion.expoOut));
 
         final fadeIn = Tween<double>(begin: 0.0, end: 1.0).animate(
-          CurvedAnimation(
-            parent: animation,
-            curve: AppMotion.decelerate,
-          ),
+          CurvedAnimation(parent: animation, curve: AppMotion.decelerate),
         );
 
         return SlideTransition(
           position: slideIn,
-          child: FadeTransition(
-            opacity: fadeIn,
-            child: child,
-          ),
+          child: FadeTransition(opacity: fadeIn, child: child),
         );
       },
     );

@@ -27,8 +27,18 @@ class Certificate {
   /// e.g. "12 June 2026"
   String get issuedOnLabel {
     const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December',
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
     ];
     return '${issuedOn.day} ${months[issuedOn.month - 1]} ${issuedOn.year}';
   }

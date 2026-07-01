@@ -12,7 +12,7 @@ class WeatherRepository {
   static const int _cacheTtlMs = 15 * 60 * 1000; // 15 minutes
 
   WeatherRepository({WeatherService? weatherService})
-      : _weatherService = weatherService ?? WeatherService();
+    : _weatherService = weatherService ?? WeatherService();
 
   Future<WeatherData> getWeather({bool force = false}) async {
     final prefs = await SharedPreferences.getInstance();

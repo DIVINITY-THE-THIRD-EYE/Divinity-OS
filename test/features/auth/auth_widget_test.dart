@@ -70,7 +70,10 @@ class _FakeAuthRepository implements AuthRepository {
   Future<void> updatePassword(String newPassword) async {}
 
   @override
-  RealtimeChannel subscribeToUserProfile(String userId, void Function(Map<String, dynamic> record) callback) {
+  RealtimeChannel subscribeToUserProfile(
+    String userId,
+    void Function(Map<String, dynamic> record) callback,
+  ) {
     return _FakeRealtimeChannel();
   }
 
@@ -87,10 +90,7 @@ Widget _wrap(Widget child) {
         (ref) => AuthNotifier(_FakeAuthRepository()),
       ),
     ],
-    child: MaterialApp(
-      theme: AppTheme.dark(),
-      home: child,
-    ),
+    child: MaterialApp(theme: AppTheme.dark(), home: child),
   );
 }
 
@@ -134,7 +134,9 @@ void main() {
       expect(find.text('Use another sign-in method'), findsOneWidget);
     });
 
-    testWidgets('validates empty email on email sign-in submit', (tester) async {
+    testWidgets('validates empty email on email sign-in submit', (
+      tester,
+    ) async {
       await tester.pumpWidget(_wrap(const LoginScreen()));
       await tester.pump();
 
@@ -160,14 +162,9 @@ void main() {
     Widget wrapOtp() {
       return ProviderScope(
         overrides: [
-          authStateProvider.overrideWith(
-            (ref) => _OtpSentNotifier(),
-          ),
+          authStateProvider.overrideWith((ref) => _OtpSentNotifier()),
         ],
-        child: MaterialApp(
-          theme: AppTheme.dark(),
-          home: const OtpScreen(),
-        ),
+        child: MaterialApp(theme: AppTheme.dark(), home: const OtpScreen()),
       );
     }
 
@@ -205,7 +202,10 @@ void main() {
 
       expect(find.text('Data privacy & consent'), findsOneWidget);
       expect(find.textContaining('DPDP Act Compliance'), findsOneWidget);
-      expect(find.textContaining('Location coordinates to verify presence'), findsOneWidget);
+      expect(
+        find.textContaining('Location coordinates to verify presence'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('taps checkbox and invokes onConsentChanged', (tester) async {

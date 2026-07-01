@@ -36,19 +36,21 @@ class _TrainerShellState extends ConsumerState<TrainerShell> {
   ];
 
   static int _targetToIndex(String target) => switch (target) {
-        'leaves' => 1,
-        'batches' => 2,
-        'workouts' => 3,
-        'logs' => 4,
-        'payments' => 5,
-        'profile' => 6,
-        _ => 0,
-      };
+    'leaves' => 1,
+    'batches' => 2,
+    'workouts' => 3,
+    'logs' => 4,
+    'payments' => 5,
+    'profile' => 6,
+    _ => 0,
+  };
 
   @override
   Widget build(BuildContext context) {
     ref.listen<AsyncValue<String>>(fcmNotificationTapProvider, (_, next) {
-      next.whenData((target) => setState(() => _index = _targetToIndex(target)));
+      next.whenData(
+        (target) => setState(() => _index = _targetToIndex(target)),
+      );
     });
     final themeMode = ref.watch(themeModeProvider);
     return Scaffold(
@@ -94,10 +96,9 @@ class _TrainerShellState extends ConsumerState<TrainerShell> {
         selectedIndex: _index,
         onDestinationSelected: (i) => setState(() => _index = i),
         destinations: _tabs
-            .map((t) => NavigationDestination(
-                  icon: Icon(t.icon),
-                  label: t.label,
-                ))
+            .map(
+              (t) => NavigationDestination(icon: Icon(t.icon), label: t.label),
+            )
             .toList(),
       ),
     );

@@ -36,8 +36,7 @@ class HomeStubScreen extends ConsumerWidget {
           ),
           IconButton(
             icon: const Icon(Icons.logout_outlined),
-            onPressed: () =>
-                ref.read(authStateProvider.notifier).signOut(),
+            onPressed: () => ref.read(authStateProvider.notifier).signOut(),
             tooltip: 'Sign out',
           ),
         ],
@@ -52,8 +51,9 @@ class HomeStubScreen extends ConsumerWidget {
             const SizedBox(height: 8),
             Text(
               'Session 0 scaffold — features coming next.',
-              style:
-                  tt.bodyMedium?.copyWith(color: AppColors.textSecondaryDark),
+              style: tt.bodyMedium?.copyWith(
+                color: AppColors.textSecondaryDark,
+              ),
             ),
           ],
         ),

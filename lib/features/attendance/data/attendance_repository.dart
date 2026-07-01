@@ -14,7 +14,10 @@ class CheckInException implements Exception {
 
 abstract interface class AttendanceRepository {
   Future<AttendanceRecord?> fetchTodayRecord(String studentId);
-  Future<List<AttendanceRecord>> fetchHistory(String studentId, {int days = 30});
+  Future<List<AttendanceRecord>> fetchHistory(
+    String studentId, {
+    int days = 30,
+  });
 
   /// Records the current user's check-in via the server-side `check_in` RPC,
   /// which validates the geofence and forces marked_by=STUDENT. The user id is
@@ -29,10 +32,13 @@ abstract interface class AttendanceRepository {
     AttendanceStatus status, {
     MarkedBy markedBy = MarkedBy.admin,
   });
+
   /// Returns the first active enrollment's batch row for the given student, or null.
   Future<Map<String, dynamic>?> fetchActiveBatch(String studentId);
   Future<List<Map<String, dynamic>>> fetchBatchAttendanceToday(String batchId);
-  Future<List<Map<String, dynamic>>> fetchBatchesAttendanceToday(List<String> batchIds);
+  Future<List<Map<String, dynamic>>> fetchBatchesAttendanceToday(
+    List<String> batchIds,
+  );
 
   /// Upserts an attendance record on behalf of a trainer.
   Future<void> trainerMark({
@@ -86,11 +92,10 @@ class SupabaseAttendanceRepository implements AttendanceRepository {
   }) async {
     try {
       // Server validates geofence + enrollment, forces student_id & marked_by.
-      final data = await _client.rpc('check_in', params: {
-        'p_lat': lat,
-        'p_lng': lng,
-        'p_batch_id': batchId,
-      });
+      final data = await _client.rpc(
+        'check_in',
+        params: {'p_lat': lat, 'p_lng': lng, 'p_batch_id': batchId},
+      );
       // `returns public.attendance` → single object; tolerate a 1-element list.
       final map = data is List
           ? (data.first as Map<String, dynamic>)
@@ -121,12 +126,15 @@ class SupabaseAttendanceRepository implements AttendanceRepository {
     // Returns the batch row for the student's first enrollment that has a location.
     final rows = await _client
         .from('enrollments')
-        .select('batch_id, batches(id, name, location_lat, location_lng, radius_meters, schedule_time, days_of_week, trainer_id, users(name))')
+        .select(
+          'batch_id, batches(id, name, location_lat, location_lng, radius_meters, schedule_time, days_of_week, trainer_id, users(name))',
+        )
         .eq('student_id', studentId)
         .limit(1);
     final list = rows as List<dynamic>;
     if (list.isEmpty) return null;
-    return (list.first as Map<String, dynamic>)['batches'] as Map<String, dynamic>?;
+    return (list.first as Map<String, dynamic>)['batches']
+        as Map<String, dynamic>?;
   }
 
   @override
@@ -160,15 +168,12 @@ class SupabaseAttendanceRepository implements AttendanceRepository {
     required String batchId,
     required AttendanceStatus status,
   }) async {
-    await _client.from('attendance').upsert(
-      {
-        'student_id': studentId,
-        'batch_id': batchId,
-        'date': _today(),
-        'status': status.dbValue,
-        'marked_by': 'TRAINER',
-      },
-      onConflict: 'student_id,date',
-    );
+    await _client.from('attendance').upsert({
+      'student_id': studentId,
+      'batch_id': batchId,
+      'date': _today(),
+      'status': status.dbValue,
+      'marked_by': 'TRAINER',
+    }, onConflict: 'student_id,date');
   }
 }

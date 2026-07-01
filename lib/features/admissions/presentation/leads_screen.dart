@@ -11,11 +11,11 @@ import 'leads_provider.dart';
 // ── Palette for pipeline columns ─────────────────────────────────────────────
 
 Color _columnColor(LeadStatus s) => switch (s) {
-      LeadStatus.newLead => AppColors.accentViolet,
-      LeadStatus.consultation => AppColors.warning,
-      LeadStatus.admitted => AppColors.success,
-      LeadStatus.lost => AppColors.error,
-    };
+  LeadStatus.newLead => AppColors.accentViolet,
+  LeadStatus.consultation => AppColors.warning,
+  LeadStatus.admitted => AppColors.success,
+  LeadStatus.lost => AppColors.error,
+};
 
 // ── Screen ────────────────────────────────────────────────────────────────────
 
@@ -40,8 +40,7 @@ class LeadsScreen extends ConsumerWidget {
               const Text('Failed to load leads'),
               const SizedBox(height: 8),
               TextButton(
-                onPressed: () =>
-                    ref.read(leadsProvider.notifier).refresh(),
+                onPressed: () => ref.read(leadsProvider.notifier).refresh(),
                 child: const Text('Retry'),
               ),
             ],
@@ -85,8 +84,9 @@ class _PipelineBoard extends StatelessWidget {
 
     return Row(
       children: columns.map((status) {
-        final columnLeads =
-            leads.where((l) => l.pipelineStatus == status).toList();
+        final columnLeads = leads
+            .where((l) => l.pipelineStatus == status)
+            .toList();
         return Expanded(
           child: _PipelineColumn(status: status, leads: columnLeads),
         );
@@ -116,10 +116,7 @@ class _PipelineColumn extends StatelessWidget {
               Container(
                 width: 8,
                 height: 8,
-                decoration: BoxDecoration(
-                  color: color,
-                  shape: BoxShape.circle,
-                ),
+                decoration: BoxDecoration(color: color, shape: BoxShape.circle),
               ),
               const SizedBox(width: 6),
               Expanded(
@@ -240,8 +237,7 @@ class _ActionRow extends ConsumerWidget {
               child: Text('→ ${next!.label}'),
             ),
           ),
-        if (next != null &&
-            lead.pipelineStatus != LeadStatus.consultation)
+        if (next != null && lead.pipelineStatus != LeadStatus.consultation)
           const SizedBox(width: 4),
         if (lead.pipelineStatus != LeadStatus.admitted &&
             lead.pipelineStatus != LeadStatus.lost) ...[
@@ -366,8 +362,7 @@ class _ConvertToMemberSheet extends ConsumerStatefulWidget {
       _ConvertToMemberSheetState();
 }
 
-class _ConvertToMemberSheetState
-    extends ConsumerState<_ConvertToMemberSheet> {
+class _ConvertToMemberSheetState extends ConsumerState<_ConvertToMemberSheet> {
   final _searchCtrl = TextEditingController();
   bool _searching = false;
   bool _converting = false;
@@ -398,9 +393,13 @@ class _ConvertToMemberSheetState
     });
     try {
       final client = ref.read(supabaseClientProvider);
-      var builder = client.from('users').select('id, name, phone, email, plan_status');
-      
-      final isUuid = RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$').hasMatch(queryText);
+      var builder = client
+          .from('users')
+          .select('id, name, phone, email, plan_status');
+
+      final isUuid = RegExp(
+        r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+      ).hasMatch(queryText);
       final isEmail = queryText.contains('@');
 
       if (isUuid) {
@@ -409,13 +408,17 @@ class _ConvertToMemberSheetState
         builder = builder.eq('email', queryText);
       } else {
         final cleanPhone = queryText.replaceAll(RegExp(r'\D'), '');
-        builder = builder.or('phone.eq.$queryText,phone.eq.+91$queryText,phone.eq.$cleanPhone,phone.eq.+91$cleanPhone');
+        builder = builder.or(
+          'phone.eq.$queryText,phone.eq.+91$queryText,phone.eq.$cleanPhone,phone.eq.+91$cleanPhone',
+        );
       }
 
       final row = await builder.maybeSingle();
       setState(() {
         _foundUser = row;
-        if (row == null) _searchError = 'No registered user matching that identifier.';
+        if (row == null) {
+          _searchError = 'No registered user matching that identifier.';
+        }
       });
     } catch (e) {
       setState(() => _searchError = e.toString());
@@ -434,15 +437,14 @@ class _ConvertToMemberSheetState
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${widget.lead.name} admitted as a member.'),
-          ),
+          SnackBar(content: Text('${widget.lead.name} admitted as a member.')),
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _converting = false);
@@ -508,8 +510,11 @@ class _ConvertToMemberSheetState
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.info_outline,
-                        size: 16, color: AppColors.error),
+                    const Icon(
+                      Icons.info_outline,
+                      size: 16,
+                      color: AppColors.error,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -542,8 +547,10 @@ class _ConvertToMemberSheetState
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.check_circle_outline,
-                        color: AppColors.success),
+                    const Icon(
+                      Icons.check_circle_outline,
+                      color: AppColors.success,
+                    ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
@@ -619,14 +626,16 @@ class _AddLeadSheetState extends ConsumerState<_AddLeadSheet> {
 
   Future<void> _save() async {
     if (_nameCtrl.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Name is required.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Name is required.')));
       return;
     }
     setState(() => _saving = true);
     try {
-      await ref.read(leadsProvider.notifier).addLead(
+      await ref
+          .read(leadsProvider.notifier)
+          .addLead(
             name: _nameCtrl.text.trim(),
             phone: _phoneCtrl.text.trim().isEmpty
                 ? null
@@ -643,8 +652,9 @@ class _AddLeadSheetState extends ConsumerState<_AddLeadSheet> {
       if (mounted) Navigator.pop(context);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -694,10 +704,12 @@ class _AddLeadSheetState extends ConsumerState<_AddLeadSheet> {
               initialValue: _source,
               decoration: const InputDecoration(labelText: 'Source (optional)'),
               items: LeadSource.values
-                  .map((s) => DropdownMenuItem(
-                        value: s.dbValue,
-                        child: Text(s.label),
-                      ))
+                  .map(
+                    (s) => DropdownMenuItem(
+                      value: s.dbValue,
+                      child: Text(s.label),
+                    ),
+                  )
                   .toList(),
               onChanged: (v) => setState(() => _source = v),
             ),

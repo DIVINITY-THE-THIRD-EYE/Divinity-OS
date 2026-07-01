@@ -4,11 +4,7 @@ import '../onboarding_constants.dart';
 import '../onboarding_step_scaffold.dart';
 
 class StepGoal extends StatelessWidget {
-  const StepGoal({
-    super.key,
-    required this.goal,
-    required this.onGoal,
-  });
+  const StepGoal({super.key, required this.goal, required this.onGoal});
 
   final String? goal;
   final ValueChanged<String?> onGoal;

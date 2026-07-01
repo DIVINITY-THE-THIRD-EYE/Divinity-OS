@@ -25,16 +25,15 @@ AppNotification _fakeNotification({
   bool isRead = false,
   String title = 'Test notification',
   String? body,
-}) =>
-    AppNotification(
-      id: id,
-      userId: 'user-1',
-      kind: kind,
-      title: title,
-      body: body,
-      isRead: isRead,
-      createdAt: DateTime(2026, 6, 16, 10),
-    );
+}) => AppNotification(
+  id: id,
+  userId: 'user-1',
+  kind: kind,
+  title: title,
+  body: body,
+  isRead: isRead,
+  createdAt: DateTime(2026, 6, 16, 10),
+);
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
@@ -42,11 +41,13 @@ void main() {
   setUpAll(() {
     registerFallbackValue(NotificationKind.general);
     registerFallbackValue(PostgresChangeEvent.all);
-    registerFallbackValue(const PostgresChangeFilter(
-      type: PostgresChangeFilterType.eq,
-      column: 'user_id',
-      value: 'user-1',
-    ));
+    registerFallbackValue(
+      const PostgresChangeFilter(
+        type: PostgresChangeFilterType.eq,
+        column: 'user_id',
+        value: 'user-1',
+      ),
+    );
     registerFallbackValue(MockRealtimeChannel());
   });
 
@@ -54,18 +55,27 @@ void main() {
 
   group('NotificationKind.fromString', () {
     test('parses all known values', () {
-      expect(NotificationKind.fromString('GENERAL'),
-          NotificationKind.general);
-      expect(NotificationKind.fromString('LEAVE_APPROVED'),
-          NotificationKind.leaveApproved);
-      expect(NotificationKind.fromString('LEAVE_REJECTED'),
-          NotificationKind.leaveRejected);
-      expect(NotificationKind.fromString('PAYMENT_DUE'),
-          NotificationKind.paymentDue);
-      expect(NotificationKind.fromString('BATCH_UPDATE'),
-          NotificationKind.batchUpdate);
-      expect(NotificationKind.fromString('ATTENDANCE'),
-          NotificationKind.attendance);
+      expect(NotificationKind.fromString('GENERAL'), NotificationKind.general);
+      expect(
+        NotificationKind.fromString('LEAVE_APPROVED'),
+        NotificationKind.leaveApproved,
+      );
+      expect(
+        NotificationKind.fromString('LEAVE_REJECTED'),
+        NotificationKind.leaveRejected,
+      );
+      expect(
+        NotificationKind.fromString('PAYMENT_DUE'),
+        NotificationKind.paymentDue,
+      );
+      expect(
+        NotificationKind.fromString('BATCH_UPDATE'),
+        NotificationKind.batchUpdate,
+      );
+      expect(
+        NotificationKind.fromString('ATTENDANCE'),
+        NotificationKind.attendance,
+      );
     });
 
     test('defaults to general for unknown', () {
@@ -148,13 +158,15 @@ void main() {
       mockChannel = MockRealtimeChannel();
 
       when(() => mockClient.channel(any())).thenReturn(mockChannel);
-      when(() => mockChannel.onPostgresChanges(
-            event: any(named: 'event'),
-            schema: any(named: 'schema'),
-            table: any(named: 'table'),
-            filter: any(named: 'filter'),
-            callback: any(named: 'callback'),
-          )).thenReturn(mockChannel);
+      when(
+        () => mockChannel.onPostgresChanges(
+          event: any(named: 'event'),
+          schema: any(named: 'schema'),
+          table: any(named: 'table'),
+          filter: any(named: 'filter'),
+          callback: any(named: 'callback'),
+        ),
+      ).thenReturn(mockChannel);
       when(() => mockChannel.subscribe()).thenReturn(mockChannel);
       when(() => mockClient.removeChannel(any())).thenAnswer((_) async => '');
 
@@ -170,13 +182,13 @@ void main() {
     tearDown(() => container.dispose());
 
     test('markRead updates notification in list', () async {
-      when(() => mockRepo.fetchMyNotifications(any()))
-          .thenAnswer((_) async => [_fakeNotification()]);
+      when(
+        () => mockRepo.fetchMyNotifications(any()),
+      ).thenAnswer((_) async => [_fakeNotification()]);
       await container.read(myNotificationsProvider.future);
 
       final readNotif = _fakeNotification(isRead: true);
-      when(() => mockRepo.markRead(any()))
-          .thenAnswer((_) async => readNotif);
+      when(() => mockRepo.markRead(any())).thenAnswer((_) async => readNotif);
 
       await container
           .read(myNotificationsProvider.notifier)
@@ -188,33 +200,34 @@ void main() {
 
     test('markAllRead sets all to read', () async {
       when(() => mockRepo.fetchMyNotifications(any())).thenAnswer(
-          (_) async => [
-                _fakeNotification(id: 'n-1'),
-                _fakeNotification(id: 'n-2'),
-              ]);
+        (_) async => [
+          _fakeNotification(id: 'n-1'),
+          _fakeNotification(id: 'n-2'),
+        ],
+      );
       await container.read(myNotificationsProvider.future);
 
       when(() => mockRepo.markAllRead(any())).thenAnswer((_) async {});
 
-      await container
-          .read(myNotificationsProvider.notifier)
-          .markAllRead();
+      await container.read(myNotificationsProvider.notifier).markAllRead();
 
       final state = container.read(myNotificationsProvider).value!;
       expect(state.every((n) => n.isRead), true);
     });
 
     test('refresh reloads notifications', () async {
-      when(() => mockRepo.fetchMyNotifications(any()))
-          .thenAnswer((_) async => [_fakeNotification()]);
+      when(
+        () => mockRepo.fetchMyNotifications(any()),
+      ).thenAnswer((_) async => [_fakeNotification()]);
       await container.read(myNotificationsProvider.future);
       expect(container.read(myNotificationsProvider).value!.length, 1);
 
       when(() => mockRepo.fetchMyNotifications(any())).thenAnswer(
-          (_) async => [
-                _fakeNotification(id: 'n-1'),
-                _fakeNotification(id: 'n-2'),
-              ]);
+        (_) async => [
+          _fakeNotification(id: 'n-1'),
+          _fakeNotification(id: 'n-2'),
+        ],
+      );
       await container.read(myNotificationsProvider.notifier).refresh();
       expect(container.read(myNotificationsProvider).value!.length, 2);
     });
@@ -229,13 +242,15 @@ void main() {
       final mockChannel = MockRealtimeChannel();
 
       when(() => mockClient.channel(any())).thenReturn(mockChannel);
-      when(() => mockChannel.onPostgresChanges(
-            event: any(named: 'event'),
-            schema: any(named: 'schema'),
-            table: any(named: 'table'),
-            filter: any(named: 'filter'),
-            callback: any(named: 'callback'),
-          )).thenReturn(mockChannel);
+      when(
+        () => mockChannel.onPostgresChanges(
+          event: any(named: 'event'),
+          schema: any(named: 'schema'),
+          table: any(named: 'table'),
+          filter: any(named: 'filter'),
+          callback: any(named: 'callback'),
+        ),
+      ).thenReturn(mockChannel);
       when(() => mockChannel.subscribe()).thenReturn(mockChannel);
       when(() => mockClient.removeChannel(any())).thenAnswer((_) async => '');
 
@@ -248,11 +263,12 @@ void main() {
       );
 
       when(() => mockRepo.fetchMyNotifications(any())).thenAnswer(
-          (_) async => [
-                _fakeNotification(id: 'n-1'),
-                _fakeNotification(id: 'n-2', isRead: true),
-                _fakeNotification(id: 'n-3'),
-              ]);
+        (_) async => [
+          _fakeNotification(id: 'n-1'),
+          _fakeNotification(id: 'n-2', isRead: true),
+          _fakeNotification(id: 'n-3'),
+        ],
+      );
       await container.read(myNotificationsProvider.future);
 
       expect(container.read(unreadCountProvider), 2);
@@ -265,13 +281,15 @@ void main() {
       final mockChannel = MockRealtimeChannel();
 
       when(() => mockClient.channel(any())).thenReturn(mockChannel);
-      when(() => mockChannel.onPostgresChanges(
-            event: any(named: 'event'),
-            schema: any(named: 'schema'),
-            table: any(named: 'table'),
-            filter: any(named: 'filter'),
-            callback: any(named: 'callback'),
-          )).thenReturn(mockChannel);
+      when(
+        () => mockChannel.onPostgresChanges(
+          event: any(named: 'event'),
+          schema: any(named: 'schema'),
+          table: any(named: 'table'),
+          filter: any(named: 'filter'),
+          callback: any(named: 'callback'),
+        ),
+      ).thenReturn(mockChannel);
       when(() => mockChannel.subscribe()).thenReturn(mockChannel);
       when(() => mockClient.removeChannel(any())).thenAnswer((_) async => '');
 
@@ -284,10 +302,11 @@ void main() {
       );
 
       when(() => mockRepo.fetchMyNotifications(any())).thenAnswer(
-          (_) async => [
-                _fakeNotification(id: 'n-1', isRead: true),
-                _fakeNotification(id: 'n-2', isRead: true),
-              ]);
+        (_) async => [
+          _fakeNotification(id: 'n-1', isRead: true),
+          _fakeNotification(id: 'n-2', isRead: true),
+        ],
+      );
       // all read → unread count = 0
       await container.read(myNotificationsProvider.future);
 

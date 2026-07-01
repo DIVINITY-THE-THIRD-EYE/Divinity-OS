@@ -33,17 +33,21 @@ class _CrashlyticsProviderObserver extends ProviderObserver {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  assert(_supabaseUrl.isNotEmpty, 'SUPABASE_URL not defined — pass --dart-define-from-file=dart_defines.json');
-  assert(_supabaseAnonKey.isNotEmpty, 'SUPABASE_ANON_KEY not defined — pass --dart-define-from-file=dart_defines.json');
+  assert(
+    _supabaseUrl.isNotEmpty,
+    'SUPABASE_URL not defined — pass --dart-define-from-file=dart_defines.json',
+  );
+  assert(
+    _supabaseAnonKey.isNotEmpty,
+    'SUPABASE_ANON_KEY not defined — pass --dart-define-from-file=dart_defines.json',
+  );
 
   await Supabase.initialize(
     url: _supabaseUrl,
     publishableKey: _supabaseAnonKey,
   );
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // Secure client-side requests using App Check
   await AppCheckService.init();
@@ -52,7 +56,8 @@ Future<void> main() async {
   final remoteConfig = FirebaseRemoteConfig.instance;
   await remoteConfig.setDefaults({
     'ai_model_name': 'gemini-1.5-flash',
-    'ai_system_instruction': 'You are Divinity, a helpful and calm wellness academy coach.',
+    'ai_system_instruction':
+        'You are Divinity, a helpful and calm wellness academy coach.',
     'streak_milestone_target': 10,
     'auth_enable_email': true,
     'auth_enable_google': true,
@@ -60,24 +65,27 @@ Future<void> main() async {
     'auth_enable_phone': true,
     'auth_enable_anonymous': false,
   });
-  await remoteConfig.setConfigSettings(RemoteConfigSettings(
-    fetchTimeout: const Duration(minutes: 1),
-    minimumFetchInterval: const Duration(hours: 1),
-  ));
+  await remoteConfig.setConfigSettings(
+    RemoteConfigSettings(
+      fetchTimeout: const Duration(minutes: 1),
+      minimumFetchInterval: const Duration(hours: 1),
+    ),
+  );
   await remoteConfig.fetchAndActivate();
 
   // Wire Flutter framework errors and uncaught async errors to Crashlytics.
-  FlutterError.onError =
-      FirebaseCrashlytics.instance.recordFlutterFatalError;
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
   PlatformDispatcher.instance.onError = (error, stack) {
     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
     return true;
   };
 
-  runApp(ProviderScope(
-    observers: [_CrashlyticsProviderObserver()],
-    child: const DivinityApp(),
-  ));
+  runApp(
+    ProviderScope(
+      observers: [_CrashlyticsProviderObserver()],
+      child: const DivinityApp(),
+    ),
+  );
 }
 
 class DivinityApp extends ConsumerWidget {

@@ -55,10 +55,7 @@ class _SpringTapState extends State<SpringTap>
       duration: AppMotion.fast,
       reverseDuration: AppMotion.medium,
     );
-    _scaleAnimation = Tween<double>(
-      begin: 1.0,
-      end: widget.scaleDown,
-    ).animate(
+    _scaleAnimation = Tween<double>(begin: 1.0, end: widget.scaleDown).animate(
       CurvedAnimation(
         parent: _controller,
         curve: AppMotion.standard,
@@ -107,10 +104,8 @@ class _SpringTapState extends State<SpringTap>
         onLongPress: widget.onLongPress,
         child: AnimatedBuilder(
           animation: _scaleAnimation,
-          builder: (context, child) => Transform.scale(
-            scale: _scaleAnimation.value,
-            child: child,
-          ),
+          builder: (context, child) =>
+              Transform.scale(scale: _scaleAnimation.value, child: child),
           child: widget.child,
         ),
       );

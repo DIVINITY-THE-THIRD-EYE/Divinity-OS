@@ -40,15 +40,15 @@ class _AdminShellState extends ConsumerState<AdminShell> {
   ];
 
   static int _targetToIndex(String target) => switch (target) {
-        'payments' => 1,
-        'admissions' => 2,
-        'students' => 3,
-        'leaves' => 4,
-        'batches' => 5,
-        'certificates' => 6,
-        'reports' => 7,
-        _ => 0,
-      };
+    'payments' => 1,
+    'admissions' => 2,
+    'students' => 3,
+    'leaves' => 4,
+    'batches' => 5,
+    'certificates' => 6,
+    'reports' => 7,
+    _ => 0,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -92,9 +92,7 @@ class _AdminShellState extends ConsumerState<AdminShell> {
             icon: const Icon(Icons.event_outlined),
             tooltip: 'Holidays',
             onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const HolidaysScreen(),
-              ),
+              MaterialPageRoute<void>(builder: (_) => const HolidaysScreen()),
             ),
           ),
           IconButton(
@@ -130,10 +128,9 @@ class _AdminShellState extends ConsumerState<AdminShell> {
         selectedIndex: _index,
         onDestinationSelected: (i) => setState(() => _index = i),
         destinations: _tabs
-            .map((t) => NavigationDestination(
-                  icon: Icon(t.icon),
-                  label: t.label,
-                ))
+            .map(
+              (t) => NavigationDestination(icon: Icon(t.icon), label: t.label),
+            )
             .toList(),
       ),
     );

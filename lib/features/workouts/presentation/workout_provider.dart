@@ -35,7 +35,9 @@ class TrainerWorkoutsNotifier extends AsyncNotifier<List<Workout>> {
   }) async {
     final uid = ref.read(currentUserIdProvider);
     if (uid == null) return;
-    final workout = await ref.read(workoutRepositoryProvider).createWorkout(
+    final workout = await ref
+        .read(workoutRepositoryProvider)
+        .createWorkout(
           trainerId: uid,
           title: title,
           description: description,
@@ -57,27 +59,25 @@ class TrainerWorkoutsNotifier extends AsyncNotifier<List<Workout>> {
   }) async {
     final uid = ref.read(currentUserIdProvider);
     if (uid == null) return;
-    await ref.read(workoutRepositoryProvider).assignToBatch(
-          workoutId: workoutId,
-          batchId: batchId,
-          assignedBy: uid,
-        );
+    await ref
+        .read(workoutRepositoryProvider)
+        .assignToBatch(workoutId: workoutId, batchId: batchId, assignedBy: uid);
   }
 }
 
 final trainerWorkoutsProvider =
     AsyncNotifierProvider<TrainerWorkoutsNotifier, List<Workout>>(
-  TrainerWorkoutsNotifier.new,
-);
+      TrainerWorkoutsNotifier.new,
+    );
 
 // ── Trainer: where a workout is assigned (family) ────────────────────────────
 
 final workoutAssignmentsProvider =
     FutureProvider.family<List<WorkoutAssignment>, String>((ref, workoutId) {
-  return ref
-      .read(workoutRepositoryProvider)
-      .fetchAssignmentsForWorkout(workoutId);
-});
+      return ref
+          .read(workoutRepositoryProvider)
+          .fetchAssignmentsForWorkout(workoutId);
+    });
 
 // ── Student: workouts assigned to my batches ─────────────────────────────────
 
@@ -120,5 +120,5 @@ class StudentWorkoutsNotifier extends AsyncNotifier<List<WorkoutAssignment>> {
 
 final studentWorkoutsProvider =
     AsyncNotifierProvider<StudentWorkoutsNotifier, List<WorkoutAssignment>>(
-  StudentWorkoutsNotifier.new,
-);
+      StudentWorkoutsNotifier.new,
+    );

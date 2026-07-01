@@ -61,12 +61,13 @@ class _AnimatedListItemState extends State<AnimatedListItem>
       ),
     );
 
-    _slideAnimation = Tween<double>(begin: widget.slideOffset, end: 0.0).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Interval(0.0, 1.0, curve: widget.curve ?? AppMotion.expoOut),
-      ),
-    );
+    _slideAnimation = Tween<double>(begin: widget.slideOffset, end: 0.0)
+        .animate(
+          CurvedAnimation(
+            parent: _controller,
+            curve: Interval(0.0, 1.0, curve: widget.curve ?? AppMotion.expoOut),
+          ),
+        );
 
     _startAnimation();
   }

@@ -47,8 +47,8 @@ class TodayAttendanceNotifier extends AsyncNotifier<AttendanceRecord?> {
 
 final todayAttendanceProvider =
     AsyncNotifierProvider<TodayAttendanceNotifier, AttendanceRecord?>(
-  TodayAttendanceNotifier.new,
-);
+      TodayAttendanceNotifier.new,
+    );
 
 // ── History ───────────────────────────────────────────────────────────────────
 
@@ -63,8 +63,8 @@ class AttendanceHistoryNotifier extends AsyncNotifier<List<AttendanceRecord>> {
 
 final attendanceHistoryProvider =
     AsyncNotifierProvider<AttendanceHistoryNotifier, List<AttendanceRecord>>(
-  AttendanceHistoryNotifier.new,
-);
+      AttendanceHistoryNotifier.new,
+    );
 
 // ── Geolocation helpers ───────────────────────────────────────────────────────
 
@@ -101,8 +101,8 @@ class GeolocationNotifier extends AsyncNotifier<Position?> {
 
 final geolocationProvider =
     AsyncNotifierProvider<GeolocationNotifier, Position?>(
-  GeolocationNotifier.new,
-);
+      GeolocationNotifier.new,
+    );
 
 // ── Active batch for student ──────────────────────────────────────────────────
 

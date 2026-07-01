@@ -14,11 +14,11 @@ class Holiday {
   final DateTime createdAt;
 
   factory Holiday.fromMap(Map<String, dynamic> m) => Holiday(
-        id: m['id'] as String,
-        date: DateTime.parse(m['date'] as String),
-        name: m['name'] as String,
-        createdAt: DateTime.parse(m['created_at'] as String),
-      );
+    id: m['id'] as String,
+    date: DateTime.parse(m['date'] as String),
+    name: m['name'] as String,
+    createdAt: DateTime.parse(m['created_at'] as String),
+  );
 
   String get dateLabel => DateFormat('d MMM yyyy').format(date);
 

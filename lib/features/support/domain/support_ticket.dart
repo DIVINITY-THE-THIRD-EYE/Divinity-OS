@@ -3,16 +3,16 @@ enum SupportTicketStatus {
   resolved;
 
   static SupportTicketStatus fromString(String v) => switch (v.toUpperCase()) {
-        'RESOLVED' => SupportTicketStatus.resolved,
-        _ => SupportTicketStatus.open,
-      };
+    'RESOLVED' => SupportTicketStatus.resolved,
+    _ => SupportTicketStatus.open,
+  };
 
   String get dbValue => name.toUpperCase();
 
   String get label => switch (this) {
-        SupportTicketStatus.open => 'Open',
-        SupportTicketStatus.resolved => 'Resolved',
-      };
+    SupportTicketStatus.open => 'Open',
+    SupportTicketStatus.resolved => 'Resolved',
+  };
 }
 
 class SupportTicket {

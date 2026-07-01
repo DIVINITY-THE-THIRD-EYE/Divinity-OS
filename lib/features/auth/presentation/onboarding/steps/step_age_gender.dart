@@ -21,7 +21,8 @@ class StepAgeGender extends StatelessWidget {
     final tt = Theme.of(context).textTheme;
     return OnboardingStepScaffold(
       title: 'A little about you',
-      subtitle: 'Age and gender personalise your journey and cannot be '
+      subtitle:
+          'Age and gender personalise your journey and cannot be '
           'changed after onboarding.',
       child: Column(
         children: [
@@ -61,8 +62,11 @@ class StepAgeGender extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const Icon(Icons.lock_outline,
-                    size: 16, color: AppColors.warning),
+                const Icon(
+                  Icons.lock_outline,
+                  size: 16,
+                  color: AppColors.warning,
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(

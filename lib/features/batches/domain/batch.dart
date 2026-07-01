@@ -4,16 +4,16 @@ enum BatchStatus {
   cancelled;
 
   static BatchStatus fromString(String v) => switch (v.toUpperCase()) {
-        'PAUSED' => BatchStatus.paused,
-        'CANCELLED' => BatchStatus.cancelled,
-        _ => BatchStatus.active,
-      };
+    'PAUSED' => BatchStatus.paused,
+    'CANCELLED' => BatchStatus.cancelled,
+    _ => BatchStatus.active,
+  };
 
   String get label => switch (this) {
-        BatchStatus.active => 'Active',
-        BatchStatus.paused => 'Paused',
-        BatchStatus.cancelled => 'Cancelled',
-      };
+    BatchStatus.active => 'Active',
+    BatchStatus.paused => 'Paused',
+    BatchStatus.cancelled => 'Cancelled',
+  };
 }
 
 class Batch {
@@ -63,14 +63,14 @@ class Batch {
   }
 
   Map<String, dynamic> toInsertMap() => {
-        'name': name,
-        'trainer_id': trainerId,
-        'schedule_time': scheduleTime,
-        'days_of_week': daysOfWeek,
-        'capacity': capacity,
-        'status': status.name.toUpperCase(),
-        if (locationLat != null) 'location_lat': locationLat,
-        if (locationLng != null) 'location_lng': locationLng,
-        'radius_meters': radiusMeters,
-      };
+    'name': name,
+    'trainer_id': trainerId,
+    'schedule_time': scheduleTime,
+    'days_of_week': daysOfWeek,
+    'capacity': capacity,
+    'status': status.name.toUpperCase(),
+    if (locationLat != null) 'location_lat': locationLat,
+    if (locationLng != null) 'location_lng': locationLng,
+    'radius_meters': radiusMeters,
+  };
 }

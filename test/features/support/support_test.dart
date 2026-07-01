@@ -15,16 +15,15 @@ SupportTicket _fakeTicket({
   String subject = 'Login issue',
   String description = 'Cannot login via OTP',
   SupportTicketStatus status = SupportTicketStatus.open,
-}) =>
-    SupportTicket(
-      id: id,
-      studentId: studentId,
-      studentName: studentName,
-      subject: subject,
-      description: description,
-      status: status,
-      createdAt: DateTime(2026, 6, 20),
-    );
+}) => SupportTicket(
+  id: id,
+  studentId: studentId,
+  studentName: studentName,
+  subject: subject,
+  description: description,
+  status: status,
+  createdAt: DateTime(2026, 6, 20),
+);
 
 void main() {
   setUpAll(() {
@@ -34,8 +33,14 @@ void main() {
   group('SupportTicketStatus enum', () {
     test('fromString parses correctly', () {
       expect(SupportTicketStatus.fromString('OPEN'), SupportTicketStatus.open);
-      expect(SupportTicketStatus.fromString('RESOLVED'), SupportTicketStatus.resolved);
-      expect(SupportTicketStatus.fromString('UNKNOWN'), SupportTicketStatus.open);
+      expect(
+        SupportTicketStatus.fromString('RESOLVED'),
+        SupportTicketStatus.resolved,
+      );
+      expect(
+        SupportTicketStatus.fromString('UNKNOWN'),
+        SupportTicketStatus.open,
+      );
     });
 
     test('dbValue matches expectations', () {
@@ -93,8 +98,9 @@ void main() {
 
     test('loads my tickets on build', () async {
       final list = [_fakeTicket()];
-      when(() => mockRepo.fetchMyTickets('student-1'))
-          .thenAnswer((_) async => list);
+      when(
+        () => mockRepo.fetchMyTickets('student-1'),
+      ).thenAnswer((_) async => list);
 
       await container.read(myTicketsProvider.future);
       final state = container.read(myTicketsProvider).value!;
@@ -104,22 +110,28 @@ void main() {
 
     test('createTicket adds ticket to state', () async {
       final list = [_fakeTicket()];
-      when(() => mockRepo.fetchMyTickets('student-1'))
-          .thenAnswer((_) async => list);
+      when(
+        () => mockRepo.fetchMyTickets('student-1'),
+      ).thenAnswer((_) async => list);
 
       await container.read(myTicketsProvider.future);
 
-      final created = _fakeTicket(id: 'tkt-2', subject: 'New Help', description: 'Desc');
-      when(() => mockRepo.createTicket(
-            studentId: 'student-1',
-            subject: 'New Help',
-            description: 'Desc',
-          )).thenAnswer((_) async => created);
+      final created = _fakeTicket(
+        id: 'tkt-2',
+        subject: 'New Help',
+        description: 'Desc',
+      );
+      when(
+        () => mockRepo.createTicket(
+          studentId: 'student-1',
+          subject: 'New Help',
+          description: 'Desc',
+        ),
+      ).thenAnswer((_) async => created);
 
-      await container.read(myTicketsProvider.notifier).createTicket(
-            subject: 'New Help',
-            description: 'Desc',
-          );
+      await container
+          .read(myTicketsProvider.notifier)
+          .createTicket(subject: 'New Help', description: 'Desc');
 
       final state = container.read(myTicketsProvider).value!;
       expect(state.length, 2);
@@ -134,9 +146,7 @@ void main() {
     setUp(() {
       mockRepo = MockSupportRepository();
       container = ProviderContainer(
-        overrides: [
-          supportRepositoryProvider.overrideWithValue(mockRepo),
-        ],
+        overrides: [supportRepositoryProvider.overrideWithValue(mockRepo)],
       );
     });
 
@@ -157,8 +167,10 @@ void main() {
       await container.read(allTicketsProvider.future);
 
       final resolved = _fakeTicket(status: SupportTicketStatus.resolved);
-      when(() => mockRepo.updateTicketStatus('tkt-1', SupportTicketStatus.resolved))
-          .thenAnswer((_) async => resolved);
+      when(
+        () =>
+            mockRepo.updateTicketStatus('tkt-1', SupportTicketStatus.resolved),
+      ).thenAnswer((_) async => resolved);
 
       await container.read(allTicketsProvider.notifier).resolveTicket('tkt-1');
 
@@ -167,14 +179,15 @@ void main() {
     });
 
     test('refresh reloads ticket list', () async {
-      when(() => mockRepo.fetchAllTickets()).thenAnswer((_) async => [_fakeTicket()]);
+      when(
+        () => mockRepo.fetchAllTickets(),
+      ).thenAnswer((_) async => [_fakeTicket()]);
       await container.read(allTicketsProvider.future);
       expect(container.read(allTicketsProvider).value!.length, 1);
 
-      when(() => mockRepo.fetchAllTickets()).thenAnswer((_) async => [
-            _fakeTicket(),
-            _fakeTicket(id: 'tkt-2'),
-          ]);
+      when(
+        () => mockRepo.fetchAllTickets(),
+      ).thenAnswer((_) async => [_fakeTicket(), _fakeTicket(id: 'tkt-2')]);
       await container.read(allTicketsProvider.notifier).refresh();
       expect(container.read(allTicketsProvider).value!.length, 2);
     });

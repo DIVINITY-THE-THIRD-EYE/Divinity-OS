@@ -39,15 +39,15 @@ class _StudentShellState extends ConsumerState<StudentShell> {
   ];
 
   static int _targetToIndex(String target) => switch (target) {
-        'thirdeye' => 1,
-        'workouts' => 2,
-        'attendance' => 3,
-        'leaves' => 4,
-        'payments' => 5,
-        'profile' => 6,
-        'certificates' => 7,
-        _ => 0,
-      };
+    'thirdeye' => 1,
+    'workouts' => 2,
+    'attendance' => 3,
+    'leaves' => 4,
+    'payments' => 5,
+    'profile' => 6,
+    'certificates' => 7,
+    _ => 0,
+  };
 
   void _openEvents() {
     Navigator.of(context).push(
@@ -117,10 +117,9 @@ class _StudentShellState extends ConsumerState<StudentShell> {
         selectedIndex: _index,
         onDestinationSelected: (i) => setState(() => _index = i),
         destinations: _tabs
-            .map((t) => NavigationDestination(
-                  icon: Icon(t.icon),
-                  label: t.label,
-                ))
+            .map(
+              (t) => NavigationDestination(icon: Icon(t.icon), label: t.label),
+            )
             .toList(),
       ),
     );
@@ -132,4 +131,3 @@ class _Tab {
   final String label;
   final IconData icon;
 }
-

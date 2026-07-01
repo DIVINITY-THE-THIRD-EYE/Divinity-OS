@@ -16,17 +16,16 @@ Lead _fakeLead({
   String name = 'Priya Sharma',
   LeadStatus status = LeadStatus.newLead,
   String? convertedUserId,
-}) =>
-    Lead(
-      id: id,
-      name: name,
-      phone: '+919876543210',
-      source: LeadSource.instagram,
-      pipelineStatus: status,
-      convertedUserId: convertedUserId,
-      createdAt: DateTime(2026),
-      updatedAt: DateTime(2026),
-    );
+}) => Lead(
+  id: id,
+  name: name,
+  phone: '+919876543210',
+  source: LeadSource.instagram,
+  pipelineStatus: status,
+  convertedUserId: convertedUserId,
+  createdAt: DateTime(2026),
+  updatedAt: DateTime(2026),
+);
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
@@ -105,9 +104,7 @@ void main() {
     setUp(() {
       mockRepo = MockLeadsRepository();
       container = ProviderContainer(
-        overrides: [
-          leadsRepositoryProvider.overrideWithValue(mockRepo),
-        ],
+        overrides: [leadsRepositoryProvider.overrideWithValue(mockRepo)],
       );
     });
 
@@ -126,19 +123,20 @@ void main() {
       await container.read(leadsProvider.future);
 
       final newLead = _fakeLead(id: 'l-new', name: 'Nisha');
-      when(() => mockRepo.createLead(
-            name: any(named: 'name'),
-            phone: any(named: 'phone'),
-            email: any(named: 'email'),
-            source: any(named: 'source'),
-            notes: any(named: 'notes'),
-            createdBy: any(named: 'createdBy'),
-          )).thenAnswer((_) async => newLead);
+      when(
+        () => mockRepo.createLead(
+          name: any(named: 'name'),
+          phone: any(named: 'phone'),
+          email: any(named: 'email'),
+          source: any(named: 'source'),
+          notes: any(named: 'notes'),
+          createdBy: any(named: 'createdBy'),
+        ),
+      ).thenAnswer((_) async => newLead);
 
-      await container.read(leadsProvider.notifier).addLead(
-            name: 'Nisha',
-            createdBy: 'admin-1',
-          );
+      await container
+          .read(leadsProvider.notifier)
+          .addLead(name: 'Nisha', createdBy: 'admin-1');
 
       final state = container.read(leadsProvider).value!;
       expect(state.length, 1);
@@ -151,8 +149,9 @@ void main() {
       await container.read(leadsProvider.future);
 
       final advanced = _fakeLead(status: LeadStatus.consultation);
-      when(() => mockRepo.advancePipeline('l-1', LeadStatus.consultation))
-          .thenAnswer((_) async => advanced);
+      when(
+        () => mockRepo.advancePipeline('l-1', LeadStatus.consultation),
+      ).thenAnswer((_) async => advanced);
 
       await container
           .read(leadsProvider.notifier)
@@ -167,10 +166,13 @@ void main() {
       when(() => mockRepo.fetchLeads()).thenAnswer((_) async => [lead]);
       await container.read(leadsProvider.future);
 
-      final admitted =
-          _fakeLead(status: LeadStatus.admitted, convertedUserId: 'user-99');
-      when(() => mockRepo.convertToMember('l-1', 'user-99'))
-          .thenAnswer((_) async => admitted);
+      final admitted = _fakeLead(
+        status: LeadStatus.admitted,
+        convertedUserId: 'user-99',
+      );
+      when(
+        () => mockRepo.convertToMember('l-1', 'user-99'),
+      ).thenAnswer((_) async => admitted);
 
       await container
           .read(leadsProvider.notifier)
@@ -187,8 +189,9 @@ void main() {
       await container.read(leadsProvider.future);
 
       final lost = _fakeLead(status: LeadStatus.lost);
-      when(() => mockRepo.advancePipeline('l-1', LeadStatus.lost))
-          .thenAnswer((_) async => lost);
+      when(
+        () => mockRepo.advancePipeline('l-1', LeadStatus.lost),
+      ).thenAnswer((_) async => lost);
 
       await container.read(leadsProvider.notifier).markLost('l-1');
 

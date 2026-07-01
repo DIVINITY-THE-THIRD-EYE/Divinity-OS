@@ -86,14 +86,12 @@ class SupabasePaymentRepository implements PaymentRepository {
     if (recordedBy != null) insert['recorded_by'] = recordedBy;
     if (screenshotUrl != null) insert['screenshot_url'] = screenshotUrl;
     if (planExpirationDate != null) {
-      insert['plan_expiration_date'] = DateFormat('yyyy-MM-dd').format(planExpirationDate);
+      insert['plan_expiration_date'] = DateFormat(
+        'yyyy-MM-dd',
+      ).format(planExpirationDate);
     }
-    
-    final row = await _client
-        .from('payments')
-        .insert(insert)
-        .select()
-        .single();
+
+    final row = await _client.from('payments').insert(insert).select().single();
     return PaymentRecord.fromMap(row);
   }
 
@@ -109,12 +107,17 @@ class SupabasePaymentRepository implements PaymentRepository {
   }
 
   @override
-  Future<PaymentRecord> approvePayment(String id, DateTime expirationDate) async {
+  Future<PaymentRecord> approvePayment(
+    String id,
+    DateTime expirationDate,
+  ) async {
     final row = await _client
         .from('payments')
         .update({
           'admin_approved': true,
-          'plan_expiration_date': DateFormat('yyyy-MM-dd').format(expirationDate),
+          'plan_expiration_date': DateFormat(
+            'yyyy-MM-dd',
+          ).format(expirationDate),
         })
         .eq('id', id)
         .select()
@@ -151,7 +154,9 @@ class SupabasePaymentRepository implements PaymentRepository {
     required List<int> bytes,
   }) async {
     final path = '$userId/$filename';
-    await _client.storage.from('payment_screenshots').uploadBinary(
+    await _client.storage
+        .from('payment_screenshots')
+        .uploadBinary(
           path,
           bytes as dynamic,
           fileOptions: const FileOptions(upsert: true),

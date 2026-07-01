@@ -22,7 +22,7 @@ ReportsData _fakeReportsData() {
           attendanceRate: 60.0,
           totalClasses: 10,
           attendedClasses: 6,
-        )
+        ),
       ],
     ),
     revenue: RevenueReport(
@@ -59,7 +59,7 @@ ReportsData _fakeReportsData() {
         attendanceHandled: 150,
         activeBatchesCount: 2,
         studentCount: 12,
-      )
+      ),
     ],
     events: [
       EventReportItem(
@@ -70,7 +70,7 @@ ReportsData _fakeReportsData() {
         attendanceCount: 15,
         isFull: false,
         isCancelled: false,
-      )
+      ),
     ],
     holidays: [
       HolidayReportItem(
@@ -78,11 +78,9 @@ ReportsData _fakeReportsData() {
         name: 'Independence Day',
         date: DateTime(2026, 8, 15),
         overlapCount: 0,
-      )
+      ),
     ],
-    batches: [
-      const BatchReportItem(id: 'batch_1', name: 'Morning Yoga'),
-    ],
+    batches: [const BatchReportItem(id: 'batch_1', name: 'Morning Yoga')],
   );
 }
 
@@ -131,9 +129,7 @@ void main() {
     setUp(() {
       mockRepo = MockReportsRepository();
       container = ProviderContainer(
-        overrides: [
-          reportsRepositoryProvider.overrideWithValue(mockRepo),
-        ],
+        overrides: [reportsRepositoryProvider.overrideWithValue(mockRepo)],
       );
     });
 
@@ -141,7 +137,9 @@ void main() {
 
     test('loads reports data successfully', () async {
       final fakeData = _fakeReportsData();
-      when(() => mockRepo.fetchReports(any())).thenAnswer((_) async => fakeData);
+      when(
+        () => mockRepo.fetchReports(any()),
+      ).thenAnswer((_) async => fakeData);
 
       final data = await container.read(reportsDataProvider.future);
       expect(data.attendance.perBatchAttendance['Morning Yoga'], 85.0);
@@ -151,7 +149,9 @@ void main() {
     });
 
     test('propagates errors from repository', () async {
-      when(() => mockRepo.fetchReports(any())).thenThrow(Exception('database error'));
+      when(
+        () => mockRepo.fetchReports(any()),
+      ).thenThrow(Exception('database error'));
 
       await expectLater(
         container.read(reportsDataProvider.future),

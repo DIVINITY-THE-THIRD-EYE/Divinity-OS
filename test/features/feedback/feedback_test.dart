@@ -18,19 +18,18 @@ StudentFeedback _fakeFeedback({
   String? batchName,
   int rating = 5,
   String comments = 'Awesome!',
-}) =>
-    StudentFeedback(
-      id: id,
-      studentId: studentId,
-      studentName: studentName,
-      trainerId: trainerId,
-      trainerName: trainerName,
-      batchId: batchId,
-      batchName: batchName,
-      rating: rating,
-      comments: comments,
-      createdAt: DateTime(2026, 6, 20),
-    );
+}) => StudentFeedback(
+  id: id,
+  studentId: studentId,
+  studentName: studentName,
+  trainerId: trainerId,
+  trainerName: trainerName,
+  batchId: batchId,
+  batchName: batchName,
+  rating: rating,
+  comments: comments,
+  createdAt: DateTime(2026, 6, 20),
+);
 
 void main() {
   group('StudentFeedback Model', () {
@@ -90,8 +89,9 @@ void main() {
 
     test('loads my feedback on build', () async {
       final list = [_fakeFeedback()];
-      when(() => mockRepo.fetchMyFeedback('student-1'))
-          .thenAnswer((_) async => list);
+      when(
+        () => mockRepo.fetchMyFeedback('student-1'),
+      ).thenAnswer((_) async => list);
 
       await container.read(myFeedbackProvider.future);
       final state = container.read(myFeedbackProvider).value!;
@@ -101,21 +101,30 @@ void main() {
 
     test('submit adds feedback to state', () async {
       final list = [_fakeFeedback()];
-      when(() => mockRepo.fetchMyFeedback('student-1'))
-          .thenAnswer((_) async => list);
+      when(
+        () => mockRepo.fetchMyFeedback('student-1'),
+      ).thenAnswer((_) async => list);
 
       await container.read(myFeedbackProvider.future);
 
-      final created = _fakeFeedback(id: 'fb-2', rating: 4, comments: 'New feedback');
-      when(() => mockRepo.submitFeedback(
-            studentId: 'student-1',
-            trainerId: 'train-1',
-            batchId: 'batch-1',
-            rating: 4,
-            comments: 'New feedback',
-          )).thenAnswer((_) async => created);
+      final created = _fakeFeedback(
+        id: 'fb-2',
+        rating: 4,
+        comments: 'New feedback',
+      );
+      when(
+        () => mockRepo.submitFeedback(
+          studentId: 'student-1',
+          trainerId: 'train-1',
+          batchId: 'batch-1',
+          rating: 4,
+          comments: 'New feedback',
+        ),
+      ).thenAnswer((_) async => created);
 
-      await container.read(myFeedbackProvider.notifier).submit(
+      await container
+          .read(myFeedbackProvider.notifier)
+          .submit(
             trainerId: 'train-1',
             batchId: 'batch-1',
             rating: 4,
@@ -135,9 +144,7 @@ void main() {
     setUp(() {
       mockRepo = MockFeedbackRepository();
       container = ProviderContainer(
-        overrides: [
-          feedbackRepositoryProvider.overrideWithValue(mockRepo),
-        ],
+        overrides: [feedbackRepositoryProvider.overrideWithValue(mockRepo)],
       );
     });
 
@@ -153,14 +160,15 @@ void main() {
     });
 
     test('refresh reloads feedback list', () async {
-      when(() => mockRepo.fetchAllFeedback()).thenAnswer((_) async => [_fakeFeedback()]);
+      when(
+        () => mockRepo.fetchAllFeedback(),
+      ).thenAnswer((_) async => [_fakeFeedback()]);
       await container.read(allFeedbackProvider.future);
       expect(container.read(allFeedbackProvider).value!.length, 1);
 
-      when(() => mockRepo.fetchAllFeedback()).thenAnswer((_) async => [
-            _fakeFeedback(),
-            _fakeFeedback(id: 'fb-2'),
-          ]);
+      when(
+        () => mockRepo.fetchAllFeedback(),
+      ).thenAnswer((_) async => [_fakeFeedback(), _fakeFeedback(id: 'fb-2')]);
       await container.read(allFeedbackProvider.notifier).refresh();
       expect(container.read(allFeedbackProvider).value!.length, 2);
     });
@@ -173,9 +181,7 @@ void main() {
     setUp(() {
       mockRepo = MockFeedbackRepository();
       container = ProviderContainer(
-        overrides: [
-          feedbackRepositoryProvider.overrideWithValue(mockRepo),
-        ],
+        overrides: [feedbackRepositoryProvider.overrideWithValue(mockRepo)],
       );
     });
 
@@ -183,8 +189,9 @@ void main() {
 
     test('loads batch feedback on build', () async {
       final list = [_fakeFeedback(batchId: 'batch-1')];
-      when(() => mockRepo.fetchBatchFeedback('batch-1'))
-          .thenAnswer((_) async => list);
+      when(
+        () => mockRepo.fetchBatchFeedback('batch-1'),
+      ).thenAnswer((_) async => list);
 
       await container.read(batchFeedbackProvider('batch-1').future);
       final state = container.read(batchFeedbackProvider('batch-1')).value!;

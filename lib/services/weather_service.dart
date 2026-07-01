@@ -43,7 +43,9 @@ class WeatherService {
       final aqiRes = responses[1];
 
       if (weatherRes.statusCode != 200 || aqiRes.statusCode != 200) {
-        throw WeatherException('Weather APIs returned status code ${weatherRes.statusCode} / ${aqiRes.statusCode}');
+        throw WeatherException(
+          'Weather APIs returned status code ${weatherRes.statusCode} / ${aqiRes.statusCode}',
+        );
       }
 
       final weatherData = json.decode(weatherRes.body) as Map<String, dynamic>;
@@ -52,7 +54,9 @@ class WeatherService {
       if (weatherData['current'] == null ||
           weatherData['daily'] == null ||
           aqiData['current'] == null) {
-        throw WeatherException('Invalid JSON payload returned from weather service.');
+        throw WeatherException(
+          'Invalid JSON payload returned from weather service.',
+        );
       }
 
       final current = weatherData['current'];
@@ -79,11 +83,16 @@ class WeatherService {
       final sunriseList = daily['sunrise'] as List?;
       final sunsetList = daily['sunset'] as List?;
 
-      final sunriseIso = (sunriseList != null && sunriseList.isNotEmpty) ? sunriseList[0]?.toString() : null;
-      final sunsetIso = (sunsetList != null && sunsetList.isNotEmpty) ? sunsetList[0]?.toString() : null;
+      final sunriseIso = (sunriseList != null && sunriseList.isNotEmpty)
+          ? sunriseList[0]?.toString()
+          : null;
+      final sunsetIso = (sunsetList != null && sunsetList.isNotEmpty)
+          ? sunsetList[0]?.toString()
+          : null;
 
       final now = DateTime.now();
-      final lastUpdatedStr = '${now.hour % 12 == 0 ? 12 : now.hour % 12}:${now.minute.toString().padLeft(2, '0')} ${now.hour >= 12 ? 'PM' : 'AM'}';
+      final lastUpdatedStr =
+          '${now.hour % 12 == 0 ? 12 : now.hour % 12}:${now.minute.toString().padLeft(2, '0')} ${now.hour >= 12 ? 'PM' : 'AM'}';
 
       return WeatherData(
         temp: temp,

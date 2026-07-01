@@ -27,14 +27,14 @@ class TrainerSummary {
   final DateTime createdAt;
 
   TrainerSummary copyWith({bool? isActive}) => TrainerSummary(
-        id: id,
-        name: name,
-        phone: phone,
-        email: email,
-        isActive: isActive ?? this.isActive,
-        batchCount: batchCount,
-        createdAt: createdAt,
-      );
+    id: id,
+    name: name,
+    phone: phone,
+    email: email,
+    isActive: isActive ?? this.isActive,
+    batchCount: batchCount,
+    createdAt: createdAt,
+  );
 }
 
 // ── Provider ──────────────────────────────────────────────────────────────────
@@ -81,9 +81,11 @@ class AdminTrainersNotifier extends AsyncNotifier<List<TrainerSummary>> {
   }
 
   Future<void> setActive(String trainerId, bool isActive) async {
-    await ref.read(supabaseClientProvider).from('users').update({
-      'is_active': isActive,
-    }).eq('id', trainerId);
+    await ref
+        .read(supabaseClientProvider)
+        .from('users')
+        .update({'is_active': isActive})
+        .eq('id', trainerId);
     state = AsyncData(
       (state.value ?? [])
           .map((t) => t.id == trainerId ? t.copyWith(isActive: isActive) : t)
@@ -94,8 +96,8 @@ class AdminTrainersNotifier extends AsyncNotifier<List<TrainerSummary>> {
 
 final adminTrainersProvider =
     AsyncNotifierProvider<AdminTrainersNotifier, List<TrainerSummary>>(
-  AdminTrainersNotifier.new,
-);
+      AdminTrainersNotifier.new,
+    );
 
 // ── Screen ────────────────────────────────────────────────────────────────────
 
@@ -183,15 +185,17 @@ class _TrainerTile extends ConsumerWidget {
           newValue
               ? 'Reactivate ${trainer.name}? They will regain access as a trainer.'
               : 'Deactivate ${trainer.name}? Their batches and history are kept, '
-                  'but they should be reassigned or paused separately.',
+                    'but they should be reassigned or paused separately.',
         ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel')),
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
           FilledButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: Text(newValue ? 'Activate' : 'Deactivate')),
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(newValue ? 'Activate' : 'Deactivate'),
+          ),
         ],
       ),
     );
@@ -211,8 +215,9 @@ class _TrainerTile extends ConsumerWidget {
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text('Error: $e')));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Error: $e')));
         }
       }
     }

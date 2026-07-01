@@ -25,7 +25,9 @@ class MyTicketsNotifier extends AsyncNotifier<List<SupportTicket>> {
   }) async {
     final uid = ref.read(currentUserIdProvider);
     if (uid == null) return;
-    final created = await ref.read(supportRepositoryProvider).createTicket(
+    final created = await ref
+        .read(supportRepositoryProvider)
+        .createTicket(
           studentId: uid,
           subject: subject,
           description: description,
@@ -36,8 +38,8 @@ class MyTicketsNotifier extends AsyncNotifier<List<SupportTicket>> {
 
 final myTicketsProvider =
     AsyncNotifierProvider<MyTicketsNotifier, List<SupportTicket>>(
-  MyTicketsNotifier.new,
-);
+      MyTicketsNotifier.new,
+    );
 
 // ── All tickets (Admin view) ──────────────────────────────────────────────────
 
@@ -70,5 +72,5 @@ class AllTicketsNotifier extends AsyncNotifier<List<SupportTicket>> {
 
 final allTicketsProvider =
     AsyncNotifierProvider<AllTicketsNotifier, List<SupportTicket>>(
-  AllTicketsNotifier.new,
-);
+      AllTicketsNotifier.new,
+    );

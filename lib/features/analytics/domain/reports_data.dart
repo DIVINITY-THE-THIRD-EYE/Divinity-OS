@@ -31,8 +31,12 @@ class ReportFilters {
       endDate: endDate != null ? endDate() : this.endDate,
       trainerId: trainerId != null ? trainerId() : this.trainerId,
       batchId: batchId != null ? batchId() : this.batchId,
-      membershipPlan: membershipPlan != null ? membershipPlan() : this.membershipPlan,
-      studentStatus: studentStatus != null ? studentStatus() : this.studentStatus,
+      membershipPlan: membershipPlan != null
+          ? membershipPlan()
+          : this.membershipPlan,
+      studentStatus: studentStatus != null
+          ? studentStatus()
+          : this.studentStatus,
       eventId: eventId != null ? eventId() : this.eventId,
     );
   }
@@ -78,9 +82,12 @@ class LowAttendanceAlert {
 class AttendanceReport {
   final List<DailyTrend> dailyAttendance;
   final List<MonthlyTrend> monthlyAttendance;
-  final Map<String, double> perBatchAttendance;   // batchId/name -> check-in count or rate
-  final Map<String, double> perTrainerAttendance; // trainerId/name -> check-in count or rate
-  final Map<String, double> studentAttendancePercentage; // studentName -> check-in rate
+  final Map<String, double>
+  perBatchAttendance; // batchId/name -> check-in count or rate
+  final Map<String, double>
+  perTrainerAttendance; // trainerId/name -> check-in count or rate
+  final Map<String, double>
+  studentAttendancePercentage; // studentName -> check-in rate
   final List<LowAttendanceAlert> lowAttendanceAlerts;
 
   const AttendanceReport({
@@ -100,8 +107,8 @@ class RevenueReport {
   final double outstandingFees;
   final int paidCount;
   final int unpaidCount;
-  final Map<String, int> membershipSales;   // planName -> count of sales
-  final Map<String, double> revenueByPlan;  // planName -> revenue
+  final Map<String, int> membershipSales; // planName -> count of sales
+  final Map<String, double> revenueByPlan; // planName -> revenue
 
   const RevenueReport({
     required this.dailyRevenue,

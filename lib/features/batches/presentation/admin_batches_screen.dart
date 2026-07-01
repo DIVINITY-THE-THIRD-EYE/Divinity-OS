@@ -14,7 +14,12 @@ import 'enrollment_provider.dart';
 // ── Trainers provider ─────────────────────────────────────────────────────────
 
 final _trainersProvider = FutureProvider<List<AppUser>>((ref) async {
-  final rows = await ref.watch(supabaseClientProvider).from('users').select().eq('role', 'TRAINER').order('name');
+  final rows = await ref
+      .watch(supabaseClientProvider)
+      .from('users')
+      .select()
+      .eq('role', 'TRAINER')
+      .order('name');
   return (rows as List<dynamic>)
       .map((r) => AppUser.fromMap(r as Map<String, dynamic>))
       .toList();
@@ -111,9 +116,12 @@ class _AdminBatchCard extends ConsumerWidget {
             Row(
               children: [
                 Expanded(
-                  child: Text(batch.name,
-                      style: tt.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.bold)),
+                  child: Text(
+                    batch.name,
+                    style: tt.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
                 _StatusChip(status: batch.status, color: statusColor),
               ],
@@ -122,34 +130,43 @@ class _AdminBatchCard extends ConsumerWidget {
             // Schedule
             Row(
               children: [
-                const Icon(Icons.schedule_outlined,
-                    size: 14, color: Colors.grey),
+                const Icon(
+                  Icons.schedule_outlined,
+                  size: 14,
+                  color: Colors.grey,
+                ),
                 const SizedBox(width: 4),
                 Text(
                   '${batch.scheduleTime}  ·  ${batch.daysOfWeek.join(', ')}',
                   style: tt.bodySmall?.copyWith(color: Colors.grey),
                 ),
                 const SizedBox(width: 12),
-                const Icon(Icons.people_outline,
-                    size: 14, color: Colors.grey),
+                const Icon(Icons.people_outline, size: 14, color: Colors.grey),
                 const SizedBox(width: 4),
-                Text('Cap. ${batch.capacity}',
-                    style: tt.bodySmall?.copyWith(color: Colors.grey)),
+                Text(
+                  'Cap. ${batch.capacity}',
+                  style: tt.bodySmall?.copyWith(color: Colors.grey),
+                ),
               ],
             ),
             // Trainer
             const SizedBox(height: 4),
             Row(
               children: [
-                const Icon(Icons.sports_gymnastics_outlined,
-                    size: 14, color: Colors.grey),
+                const Icon(
+                  Icons.sports_gymnastics_outlined,
+                  size: 14,
+                  color: Colors.grey,
+                ),
                 const SizedBox(width: 4),
                 Text(
                   trainerName != null
                       ? 'Trainer: $trainerName'
                       : 'No trainer assigned',
                   style: tt.bodySmall?.copyWith(
-                    color: trainerName != null ? Colors.grey : AppColors.warning,
+                    color: trainerName != null
+                        ? Colors.grey
+                        : AppColors.warning,
                   ),
                 ),
               ],
@@ -221,7 +238,10 @@ class _StatusChip extends StatelessWidget {
       child: Text(
         status.label,
         style: TextStyle(
-            color: color, fontSize: 12, fontWeight: FontWeight.w600),
+          color: color,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
@@ -240,9 +260,11 @@ class _EmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.groups_outlined,
-              size: 72,
-              color: AppColors.accentViolet.withValues(alpha: 0.3)),
+          Icon(
+            Icons.groups_outlined,
+            size: 72,
+            color: AppColors.accentViolet.withValues(alpha: 0.3),
+          ),
           const SizedBox(height: 16),
           Text('No batches yet', style: tt.titleMedium),
           const SizedBox(height: 8),
@@ -298,15 +320,20 @@ class _CreateBatchSheetState extends ConsumerState<_CreateBatchSheet> {
   Future<void> _save() async {
     final name = _nameCtrl.text.trim();
     if (name.isEmpty) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Name is required.')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Name is required.')));
       return;
     }
     final lat = double.tryParse(_latCtrl.text.trim());
     final lng = double.tryParse(_lngCtrl.text.trim());
     if (lat == null || lng == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Valid latitude and longitude coordinates are required.')),
+        const SnackBar(
+          content: Text(
+            'Valid latitude and longitude coordinates are required.',
+          ),
+        ),
       );
       return;
     }
@@ -331,8 +358,9 @@ class _CreateBatchSheetState extends ConsumerState<_CreateBatchSheet> {
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -346,7 +374,8 @@ class _CreateBatchSheetState extends ConsumerState<_CreateBatchSheet> {
 
     return Padding(
       padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom),
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
         child: Column(
@@ -401,10 +430,9 @@ class _CreateBatchSheetState extends ConsumerState<_CreateBatchSheet> {
                 ),
                 items: [
                   const DropdownMenuItem(child: Text('— None —')),
-                  ...trainers.map((t) => DropdownMenuItem(
-                        value: t.id,
-                        child: Text(t.name),
-                      )),
+                  ...trainers.map(
+                    (t) => DropdownMenuItem(value: t.id, child: Text(t.name)),
+                  ),
                 ],
                 onChanged: (v) => setState(() => _selectedTrainerId = v),
               ),
@@ -439,7 +467,9 @@ class _CreateBatchSheetState extends ConsumerState<_CreateBatchSheet> {
                   child: TextField(
                     controller: _latCtrl,
                     keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true, signed: true),
+                      decimal: true,
+                      signed: true,
+                    ),
                     decoration: const InputDecoration(
                       labelText: 'Latitude',
                       prefixIcon: Icon(Icons.my_location_outlined),
@@ -451,7 +481,9 @@ class _CreateBatchSheetState extends ConsumerState<_CreateBatchSheet> {
                   child: TextField(
                     controller: _lngCtrl,
                     keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true, signed: true),
+                      decimal: true,
+                      signed: true,
+                    ),
                     decoration: const InputDecoration(
                       labelText: 'Longitude',
                       prefixIcon: Icon(Icons.location_on_outlined),
@@ -463,7 +495,9 @@ class _CreateBatchSheetState extends ConsumerState<_CreateBatchSheet> {
             const SizedBox(height: 12),
             TextField(
               controller: _radiusCtrl,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               decoration: const InputDecoration(
                 labelText: 'Radius (metres)',
                 prefixIcon: Icon(Icons.radar_outlined),
@@ -519,12 +553,11 @@ class _EditBatchSheetState extends ConsumerState<_EditBatchSheet> {
     _nameCtrl = TextEditingController(text: b.name);
     _timeCtrl = TextEditingController(text: b.scheduleTime);
     _capacityCtrl = TextEditingController(text: b.capacity.toString());
-    _latCtrl = TextEditingController(
-        text: b.locationLat?.toString() ?? '');
-    _lngCtrl = TextEditingController(
-        text: b.locationLng?.toString() ?? '');
+    _latCtrl = TextEditingController(text: b.locationLat?.toString() ?? '');
+    _lngCtrl = TextEditingController(text: b.locationLng?.toString() ?? '');
     _radiusCtrl = TextEditingController(
-        text: b.radiusMeters.toStringAsFixed(0));
+      text: b.radiusMeters.toStringAsFixed(0),
+    );
     _selectedDays = Set.from(b.daysOfWeek);
     _selectedTrainerId = b.trainerId;
     _status = b.status;
@@ -544,40 +577,43 @@ class _EditBatchSheetState extends ConsumerState<_EditBatchSheet> {
   Future<void> _save() async {
     final name = _nameCtrl.text.trim();
     if (name.isEmpty) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Name is required.')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Name is required.')));
       return;
     }
     final lat = double.tryParse(_latCtrl.text.trim());
     final lng = double.tryParse(_lngCtrl.text.trim());
     if (lat == null || lng == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Valid latitude and longitude coordinates are required.')),
+        const SnackBar(
+          content: Text(
+            'Valid latitude and longitude coordinates are required.',
+          ),
+        ),
       );
       return;
     }
     setState(() => _saving = true);
     try {
       final radius = double.tryParse(_radiusCtrl.text.trim()) ?? 100.0;
-      await ref.read(batchesProvider.notifier).updateBatch(
-        widget.batch.id,
-        {
-          'name': name,
-          'trainer_id': _selectedTrainerId,
-          'schedule_time': _timeCtrl.text.trim(),
-          'days_of_week': _selectedDays.toList(),
-          'capacity': int.tryParse(_capacityCtrl.text.trim()) ?? 20,
-          'status': _status.name.toUpperCase(),
-          'location_lat': lat,
-          'location_lng': lng,
-          'radius_meters': radius,
-        },
-      );
+      await ref.read(batchesProvider.notifier).updateBatch(widget.batch.id, {
+        'name': name,
+        'trainer_id': _selectedTrainerId,
+        'schedule_time': _timeCtrl.text.trim(),
+        'days_of_week': _selectedDays.toList(),
+        'capacity': int.tryParse(_capacityCtrl.text.trim()) ?? 20,
+        'status': _status.name.toUpperCase(),
+        'location_lat': lat,
+        'location_lng': lng,
+        'radius_meters': radius,
+      });
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -591,7 +627,8 @@ class _EditBatchSheetState extends ConsumerState<_EditBatchSheet> {
 
     return Padding(
       padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom),
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
         child: Column(
@@ -642,10 +679,9 @@ class _EditBatchSheetState extends ConsumerState<_EditBatchSheet> {
                 ),
                 items: [
                   const DropdownMenuItem(child: Text('— None —')),
-                  ...trainers.map((t) => DropdownMenuItem(
-                        value: t.id,
-                        child: Text(t.name),
-                      )),
+                  ...trainers.map(
+                    (t) => DropdownMenuItem(value: t.id, child: Text(t.name)),
+                  ),
                 ],
                 onChanged: (v) => setState(() => _selectedTrainerId = v),
               ),
@@ -655,10 +691,7 @@ class _EditBatchSheetState extends ConsumerState<_EditBatchSheet> {
               initialValue: _status,
               decoration: const InputDecoration(labelText: 'Status'),
               items: BatchStatus.values
-                  .map((s) => DropdownMenuItem(
-                        value: s,
-                        child: Text(s.label),
-                      ))
+                  .map((s) => DropdownMenuItem(value: s, child: Text(s.label)))
                   .toList(),
               onChanged: (v) => setState(() => _status = v ?? _status),
             ),
@@ -671,7 +704,9 @@ class _EditBatchSheetState extends ConsumerState<_EditBatchSheet> {
                   child: TextField(
                     controller: _latCtrl,
                     keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true, signed: true),
+                      decimal: true,
+                      signed: true,
+                    ),
                     decoration: const InputDecoration(
                       labelText: 'Latitude',
                       prefixIcon: Icon(Icons.my_location_outlined),
@@ -683,7 +718,9 @@ class _EditBatchSheetState extends ConsumerState<_EditBatchSheet> {
                   child: TextField(
                     controller: _lngCtrl,
                     keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true, signed: true),
+                      decimal: true,
+                      signed: true,
+                    ),
                     decoration: const InputDecoration(
                       labelText: 'Longitude',
                       prefixIcon: Icon(Icons.location_on_outlined),
@@ -695,7 +732,9 @@ class _EditBatchSheetState extends ConsumerState<_EditBatchSheet> {
             const SizedBox(height: 12),
             TextField(
               controller: _radiusCtrl,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               decoration: const InputDecoration(
                 labelText: 'Radius (metres)',
                 prefixIcon: Icon(Icons.radar_outlined),
@@ -779,8 +818,11 @@ class _EnrolSheet extends ConsumerWidget {
                 Row(
                   children: [
                     Expanded(
-                        child: Text('${batch.name} — Enrolments',
-                            style: tt.titleMedium)),
+                      child: Text(
+                        '${batch.name} — Enrolments',
+                        style: tt.titleMedium,
+                      ),
+                    ),
                     FilledButton.icon(
                       onPressed: () => _showAddStudentDialog(ctx, ref),
                       icon: const Icon(Icons.person_add_outlined, size: 16),
@@ -805,22 +847,24 @@ class _EnrolSheet extends ConsumerWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.people_outline,
-                              size: 48,
-                              color: Colors.grey.withValues(alpha: 0.4)),
+                          Icon(
+                            Icons.people_outline,
+                            size: 48,
+                            color: Colors.grey.withValues(alpha: 0.4),
+                          ),
                           const SizedBox(height: 12),
-                          Text('No students enrolled yet.',
-                              style: tt.bodyMedium),
+                          Text(
+                            'No students enrolled yet.',
+                            style: tt.bodyMedium,
+                          ),
                         ],
                       ),
                     )
                   : ListView.separated(
                       controller: controller,
-                      padding:
-                          const EdgeInsets.symmetric(vertical: 8),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
                       itemCount: enrollments.length,
-                      separatorBuilder: (_, _) =>
-                          const Divider(height: 1),
+                      separatorBuilder: (_, _) => const Divider(height: 1),
                       itemBuilder: (ctx2, i) => _EnrolmentTile(
                         enrollment: enrollments[i],
                         batchId: batch.id,
@@ -834,14 +878,17 @@ class _EnrolSheet extends ConsumerWidget {
   }
 
   Future<void> _showAddStudentDialog(
-      BuildContext context, WidgetRef ref) async {
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
     final allStudentsAsync = ref.read(studentsProvider);
     final enrolled = ref.read(batchEnrollmentsProvider(batch.id)).value ?? [];
     final enrolledIds = enrolled.map((e) => e.studentId).toSet();
 
     final students = allStudentsAsync.value ?? [];
-    final unenrolled =
-        students.where((s) => !enrolledIds.contains(s.id)).toList();
+    final unenrolled = students
+        .where((s) => !enrolledIds.contains(s.id))
+        .toList();
 
     if (!context.mounted) return;
 
@@ -864,14 +911,15 @@ class _EnrolSheet extends ConsumerWidget {
             .enroll(selected.id);
         unawaited(AnalyticsService.logStudentEnroll(batchId: batch.id));
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${selected.name} enrolled.')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('${selected.name} enrolled.')));
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text('Error: $e')));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Error: $e')));
         }
       }
     }
@@ -879,8 +927,7 @@ class _EnrolSheet extends ConsumerWidget {
 }
 
 class _EnrolmentTile extends ConsumerWidget {
-  const _EnrolmentTile(
-      {required this.enrollment, required this.batchId});
+  const _EnrolmentTile({required this.enrollment, required this.batchId});
   final Enrollment enrollment;
   final String batchId;
 
@@ -907,17 +954,17 @@ class _EnrolmentTile extends ConsumerWidget {
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Remove Student'),
-        content: Text(
-            'Remove ${enrollment.studentName} from this batch?'),
+        content: Text('Remove ${enrollment.studentName} from this batch?'),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel')),
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
           FilledButton(
-              style: FilledButton.styleFrom(
-                  backgroundColor: Colors.red),
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text('Remove')),
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Remove'),
+          ),
         ],
       ),
     );
@@ -928,14 +975,14 @@ class _EnrolmentTile extends ConsumerWidget {
             .unenroll(enrollment.id);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text('${enrollment.studentName} removed.')),
+            SnackBar(content: Text('${enrollment.studentName} removed.')),
           );
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text('Error: $e')));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Error: $e')));
         }
       }
     }
@@ -961,11 +1008,9 @@ class _PickStudentDialog extends StatelessWidget {
           itemBuilder: (ctx, i) {
             final s = students[i];
             return ListTile(
-              leading: CircleAvatar(
-                  child: Text(s.name[0].toUpperCase())),
+              leading: CircleAvatar(child: Text(s.name[0].toUpperCase())),
               title: Text(s.name),
-              subtitle:
-                  Text(s.phone ?? s.email ?? '—'),
+              subtitle: Text(s.phone ?? s.email ?? '—'),
               onTap: () => Navigator.of(ctx).pop(s),
             );
           },

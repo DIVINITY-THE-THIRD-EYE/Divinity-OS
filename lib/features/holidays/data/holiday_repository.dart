@@ -32,10 +32,7 @@ class SupabaseHolidayRepository implements HolidayRepository {
   }) async {
     final row = await _client
         .from('holidays')
-        .insert({
-          'date': date.toIso8601String().substring(0, 10),
-          'name': name,
-        })
+        .insert({'date': date.toIso8601String().substring(0, 10), 'name': name})
         .select()
         .single();
     return Holiday.fromMap(row);

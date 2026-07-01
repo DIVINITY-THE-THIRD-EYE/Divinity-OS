@@ -15,8 +15,7 @@ class RecordPaymentSheet extends ConsumerStatefulWidget {
   final String? studentName;
 
   @override
-  ConsumerState<RecordPaymentSheet> createState() =>
-      _RecordPaymentSheetState();
+  ConsumerState<RecordPaymentSheet> createState() => _RecordPaymentSheetState();
 }
 
 class _RecordPaymentSheetState extends ConsumerState<RecordPaymentSheet> {
@@ -49,14 +48,17 @@ class _RecordPaymentSheetState extends ConsumerState<RecordPaymentSheet> {
     if (!_formKey.currentState!.validate()) return;
     final studentId = _pickedStudentId;
     if (studentId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select a student.')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please select a student.')));
       return;
     }
     setState(() => _saving = true);
     try {
       final amount = double.parse(_amountCtrl.text.trim());
-      await ref.read(allPaymentsProvider.notifier).record(
+      await ref
+          .read(allPaymentsProvider.notifier)
+          .record(
             studentId: studentId,
             amount: amount,
             method: _method,
@@ -67,15 +69,18 @@ class _RecordPaymentSheetState extends ConsumerState<RecordPaymentSheet> {
                 ? null
                 : _notesCtrl.text.trim(),
           );
-      unawaited(AnalyticsService.logPaymentRecord(
-        amount: amount,
-        method: _method.dbValue,
-      ));
+      unawaited(
+        AnalyticsService.logPaymentRecord(
+          amount: amount,
+          method: _method.dbValue,
+        ),
+      );
       if (mounted) Navigator.of(context).pop(true);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -87,8 +92,9 @@ class _RecordPaymentSheetState extends ConsumerState<RecordPaymentSheet> {
     final tt = Theme.of(context).textTheme;
 
     return Padding(
-      padding:
-          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: DraggableScrollableSheet(
         initialChildSize: 0.78,
         minChildSize: 0.5,
@@ -121,14 +127,14 @@ class _RecordPaymentSheetState extends ConsumerState<RecordPaymentSheet> {
                   if (widget.studentId == null) ...[
                     _StudentPicker(
                       selectedId: _pickedStudentId,
-                      onChanged: (id) =>
-                          setState(() => _pickedStudentId = id),
+                      onChanged: (id) => setState(() => _pickedStudentId = id),
                     ),
                     const SizedBox(height: 16),
                   ] else if (widget.studentName != null) ...[
-                    Text('Student: ${widget.studentName}',
-                        style:
-                            tt.bodyMedium?.copyWith(color: Colors.grey)),
+                    Text(
+                      'Student: ${widget.studentName}',
+                      style: tt.bodyMedium?.copyWith(color: Colors.grey),
+                    ),
                     const SizedBox(height: 16),
                   ],
 
@@ -136,8 +142,7 @@ class _RecordPaymentSheetState extends ConsumerState<RecordPaymentSheet> {
                     controller: _amountCtrl,
                     keyboardType: TextInputType.number,
                     inputFormatters: [
-                      FilteringTextInputFormatter.allow(
-                          RegExp(r'[0-9.]'))
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
                     ],
                     decoration: const InputDecoration(
                       labelText: 'Amount (₹)',
@@ -161,14 +166,19 @@ class _RecordPaymentSheetState extends ConsumerState<RecordPaymentSheet> {
                       labelText: 'Payment Method',
                       prefixIcon: Icon(Icons.payment_outlined),
                     ),
-                    items: [
-                      PaymentMethod.cash,
-                      PaymentMethod.upi,
-                      PaymentMethod.bankTransfer,
-                    ]
-                        .map((m) => DropdownMenuItem(
-                            value: m, child: Text(m.label)))
-                        .toList(),
+                    items:
+                        [
+                              PaymentMethod.cash,
+                              PaymentMethod.upi,
+                              PaymentMethod.bankTransfer,
+                            ]
+                            .map(
+                              (m) => DropdownMenuItem(
+                                value: m,
+                                child: Text(m.label),
+                              ),
+                            )
+                            .toList(),
                     onChanged: (m) =>
                         setState(() => _method = m ?? PaymentMethod.cash),
                   ),
@@ -200,8 +210,7 @@ class _RecordPaymentSheetState extends ConsumerState<RecordPaymentSheet> {
                       child: _saving
                           ? const SizedBox.square(
                               dimension: 20,
-                              child: CircularProgressIndicator(
-                                  strokeWidth: 2),
+                              child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : const Text('Record Payment'),
                     ),
@@ -219,8 +228,7 @@ class _RecordPaymentSheetState extends ConsumerState<RecordPaymentSheet> {
 // ── Student picker widget ─────────────────────────────────────────────────────
 
 class _StudentPicker extends ConsumerWidget {
-  const _StudentPicker(
-      {required this.selectedId, required this.onChanged});
+  const _StudentPicker({required this.selectedId, required this.onChanged});
   final String? selectedId;
   final void Function(String id) onChanged;
 
@@ -240,8 +248,7 @@ class _StudentPicker extends ConsumerWidget {
         ),
         hint: const Text('Select student'),
         items: students
-            .map((s) =>
-                DropdownMenuItem(value: s.id, child: Text(s.name)))
+            .map((s) => DropdownMenuItem(value: s.id, child: Text(s.name)))
             .toList(),
         onChanged: (id) {
           if (id != null) onChanged(id);

@@ -22,14 +22,18 @@ class DashboardStats {
   final int activeStudents;
   final double totalRevenue;
   final double pendingAmount;
-  final List<MonthlyValue> monthlyRevenue;    // oldest→newest, length 6
+  final List<MonthlyValue> monthlyRevenue; // oldest→newest, length 6
   final List<MonthlyValue> monthlyEnrolments; // oldest→newest, length 6
 
-  String get totalRevenueLabel =>
-      NumberFormat.currency(locale: 'en_IN', symbol: '₹', decimalDigits: 0)
-          .format(totalRevenue);
+  String get totalRevenueLabel => NumberFormat.currency(
+    locale: 'en_IN',
+    symbol: '₹',
+    decimalDigits: 0,
+  ).format(totalRevenue);
 
-  String get pendingAmountLabel =>
-      NumberFormat.currency(locale: 'en_IN', symbol: '₹', decimalDigits: 0)
-          .format(pendingAmount);
+  String get pendingAmountLabel => NumberFormat.currency(
+    locale: 'en_IN',
+    symbol: '₹',
+    decimalDigits: 0,
+  ).format(pendingAmount);
 }

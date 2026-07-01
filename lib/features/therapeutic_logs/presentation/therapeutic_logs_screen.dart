@@ -66,8 +66,7 @@ class TherapeuticLogsScreen extends ConsumerWidget {
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Delete Log'),
-        content: Text(
-            'Delete this note for ${log.studentName ?? 'student'}?'),
+        content: Text('Delete this note for ${log.studentName ?? 'student'}?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -86,8 +85,9 @@ class TherapeuticLogsScreen extends ConsumerWidget {
         await ref.read(trainerLogsProvider.notifier).remove(log.id);
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text('Error: $e')));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Error: $e')));
         }
       }
     }
@@ -116,9 +116,11 @@ class _EmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.sticky_note_2_outlined,
-              size: 72,
-              color: AppColors.accentViolet.withValues(alpha: 0.3)),
+          Icon(
+            Icons.sticky_note_2_outlined,
+            size: 72,
+            color: AppColors.accentViolet.withValues(alpha: 0.3),
+          ),
           const SizedBox(height: 16),
           Text('No therapeutic logs yet', style: tt.titleMedium),
           const SizedBox(height: 8),
@@ -162,8 +164,10 @@ class _LogTile extends StatelessWidget {
         children: [
           Text(log.note, maxLines: 2, overflow: TextOverflow.ellipsis),
           const SizedBox(height: 2),
-          Text(log.dateLabel,
-              style: tt.labelSmall?.copyWith(color: Colors.grey)),
+          Text(
+            log.dateLabel,
+            style: tt.labelSmall?.copyWith(color: Colors.grey),
+          ),
         ],
       ),
       isThreeLine: true,
@@ -199,26 +203,28 @@ class _AddLogSheetState extends ConsumerState<_AddLogSheet> {
   Future<void> _save() async {
     final note = _noteCtrl.text.trim();
     if (_selectedStudentId == null) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Select a student.')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Select a student.')));
       return;
     }
     if (note.isEmpty) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Note cannot be empty.')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Note cannot be empty.')));
       return;
     }
     setState(() => _saving = true);
     try {
-      await ref.read(trainerLogsProvider.notifier).add(
-            studentId: _selectedStudentId!,
-            note: note,
-          );
+      await ref
+          .read(trainerLogsProvider.notifier)
+          .add(studentId: _selectedStudentId!, note: note);
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -232,7 +238,8 @@ class _AddLogSheetState extends ConsumerState<_AddLogSheet> {
 
     return Padding(
       padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom),
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
         child: Column(
@@ -254,13 +261,11 @@ class _AddLogSheetState extends ConsumerState<_AddLogSheet> {
                 ),
                 hint: const Text('Select student'),
                 items: students
-                    .map((s) => DropdownMenuItem(
-                          value: s.id,
-                          child: Text(s.name),
-                        ))
+                    .map(
+                      (s) => DropdownMenuItem(value: s.id, child: Text(s.name)),
+                    )
                     .toList(),
-                onChanged: (v) =>
-                    setState(() => _selectedStudentId = v),
+                onChanged: (v) => setState(() => _selectedStudentId = v),
               ),
             ),
             const SizedBox(height: 16),

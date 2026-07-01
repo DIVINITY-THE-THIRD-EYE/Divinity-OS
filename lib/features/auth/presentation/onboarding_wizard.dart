@@ -123,9 +123,7 @@ class _OnboardingWizardState extends ConsumerState<OnboardingWizard> {
       case 3:
         if (_lifestyle == null) {
           messenger.showSnackBar(
-            const SnackBar(
-              content: Text('Please select your activity level.'),
-            ),
+            const SnackBar(content: Text('Please select your activity level.')),
           );
           return false;
         }
@@ -140,7 +138,9 @@ class _OnboardingWizardState extends ConsumerState<OnboardingWizard> {
         if (!_consent) {
           messenger.showSnackBar(
             const SnackBar(
-              content: Text('Please consent to our data policy to complete onboarding.'),
+              content: Text(
+                'Please consent to our data policy to complete onboarding.',
+              ),
             ),
           );
           return false;
@@ -195,7 +195,11 @@ class _OnboardingWizardState extends ConsumerState<OnboardingWizard> {
                 Text('Something went wrong', style: tt.titleMedium),
                 const SizedBox(height: 8),
                 if (authState case app_auth.AuthError(:final message))
-                  Text(message, style: tt.bodyMedium, textAlign: TextAlign.center),
+                  Text(
+                    message,
+                    style: tt.bodyMedium,
+                    textAlign: TextAlign.center,
+                  ),
                 const SizedBox(height: 24),
                 FilledButton(
                   onPressed: () => setState(() {}),
@@ -212,7 +216,12 @@ class _OnboardingWizardState extends ConsumerState<OnboardingWizard> {
       body: SafeArea(
         child: Column(
           children: [
-            _ProgressHeader(step: _step, total: kOnboardingTotalSteps, cs: cs, tt: tt),
+            _ProgressHeader(
+              step: _step,
+              total: kOnboardingTotalSteps,
+              cs: cs,
+              tt: tt,
+            ),
             const SizedBox(height: 8),
             Expanded(
               child: PageView(

@@ -40,17 +40,17 @@ void main() {
         currentUserIdProvider.overrideWithValue('student-1'),
         attendanceRepositoryProvider.overrideWithValue(mockAttendanceRepo),
         if (batch != null) activeBatchProvider.overrideWith((ref) => batch),
-        geolocationProvider.overrideWith(() => FakeGeolocationNotifier(position)),
-      ],
-      child: const MaterialApp(
-        home: Scaffold(
-          body: CheckInScreen(),
+        geolocationProvider.overrideWith(
+          () => FakeGeolocationNotifier(position),
         ),
-      ),
+      ],
+      child: const MaterialApp(home: Scaffold(body: CheckInScreen())),
     );
   }
 
-  testWidgets('Check In button is disabled if distance > radius', (tester) async {
+  testWidgets('Check In button is disabled if distance > radius', (
+    tester,
+  ) async {
     final mockBatch = {
       'id': 'batch-123',
       'name': 'Hatha Yoga Morning',
@@ -59,9 +59,7 @@ void main() {
       'location_lat': 12.9716,
       'location_lng': 77.5946,
       'radius_meters': 100.0,
-      'users': {
-        'name': 'Trainer Guru',
-      }
+      'users': {'name': 'Trainer Guru'},
     };
 
     // User is far away (e.g. lat 13.9716 is ~110 km away)
@@ -78,17 +76,19 @@ void main() {
       speedAccuracy: 1.0,
     );
 
-    when(() => mockAttendanceRepo.fetchActiveBatch('student-1'))
-        .thenAnswer((_) async => mockBatch);
-    when(() => mockAttendanceRepo.fetchTodayRecord('student-1'))
-        .thenAnswer((_) async => null);
-    when(() => mockAttendanceRepo.fetchHistory('student-1'))
-        .thenAnswer((_) async => []);
+    when(
+      () => mockAttendanceRepo.fetchActiveBatch('student-1'),
+    ).thenAnswer((_) async => mockBatch);
+    when(
+      () => mockAttendanceRepo.fetchTodayRecord('student-1'),
+    ).thenAnswer((_) async => null);
+    when(
+      () => mockAttendanceRepo.fetchHistory('student-1'),
+    ).thenAnswer((_) async => []);
 
-    await tester.pumpWidget(createWidgetUnderTest(
-      position: farPosition,
-      batch: mockBatch,
-    ));
+    await tester.pumpWidget(
+      createWidgetUnderTest(position: farPosition, batch: mockBatch),
+    );
     await tester.pump();
     await tester.pumpAndSettle();
 
@@ -98,12 +98,14 @@ void main() {
     // Verify Check In button is disabled
     final btnFinder = find.byKey(const Key('check_in_now_btn'));
     expect(btnFinder, findsOneWidget);
-    
+
     final FilledButton button = tester.widget<FilledButton>(btnFinder);
     expect(button.onPressed, isNull); // disabled
   });
 
-  testWidgets('Check In button is enabled if distance <= radius', (tester) async {
+  testWidgets('Check In button is enabled if distance <= radius', (
+    tester,
+  ) async {
     final mockBatch = {
       'id': 'batch-123',
       'name': 'Hatha Yoga Morning',
@@ -112,9 +114,7 @@ void main() {
       'location_lat': 12.9716,
       'location_lng': 77.5946,
       'radius_meters': 100.0,
-      'users': {
-        'name': 'Trainer Guru',
-      }
+      'users': {'name': 'Trainer Guru'},
     };
 
     // User is at the exact location
@@ -131,24 +131,26 @@ void main() {
       speedAccuracy: 1.0,
     );
 
-    when(() => mockAttendanceRepo.fetchActiveBatch('student-1'))
-        .thenAnswer((_) async => mockBatch);
-    when(() => mockAttendanceRepo.fetchTodayRecord('student-1'))
-        .thenAnswer((_) async => null);
-    when(() => mockAttendanceRepo.fetchHistory('student-1'))
-        .thenAnswer((_) async => []);
+    when(
+      () => mockAttendanceRepo.fetchActiveBatch('student-1'),
+    ).thenAnswer((_) async => mockBatch);
+    when(
+      () => mockAttendanceRepo.fetchTodayRecord('student-1'),
+    ).thenAnswer((_) async => null);
+    when(
+      () => mockAttendanceRepo.fetchHistory('student-1'),
+    ).thenAnswer((_) async => []);
 
-    await tester.pumpWidget(createWidgetUnderTest(
-      position: nearPosition,
-      batch: mockBatch,
-    ));
+    await tester.pumpWidget(
+      createWidgetUnderTest(position: nearPosition, batch: mockBatch),
+    );
     await tester.pump();
     await tester.pumpAndSettle();
 
     // Verify Check In button is enabled
     final btnFinder = find.byKey(const Key('check_in_now_btn'));
     expect(btnFinder, findsOneWidget);
-    
+
     final FilledButton button = tester.widget<FilledButton>(btnFinder);
     expect(button.onPressed, isNotNull); // enabled
   });

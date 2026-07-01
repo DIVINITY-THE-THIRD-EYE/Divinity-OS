@@ -14,17 +14,13 @@ class StudentFeedbackScreen extends ConsumerWidget {
     final feedbackAsync = ref.watch(myFeedbackProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Feedback'),
-      ),
+      appBar: AppBar(title: const Text('My Feedback')),
       body: feedbackAsync.when(
         loading: () => const Center(child: ChakraLoader()),
         error: (err, stack) => Center(child: Text('Error: $err')),
         data: (list) {
           if (list.isEmpty) {
-            return const Center(
-              child: Text('No feedback submitted yet.'),
-            );
+            return const Center(child: Text('No feedback submitted yet.'));
           }
           return ListView.builder(
             padding: const EdgeInsets.all(16),
@@ -45,15 +41,17 @@ class StudentFeedbackScreen extends ConsumerWidget {
                           Expanded(
                             child: Text(
                               item.batchName ?? 'General Feedback',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                           ),
                           Text(
                             DateFormat('MMM d, yyyy').format(item.createdAt),
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                                 ),
                           ),
                         ],
@@ -75,7 +73,8 @@ class StudentFeedbackScreen extends ConsumerWidget {
                           );
                         }),
                       ),
-                      if (item.comments != null && item.comments!.isNotEmpty) ...[
+                      if (item.comments != null &&
+                          item.comments!.isNotEmpty) ...[
                         const SizedBox(height: 8),
                         Text(
                           item.comments!,
@@ -131,15 +130,15 @@ class _FeedbackFormBottomSheetState
 
   Future<void> _submit() async {
     if (_selectedBatchId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a batch')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please select a batch')));
       return;
     }
     if (_selectedRating < 1) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a rating')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please select a rating')));
       return;
     }
 
@@ -149,11 +148,15 @@ class _FeedbackFormBottomSheetState
       final allBatches = ref.read(batchesProvider).value;
       final trainerId = allBatches != null
           ? (allBatches.any((b) => b.id == _selectedBatchId)
-              ? allBatches.firstWhere((b) => b.id == _selectedBatchId).trainerId
-              : null)
+                ? allBatches
+                      .firstWhere((b) => b.id == _selectedBatchId)
+                      .trainerId
+                : null)
           : null;
 
-      await ref.read(myFeedbackProvider.notifier).submit(
+      await ref
+          .read(myFeedbackProvider.notifier)
+          .submit(
             batchId: _selectedBatchId,
             rating: _selectedRating,
             comments: _commentsCtrl.text.trim().isNotEmpty
@@ -202,9 +205,9 @@ class _FeedbackFormBottomSheetState
               children: [
                 Text(
                   'Submit Feedback',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
@@ -262,8 +265,8 @@ class _FeedbackFormBottomSheetState
                 Text(
                   'Rating',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Row(

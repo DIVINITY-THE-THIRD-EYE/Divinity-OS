@@ -20,11 +20,10 @@ class StudentProgressDetailScreen extends ConsumerWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(student.name),
-      ),
+      appBar: AppBar(title: Text(student.name)),
       body: RefreshIndicator(
-        onRefresh: () => ref.refresh(studentScoresHistoryProvider(student.id).future),
+        onRefresh: () =>
+            ref.refresh(studentScoresHistoryProvider(student.id).future),
         child: scoresAsync.when(
           loading: () => const Center(child: ChakraLoader()),
           error: (e, _) => Center(child: Text('Error loading scores: $e')),
@@ -34,7 +33,10 @@ class StudentProgressDetailScreen extends ConsumerWidget {
             return ListView(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
               children: [
-                _StudentSummaryCard(student: student, latestScore: latest?.score),
+                _StudentSummaryCard(
+                  student: student,
+                  latestScore: latest?.score,
+                ),
                 const SizedBox(height: 16),
                 if (scores.isEmpty) ...[
                   _NoScoresCard(studentName: student.name),
@@ -45,7 +47,11 @@ class StudentProgressDetailScreen extends ConsumerWidget {
                     _TrendChartSection(scores: scores, isDark: isDark),
                     const SizedBox(height: 16),
                   ],
-                  _ScoresTableSection(scores: scores, studentId: student.id, isDark: isDark),
+                  _ScoresTableSection(
+                    scores: scores,
+                    studentId: student.id,
+                    isDark: isDark,
+                  ),
                 ],
               ],
             );
@@ -53,18 +59,24 @@ class StudentProgressDetailScreen extends ConsumerWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showRecordScoreSheet(context, student.id, scoresAsync.value),
+        onPressed: () =>
+            _showRecordScoreSheet(context, student.id, scoresAsync.value),
         icon: const Icon(Icons.add),
         label: const Text('Record Score'),
       ),
     );
   }
 
-  void _showRecordScoreSheet(BuildContext context, String studentId, List<TransformationScore>? currentHistory) {
+  void _showRecordScoreSheet(
+    BuildContext context,
+    String studentId,
+    List<TransformationScore>? currentHistory,
+  ) {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      builder: (_) => _RecordScoreSheet(studentId: studentId, history: currentHistory),
+      builder: (_) =>
+          _RecordScoreSheet(studentId: studentId, history: currentHistory),
     );
   }
 }
@@ -90,7 +102,9 @@ class _StudentSummaryCard extends StatelessWidget {
               backgroundColor: AppColors.accentViolet.withValues(alpha: 0.15),
               child: Text(
                 student.name[0].toUpperCase(),
-                style: tt.headlineMedium?.copyWith(color: AppColors.accentViolet),
+                style: tt.headlineMedium?.copyWith(
+                  color: AppColors.accentViolet,
+                ),
               ),
             ),
             const SizedBox(width: 16),
@@ -98,21 +112,34 @@ class _StudentSummaryCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(student.name, style: tt.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                  Text(
+                    student.name,
+                    style: tt.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 4),
-                  Text(student.phone ?? student.email ?? 'No contact info', style: tt.bodySmall),
+                  Text(
+                    student.phone ?? student.email ?? 'No contact info',
+                    style: tt.bodySmall,
+                  ),
                   const SizedBox(height: 6),
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: AppColors.success.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
                           student.planStatus,
-                          style: tt.labelSmall?.copyWith(color: AppColors.success, fontWeight: FontWeight.bold, fontSize: 10),
+                          style: tt.labelSmall?.copyWith(
+                            color: AppColors.success,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 10,
+                          ),
                         ),
                       ),
                       if (latestScore != null) ...[
@@ -151,7 +178,11 @@ class _NoScoresCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 36),
         child: Column(
           children: [
-            Icon(Icons.assessment_outlined, size: 48, color: Colors.grey.withValues(alpha: 0.5)),
+            Icon(
+              Icons.assessment_outlined,
+              size: 48,
+              color: Colors.grey.withValues(alpha: 0.5),
+            ),
             const SizedBox(height: 16),
             Text('No scores recorded yet', style: tt.titleMedium),
             const SizedBox(height: 8),
@@ -184,7 +215,10 @@ class _RadarChartSection extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Transformation Balance', style: tt.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+            Text(
+              'Transformation Balance',
+              style: tt.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 20),
             SizedBox(
               height: 200,
@@ -206,15 +240,21 @@ class _RadarChartSection extends StatelessWidget {
                   ],
                   radarShape: RadarShape.circle,
                   gridBorderData: BorderSide(
-                    color: isDark ? AppColors.borderDark : AppColors.borderLight,
+                    color: isDark
+                        ? AppColors.borderDark
+                        : AppColors.borderLight,
                   ),
                   tickBorderData: BorderSide(
-                    color: isDark ? AppColors.borderLightDark : AppColors.borderLightAlt,
+                    color: isDark
+                        ? AppColors.borderLightDark
+                        : AppColors.borderLightAlt,
                     width: 0.5,
                   ),
                   tickCount: 5,
                   ticksTextStyle: TextStyle(
-                    color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
+                    color: isDark
+                        ? AppColors.textMutedDark
+                        : AppColors.textMutedLight,
                     fontSize: 8,
                   ),
                   getTitle: (index, angle) {
@@ -231,7 +271,9 @@ class _RadarChartSection extends StatelessWidget {
                   titleTextStyle: tt.bodySmall?.copyWith(
                     fontWeight: FontWeight.w600,
                     fontSize: 10,
-                    color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                    color: isDark
+                        ? AppColors.textSecondaryDark
+                        : AppColors.textSecondaryLight,
                   ),
                 ),
               ),
@@ -260,7 +302,10 @@ class _TrendChartSection extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Journey Progress Trend', style: tt.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+            Text(
+              'Journey Progress Trend',
+              style: tt.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 20),
             SizedBox(
               height: 140,
@@ -284,7 +329,9 @@ class _TrendChartSection extends StatelessWidget {
                               DateFormat('d/M').format(date),
                               style: TextStyle(
                                 fontSize: 9,
-                                color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                                color: isDark
+                                    ? AppColors.textSecondaryDark
+                                    : AppColors.textSecondaryLight,
                               ),
                             ),
                           );
@@ -301,7 +348,9 @@ class _TrendChartSection extends StatelessWidget {
                               '${value.toInt()}',
                               style: TextStyle(
                                 fontSize: 9,
-                                color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
+                                color: isDark
+                                    ? AppColors.textMutedDark
+                                    : AppColors.textMutedLight,
                               ),
                             );
                           }
@@ -336,7 +385,9 @@ class _TrendChartSection extends StatelessWidget {
                           radius: 3.5,
                           color: AppColors.accentGold,
                           strokeWidth: 2,
-                          strokeColor: isDark ? AppColors.bgDark : AppColors.bgLight,
+                          strokeColor: isDark
+                              ? AppColors.bgDark
+                              : AppColors.bgLight,
                         ),
                       ),
                     ),
@@ -354,7 +405,11 @@ class _TrendChartSection extends StatelessWidget {
 // ── Scores Table Section ─────────────────────────────────────────────────────
 
 class _ScoresTableSection extends StatelessWidget {
-  const _ScoresTableSection({required this.scores, required this.studentId, required this.isDark});
+  const _ScoresTableSection({
+    required this.scores,
+    required this.studentId,
+    required this.isDark,
+  });
   final List<TransformationScore> scores;
   final String studentId;
   final bool isDark;
@@ -369,7 +424,10 @@ class _ScoresTableSection extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Historical Scores', style: tt.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+            Text(
+              'Historical Scores',
+              style: tt.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 12),
             ListView.separated(
               shrinkWrap: true,
@@ -421,7 +479,9 @@ class _RecordScoreSheetState extends ConsumerState<_RecordScoreSheet> {
   double _intensity = 7.0;
   double _mindfulness = 7.0;
   double _recovery = 7.0;
-  DateTime _weekStartDate = DateTime.now().subtract(Duration(days: DateTime.now().weekday - 1)); // Most recent Monday
+  DateTime _weekStartDate = DateTime.now().subtract(
+    Duration(days: DateTime.now().weekday - 1),
+  ); // Most recent Monday
 
   @override
   void initState() {
@@ -436,7 +496,8 @@ class _RecordScoreSheetState extends ConsumerState<_RecordScoreSheet> {
     }
   }
 
-  double get _computedScore => (_consistency + _intensity + _mindfulness + _recovery) / 4.0;
+  double get _computedScore =>
+      (_consistency + _intensity + _mindfulness + _recovery) / 4.0;
 
   Future<void> _selectDate() async {
     final picked = await showDatePicker(
@@ -477,9 +538,9 @@ class _RecordScoreSheetState extends ConsumerState<_RecordScoreSheet> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error recording score: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error recording score: $e')));
       }
     }
   }
@@ -522,7 +583,9 @@ class _RecordScoreSheetState extends ConsumerState<_RecordScoreSheet> {
                       Text('Week Commencing (Monday)', style: tt.bodySmall),
                       Text(
                         DateFormat('EEEE, MMMM d, yyyy').format(_weekStartDate),
-                        style: tt.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+                        style: tt.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
@@ -567,7 +630,12 @@ class _RecordScoreSheetState extends ConsumerState<_RecordScoreSheet> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Computed Overall Score:', style: tt.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                  Text(
+                    'Computed Overall Score:',
+                    style: tt.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   Text(
                     '${_computedScore.toStringAsFixed(2)} / 10.0',
                     style: tt.titleLarge?.copyWith(
@@ -586,7 +654,10 @@ class _RecordScoreSheetState extends ConsumerState<_RecordScoreSheet> {
                       ? const SizedBox(
                           height: 20,
                           width: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
                         )
                       : const Text('Save Weekly Score'),
                 ),
@@ -622,10 +693,16 @@ class _SliderInput extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(title, style: tt.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
+            Text(
+              title,
+              style: tt.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
             Text(
               '${value.toStringAsFixed(1)} / 10.0',
-              style: tt.bodyMedium?.copyWith(color: color, fontWeight: FontWeight.bold),
+              style: tt.bodyMedium?.copyWith(
+                color: color,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ],
         ),

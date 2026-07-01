@@ -34,8 +34,9 @@ class SupabaseDashboardRepository implements DashboardRepository {
 
     return DashboardStats(
       totalStudents: studentRows.length,
-      activeStudents:
-          studentRows.where((r) => r['plan_status'] == 'ACTIVE').length,
+      activeStudents: studentRows
+          .where((r) => r['plan_status'] == 'ACTIVE')
+          .length,
       totalRevenue: paymentRows.fold<double>(
         0,
         (s, r) => s + (r['amount'] as num).toDouble(),

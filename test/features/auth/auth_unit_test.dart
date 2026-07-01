@@ -25,10 +25,10 @@ Future<AuthNotifier> buildNotifier(AuthRepository repo) async {
 }
 
 Map<String, dynamic> activeProfile({String role = 'STUDENT'}) => {
-      'role': role,
-      'plan_status': 'ACTIVE',
-      'onboarding_complete': true,
-    };
+  'role': role,
+  'plan_status': 'ACTIVE',
+  'onboarding_complete': true,
+};
 
 // ── Tests ────────────────────────────────────────────────────────────────────
 
@@ -44,21 +44,28 @@ void main() {
     when(() => repo.currentUser).thenReturn(null);
     // Default: no external auth events. Tests needing them override with a
     // StreamController.
-    when(() => repo.authEvents())
-        .thenAnswer((_) => const Stream<AuthLifecycleEvent>.empty());
+    when(
+      () => repo.authEvents(),
+    ).thenAnswer((_) => const Stream<AuthLifecycleEvent>.empty());
 
     final mockChannel = MockRealtimeChannel();
-    when(() => repo.subscribeToUserProfile(any(), any()))
-        .thenReturn(mockChannel);
-    when(() => repo.unsubscribeFromChannel(any()))
-        .thenAnswer((_) async {});
+    when(
+      () => repo.subscribeToUserProfile(any(), any()),
+    ).thenReturn(mockChannel);
+    when(() => repo.unsubscribeFromChannel(any())).thenAnswer((_) async {});
   });
 
   group('UserRole.fromString', () {
     test('maps all known values', () {
       expect(app_auth.UserRole.fromString('ADMIN'), app_auth.UserRole.admin);
-      expect(app_auth.UserRole.fromString('TRAINER'), app_auth.UserRole.trainer);
-      expect(app_auth.UserRole.fromString('STUDENT'), app_auth.UserRole.student);
+      expect(
+        app_auth.UserRole.fromString('TRAINER'),
+        app_auth.UserRole.trainer,
+      );
+      expect(
+        app_auth.UserRole.fromString('STUDENT'),
+        app_auth.UserRole.student,
+      );
     });
 
     test('unknown value defaults to student', () {
@@ -77,8 +84,9 @@ void main() {
       final user = MockUser();
       when(() => user.id).thenReturn('uid-1');
       when(() => repo.currentUser).thenReturn(user);
-      when(() => repo.fetchProfile('uid-1'))
-          .thenAnswer((_) async => activeProfile());
+      when(
+        () => repo.fetchProfile('uid-1'),
+      ).thenAnswer((_) async => activeProfile());
 
       final n = await buildNotifier(repo);
       expect(n.state, isA<app_auth.AuthAuthenticated>());
@@ -88,35 +96,39 @@ void main() {
       );
     });
 
-    test('resolves to AuthNeedsOnboarding when onboarding_complete is false',
-        () async {
-      final user = MockUser();
-      when(() => user.id).thenReturn('uid-ob');
-      when(() => repo.currentUser).thenReturn(user);
-      when(() => repo.fetchProfile('uid-ob')).thenAnswer(
-        (_) async => {
-          'role': 'STUDENT',
-          'plan_status': 'UNPAID',
-          'onboarding_complete': false,
-        },
-      );
+    test(
+      'resolves to AuthNeedsOnboarding when onboarding_complete is false',
+      () async {
+        final user = MockUser();
+        when(() => user.id).thenReturn('uid-ob');
+        when(() => repo.currentUser).thenReturn(user);
+        when(() => repo.fetchProfile('uid-ob')).thenAnswer(
+          (_) async => {
+            'role': 'STUDENT',
+            'plan_status': 'UNPAID',
+            'onboarding_complete': false,
+          },
+        );
 
-      final n = await buildNotifier(repo);
-      expect(n.state, isA<app_auth.AuthNeedsOnboarding>());
-    });
+        final n = await buildNotifier(repo);
+        expect(n.state, isA<app_auth.AuthNeedsOnboarding>());
+      },
+    );
 
-    test('resolves to AuthNeedsOnboarding when onboarding_complete absent',
-        () async {
-      final user = MockUser();
-      when(() => user.id).thenReturn('uid-ob2');
-      when(() => repo.currentUser).thenReturn(user);
-      when(() => repo.fetchProfile('uid-ob2')).thenAnswer(
-        (_) async => {'role': 'STUDENT', 'plan_status': 'UNPAID'},
-      );
+    test(
+      'resolves to AuthNeedsOnboarding when onboarding_complete absent',
+      () async {
+        final user = MockUser();
+        when(() => user.id).thenReturn('uid-ob2');
+        when(() => repo.currentUser).thenReturn(user);
+        when(
+          () => repo.fetchProfile('uid-ob2'),
+        ).thenAnswer((_) async => {'role': 'STUDENT', 'plan_status': 'UNPAID'});
 
-      final n = await buildNotifier(repo);
-      expect(n.state, isA<app_auth.AuthNeedsOnboarding>());
-    });
+        final n = await buildNotifier(repo);
+        expect(n.state, isA<app_auth.AuthNeedsOnboarding>());
+      },
+    );
 
     test('resolves to AuthPendingApproval for pending user', () async {
       final user = MockUser();
@@ -140,15 +152,16 @@ void main() {
       final user = MockUser();
       when(() => user.id).thenReturn('uid-onboard');
       when(() => repo.currentUser).thenReturn(user);
-      when(() => repo.fetchProfile('uid-onboard')).thenAnswer(
-        (_) async => {'role': 'STUDENT', 'plan_status': 'UNPAID'},
-      );
+      when(
+        () => repo.fetchProfile('uid-onboard'),
+      ).thenAnswer((_) async => {'role': 'STUDENT', 'plan_status': 'UNPAID'});
 
       final n = await buildNotifier(repo);
       expect(n.state, isA<app_auth.AuthNeedsOnboarding>());
 
-      when(() => repo.updateProfile('uid-onboard', any()))
-          .thenAnswer((_) async {});
+      when(
+        () => repo.updateProfile('uid-onboard', any()),
+      ).thenAnswer((_) async {});
       // After update, re-fetch returns pending profile.
       when(() => repo.fetchProfile('uid-onboard')).thenAnswer(
         (_) async => {
@@ -161,14 +174,18 @@ void main() {
       await n.completeOnboarding({'name': 'Arjun', 'age': 28});
 
       expect(n.state, isA<app_auth.AuthPendingApproval>());
-      verify(() => repo.updateProfile(
-            'uid-onboard',
-            any(that: predicate<Map<String, dynamic>>(
+      verify(
+        () => repo.updateProfile(
+          'uid-onboard',
+          any(
+            that: predicate<Map<String, dynamic>>(
               (m) =>
                   m['onboarding_complete'] == true &&
                   m['plan_status'] == 'PENDING_ADMIN',
-            )),
-          )).called(1);
+            ),
+          ),
+        ),
+      ).called(1);
     });
 
     test('is a no-op when state is not AuthNeedsOnboarding', () async {
@@ -187,15 +204,21 @@ void main() {
 
       final user = MockUser();
       when(() => user.id).thenReturn('uid-3');
-      when(() => repo.signInWithEmail(
-            email: any(named: 'email'),
-            password: any(named: 'password'),
-          )).thenAnswer((_) async {});
+      when(
+        () => repo.signInWithEmail(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenAnswer((_) async {});
       when(() => repo.currentUser).thenReturn(user);
-      when(() => repo.fetchProfile('uid-3'))
-          .thenAnswer((_) async => activeProfile(role: 'TRAINER'));
+      when(
+        () => repo.fetchProfile('uid-3'),
+      ).thenAnswer((_) async => activeProfile(role: 'TRAINER'));
 
-      await n.signInWithEmail(email: 'trainer@divinity.com', password: 'secret');
+      await n.signInWithEmail(
+        email: 'trainer@divinity.com',
+        password: 'secret',
+      );
 
       expect(n.state, isA<app_auth.AuthAuthenticated>());
       expect(
@@ -207,10 +230,12 @@ void main() {
     test('sets AuthError on AuthException', () async {
       final n = await buildNotifier(repo);
 
-      when(() => repo.signInWithEmail(
-            email: any(named: 'email'),
-            password: any(named: 'password'),
-          )).thenThrow(const AuthException('Invalid login credentials'));
+      when(
+        () => repo.signInWithEmail(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenThrow(const AuthException('Invalid login credentials'));
 
       await n.signInWithEmail(email: 'trainer@divinity.com', password: 'wrong');
 
@@ -228,13 +253,16 @@ void main() {
 
       final user = MockUser();
       when(() => user.id).thenReturn('uid-3');
-      when(() => repo.signInWithPhone(
-            phone: any(named: 'phone'),
-            password: any(named: 'password'),
-          )).thenAnswer((_) async {});
+      when(
+        () => repo.signInWithPhone(
+          phone: any(named: 'phone'),
+          password: any(named: 'password'),
+        ),
+      ).thenAnswer((_) async {});
       when(() => repo.currentUser).thenReturn(user);
-      when(() => repo.fetchProfile('uid-3'))
-          .thenAnswer((_) async => activeProfile(role: 'TRAINER'));
+      when(
+        () => repo.fetchProfile('uid-3'),
+      ).thenAnswer((_) async => activeProfile(role: 'TRAINER'));
 
       await n.signInWithPhone(phone: '+919876543210', password: 'secret');
 
@@ -248,10 +276,12 @@ void main() {
     test('sets AuthError on AuthException', () async {
       final n = await buildNotifier(repo);
 
-      when(() => repo.signInWithPhone(
-            phone: any(named: 'phone'),
-            password: any(named: 'password'),
-          )).thenThrow(const AuthException('Invalid login credentials'));
+      when(
+        () => repo.signInWithPhone(
+          phone: any(named: 'phone'),
+          password: any(named: 'password'),
+        ),
+      ).thenThrow(const AuthException('Invalid login credentials'));
 
       await n.signInWithPhone(phone: '+919876543210', password: 'wrong');
 
@@ -267,8 +297,9 @@ void main() {
     test('sendOtp transitions to AuthOtpSent', () async {
       final n = await buildNotifier(repo);
 
-      when(() => repo.signInWithOtp(phone: any(named: 'phone')))
-          .thenAnswer((_) async {});
+      when(
+        () => repo.signInWithOtp(phone: any(named: 'phone')),
+      ).thenAnswer((_) async {});
 
       await n.sendOtp(phone: '+919876543210');
 
@@ -279,8 +310,9 @@ void main() {
     test('sendOtp sets AuthError on AuthException', () async {
       final n = await buildNotifier(repo);
 
-      when(() => repo.signInWithOtp(phone: any(named: 'phone')))
-          .thenThrow(const AuthException('Phone not supported'));
+      when(
+        () => repo.signInWithOtp(phone: any(named: 'phone')),
+      ).thenThrow(const AuthException('Phone not supported'));
 
       await n.sendOtp(phone: '+919876543210');
 
@@ -292,13 +324,16 @@ void main() {
       final user = MockUser();
       when(() => user.id).thenReturn('uid-4');
 
-      when(() => repo.verifyOtp(
-            phone: any(named: 'phone'),
-            token: any(named: 'token'),
-          )).thenAnswer((_) async {});
+      when(
+        () => repo.verifyOtp(
+          phone: any(named: 'phone'),
+          token: any(named: 'token'),
+        ),
+      ).thenAnswer((_) async {});
       when(() => repo.currentUser).thenReturn(user);
-      when(() => repo.fetchProfile('uid-4'))
-          .thenAnswer((_) async => activeProfile(role: 'ADMIN'));
+      when(
+        () => repo.fetchProfile('uid-4'),
+      ).thenAnswer((_) async => activeProfile(role: 'ADMIN'));
 
       await n.verifyOtp(phone: '+919876543210', token: '123456');
 
@@ -309,20 +344,24 @@ void main() {
       );
     });
 
-    test('verifyOtp sets AuthError when currentUser is null after verify',
-        () async {
-      final n = await buildNotifier(repo);
+    test(
+      'verifyOtp sets AuthError when currentUser is null after verify',
+      () async {
+        final n = await buildNotifier(repo);
 
-      when(() => repo.verifyOtp(
+        when(
+          () => repo.verifyOtp(
             phone: any(named: 'phone'),
             token: any(named: 'token'),
-          )).thenAnswer((_) async {});
-      when(() => repo.currentUser).thenReturn(null);
+          ),
+        ).thenAnswer((_) async {});
+        when(() => repo.currentUser).thenReturn(null);
 
-      await n.verifyOtp(phone: '+919876543210', token: '999999');
+        await n.verifyOtp(phone: '+919876543210', token: '999999');
 
-      expect(n.state, isA<app_auth.AuthError>());
-    });
+        expect(n.state, isA<app_auth.AuthError>());
+      },
+    );
   });
 
   group('AuthNotifier — signOut', () {
@@ -330,8 +369,9 @@ void main() {
       final user = MockUser();
       when(() => user.id).thenReturn('uid-5');
       when(() => repo.currentUser).thenReturn(user);
-      when(() => repo.fetchProfile('uid-5'))
-          .thenAnswer((_) async => activeProfile());
+      when(
+        () => repo.fetchProfile('uid-5'),
+      ).thenAnswer((_) async => activeProfile());
       final n = await buildNotifier(repo);
       expect(n.state, isA<app_auth.AuthAuthenticated>());
 
@@ -348,8 +388,9 @@ void main() {
       final user = MockUser();
       when(() => user.id).thenReturn('uid-ext');
       when(() => repo.currentUser).thenReturn(user);
-      when(() => repo.fetchProfile('uid-ext'))
-          .thenAnswer((_) async => activeProfile());
+      when(
+        () => repo.fetchProfile('uid-ext'),
+      ).thenAnswer((_) async => activeProfile());
       when(() => repo.authEvents()).thenAnswer((_) => controller.stream);
 
       final n = await buildNotifier(repo);
@@ -368,8 +409,9 @@ void main() {
       final user = MockUser();
       when(() => user.id).thenReturn('uid-upd');
       when(() => repo.currentUser).thenReturn(user);
-      when(() => repo.fetchProfile('uid-upd'))
-          .thenAnswer((_) async => activeProfile());
+      when(
+        () => repo.fetchProfile('uid-upd'),
+      ).thenAnswer((_) async => activeProfile());
       when(() => repo.authEvents()).thenAnswer((_) => controller.stream);
 
       final n = await buildNotifier(repo);
@@ -379,8 +421,9 @@ void main() {
       );
 
       // Profile now resolves to ADMIN; userUpdated should re-resolve.
-      when(() => repo.fetchProfile('uid-upd'))
-          .thenAnswer((_) async => activeProfile(role: 'ADMIN'));
+      when(
+        () => repo.fetchProfile('uid-upd'),
+      ).thenAnswer((_) async => activeProfile(role: 'ADMIN'));
       controller.add(AuthLifecycleEvent.userUpdated);
       await Future<void>.delayed(Duration.zero);
 
@@ -393,53 +436,68 @@ void main() {
   });
 
   group('AuthNotifier — Password Recovery & Reset', () {
-    test('routes to AuthPasswordRecovery on passwordRecovery lifecycle event', () async {
-      final controller = StreamController<AuthLifecycleEvent>();
-      final user = MockUser();
-      when(() => user.id).thenReturn('uid-rec');
-      when(() => repo.currentUser).thenReturn(user);
-      when(() => repo.fetchProfile('uid-rec'))
-          .thenAnswer((_) async => activeProfile());
-      when(() => repo.authEvents()).thenAnswer((_) => controller.stream);
+    test(
+      'routes to AuthPasswordRecovery on passwordRecovery lifecycle event',
+      () async {
+        final controller = StreamController<AuthLifecycleEvent>();
+        final user = MockUser();
+        when(() => user.id).thenReturn('uid-rec');
+        when(() => repo.currentUser).thenReturn(user);
+        when(
+          () => repo.fetchProfile('uid-rec'),
+        ).thenAnswer((_) async => activeProfile());
+        when(() => repo.authEvents()).thenAnswer((_) => controller.stream);
 
-      final n = await buildNotifier(repo);
-      expect(n.state, isA<app_auth.AuthAuthenticated>());
+        final n = await buildNotifier(repo);
+        expect(n.state, isA<app_auth.AuthAuthenticated>());
 
-      controller.add(AuthLifecycleEvent.passwordRecovery);
-      await Future<void>.delayed(Duration.zero);
+        controller.add(AuthLifecycleEvent.passwordRecovery);
+        await Future<void>.delayed(Duration.zero);
 
-      expect(n.state, isA<app_auth.AuthPasswordRecovery>());
-      expect((n.state as app_auth.AuthPasswordRecovery).user, user);
-      await controller.close();
-    });
+        expect(n.state, isA<app_auth.AuthPasswordRecovery>());
+        expect((n.state as app_auth.AuthPasswordRecovery).user, user);
+        await controller.close();
+      },
+    );
 
-    test('sendPasswordReset calls repo.sendPasswordResetEmail and goes to AuthUnauthenticated', () async {
-      when(() => repo.sendPasswordResetEmail('test@divinity.local'))
-          .thenAnswer((_) async {});
+    test(
+      'sendPasswordReset calls repo.sendPasswordResetEmail and goes to AuthUnauthenticated',
+      () async {
+        when(
+          () => repo.sendPasswordResetEmail('test@divinity.local'),
+        ).thenAnswer((_) async {});
 
-      final n = await buildNotifier(repo);
-      expect(n.state, isA<app_auth.AuthUnauthenticated>());
+        final n = await buildNotifier(repo);
+        expect(n.state, isA<app_auth.AuthUnauthenticated>());
 
-      await n.sendPasswordReset('test@divinity.local');
-      verify(() => repo.sendPasswordResetEmail('test@divinity.local')).called(1);
-      expect(n.state, isA<app_auth.AuthUnauthenticated>());
-    });
+        await n.sendPasswordReset('test@divinity.local');
+        verify(
+          () => repo.sendPasswordResetEmail('test@divinity.local'),
+        ).called(1);
+        expect(n.state, isA<app_auth.AuthUnauthenticated>());
+      },
+    );
 
-    test('updatePassword calls repo.updatePassword and resolves user profile', () async {
-      final user = MockUser();
-      when(() => user.id).thenReturn('uid-reset');
-      when(() => repo.currentUser).thenReturn(user);
-      when(() => repo.updatePassword('newsecurepass'))
-          .thenAnswer((_) async {});
-      when(() => repo.fetchProfile('uid-reset'))
-          .thenAnswer((_) async => activeProfile());
+    test(
+      'updatePassword calls repo.updatePassword and resolves user profile',
+      () async {
+        final user = MockUser();
+        when(() => user.id).thenReturn('uid-reset');
+        when(() => repo.currentUser).thenReturn(user);
+        when(
+          () => repo.updatePassword('newsecurepass'),
+        ).thenAnswer((_) async {});
+        when(
+          () => repo.fetchProfile('uid-reset'),
+        ).thenAnswer((_) async => activeProfile());
 
-      final n = await buildNotifier(repo);
-      n.state = app_auth.AuthPasswordRecovery(user);
+        final n = await buildNotifier(repo);
+        n.state = app_auth.AuthPasswordRecovery(user);
 
-      await n.updatePassword('newsecurepass');
-      verify(() => repo.updatePassword('newsecurepass')).called(1);
-      expect(n.state, isA<app_auth.AuthAuthenticated>());
-    });
+        await n.updatePassword('newsecurepass');
+        verify(() => repo.updatePassword('newsecurepass')).called(1);
+        expect(n.state, isA<app_auth.AuthAuthenticated>());
+      },
+    );
   });
 }

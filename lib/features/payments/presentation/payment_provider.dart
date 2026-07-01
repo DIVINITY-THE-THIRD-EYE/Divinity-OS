@@ -34,14 +34,14 @@ class MyPaymentsNotifier extends AsyncNotifier<List<PaymentRecord>> {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       // 1. Upload screenshot to Supabase Storage
-      final screenshotUrl = await ref.read(paymentRepositoryProvider).uploadScreenshot(
-            userId: uid,
-            filename: filename,
-            bytes: bytes,
-          );
+      final screenshotUrl = await ref
+          .read(paymentRepositoryProvider)
+          .uploadScreenshot(userId: uid, filename: filename, bytes: bytes);
 
       // 2. Record payment with PENDING status
-      final record = await ref.read(paymentRepositoryProvider).recordPayment(
+      final record = await ref
+          .read(paymentRepositoryProvider)
+          .recordPayment(
             studentId: uid,
             amount: amount,
             method: method,
@@ -52,7 +52,8 @@ class MyPaymentsNotifier extends AsyncNotifier<List<PaymentRecord>> {
           );
 
       // 3. Update student's plan_status to PENDING_ADMIN
-      await ref.read(supabaseClientProvider)
+      await ref
+          .read(supabaseClientProvider)
           .from('users')
           .update({'plan_status': 'PENDING_ADMIN'})
           .eq('id', uid);
@@ -67,8 +68,8 @@ class MyPaymentsNotifier extends AsyncNotifier<List<PaymentRecord>> {
 
 final myPaymentsProvider =
     AsyncNotifierProvider<MyPaymentsNotifier, List<PaymentRecord>>(
-  MyPaymentsNotifier.new,
-);
+      MyPaymentsNotifier.new,
+    );
 
 // ── All payments (admin view) ─────────────────────────────────────────────────
 
@@ -85,7 +86,9 @@ class AllPaymentsNotifier extends AsyncNotifier<List<PaymentRecord>> {
     String? notes,
   }) async {
     final uid = ref.read(currentUserIdProvider);
-    final created = await ref.read(paymentRepositoryProvider).recordPayment(
+    final created = await ref
+        .read(paymentRepositoryProvider)
+        .recordPayment(
           studentId: studentId,
           amount: amount,
           method: method,
@@ -106,10 +109,16 @@ class AllPaymentsNotifier extends AsyncNotifier<List<PaymentRecord>> {
     state = await AsyncValue.guard(() async {
       final PaymentRecord updated;
       if (status == PaymentStatus.paid) {
-        if (expirationDate == null) throw Exception('Expiration date required for approval');
-        updated = await ref.read(paymentRepositoryProvider).approvePayment(paymentId, expirationDate);
+        if (expirationDate == null) {
+          throw Exception('Expiration date required for approval');
+        }
+        updated = await ref
+            .read(paymentRepositoryProvider)
+            .approvePayment(paymentId, expirationDate);
       } else {
-        updated = await ref.read(paymentRepositoryProvider).rejectPayment(paymentId);
+        updated = await ref
+            .read(paymentRepositoryProvider)
+            .rejectPayment(paymentId);
       }
 
       // Invalidate caches to refresh data across pages
@@ -125,7 +134,9 @@ class AllPaymentsNotifier extends AsyncNotifier<List<PaymentRecord>> {
   Future<void> confirmReceipt(String paymentId) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
-      final updated = await ref.read(paymentRepositoryProvider).confirmTrainerReceipt(paymentId);
+      final updated = await ref
+          .read(paymentRepositoryProvider)
+          .confirmTrainerReceipt(paymentId);
       ref.invalidate(studentsProvider);
       ref.invalidate(myProfileProvider);
       return (state.value ?? [])
@@ -144,5 +155,5 @@ class AllPaymentsNotifier extends AsyncNotifier<List<PaymentRecord>> {
 
 final allPaymentsProvider =
     AsyncNotifierProvider<AllPaymentsNotifier, List<PaymentRecord>>(
-  AllPaymentsNotifier.new,
-);
+      AllPaymentsNotifier.new,
+    );

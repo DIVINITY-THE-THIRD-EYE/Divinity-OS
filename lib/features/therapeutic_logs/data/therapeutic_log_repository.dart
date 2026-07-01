@@ -5,6 +5,7 @@ import '../domain/therapeutic_log.dart';
 abstract interface class TherapeuticLogRepository {
   /// Returns all logs for a given student, newest first.
   Future<List<TherapeuticLog>> fetchForStudent(String studentId);
+
   /// Returns all logs written by a given trainer, newest first.
   Future<List<TherapeuticLog>> fetchByTrainer(String trainerId);
   Future<TherapeuticLog> addLog({

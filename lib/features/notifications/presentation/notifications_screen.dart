@@ -34,16 +34,19 @@ class NotificationsScreen extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.notifications_none_outlined,
-                      size: 64,
-                      color: AppColors.accentViolet.withValues(alpha: 0.4)),
+                  Icon(
+                    Icons.notifications_none_outlined,
+                    size: 64,
+                    color: AppColors.accentViolet.withValues(alpha: 0.4),
+                  ),
                   const SizedBox(height: 16),
                   Text('All caught up', style: tt.headlineSmall),
                   const SizedBox(height: 8),
                   Text(
                     'No notifications yet.',
-                    style: tt.bodyMedium
-                        ?.copyWith(color: AppColors.textSecondaryDark),
+                    style: tt.bodyMedium?.copyWith(
+                      color: AppColors.textSecondaryDark,
+                    ),
                   ),
                 ],
               ),
@@ -55,8 +58,7 @@ class NotificationsScreen extends ConsumerWidget {
                 ref.read(myNotificationsProvider.notifier).refresh(),
             child: ListView.separated(
               itemCount: notifications.length,
-              separatorBuilder: (_, _) =>
-                  const Divider(height: 1, indent: 72),
+              separatorBuilder: (_, _) => const Divider(height: 1, indent: 72),
               itemBuilder: (ctx, i) {
                 final n = notifications[i];
                 return _NotificationTile(
@@ -64,8 +66,8 @@ class NotificationsScreen extends ConsumerWidget {
                   onTap: n.isRead
                       ? null
                       : () => ref
-                          .read(myNotificationsProvider.notifier)
-                          .markRead(n.id),
+                            .read(myNotificationsProvider.notifier)
+                            .markRead(n.id),
                 );
               },
             ),
@@ -94,15 +96,17 @@ class _NotificationTile extends StatelessWidget {
             ? Colors.transparent
             : colors.primaryContainer.withValues(alpha: 0.15),
         child: Padding(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CircleAvatar(
                 backgroundColor: kindColor.withValues(alpha: 0.15),
-                child: Icon(_kindIcon(notification.kind),
-                    color: kindColor, size: 20),
+                child: Icon(
+                  _kindIcon(notification.kind),
+                  color: kindColor,
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -123,9 +127,10 @@ class _NotificationTile extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Text(notification.timeLabel,
-                            style: tt.bodySmall
-                                ?.copyWith(color: Colors.grey)),
+                        Text(
+                          notification.timeLabel,
+                          style: tt.bodySmall?.copyWith(color: Colors.grey),
+                        ),
                       ],
                     ),
                     if (notification.body != null) ...[
@@ -158,20 +163,20 @@ class _NotificationTile extends StatelessWidget {
   }
 
   IconData _kindIcon(NotificationKind k) => switch (k) {
-        NotificationKind.leaveApproved => Icons.check_circle_outline,
-        NotificationKind.leaveRejected => Icons.cancel_outlined,
-        NotificationKind.paymentDue => Icons.payment_outlined,
-        NotificationKind.batchUpdate => Icons.groups_outlined,
-        NotificationKind.attendance => Icons.how_to_reg_outlined,
-        NotificationKind.general => Icons.info_outline,
-      };
+    NotificationKind.leaveApproved => Icons.check_circle_outline,
+    NotificationKind.leaveRejected => Icons.cancel_outlined,
+    NotificationKind.paymentDue => Icons.payment_outlined,
+    NotificationKind.batchUpdate => Icons.groups_outlined,
+    NotificationKind.attendance => Icons.how_to_reg_outlined,
+    NotificationKind.general => Icons.info_outline,
+  };
 
   Color _kindColor(NotificationKind k) => switch (k) {
-        NotificationKind.leaveApproved => Colors.green,
-        NotificationKind.leaveRejected => Colors.red,
-        NotificationKind.paymentDue => Colors.orange,
-        NotificationKind.batchUpdate => Colors.blue,
-        NotificationKind.attendance => Colors.teal,
-        NotificationKind.general => Colors.grey,
-      };
+    NotificationKind.leaveApproved => Colors.green,
+    NotificationKind.leaveRejected => Colors.red,
+    NotificationKind.paymentDue => Colors.orange,
+    NotificationKind.batchUpdate => Colors.blue,
+    NotificationKind.attendance => Colors.teal,
+    NotificationKind.general => Colors.grey,
+  };
 }

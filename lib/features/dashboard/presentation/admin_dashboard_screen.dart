@@ -9,7 +9,8 @@ import '../../auth/presentation/auth_provider.dart' show supabaseClientProvider;
 import '../../events/presentation/admin_events_screen.dart';
 import '../../holidays/presentation/holidays_screen.dart';
 import '../../notifications/domain/app_notification.dart' show NotificationKind;
-import '../../notifications/presentation/notification_provider.dart' show notificationRepositoryProvider;
+import '../../notifications/presentation/notification_provider.dart'
+    show notificationRepositoryProvider;
 import '../../trainer/presentation/admin_trainers_screen.dart';
 import '../domain/dashboard_stats.dart';
 import 'dashboard_provider.dart';
@@ -30,8 +31,11 @@ class AdminDashboardScreen extends ConsumerWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.error_outline,
-                    size: 48, color: AppColors.error),
+                const Icon(
+                  Icons.error_outline,
+                  size: 48,
+                  color: AppColors.error,
+                ),
                 const SizedBox(height: 16),
                 Text(
                   'Could not load dashboard',
@@ -99,7 +103,8 @@ class _QuickAccessRow extends StatelessWidget {
             color: AppColors.accentViolet,
             onTap: () => Navigator.of(context).push(
               MaterialPageRoute<void>(
-                  builder: (_) => const AdminEventsScreen()),
+                builder: (_) => const AdminEventsScreen(),
+              ),
             ),
           ),
         ),
@@ -122,7 +127,8 @@ class _QuickAccessRow extends StatelessWidget {
             color: AppColors.success,
             onTap: () => Navigator.of(context).push(
               MaterialPageRoute<void>(
-                  builder: (_) => const AdminTrainersScreen()),
+                builder: (_) => const AdminTrainersScreen(),
+              ),
             ),
           ),
         ),
@@ -159,13 +165,16 @@ class _QuickTile extends StatelessWidget {
               Text(
                 label,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: color,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  color: color,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const Spacer(),
-              Icon(Icons.chevron_right, size: 18,
-                  color: color.withValues(alpha: 0.6)),
+              Icon(
+                Icons.chevron_right,
+                size: 18,
+                color: color.withValues(alpha: 0.6),
+              ),
             ],
           ),
         ),
@@ -288,14 +297,12 @@ class _ChartSection extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style:
-                      tt.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                  style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(width: 6),
                 Text(
                   subtitle,
-                  style:
-                      tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                  style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
                 ),
               ],
             ),
@@ -358,7 +365,9 @@ class _RevenueChart extends StatelessWidget {
                     child: Text(
                       data[idx].monthLabel,
                       style: TextStyle(
-                          fontSize: 10, color: cs.onSurfaceVariant),
+                        fontSize: 10,
+                        color: cs.onSurfaceVariant,
+                      ),
                     ),
                   );
                 },
@@ -378,8 +387,7 @@ class _RevenueChart extends StatelessWidget {
                       symbol: '₹',
                       decimalDigits: 0,
                     ).format(value),
-                    style: TextStyle(
-                        fontSize: 9, color: cs.onSurfaceVariant),
+                    style: TextStyle(fontSize: 9, color: cs.onSurfaceVariant),
                   );
                 },
               ),
@@ -441,14 +449,16 @@ class _EnrolmentChart extends StatelessWidget {
             touchTooltipData: LineTouchTooltipData(
               getTooltipColor: (_) => cs.surface,
               getTooltipItems: (spots) => spots
-                  .map((s) => LineTooltipItem(
-                        '${s.y.toInt()} new',
-                        TextStyle(
-                          color: cs.onSurface,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12,
-                        ),
-                      ))
+                  .map(
+                    (s) => LineTooltipItem(
+                      '${s.y.toInt()} new',
+                      TextStyle(
+                        color: cs.onSurface,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                      ),
+                    ),
+                  )
                   .toList(),
             ),
           ),
@@ -466,7 +476,9 @@ class _EnrolmentChart extends StatelessWidget {
                     child: Text(
                       data[idx].monthLabel,
                       style: TextStyle(
-                          fontSize: 10, color: cs.onSurfaceVariant),
+                        fontSize: 10,
+                        color: cs.onSurfaceVariant,
+                      ),
                     ),
                   );
                 },
@@ -484,8 +496,7 @@ class _EnrolmentChart extends StatelessWidget {
                   }
                   return Text(
                     '${value.toInt()}',
-                    style: TextStyle(
-                        fontSize: 10, color: cs.onSurfaceVariant),
+                    style: TextStyle(fontSize: 10, color: cs.onSurfaceVariant),
                   );
                 },
               ),
@@ -554,7 +565,7 @@ class _AdminActionsCardState extends ConsumerState<_AdminActionsCard> {
     setState(() => _sending = true);
     try {
       final client = ref.read(supabaseClientProvider);
-      
+
       final students = await client
           .from('users')
           .select('id, name, current_streak')
@@ -565,7 +576,9 @@ class _AdminActionsCardState extends ConsumerState<_AdminActionsCard> {
       if (students.isEmpty) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('No active students with low streaks (< 3 days).')),
+            const SnackBar(
+              content: Text('No active students with low streaks (< 3 days).'),
+            ),
           );
         }
         return;
@@ -573,17 +586,17 @@ class _AdminActionsCardState extends ConsumerState<_AdminActionsCard> {
 
       final repo = ref.read(notificationRepositoryProvider);
       var count = 0;
-      
+
       for (final s in (students as List)) {
         final studentId = s['id'] as String;
         final name = s['name'] as String? ?? 'Student';
         final streak = s['current_streak'] as int? ?? 0;
-        
+
         await repo.sendNotification(
           userId: studentId,
           kind: NotificationKind.general,
           title: '🔥 Keep up your streak, $name!',
-          body: streak == 0 
+          body: streak == 0
               ? 'You don\'t have an active streak. Join a class today to start your journey!'
               : 'Your current streak is $streak days. Show up today to keep the fire burning!',
           metadata: {'type': 'low_streak', 'streak': streak},
@@ -593,14 +606,18 @@ class _AdminActionsCardState extends ConsumerState<_AdminActionsCard> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Sent low streak alert notifications to $count students.')),
+          SnackBar(
+            content: Text(
+              'Sent low streak alert notifications to $count students.',
+            ),
+          ),
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error sending alerts: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error sending alerts: $e')));
       }
     } finally {
       if (mounted) setState(() => _sending = false);
@@ -617,12 +634,15 @@ class _AdminActionsCardState extends ConsumerState<_AdminActionsCard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Quick Operations', style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+            Text(
+              'Quick Operations',
+              style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+            ),
             const SizedBox(height: 12),
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
-                icon: _sending 
+                icon: _sending
                     ? const SizedBox(
                         width: 16,
                         height: 16,
@@ -639,4 +659,3 @@ class _AdminActionsCardState extends ConsumerState<_AdminActionsCard> {
     );
   }
 }
-

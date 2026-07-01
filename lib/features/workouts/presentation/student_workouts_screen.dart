@@ -105,8 +105,7 @@ class _AssignmentCard extends ConsumerWidget {
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.chevron_right, size: 18),
                 title: Text(e.name),
-                subtitle:
-                    e.prescription.isEmpty ? null : Text(e.prescription),
+                subtitle: e.prescription.isEmpty ? null : Text(e.prescription),
               ),
             ),
             const Divider(),
@@ -137,8 +136,9 @@ class _AssignmentCard extends ConsumerWidget {
           .toggleComplete(assignment);
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     }
   }
@@ -154,8 +154,11 @@ class _EmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.self_improvement,
-              size: 72, color: AppColors.accentViolet.withValues(alpha: 0.3)),
+          Icon(
+            Icons.self_improvement,
+            size: 72,
+            color: AppColors.accentViolet.withValues(alpha: 0.3),
+          ),
           const SizedBox(height: 16),
           Text('No workouts assigned yet', style: tt.titleMedium),
           const SizedBox(height: 8),

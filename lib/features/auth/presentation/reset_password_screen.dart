@@ -11,7 +11,8 @@ class ResetPasswordScreen extends ConsumerStatefulWidget {
   const ResetPasswordScreen({super.key});
 
   @override
-  ConsumerState<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
+  ConsumerState<ResetPasswordScreen> createState() =>
+      _ResetPasswordScreenState();
 }
 
 class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
@@ -29,7 +30,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
 
   Future<void> _submit() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
-    await ref.read(authStateProvider.notifier).updatePassword(_passwordCtrl.text);
+    await ref
+        .read(authStateProvider.notifier)
+        .updatePassword(_passwordCtrl.text);
   }
 
   @override
@@ -60,10 +63,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
               ),
             ),
           ),
-          if (isLoading)
-            const LoadingOverlay(
-              message: 'Updating password…',
-            ),
+          if (isLoading) const LoadingOverlay(message: 'Updating password…'),
         ],
       ),
     );
@@ -78,10 +78,7 @@ class _Background extends StatelessWidget {
         gradient: RadialGradient(
           center: Alignment(0, -0.3),
           radius: 1.2,
-          colors: [
-            Color(0xFF1E1740),
-            AppColors.bgDark,
-          ],
+          colors: [Color(0xFF1E1740), AppColors.bgDark],
         ),
       ),
     );
@@ -189,9 +186,7 @@ class _ResetCard extends StatelessWidget {
             TextFormField(
               controller: confirmPasswordCtrl,
               obscureText: obscurePassword,
-              decoration: const InputDecoration(
-                labelText: 'Confirm Password',
-              ),
+              decoration: const InputDecoration(labelText: 'Confirm Password'),
               validator: (v) {
                 if (v != passwordCtrl.text) {
                   return 'Passwords do not match';
@@ -234,10 +229,9 @@ class _ErrorBanner extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall
-                  ?.copyWith(color: AppColors.error),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: AppColors.error),
             ),
           ),
         ],

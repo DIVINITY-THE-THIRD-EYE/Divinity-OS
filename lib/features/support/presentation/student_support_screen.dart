@@ -13,17 +13,13 @@ class StudentSupportScreen extends ConsumerWidget {
     final ticketsAsync = ref.watch(myTicketsProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Help & Support'),
-      ),
+      appBar: AppBar(title: const Text('Help & Support')),
       body: ticketsAsync.when(
         loading: () => const Center(child: ChakraLoader()),
         error: (err, stack) => Center(child: Text('Error: $err')),
         data: (list) {
           if (list.isEmpty) {
-            return const Center(
-              child: Text('No support tickets created yet.'),
-            );
+            return const Center(child: Text('No support tickets created yet.'));
           }
           return ListView.builder(
             padding: const EdgeInsets.all(16),
@@ -44,9 +40,8 @@ class StudentSupportScreen extends ConsumerWidget {
                           Expanded(
                             child: Text(
                               item.subject,
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(fontWeight: FontWeight.bold),
                             ),
                           ),
                           _StatusChip(status: item.status),
@@ -54,10 +49,12 @@ class StudentSupportScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        DateFormat('MMM d, yyyy · h:mm a').format(item.createdAt),
+                        DateFormat(
+                          'MMM d, yyyy · h:mm a',
+                        ).format(item.createdAt),
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
-                            ),
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                       ),
                       const SizedBox(height: 12),
                       Text(
@@ -119,7 +116,8 @@ class _CreateTicketDialog extends ConsumerStatefulWidget {
   const _CreateTicketDialog();
 
   @override
-  ConsumerState<_CreateTicketDialog> createState() => _CreateTicketDialogState();
+  ConsumerState<_CreateTicketDialog> createState() =>
+      _CreateTicketDialogState();
 }
 
 class _CreateTicketDialogState extends ConsumerState<_CreateTicketDialog> {
@@ -140,7 +138,9 @@ class _CreateTicketDialogState extends ConsumerState<_CreateTicketDialog> {
 
     setState(() => _submitting = true);
     try {
-      await ref.read(myTicketsProvider.notifier).createTicket(
+      await ref
+          .read(myTicketsProvider.notifier)
+          .createTicket(
             subject: _subjectCtrl.text.trim(),
             description: _descriptionCtrl.text.trim(),
           );
@@ -152,9 +152,9 @@ class _CreateTicketDialogState extends ConsumerState<_CreateTicketDialog> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to create ticket: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to create ticket: $e')));
       }
     } finally {
       if (mounted) {

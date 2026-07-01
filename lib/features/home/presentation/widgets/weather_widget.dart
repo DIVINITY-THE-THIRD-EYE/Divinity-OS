@@ -28,11 +28,7 @@ class WeatherWidget extends ConsumerWidget {
           ),
           child: Column(
             children: [
-              const Icon(
-                Icons.cloud_off,
-                color: Colors.grey,
-                size: 32,
-              ),
+              const Icon(Icons.cloud_off, color: Colors.grey, size: 32),
               const SizedBox(height: 12),
               Text(
                 'Weather service offline',
@@ -42,7 +38,9 @@ class WeatherWidget extends ConsumerWidget {
               Text(
                 error.toString().replaceAll('WeatherException: ', ''),
                 style: tt.bodySmall?.copyWith(
-                  color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                  color: isDark
+                      ? AppColors.textSecondaryDark
+                      : AppColors.textSecondaryLight,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -56,8 +54,14 @@ class WeatherWidget extends ConsumerWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.accentGold,
                   foregroundColor: Colors.black,
-                  textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  textStyle: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   minimumSize: Size.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
@@ -70,8 +74,8 @@ class WeatherWidget extends ConsumerWidget {
         final aqiColor = data.aqi <= 50
             ? Colors.green
             : data.aqi <= 100
-                ? AppColors.accentGold
-                : Colors.redAccent;
+            ? AppColors.accentGold
+            : Colors.redAccent;
 
         final isOffline = weatherState.hasError;
 
@@ -102,7 +106,9 @@ class WeatherWidget extends ConsumerWidget {
                         style: tt.labelSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                           letterSpacing: 0.5,
-                          color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                          color: isDark
+                              ? AppColors.textSecondaryDark
+                              : AppColors.textSecondaryLight,
                         ),
                       ),
                     ],
@@ -113,7 +119,13 @@ class WeatherWidget extends ConsumerWidget {
                         isOffline ? 'Offline' : 'Updated ${data.lastUpdated}',
                         style: tt.bodySmall?.copyWith(
                           fontSize: 10,
-                          color: isDark ? AppColors.textSecondaryDark.withValues(alpha: 0.7) : AppColors.textSecondaryLight.withValues(alpha: 0.7),
+                          color: isDark
+                              ? AppColors.textSecondaryDark.withValues(
+                                  alpha: 0.7,
+                                )
+                              : AppColors.textSecondaryLight.withValues(
+                                  alpha: 0.7,
+                                ),
                         ),
                       ),
                       const SizedBox(width: 6),
@@ -144,7 +156,9 @@ class WeatherWidget extends ConsumerWidget {
                   Text(
                     data.conditionText,
                     style: tt.bodyMedium?.copyWith(
-                      color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                      color: isDark
+                          ? AppColors.textSecondaryDark
+                          : AppColors.textSecondaryLight,
                     ),
                   ),
                 ],
@@ -156,10 +170,7 @@ class WeatherWidget extends ConsumerWidget {
                 decoration: BoxDecoration(
                   color: AppColors.accentGold.withValues(alpha: 0.05),
                   border: const Border(
-                    left: BorderSide(
-                      color: AppColors.accentGold,
-                      width: 3,
-                    ),
+                    left: BorderSide(color: AppColors.accentGold, width: 3),
                   ),
                 ),
                 child: Text(
@@ -229,7 +240,9 @@ class _MetricItem extends StatelessWidget {
           value,
           style: tt.bodyMedium?.copyWith(
             fontWeight: FontWeight.bold,
-            color: valueColor ?? (isDark ? AppColors.textDark : AppColors.textLight),
+            color:
+                valueColor ??
+                (isDark ? AppColors.textDark : AppColors.textLight),
           ),
         ),
         const SizedBox(height: 2),
@@ -237,7 +250,9 @@ class _MetricItem extends StatelessWidget {
           label,
           style: tt.bodySmall?.copyWith(
             fontSize: 9,
-            color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+            color: isDark
+                ? AppColors.textSecondaryDark
+                : AppColors.textSecondaryLight,
           ),
         ),
       ],

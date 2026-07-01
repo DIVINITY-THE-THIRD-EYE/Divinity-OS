@@ -8,9 +8,7 @@ void main() {
     testWidgets('ThirdEyeIcon renders without error', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: Center(child: ThirdEyeIcon(size: 64)),
-          ),
+          home: Scaffold(body: Center(child: ThirdEyeIcon(size: 64))),
         ),
       );
       expect(find.byType(ThirdEyeIcon), findsOneWidget);

@@ -14,10 +14,13 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 // ── Mocks ─────────────────────────────────────────────────────────────────────
 
 class MockPaymentRepository extends Mock implements PaymentRepository {}
+
 class MockSupabaseClient extends Mock implements SupabaseClient {}
+
 class MockSupabaseQueryBuilder extends Mock implements SupabaseQueryBuilder {}
 
-class FakePostgrestFilterBuilder<T> extends Fake implements PostgrestFilterBuilder<T> {
+class FakePostgrestFilterBuilder<T> extends Fake
+    implements PostgrestFilterBuilder<T> {
   final Future<T> _future;
   FakePostgrestFilterBuilder(this._future);
 
@@ -25,7 +28,10 @@ class FakePostgrestFilterBuilder<T> extends Fake implements PostgrestFilterBuild
   PostgrestFilterBuilder<T> eq(String column, Object value) => this;
 
   @override
-  Future<R> then<R>(FutureOr<R> Function(T value) onValue, {Function? onError}) {
+  Future<R> then<R>(
+    FutureOr<R> Function(T value) onValue, {
+    Function? onError,
+  }) {
     return _future.then(onValue, onError: onError);
   }
 }
@@ -38,17 +44,16 @@ PaymentRecord _fakeRecord({
   double amount = 5000,
   PaymentMethod method = PaymentMethod.cash,
   String? studentName,
-}) =>
-    PaymentRecord(
-      id: id,
-      studentId: 'user-1',
-      studentName: studentName,
-      amount: amount,
-      method: method,
-      status: status,
-      paidAt: DateTime(2026, 6, 16),
-      createdAt: DateTime(2026, 6, 16),
-    );
+}) => PaymentRecord(
+  id: id,
+  studentId: 'user-1',
+  studentName: studentName,
+  amount: amount,
+  method: method,
+  status: status,
+  paidAt: DateTime(2026, 6, 16),
+  createdAt: DateTime(2026, 6, 16),
+);
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
@@ -86,8 +91,10 @@ void main() {
     test('parses known values', () {
       expect(PaymentMethod.fromString('CASH'), PaymentMethod.cash);
       expect(PaymentMethod.fromString('UPI'), PaymentMethod.upi);
-      expect(PaymentMethod.fromString('BANK_TRANSFER'),
-          PaymentMethod.bankTransfer);
+      expect(
+        PaymentMethod.fromString('BANK_TRANSFER'),
+        PaymentMethod.bankTransfer,
+      );
       expect(PaymentMethod.fromString('RAZORPAY'), PaymentMethod.razorpay);
     });
 
@@ -191,35 +198,36 @@ void main() {
     tearDown(() => container.dispose());
 
     test('loads all payments on build', () async {
-      when(() => mockRepo.fetchAllPayments())
-          .thenAnswer((_) async => [_fakeRecord()]);
+      when(
+        () => mockRepo.fetchAllPayments(),
+      ).thenAnswer((_) async => [_fakeRecord()]);
 
-      final result =
-          await container.read(allPaymentsProvider.future);
+      final result = await container.read(allPaymentsProvider.future);
       expect(result.length, 1);
       expect(result.first.id, 'pay-1');
     });
 
     test('record prepends new payment to list', () async {
-      when(() => mockRepo.fetchAllPayments())
-          .thenAnswer((_) async => [_fakeRecord()]);
+      when(
+        () => mockRepo.fetchAllPayments(),
+      ).thenAnswer((_) async => [_fakeRecord()]);
       await container.read(allPaymentsProvider.future);
 
       final newRecord = _fakeRecord(id: 'pay-2', amount: 8000);
-      when(() => mockRepo.recordPayment(
-            studentId: any(named: 'studentId'),
-            amount: any(named: 'amount'),
-            method: any(named: 'method'),
-            referenceNumber: any(named: 'referenceNumber'),
-            notes: any(named: 'notes'),
-            recordedBy: any(named: 'recordedBy'),
-          )).thenAnswer((_) async => newRecord);
+      when(
+        () => mockRepo.recordPayment(
+          studentId: any(named: 'studentId'),
+          amount: any(named: 'amount'),
+          method: any(named: 'method'),
+          referenceNumber: any(named: 'referenceNumber'),
+          notes: any(named: 'notes'),
+          recordedBy: any(named: 'recordedBy'),
+        ),
+      ).thenAnswer((_) async => newRecord);
 
-      await container.read(allPaymentsProvider.notifier).record(
-            studentId: 'user-2',
-            amount: 8000,
-            method: PaymentMethod.upi,
-          );
+      await container
+          .read(allPaymentsProvider.notifier)
+          .record(studentId: 'user-2', amount: 8000, method: PaymentMethod.upi);
 
       final state = container.read(allPaymentsProvider).value!;
       expect(state.first.id, 'pay-2');
@@ -227,61 +235,75 @@ void main() {
     });
 
     test('refresh reloads the list', () async {
-      when(() => mockRepo.fetchAllPayments())
-          .thenAnswer((_) async => [_fakeRecord()]);
+      when(
+        () => mockRepo.fetchAllPayments(),
+      ).thenAnswer((_) async => [_fakeRecord()]);
       await container.read(allPaymentsProvider.future);
 
-      when(() => mockRepo.fetchAllPayments()).thenAnswer((_) async => [
-            _fakeRecord(),
-            _fakeRecord(id: 'pay-2'),
-          ]);
+      when(
+        () => mockRepo.fetchAllPayments(),
+      ).thenAnswer((_) async => [_fakeRecord(), _fakeRecord(id: 'pay-2')]);
       await container.read(allPaymentsProvider.notifier).refresh();
 
       expect(container.read(allPaymentsProvider).value!.length, 2);
     });
 
-    test('verifyPayment calls approvePayment on repo when status is paid', () async {
-      when(() => mockRepo.fetchAllPayments())
-          .thenAnswer((_) async => [_fakeRecord(status: PaymentStatus.pending)]);
-      await container.read(allPaymentsProvider.future);
+    test(
+      'verifyPayment calls approvePayment on repo when status is paid',
+      () async {
+        when(
+          () => mockRepo.fetchAllPayments(),
+        ).thenAnswer((_) async => [_fakeRecord(status: PaymentStatus.pending)]);
+        await container.read(allPaymentsProvider.future);
 
-      final updatedRecord = _fakeRecord();
-      when(() => mockRepo.approvePayment('pay-1', any()))
-          .thenAnswer((_) async => updatedRecord);
+        final updatedRecord = _fakeRecord();
+        when(
+          () => mockRepo.approvePayment('pay-1', any()),
+        ).thenAnswer((_) async => updatedRecord);
 
-      await container.read(allPaymentsProvider.notifier).verifyPayment(
-            paymentId: 'pay-1',
-            studentId: 'user-1',
-            status: PaymentStatus.paid,
-            expirationDate: DateTime(2026, 7, 16),
-          );
+        await container
+            .read(allPaymentsProvider.notifier)
+            .verifyPayment(
+              paymentId: 'pay-1',
+              studentId: 'user-1',
+              status: PaymentStatus.paid,
+              expirationDate: DateTime(2026, 7, 16),
+            );
 
-      final state = container.read(allPaymentsProvider).value!;
-      expect(state.first.status, PaymentStatus.paid);
+        final state = container.read(allPaymentsProvider).value!;
+        expect(state.first.status, PaymentStatus.paid);
 
-      verify(() => mockRepo.approvePayment('pay-1', any())).called(1);
-    });
+        verify(() => mockRepo.approvePayment('pay-1', any())).called(1);
+      },
+    );
 
-    test('verifyPayment calls rejectPayment on repo when status is failed', () async {
-      when(() => mockRepo.fetchAllPayments())
-          .thenAnswer((_) async => [_fakeRecord(status: PaymentStatus.pending)]);
-      await container.read(allPaymentsProvider.future);
+    test(
+      'verifyPayment calls rejectPayment on repo when status is failed',
+      () async {
+        when(
+          () => mockRepo.fetchAllPayments(),
+        ).thenAnswer((_) async => [_fakeRecord(status: PaymentStatus.pending)]);
+        await container.read(allPaymentsProvider.future);
 
-      final updatedRecord = _fakeRecord(status: PaymentStatus.failed);
-      when(() => mockRepo.rejectPayment('pay-1'))
-          .thenAnswer((_) async => updatedRecord);
+        final updatedRecord = _fakeRecord(status: PaymentStatus.failed);
+        when(
+          () => mockRepo.rejectPayment('pay-1'),
+        ).thenAnswer((_) async => updatedRecord);
 
-      await container.read(allPaymentsProvider.notifier).verifyPayment(
-            paymentId: 'pay-1',
-            studentId: 'user-1',
-            status: PaymentStatus.failed,
-          );
+        await container
+            .read(allPaymentsProvider.notifier)
+            .verifyPayment(
+              paymentId: 'pay-1',
+              studentId: 'user-1',
+              status: PaymentStatus.failed,
+            );
 
-      final state = container.read(allPaymentsProvider).value!;
-      expect(state.first.status, PaymentStatus.failed);
+        final state = container.read(allPaymentsProvider).value!;
+        expect(state.first.status, PaymentStatus.failed);
 
-      verify(() => mockRepo.rejectPayment('pay-1')).called(1);
-    });
+        verify(() => mockRepo.rejectPayment('pay-1')).called(1);
+      },
+    );
   });
 
   group('PaymentRecord extra fields', () {
@@ -309,8 +331,9 @@ void main() {
     setUp(() => mockRepo = MockPaymentRepository());
 
     test('returns list for student', () async {
-      when(() => mockRepo.fetchStudentPayments(any()))
-          .thenAnswer((_) async => [_fakeRecord(), _fakeRecord(id: 'pay-2')]);
+      when(
+        () => mockRepo.fetchStudentPayments(any()),
+      ).thenAnswer((_) async => [_fakeRecord(), _fakeRecord(id: 'pay-2')]);
 
       final result = await mockRepo.fetchStudentPayments('user-1');
       expect(result.length, 2);

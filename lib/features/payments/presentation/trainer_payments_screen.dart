@@ -22,7 +22,12 @@ class TrainerPaymentsScreen extends ConsumerWidget {
         error: (e, _) => Center(child: Text('Error: $e')),
         data: (payments) {
           final pendingTrainer = payments
-              .where((p) => p.adminApproved && !p.receiptGivenByTrainer && p.status == PaymentStatus.pending)
+              .where(
+                (p) =>
+                    p.adminApproved &&
+                    !p.receiptGivenByTrainer &&
+                    p.status == PaymentStatus.pending,
+              )
               .toList();
 
           if (pendingTrainer.isEmpty) {
@@ -30,16 +35,19 @@ class TrainerPaymentsScreen extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.check_circle_outline_outlined,
-                      size: 64,
-                      color: AppColors.accentViolet.withValues(alpha: 0.4)),
+                  Icon(
+                    Icons.check_circle_outline_outlined,
+                    size: 64,
+                    color: AppColors.accentViolet.withValues(alpha: 0.4),
+                  ),
                   const SizedBox(height: 16),
                   Text('All clear!', style: tt.headlineSmall),
                   const SizedBox(height: 8),
                   Text(
                     'No payments awaiting trainer confirmation.',
-                    style: tt.bodyMedium
-                        ?.copyWith(color: AppColors.textSecondaryDark),
+                    style: tt.bodyMedium?.copyWith(
+                      color: AppColors.textSecondaryDark,
+                    ),
                   ),
                 ],
               ),
@@ -66,7 +74,8 @@ class _TrainerPaymentCard extends ConsumerStatefulWidget {
   final PaymentRecord payment;
 
   @override
-  ConsumerState<_TrainerPaymentCard> createState() => _TrainerPaymentCardState();
+  ConsumerState<_TrainerPaymentCard> createState() =>
+      _TrainerPaymentCardState();
 }
 
 class _TrainerPaymentCardState extends ConsumerState<_TrainerPaymentCard> {
@@ -75,20 +84,24 @@ class _TrainerPaymentCardState extends ConsumerState<_TrainerPaymentCard> {
   Future<void> _confirm() async {
     setState(() => _submitting = true);
     try {
-      await ref.read(allPaymentsProvider.notifier).confirmReceipt(widget.payment.id);
+      await ref
+          .read(allPaymentsProvider.notifier)
+          .confirmReceipt(widget.payment.id);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Payment receipt confirmed. Student plan is now active!'),
+            content: Text(
+              'Payment receipt confirmed. Student plan is now active!',
+            ),
             backgroundColor: Colors.green,
           ),
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -122,7 +135,10 @@ class _TrainerPaymentCardState extends ConsumerState<_TrainerPaymentCard> {
                     return const Center(child: CircularProgressIndicator());
                   },
                   errorBuilder: (context, error, stackTrace) => const Center(
-                    child: Text('Failed to load image', style: TextStyle(color: Colors.white)),
+                    child: Text(
+                      'Failed to load image',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
               ),
@@ -157,19 +173,30 @@ class _TrainerPaymentCardState extends ConsumerState<_TrainerPaymentCard> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(p.studentName ?? p.studentId.substring(0, 8),
-                          style: tt.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-                      Text(DateFormat('dd MMM yyyy, hh:mm a').format(p.createdAt),
-                          style: tt.bodySmall?.copyWith(color: Colors.grey)),
+                      Text(
+                        p.studentName ?? p.studentId.substring(0, 8),
+                        style: tt.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        DateFormat('dd MMM yyyy, hh:mm a').format(p.createdAt),
+                        style: tt.bodySmall?.copyWith(color: Colors.grey),
+                      ),
                     ],
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.orange.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+                    border: Border.all(
+                      color: Colors.orange.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Text(
                     'Pending Trainer',
@@ -185,17 +212,33 @@ class _TrainerPaymentCardState extends ConsumerState<_TrainerPaymentCard> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Amount Paid', style: tt.bodySmall?.copyWith(color: Colors.grey)),
+                    Text(
+                      'Amount Paid',
+                      style: tt.bodySmall?.copyWith(color: Colors.grey),
+                    ),
                     const SizedBox(height: 2),
-                    Text(p.amountLabel, style: tt.titleLarge?.copyWith(color: AppColors.accentViolet)),
+                    Text(
+                      p.amountLabel,
+                      style: tt.titleLarge?.copyWith(
+                        color: AppColors.accentViolet,
+                      ),
+                    ),
                   ],
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text('Payment Method', style: tt.bodySmall?.copyWith(color: Colors.grey)),
+                    Text(
+                      'Payment Method',
+                      style: tt.bodySmall?.copyWith(color: Colors.grey),
+                    ),
                     const SizedBox(height: 2),
-                    Text(p.method.label, style: tt.bodyMedium?.copyWith(fontWeight: FontWeight.w500)),
+                    Text(
+                      p.method.label,
+                      style: tt.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -208,18 +251,30 @@ class _TrainerPaymentCardState extends ConsumerState<_TrainerPaymentCard> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Transaction UTR', style: tt.bodySmall?.copyWith(color: Colors.grey)),
+                        Text(
+                          'Transaction UTR',
+                          style: tt.bodySmall?.copyWith(color: Colors.grey),
+                        ),
                         const SizedBox(height: 2),
-                        Text(p.referenceNumber!, style: tt.bodyMedium?.copyWith(fontWeight: FontWeight.w500)),
+                        Text(
+                          p.referenceNumber!,
+                          style: tt.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ],
                     ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.copy, size: 16, color: Colors.grey),
                     onPressed: () {
-                      Clipboard.setData(ClipboardData(text: p.referenceNumber!));
+                      Clipboard.setData(
+                        ClipboardData(text: p.referenceNumber!),
+                      );
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Copied reference number to clipboard')),
+                        const SnackBar(
+                          content: Text('Copied reference number to clipboard'),
+                        ),
                       );
                     },
                   ),
@@ -237,18 +292,33 @@ class _TrainerPaymentCardState extends ConsumerState<_TrainerPaymentCard> {
               InkWell(
                 onTap: () => _showImageDialog(context, p.screenshotUrl!),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 12,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.02),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.1),
+                    ),
                   ),
                   child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.image_outlined, size: 16, color: AppColors.accentGold),
+                      Icon(
+                        Icons.image_outlined,
+                        size: 16,
+                        color: AppColors.accentGold,
+                      ),
                       SizedBox(width: 8),
-                      Text('View Receipt Screenshot', style: TextStyle(color: AppColors.accentGold, fontSize: 13)),
+                      Text(
+                        'View Receipt Screenshot',
+                        style: TextStyle(
+                          color: AppColors.accentGold,
+                          fontSize: 13,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -262,7 +332,10 @@ class _TrainerPaymentCardState extends ConsumerState<_TrainerPaymentCard> {
                 icon: _submitting
                     ? const SizedBox.square(
                         dimension: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
                       )
                     : const Icon(Icons.check_circle_outline),
                 label: const Text('Confirm Receipt'),

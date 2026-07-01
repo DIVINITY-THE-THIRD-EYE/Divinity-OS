@@ -102,16 +102,32 @@ class _ProfileBody extends ConsumerWidget {
           children: [
             ListTile(
               dense: true,
-              leading: Icon(Icons.rate_review_outlined, size: 20, color: Theme.of(context).colorScheme.onSurfaceVariant),
+              leading: Icon(
+                Icons.rate_review_outlined,
+                size: 20,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
               title: const Text('My Feedback'),
-              trailing: Icon(Icons.chevron_right, size: 16, color: Theme.of(context).colorScheme.primary),
+              trailing: Icon(
+                Icons.chevron_right,
+                size: 16,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               onTap: () => context.push(Routes.feedback),
             ),
             ListTile(
               dense: true,
-              leading: Icon(Icons.help_outline, size: 20, color: Theme.of(context).colorScheme.onSurfaceVariant),
+              leading: Icon(
+                Icons.help_outline,
+                size: 20,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
               title: const Text('Help & Support'),
-              trailing: Icon(Icons.chevron_right, size: 16, color: Theme.of(context).colorScheme.primary),
+              trailing: Icon(
+                Icons.chevron_right,
+                size: 16,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               onTap: () => context.push(Routes.support),
             ),
           ],
@@ -194,11 +210,8 @@ class _ProfileBody extends ConsumerWidget {
     final ctrl = TextEditingController(text: profile.name);
     final result = await showDialog<String>(
       context: context,
-      builder: (_) => _TextDialog(
-        title: 'Edit Name',
-        ctrl: ctrl,
-        label: 'Full name',
-      ),
+      builder: (_) =>
+          _TextDialog(title: 'Edit Name', ctrl: ctrl, label: 'Full name'),
     );
     ctrl.dispose();
     if (result != null && result.trim().isNotEmpty) {
@@ -207,11 +220,15 @@ class _ProfileBody extends ConsumerWidget {
   }
 
   Future<void> _editEmergencyContact(
-      BuildContext context, WidgetRef ref) async {
-    final nameCtrl =
-        TextEditingController(text: profile.emergencyContactName ?? '');
-    final phoneCtrl =
-        TextEditingController(text: profile.emergencyContactPhone ?? '');
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final nameCtrl = TextEditingController(
+      text: profile.emergencyContactName ?? '',
+    );
+    final phoneCtrl = TextEditingController(
+      text: profile.emergencyContactPhone ?? '',
+    );
 
     final saved = await showDialog<bool>(
       context: context,
@@ -256,7 +273,9 @@ class _ProfileBody extends ConsumerWidget {
     phoneCtrl.dispose();
 
     if (saved == true) {
-      ref.read(myProfileProvider.notifier).updateEmergencyContact(
+      ref
+          .read(myProfileProvider.notifier)
+          .updateEmergencyContact(
             name: nameCtrl.text.trim(),
             phone: phoneCtrl.text.trim(),
           );
@@ -265,8 +284,18 @@ class _ProfileBody extends ConsumerWidget {
 
   static String _memberSince(DateTime dt) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${months[dt.month - 1]} ${dt.year}';
   }
@@ -328,7 +357,10 @@ class _PlanStatusCard extends ConsumerWidget {
             'Resuming will reactivate your access and extend your membership expiration date by the number of days you were paused.',
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancel'),
+            ),
             TextButton(
               onPressed: () => Navigator.pop(ctx, true),
               style: TextButton.styleFrom(foregroundColor: AppColors.success),
@@ -349,7 +381,10 @@ class _PlanStatusCard extends ConsumerWidget {
             'Pausing your membership halts your expiration date. You won\'t be able to check in to classes until you resume. Are you sure?',
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancel'),
+            ),
             TextButton(
               onPressed: () => Navigator.pop(ctx, true),
               style: TextButton.styleFrom(foregroundColor: AppColors.warning),
@@ -410,12 +445,16 @@ class _PlanStatusCard extends ConsumerWidget {
           if (canPause)
             IconButton(
               icon: Icon(
-                planStatus == 'PAUSED' ? Icons.play_arrow_outlined : Icons.pause_circle_outline,
+                planStatus == 'PAUSED'
+                    ? Icons.play_arrow_outlined
+                    : Icons.pause_circle_outline,
                 color: color,
                 size: 20,
               ),
               visualDensity: VisualDensity.compact,
-              tooltip: planStatus == 'PAUSED' ? 'Resume Membership' : 'Pause Membership',
+              tooltip: planStatus == 'PAUSED'
+                  ? 'Resume Membership'
+                  : 'Pause Membership',
               onPressed: () => _togglePause(context, ref),
             ),
         ],
@@ -424,23 +463,33 @@ class _PlanStatusCard extends ConsumerWidget {
   }
 
   Color _statusColor(String s) => switch (s.toUpperCase()) {
-        'ACTIVE' => AppColors.success,
-        'PAUSED' => AppColors.warning,
-        'EXPIRED' => AppColors.error,
-        _ => AppColors.textSecondaryDark,
-      };
+    'ACTIVE' => AppColors.success,
+    'PAUSED' => AppColors.warning,
+    'EXPIRED' => AppColors.error,
+    _ => AppColors.textSecondaryDark,
+  };
 
   IconData _statusIcon(String s) => switch (s.toUpperCase()) {
-        'ACTIVE' => Icons.verified_outlined,
-        'PAUSED' => Icons.pause_circle_outline,
-        'EXPIRED' => Icons.cancel_outlined,
-        _ => Icons.pending_outlined,
-      };
+    'ACTIVE' => Icons.verified_outlined,
+    'PAUSED' => Icons.pause_circle_outline,
+    'EXPIRED' => Icons.cancel_outlined,
+    _ => Icons.pending_outlined,
+  };
 
   static String _expiryLabel(DateTime dt) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${dt.day} ${months[dt.month - 1]} ${dt.year}';
   }
@@ -561,8 +610,11 @@ class _StreakTile extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
     return ListTile(
       dense: true,
-      leading: const Icon(Icons.local_fire_department_outlined,
-          size: 20, color: AppColors.warning),
+      leading: const Icon(
+        Icons.local_fire_department_outlined,
+        size: 20,
+        color: AppColors.warning,
+      ),
       title: Text(
         'Streak',
         style: tt.labelSmall?.copyWith(color: cs.onSurfaceVariant),

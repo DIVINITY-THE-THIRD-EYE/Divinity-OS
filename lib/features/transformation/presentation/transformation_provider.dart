@@ -9,27 +9,38 @@ final aiServiceProvider = Provider<AiService>((ref) {
   return AiService();
 });
 
-final aiWellnessInsightProvider = FutureProvider.autoDispose.family<String, TransformationScore>((ref, score) async {
-  final aiService = ref.watch(aiServiceProvider);
-  final prompt =
-      "My consistency is ${score.consistency}, intensity is ${score.intensity}, mindfulness is ${score.mindfulness}, recovery is ${score.recovery}. Give me calm, actionable advice to balance my practice. Overall Third Eye Score is ${score.score}.";
-  return aiService.generateWellnessInsight(prompt);
-});
+final aiWellnessInsightProvider = FutureProvider.autoDispose
+    .family<String, TransformationScore>((ref, score) async {
+      final aiService = ref.watch(aiServiceProvider);
+      final prompt =
+          "My consistency is ${score.consistency}, intensity is ${score.intensity}, mindfulness is ${score.mindfulness}, recovery is ${score.recovery}. Give me calm, actionable advice to balance my practice. Overall Third Eye Score is ${score.score}.";
+      return aiService.generateWellnessInsight(prompt);
+    });
 
-final transformationRepositoryProvider = Provider<TransformationRepository>((ref) {
+final transformationRepositoryProvider = Provider<TransformationRepository>((
+  ref,
+) {
   final client = ref.watch(supabaseClientProvider);
   return SupabaseTransformationRepository(client);
 });
 
-final studentScoresProvider = FutureProvider<List<TransformationScore>>((ref) async {
+final studentScoresProvider = FutureProvider<List<TransformationScore>>((
+  ref,
+) async {
   final uid = ref.watch(currentUserIdProvider);
   if (uid == null) return const [];
   return ref.watch(transformationRepositoryProvider).fetchScoresForStudent(uid);
 });
 
-final studentScoresHistoryProvider = FutureProvider.family<List<TransformationScore>, String>((ref, studentId) async {
-  return ref.watch(transformationRepositoryProvider).fetchScoresForStudent(studentId);
-});
+final studentScoresHistoryProvider =
+    FutureProvider.family<List<TransformationScore>, String>((
+      ref,
+      studentId,
+    ) async {
+      return ref
+          .watch(transformationRepositoryProvider)
+          .fetchScoresForStudent(studentId);
+    });
 
 class RecordScoreNotifier extends AutoDisposeAsyncNotifier<void> {
   @override
@@ -45,6 +56,7 @@ class RecordScoreNotifier extends AutoDisposeAsyncNotifier<void> {
   }
 }
 
-final recordScoreNotifierProvider = AutoDisposeAsyncNotifierProvider<RecordScoreNotifier, void>(
-  RecordScoreNotifier.new,
-);
+final recordScoreNotifierProvider =
+    AutoDisposeAsyncNotifierProvider<RecordScoreNotifier, void>(
+      RecordScoreNotifier.new,
+    );

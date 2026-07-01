@@ -9,6 +9,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MockHttpClient extends Mock implements http.Client {}
+
 class MockWeatherService extends Mock implements WeatherService {}
 
 void main() {
@@ -68,17 +69,35 @@ void main() {
 
     test('Wellness recommendation logic aligns with rules', () {
       // AQI > 100
-      expect(WeatherData.generateRecommendation(25, 105), 'Better to practice indoors today.');
+      expect(
+        WeatherData.generateRecommendation(25, 105),
+        'Better to practice indoors today.',
+      );
       // Temp > 38
-      expect(WeatherData.generateRecommendation(39, 45), 'Consider restorative sessions due to heat.');
+      expect(
+        WeatherData.generateRecommendation(39, 45),
+        'Consider restorative sessions due to heat.',
+      );
       // Temp > 35
-      expect(WeatherData.generateRecommendation(36, 45), 'Stay hydrated during afternoon classes.');
+      expect(
+        WeatherData.generateRecommendation(36, 45),
+        'Stay hydrated during afternoon classes.',
+      );
       // Excellent outdoor yoga conditions
-      expect(WeatherData.generateRecommendation(24, 30), 'Excellent day for outdoor yoga.');
+      expect(
+        WeatherData.generateRecommendation(24, 30),
+        'Excellent day for outdoor yoga.',
+      );
       // Cold
-      expect(WeatherData.generateRecommendation(12, 10), 'Warm up dynamically indoors today.');
+      expect(
+        WeatherData.generateRecommendation(12, 10),
+        'Warm up dynamically indoors today.',
+      );
       // Default
-      expect(WeatherData.generateRecommendation(16, 65), 'Good conditions for pranayama.');
+      expect(
+        WeatherData.generateRecommendation(16, 65),
+        'Good conditions for pranayama.',
+      );
     });
   });
 
@@ -130,10 +149,12 @@ void main() {
         '&current=us_aqi&timezone=Asia/Kolkata',
       );
 
-      when(() => mockClient.get(weatherUrl))
-          .thenAnswer((_) async => http.Response(mockWeatherBody, 200));
-      when(() => mockClient.get(aqiUrl))
-          .thenAnswer((_) async => http.Response(mockAqiBody, 200));
+      when(
+        () => mockClient.get(weatherUrl),
+      ).thenAnswer((_) async => http.Response(mockWeatherBody, 200));
+      when(
+        () => mockClient.get(aqiUrl),
+      ).thenAnswer((_) async => http.Response(mockAqiBody, 200));
 
       final data = await service.fetchWeather(
         latitude: 26.8,
@@ -148,30 +169,49 @@ void main() {
     });
 
     test('throws WeatherException on API error', () async {
-      when(() => mockClient.get(any())).thenAnswer((_) async => http.Response('Error', 500));
+      when(
+        () => mockClient.get(any()),
+      ).thenAnswer((_) async => http.Response('Error', 500));
 
       expect(
-        () => service.fetchWeather(latitude: 26.8, longitude: 80.9, timezone: 'Asia/Kolkata'),
+        () => service.fetchWeather(
+          latitude: 26.8,
+          longitude: 80.9,
+          timezone: 'Asia/Kolkata',
+        ),
         throwsA(isA<WeatherException>()),
       );
     });
 
     test('throws WeatherException on invalid JSON format', () async {
-      when(() => mockClient.get(any())).thenAnswer((_) async => http.Response('{"invalid": "structure"}', 200));
+      when(
+        () => mockClient.get(any()),
+      ).thenAnswer((_) async => http.Response('{"invalid": "structure"}', 200));
 
       expect(
-        () => service.fetchWeather(latitude: 26.8, longitude: 80.9, timezone: 'Asia/Kolkata'),
+        () => service.fetchWeather(
+          latitude: 26.8,
+          longitude: 80.9,
+          timezone: 'Asia/Kolkata',
+        ),
         throwsA(isA<WeatherException>()),
       );
     });
 
     test('throws WeatherException on network timeout', () async {
       when(() => mockClient.get(any())).thenAnswer(
-        (_) async => Future.delayed(const Duration(seconds: 6), () => http.Response('{}', 200)),
+        (_) async => Future.delayed(
+          const Duration(seconds: 6),
+          () => http.Response('{}', 200),
+        ),
       );
 
       expect(
-        () => service.fetchWeather(latitude: 26.8, longitude: 80.9, timezone: 'Asia/Kolkata'),
+        () => service.fetchWeather(
+          latitude: 26.8,
+          longitude: 80.9,
+          timezone: 'Asia/Kolkata',
+        ),
         throwsA(isA<WeatherException>()),
       );
     });
@@ -202,11 +242,13 @@ void main() {
 
     test('returns fresh data and writes to cache on cache miss', () async {
       SharedPreferences.setMockInitialValues({}); // Empty cache
-      when(() => mockService.fetchWeather(
-            latitude: any(named: 'latitude'),
-            longitude: any(named: 'longitude'),
-            timezone: any(named: 'timezone'),
-          )).thenAnswer((_) async => testWeather);
+      when(
+        () => mockService.fetchWeather(
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
+          timezone: any(named: 'timezone'),
+        ),
+      ).thenAnswer((_) async => testWeather);
 
       final data = await repository.getWeather();
       expect(data, equals(testWeather));
@@ -226,38 +268,50 @@ void main() {
 
       final data = await repository.getWeather();
       expect(data, equals(testWeather));
-      verifyNever(() => mockService.fetchWeather(
+      verifyNever(
+        () => mockService.fetchWeather(
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
+          timezone: any(named: 'timezone'),
+        ),
+      );
+    });
+
+    test(
+      'performs API fetch and returns cached fallback on API failure',
+      () async {
+        final cachedJson = json.encode(testWeather.toMap());
+        final expiredTimestamp =
+            DateTime.now().millisecondsSinceEpoch -
+            (20 * 60 * 1000); // 20 mins ago (expired)
+        SharedPreferences.setMockInitialValues({
+          'cached_weather_data': cachedJson,
+          'cached_weather_timestamp': expiredTimestamp,
+        });
+
+        when(
+          () => mockService.fetchWeather(
             latitude: any(named: 'latitude'),
             longitude: any(named: 'longitude'),
             timezone: any(named: 'timezone'),
-          ));
-    });
+          ),
+        ).thenThrow(WeatherException('API down'));
 
-    test('performs API fetch and returns cached fallback on API failure', () async {
-      final cachedJson = json.encode(testWeather.toMap());
-      final expiredTimestamp = DateTime.now().millisecondsSinceEpoch - (20 * 60 * 1000); // 20 mins ago (expired)
-      SharedPreferences.setMockInitialValues({
-        'cached_weather_data': cachedJson,
-        'cached_weather_timestamp': expiredTimestamp,
-      });
-
-      when(() => mockService.fetchWeather(
-            latitude: any(named: 'latitude'),
-            longitude: any(named: 'longitude'),
-            timezone: any(named: 'timezone'),
-          )).thenThrow(WeatherException('API down'));
-
-      final data = await repository.getWeather(); // Force fetch due to expiration, but fall back
-      expect(data, equals(testWeather));
-    });
+        final data = await repository
+            .getWeather(); // Force fetch due to expiration, but fall back
+        expect(data, equals(testWeather));
+      },
+    );
 
     test('propagates exception if API fails and no cache exists', () async {
       SharedPreferences.setMockInitialValues({}); // Empty cache
-      when(() => mockService.fetchWeather(
-            latitude: any(named: 'latitude'),
-            longitude: any(named: 'longitude'),
-            timezone: any(named: 'timezone'),
-          )).thenThrow(WeatherException('API down'));
+      when(
+        () => mockService.fetchWeather(
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
+          timezone: any(named: 'timezone'),
+        ),
+      ).thenThrow(WeatherException('API down'));
 
       expect(() => repository.getWeather(), throwsA(isA<WeatherException>()));
     });

@@ -51,9 +51,10 @@ class _ShimmerLoadingState extends State<ShimmerLoading>
       duration: const Duration(milliseconds: 1500),
     )..repeat();
 
-    _animation = Tween<double>(begin: -2.0, end: 2.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _animation = Tween<double>(
+      begin: -2.0,
+      end: 2.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -96,11 +97,7 @@ class _ShimmerLoadingState extends State<ShimmerLoading>
             gradient: LinearGradient(
               begin: Alignment(_animation.value - 1, 0),
               end: Alignment(_animation.value + 1, 0),
-              colors: [
-                baseColor,
-                highlightColor,
-                baseColor,
-              ],
+              colors: [baseColor, highlightColor, baseColor],
               stops: const [0.0, 0.5, 1.0],
             ),
           ),
@@ -144,7 +141,11 @@ class ShimmerCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          const ShimmerLoading(width: double.infinity, height: 12, borderRadius: 4),
+          const ShimmerLoading(
+            width: double.infinity,
+            height: 12,
+            borderRadius: 4,
+          ),
           const SizedBox(height: 8),
           const ShimmerLoading(width: 200, height: 12, borderRadius: 4),
         ],

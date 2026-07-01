@@ -93,11 +93,13 @@ class SupabaseEventRepository implements EventRepository {
     required String eventId,
     required String studentId,
   }) async {
-    await _client.from('event_registrations').upsert(
-      {'event_id': eventId, 'student_id': studentId},
-      onConflict: 'event_id,student_id',
-      ignoreDuplicates: true,
-    );
+    await _client
+        .from('event_registrations')
+        .upsert(
+          {'event_id': eventId, 'student_id': studentId},
+          onConflict: 'event_id,student_id',
+          ignoreDuplicates: true,
+        );
   }
 
   @override

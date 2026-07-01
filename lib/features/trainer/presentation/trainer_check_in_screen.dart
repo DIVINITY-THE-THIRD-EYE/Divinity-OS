@@ -32,17 +32,16 @@ class _StudentRow {
 // ── Provider: today's attendance map keyed by studentId ──────────────────────
 
 final _todayAttendanceMapProvider =
-    FutureProvider.family<Map<String, Map<String, dynamic>>, String>(
-  (ref, batchId) async {
-    final repo = SupabaseAttendanceRepository(
-      ref.watch(supabaseClientProvider),
-    );
-    final records = await repo.fetchBatchAttendanceToday(batchId);
-    return {
-      for (final r in records) r['student_id'] as String: r,
-    };
-  },
-);
+    FutureProvider.family<Map<String, Map<String, dynamic>>, String>((
+      ref,
+      batchId,
+    ) async {
+      final repo = SupabaseAttendanceRepository(
+        ref.watch(supabaseClientProvider),
+      );
+      final records = await repo.fetchBatchAttendanceToday(batchId);
+      return {for (final r in records) r['student_id'] as String: r};
+    });
 
 // ── Screen ────────────────────────────────────────────────────────────────────
 
@@ -56,8 +55,7 @@ class TrainerCheckInScreen extends ConsumerStatefulWidget {
       _TrainerCheckInScreenState();
 }
 
-class _TrainerCheckInScreenState
-    extends ConsumerState<TrainerCheckInScreen> {
+class _TrainerCheckInScreenState extends ConsumerState<TrainerCheckInScreen> {
   // Local optimistic state: studentId → status (nullable = not yet set)
   final Map<String, AttendanceStatus?> _optimistic = {};
   final Set<String> _saving = {};
@@ -80,19 +78,21 @@ class _TrainerCheckInScreenState
         batchId: batchId,
         status: status,
       );
-      unawaited(AnalyticsService.logTrainerMarkAttendance(
-        batchId: batchId,
-        status: status.dbValue,
-      ));
+      unawaited(
+        AnalyticsService.logTrainerMarkAttendance(
+          batchId: batchId,
+          status: status.dbValue,
+        ),
+      );
       // Invalidate the attendance map so next open is fresh.
       ref.invalidate(_todayAttendanceMapProvider(batchId));
     } catch (e) {
       // Roll back optimistic update
       setState(() => _optimistic.remove(studentId));
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _saving.remove(studentId));
@@ -105,10 +105,9 @@ class _TrainerCheckInScreenState
   ) {
     return enrolled.map((e) {
       final att = todayMap[e.studentId];
-      final statusStr =
-          att?['status'] as String? ?? 'ABSENT';
-      final current = _optimistic[e.studentId] ??
-          AttendanceStatus.fromString(statusStr);
+      final statusStr = att?['status'] as String? ?? 'ABSENT';
+      final current =
+          _optimistic[e.studentId] ?? AttendanceStatus.fromString(statusStr);
       return _StudentRow(
         studentId: e.studentId,
         studentName: e.studentName,
@@ -123,8 +122,7 @@ class _TrainerCheckInScreenState
   Widget build(BuildContext context) {
     final batchId = widget.batch.id;
     final enrolledAsync = ref.watch(batchEnrollmentsProvider(batchId));
-    final todayAsync =
-        ref.watch(_todayAttendanceMapProvider(batchId));
+    final todayAsync = ref.watch(_todayAttendanceMapProvider(batchId));
     final tt = Theme.of(context).textTheme;
 
     return Scaffold(
@@ -149,9 +147,11 @@ class _TrainerCheckInScreenState
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.people_outline,
-                      size: 64,
-                      color: AppColors.accentViolet.withValues(alpha: 0.3)),
+                  Icon(
+                    Icons.people_outline,
+                    size: 64,
+                    color: AppColors.accentViolet.withValues(alpha: 0.3),
+                  ),
                   const SizedBox(height: 16),
                   Text('No students enrolled', style: tt.titleMedium),
                   const SizedBox(height: 8),
@@ -170,10 +170,12 @@ class _TrainerCheckInScreenState
             error: (e, _) => Center(child: Text('Error: $e')),
             data: (todayMap) {
               final rows = _mergeRows(enrolled, todayMap);
-              final present =
-                  rows.where((r) => r.status == AttendanceStatus.present).length;
-              final onLeave =
-                  rows.where((r) => r.status == AttendanceStatus.onLeave).length;
+              final present = rows
+                  .where((r) => r.status == AttendanceStatus.present)
+                  .length;
+              final onLeave = rows
+                  .where((r) => r.status == AttendanceStatus.onLeave)
+                  .length;
               final absent = rows.length - present - onLeave;
 
               return Column(
@@ -192,8 +194,7 @@ class _TrainerCheckInScreenState
                       itemBuilder: (ctx, i) => _StudentTile(
                         row: rows[i],
                         isSaving: _saving.contains(rows[i].studentId),
-                        onMark: (s) =>
-                            _mark(rows[i].studentId, s, batchId),
+                        onMark: (s) => _mark(rows[i].studentId, s, batchId),
                       ),
                     ),
                   ),
@@ -234,8 +235,7 @@ class _SummaryBar extends StatelessWidget {
           const SizedBox(width: 8),
           _Pill(label: 'Leave', value: onLeave, color: Colors.orange),
           const Spacer(),
-          Text('$total total',
-              style: Theme.of(context).textTheme.bodySmall),
+          Text('$total total', style: Theme.of(context).textTheme.bodySmall),
         ],
       ),
     );
@@ -243,8 +243,7 @@ class _SummaryBar extends StatelessWidget {
 }
 
 class _Pill extends StatelessWidget {
-  const _Pill(
-      {required this.label, required this.value, required this.color});
+  const _Pill({required this.label, required this.value, required this.color});
 
   final String label;
   final int value;
@@ -261,10 +260,7 @@ class _Pill extends StatelessWidget {
       ),
       child: Text(
         '$value $label',
-        style: Theme.of(context)
-            .textTheme
-            .labelSmall
-            ?.copyWith(color: color),
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(color: color),
       ),
     );
   }
@@ -340,10 +336,10 @@ class _StudentTile extends StatelessWidget {
   }
 
   Color _statusColor(AttendanceStatus s) => switch (s) {
-        AttendanceStatus.present => Colors.green,
-        AttendanceStatus.onLeave => Colors.orange,
-        _ => Colors.red,
-      };
+    AttendanceStatus.present => Colors.green,
+    AttendanceStatus.onLeave => Colors.orange,
+    _ => Colors.red,
+  };
 }
 
 class _MarkButton extends StatelessWidget {
