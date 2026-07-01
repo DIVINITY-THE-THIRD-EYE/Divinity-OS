@@ -1,0 +1,92 @@
+name: 🐛 Bug Report
+description: Report a bug on the Divinity marketing website
+title: "bug: "
+labels: ["bug", "triage"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please fill in as much detail as possible.
+
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser / Environment
+      options:
+        - Chrome (Desktop)
+        - Safari (Desktop)
+        - Safari (iOS / iPhone)
+        - Chrome (Android)
+        - Firefox
+        - Edge
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: page
+    attributes:
+      label: Affected Page
+      options:
+        - Home (/)
+        - About (/about)
+        - Schedule (/schedule)
+        - Pricing (/pricing)
+        - Trainers (/trainers)
+        - Events (/events)
+        - Contact (/contact)
+        - Certificate Verification (/verify)
+        - Other / Admin View
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: A clear and concise description of the bug.
+      placeholder: Tell us what you saw...
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. Scroll down to '...'
+        4. See visual issue/error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      placeholder: What should have happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots or screen recording
+      description: If applicable, add screenshots or a video recording showing the layout/functional bug.
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Browser Console Logs
+      description: Paste any error messages from the browser console (Inspect Element > Console).
+      render: shell
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues and this is not a duplicate
+          required: true
