@@ -1,0 +1,86 @@
+name: divinity_app
+description: "Divinity — Academy Operating System. Manage People. Measure Transformation. Scale Impact."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
+
+  # Navigation
+  go_router: ^14.6.3
+
+  # Backend
+  supabase_flutter: ^2.9.0
+
+  # Firebase
+  firebase_core: ^4.11.0
+  firebase_analytics: ^12.4.3
+  firebase_crashlytics: ^5.2.4
+  firebase_messaging: ^16.4.1
+  firebase_ai: ^3.13.1
+  firebase_app_check: ^0.4.5
+  firebase_remote_config: ^6.5.3
+
+  # Fonts
+  google_fonts: ^6.2.1
+
+  # Storage
+  shared_preferences: ^2.3.5
+  http: ^1.6.0
+
+  # Charts
+  fl_chart: ^0.70.0
+
+  # Calendar
+  table_calendar: ^3.1.2
+
+  # Geo
+  geolocator: ^13.0.2
+
+  # File sharing / export
+  share_plus: ^10.1.4
+  path_provider: ^2.1.5
+
+  # Utils
+  collection: ^1.19.1
+  intl: ^0.20.1
+
+  cupertino_icons: ^1.0.8
+  flutter_animate: ^4.5.2
+  integration_test:
+    sdk: flutter
+  image_picker: ^1.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # Code generation
+  riverpod_generator: ^2.6.5
+  build_runner: ^2.4.13
+
+  # Mocking
+  mocktail: ^1.0.4
+
+  # Lints
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/brand/logo-mark.png
+    - assets/brand/logo-full.png
+    - assets/payment-qr.png
+    - assets/founder.webp
+
+  # Fonts loaded via google_fonts package at runtime

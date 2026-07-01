@@ -1,0 +1,56 @@
+name: CodeQL Security Scan
+
+on:
+  push:
+    branches: [main, feature/trust-certificates]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Run every Sunday at 2 AM IST (8:30 PM UTC Saturday)
+    - cron: '30 20 * * 6'
+
+jobs:
+  analyze:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java-kotlin
+          queries: security-and-quality
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: temurin
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build (required for CodeQL to analyze generated code)
+        run: flutter build apk --debug
+        env:
+          # Use placeholder values for CodeQL scan only
+          SUPABASE_URL: https://placeholder.supabase.co
+          SUPABASE_ANON_KEY: placeholder-anon-key
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: /language:java-kotlin

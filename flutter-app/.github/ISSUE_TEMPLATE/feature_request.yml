@@ -1,0 +1,85 @@
+name: ✨ Feature Request
+description: Suggest a new feature or enhancement
+title: "feat: "
+labels: ["enhancement"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting an improvement! Please describe your idea clearly.
+
+  - type: dropdown
+    id: module
+    attributes:
+      label: Which module does this relate to?
+      options:
+        - Authentication
+        - Dashboard
+        - Attendance & Check-in
+        - Payments
+        - Admissions / Leads
+        - Batches & Scheduling
+        - Transformation / Third Eye
+        - Workouts
+        - Therapeutic Logs
+        - Events
+        - Certificates
+        - Notifications
+        - Leave Management
+        - Student Feedback
+        - Student Support
+        - Reports & Analytics
+        - Weekly Schedule
+        - Profile
+        - Other / New Module
+    validations:
+      required: true
+
+  - type: dropdown
+    id: role
+    attributes:
+      label: Who benefits?
+      multiple: true
+      options:
+        - Students
+        - Trainers
+        - Admins
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      placeholder: Describe the problem or limitation you're experiencing...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      placeholder: How would you like this to work?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      placeholder: Any other approaches you considered?
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Mockups or references
+      description: Attach any wireframes, screenshots from other apps, or references.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues and this is not a duplicate
+          required: true
