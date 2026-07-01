@@ -1,9 +1,11 @@
-name: Release Please
+name: Release Please (Website)
 
 on:
   push:
     branches:
       - main
+    paths:
+      - 'website/**'
 
 permissions:
   contents: write
@@ -11,13 +13,14 @@ permissions:
 
 jobs:
   release-please:
-    name: Create Release PR
+    name: Create Release PR (website)
     runs-on: ubuntu-latest
 
     steps:
       - uses: googleapis/release-please-action@v4
         with:
           release-type: node
+          path: website
           package-name: divinity-website
           changelog-types: |
             [

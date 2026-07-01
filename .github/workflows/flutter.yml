@@ -3,12 +3,22 @@ name: Flutter CI
 on:
   push:
     branches: [main, feature/trust-certificates]
+    paths:
+      - 'flutter-app/**'
+      - '.github/workflows/flutter.yml'
   pull_request:
     branches: [main]
+    paths:
+      - 'flutter-app/**'
+      - '.github/workflows/flutter.yml'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: flutter-app
 
 jobs:
   # ─── Flutter Analysis ────────────────────────────────────────────────────────
@@ -61,7 +71,7 @@ jobs:
         uses: codecov/codecov-action@v4
         if: always()
         with:
-          file: coverage/lcov.info
+          file: flutter-app/coverage/lcov.info
           flags: flutter
           fail_ci_if_error: false
 
@@ -114,5 +124,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: divinity-release-aab
-          path: build/app/outputs/bundle/release/app-release.aab
+          path: flutter-app/build/app/outputs/bundle/release/app-release.aab
           retention-days: 30

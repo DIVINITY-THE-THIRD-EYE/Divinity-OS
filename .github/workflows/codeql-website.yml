@@ -1,10 +1,14 @@
-name: CodeQL Security Scan
+name: CodeQL Security Scan (Website)
 
 on:
   push:
     branches: [main, feature/trust-certificates]
+    paths:
+      - 'website/**'
   pull_request:
     branches: [main]
+    paths:
+      - 'website/**'
   schedule:
     - cron: '30 20 * * 6'
 
@@ -32,8 +36,10 @@ jobs:
         with:
           node-version: '20'
           cache: npm
+          cache-dependency-path: website/package-lock.json
 
       - name: Install dependencies
+        working-directory: website
         run: npm ci
 
       - name: Perform CodeQL Analysis

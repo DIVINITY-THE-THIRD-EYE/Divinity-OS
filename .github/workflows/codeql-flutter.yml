@@ -1,10 +1,14 @@
-name: CodeQL Security Scan
+name: CodeQL Security Scan (Flutter/Android)
 
 on:
   push:
     branches: [main, feature/trust-certificates]
+    paths:
+      - 'flutter-app/**'
   pull_request:
     branches: [main]
+    paths:
+      - 'flutter-app/**'
   schedule:
     # Run every Sunday at 2 AM IST (8:30 PM UTC Saturday)
     - cron: '30 20 * * 6'
@@ -41,9 +45,11 @@ jobs:
           cache: true
 
       - name: Install dependencies
+        working-directory: flutter-app
         run: flutter pub get
 
       - name: Build (required for CodeQL to analyze generated code)
+        working-directory: flutter-app
         run: flutter build apk --debug
         env:
           # Use placeholder values for CodeQL scan only

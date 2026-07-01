@@ -1,0 +1,63 @@
+name: Supabase Deploy (migrations + Edge Functions)
+
+# Pushes committed migrations and Edge Functions to the linked production
+# Supabase project on every push to main. Requires SUPABASE_ACCESS_TOKEN and
+# SUPABASE_PROJECT_REF repo secrets (see docs/SUPABASE_SETUP.md) — the job is
+# skipped entirely if they aren't configured, so this workflow is safe to
+# merge before secrets exist.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/**'
+      - 'supabase/functions/**'
+      - '.github/workflows/supabase-deploy.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: supabase-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy migrations + Edge Functions
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check required secrets are configured
+        id: check
+        run: |
+          if [ -z "${{ secrets.SUPABASE_ACCESS_TOKEN }}" ] || [ -z "${{ secrets.SUPABASE_PROJECT_REF }}" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::warning::SUPABASE_ACCESS_TOKEN and/or SUPABASE_PROJECT_REF not set — skipping deploy. See docs/SUPABASE_SETUP.md."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up Supabase CLI
+        if: steps.check.outputs.skip == 'false'
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Link project
+        if: steps.check.outputs.skip == 'false'
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: supabase link --project-ref "${{ secrets.SUPABASE_PROJECT_REF }}"
+
+      - name: Push database migrations
+        if: steps.check.outputs.skip == 'false'
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: supabase db push
+
+      - name: Deploy Edge Functions
+        if: steps.check.outputs.skip == 'false'
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: supabase functions deploy verify-certificate --no-verify-jwt

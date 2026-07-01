@@ -1,5 +1,5 @@
 name: 🐛 Bug Report
-description: Report a bug on the Divinity marketing website
+description: Report a bug in the Divinity app or website
 title: "bug: "
 labels: ["bug", "triage"]
 assignees: []
@@ -10,36 +10,49 @@ body:
         Thanks for taking the time to report a bug! Please fill in as much detail as possible.
 
   - type: dropdown
-    id: browser
+    id: component
     attributes:
-      label: Browser / Environment
+      label: Which part is affected?
       options:
-        - Chrome (Desktop)
-        - Safari (Desktop)
-        - Safari (iOS / iPhone)
-        - Chrome (Android)
-        - Firefox
-        - Edge
-        - Other
+        - Flutter app (mobile)
+        - Website (Next.js)
+        - Supabase (DB / RLS / Edge Functions)
+        - CI/CD
+        - Docs
     validations:
       required: true
 
   - type: dropdown
-    id: page
+    id: role
     attributes:
-      label: Affected Page
+      label: Your Role (if app-related)
       options:
-        - Home (/)
-        - About (/about)
-        - Schedule (/schedule)
-        - Pricing (/pricing)
-        - Trainers (/trainers)
-        - Events (/events)
-        - Contact (/contact)
-        - Certificate Verification (/verify)
-        - Other / Admin View
+        - Student
+        - Trainer
+        - Admin
+        - N/A (website/docs)
     validations:
-      required: true
+      required: false
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - Android
+        - iOS
+        - Web
+        - N/A
+    validations:
+      required: false
+
+  - type: input
+    id: app-version
+    attributes:
+      label: App/Site Version
+      placeholder: e.g. 1.2.3
+    validations:
+      required: false
 
   - type: textarea
     id: description
@@ -55,10 +68,10 @@ body:
     attributes:
       label: Steps to reproduce
       placeholder: |
-        1. Go to '...'
-        2. Click on '...'
-        3. Scroll down to '...'
-        4. See visual issue/error
+        1. Open the app/site
+        2. Go to '...'
+        3. Tap/click on '...'
+        4. See error
     validations:
       required: true
 
@@ -74,13 +87,13 @@ body:
     id: screenshots
     attributes:
       label: Screenshots or screen recording
-      description: If applicable, add screenshots or a video recording showing the layout/functional bug.
+      description: If applicable, add screenshots or a video recording.
 
   - type: textarea
     id: logs
     attributes:
-      label: Browser Console Logs
-      description: Paste any error messages from the browser console (Inspect Element > Console).
+      label: Error logs
+      description: Paste any relevant error messages.
       render: shell
 
   - type: checkboxes
@@ -90,3 +103,5 @@ body:
       options:
         - label: I searched existing issues and this is not a duplicate
           required: true
+        - label: I'm using the latest version
+          required: false

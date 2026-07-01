@@ -2,7 +2,7 @@ version: 2
 updates:
   # ── Flutter / Dart (pub) ────────────────────────────────────────────────────
   - package-ecosystem: pub
-    directory: /
+    directory: /flutter-app
     schedule:
       interval: weekly
       day: monday
@@ -24,6 +24,38 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "cloud_firestore"
         update-types: ["version-update:semver-major"]
+
+  # ── npm (Next.js website) ────────────────────────────────────────────────────
+  - package-ecosystem: npm
+    directory: /website
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Asia/Kolkata
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - npm
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      next-ecosystem:
+        patterns:
+          - "next"
+          - "react"
+          - "react-dom"
+          - "@types/react*"
+      sanity:
+        patterns:
+          - "@sanity/*"
+          - "sanity"
+      testing:
+        patterns:
+          - "vitest"
+          - "@vitest/*"
+          - "@playwright/*"
+          - "playwright"
 
   # ── GitHub Actions ─────────────────────────────────────────────────────────
   - package-ecosystem: github-actions

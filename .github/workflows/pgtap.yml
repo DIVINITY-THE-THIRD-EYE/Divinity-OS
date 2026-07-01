@@ -5,10 +5,12 @@ on:
     branches: [main, feature/trust-certificates]
     paths:
       - 'supabase/**'
+      - '.github/workflows/pgtap.yml'
   pull_request:
     branches: [main]
     paths:
       - 'supabase/**'
+      - '.github/workflows/pgtap.yml'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

@@ -1,1 +1,11 @@
 *.log
+.DS_Store
+Thumbs.db
+
+# Legacy/archival material kept locally but not part of this monorepo.
+# See docs/PROJECT_BIBLE for context; not tracked here to keep the repo lean.
+/Divinity/
+/EXTRA_FILES/
+/.agents/
+/.claude/
+.supabase_db_password.txt

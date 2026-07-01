@@ -1,0 +1,80 @@
+# Labeler config — maps file path globs to PR labels.
+# The labels must exist in the repo (create them in GitHub Issues > Labels).
+
+flutter-app:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'flutter-app/lib/**'
+      - 'flutter-app/test/**'
+      - 'flutter-app/pubspec.yaml'
+      - 'flutter-app/pubspec.lock'
+
+website:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'website/app/**'
+      - 'website/lib/**'
+      - 'website/components/**'
+      - 'website/package.json'
+
+database:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'supabase/migrations/**'
+      - 'supabase/tests/**'
+      - 'supabase/functions/**'
+
+security:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'supabase/tests/**'
+      - 'flutter-app/android/app/build.gradle.kts'
+      - '.github/workflows/codeql-*.yml'
+
+ui:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'flutter-app/lib/**/*_screen.dart'
+      - 'flutter-app/lib/**/*_widget.dart'
+      - 'flutter-app/lib/**/widgets/**'
+      - 'flutter-app/lib/**/presentation/**'
+      - 'website/components/**'
+      - 'website/app/**/*.tsx'
+
+tests:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'flutter-app/test/**'
+      - 'flutter-app/integration_test/**'
+      - 'website/e2e/**'
+      - 'website/**/*.test.ts'
+      - 'supabase/tests/**'
+
+ci:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '.github/**'
+
+android:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'flutter-app/android/**'
+
+ios:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'flutter-app/ios/**'
+
+dependencies:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'flutter-app/pubspec.yaml'
+      - 'flutter-app/pubspec.lock'
+      - 'website/package.json'
+      - 'website/package-lock.json'
+
+documentation:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**.md'
+      - 'docs/**'
