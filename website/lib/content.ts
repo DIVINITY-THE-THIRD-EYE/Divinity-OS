@@ -1,0 +1,487 @@
+// Single source of truth for site content.
+// When Sanity is configured (see lib/sanity.ts), matching documents
+// override these values. Until then, the site renders from here.
+
+import { fetchOrFallback } from "./sanity";
+
+export type Discipline = {
+  title: string;
+  intention: "For the body" | "For the breath" | "For healing";
+  description: string;
+  tags: string[];
+};
+
+export type Plan = {
+  name: string;
+  price: string;
+  cadence: string;
+  blurb: string;
+  features?: string[];
+  featured?: boolean;
+};
+
+export type ClassSlot = {
+  time: string;
+  batch: "Dawn" | "Midday" | "Dusk";
+  name: string;
+  detail: string;
+  level: string;
+};
+
+export type Testimonial = {
+  quote: string;
+  name: string;
+  meta: string;
+};
+
+export const site = {
+  name: "Divinity",
+  full: "Divinity — The Third Eye",
+  city: "Lucknow, Uttar Pradesh",
+  entity: "Amaratv Krishi LLP",
+  founder: "Sachin Rajvanshi",
+  founderRole: "Founder & Guide",
+  founderImage: "/founder.webp",
+  est: "2024",
+  url: "https://staging.divinitytte.com", // ← clearly identified staging domain
+  // Brand marks (see public/brand)
+  logoMark: "/brand/logo-mark.png", // ember lotus, transparent — for dark surfaces
+  logoFull: "/brand/logo-full.png", // full lockup with wordmark — for light surfaces
+  // Staging / placeholder numbers and handles
+  phone: "+91 92146 52400",
+  whatsapp: "919214652400", // digits only, for wa.me links
+  instagram: "https://instagram.com/divinity_tte_staging",
+};
+
+export const locationConfig = {
+  name: "Butler Colony",
+  city: "Lucknow",
+  latitude: 26.8467,
+  longitude: 80.9462,
+  timezone: "Asia/Kolkata",
+};
+
+// UPI payment (see public/payment-qr.png). Replace the QR with the academy's
+// own before launch — the bank/handle below should match the real account.
+export const payment = {
+  bank: "UCO Bank",
+  qr: "/payment-qr.png",
+  note: "Scan with any UPI app — GPay, PhonePe, Paytm — then share a screenshot to confirm your enrolment.",
+};
+
+// Trust signals / assurance badges. Keep these TRUTHFUL — each one below is
+// grounded in a real fact already on this site (verified UPI flow, the founder,
+// small batches, a registered LLP, privacy-by-design). Edit freely, but don't
+// invent certifications the academy doesn't actually hold.
+export type Assurance = {
+  icon: "shield" | "guide" | "users" | "lock" | "spark" | "badge";
+  title: string;
+  detail: string;
+};
+
+export const assurances: Assurance[] = [
+  {
+    icon: "shield",
+    title: "Secure UPI payments",
+    detail: "Every payment is verified by our team and a receipt is issued — no hidden auto-charges.",
+  },
+  {
+    icon: "guide",
+    title: "Guided by the founder",
+    detail: `Personal guidance from ${site.founder} and our instructors, not a faceless app.`,
+  },
+  {
+    icon: "users",
+    title: "Small, focused batches",
+    detail: "Dawn, midday and dusk batches are kept small so you get real, hands-on attention.",
+  },
+  {
+    icon: "lock",
+    title: "Your data stays private",
+    detail: "Health and contact details are access-controlled and never sold or shared.",
+  },
+  {
+    icon: "spark",
+    title: "Risk-free first week",
+    detail: "Begin your practice with a ₹99 first week before you commit to a plan.",
+  },
+  {
+    icon: "badge",
+    title: "A registered academy",
+    detail: "Run by Amaratv Krishi LLP, serving Lucknow since 2024.",
+  },
+];
+
+// Practice words for the kinetic marquee (a little Sanskrit, on theme)
+export const mantra = [
+  "Breathe",
+  "आसन",
+  "Move",
+  "प्राण",
+  "Heal",
+  "ध्यान",
+  "Align",
+  "Awaken",
+  "Ascend",
+];
+
+export const faqs = [
+  {
+    q: "I've never practised yoga. Can I still join?",
+    a: "Yes. Most members start as complete beginners. Dawn and dusk batches are all-levels, and your first sessions are paced gently while you learn the foundations of breath and posture.",
+  },
+  {
+    q: "Do you teach fitness, or only yoga?",
+    a: "Both. Alongside Hatha and Vinyasa yoga we run strength, conditioning and mobility training — and most members blend the two. Your plan is shaped around your goals.",
+  },
+  {
+    q: "I have an injury or a medical condition. Is that a problem?",
+    a: "Not at all — it's exactly what therapeutic yoga is for. We build a gentle, restorative practice around your history and limits. Please share details when you enquire so we can prepare.",
+  },
+  {
+    q: "How do payments work?",
+    a: "Pay by UPI and confirm with a screenshot — there's no card gateway required. Monthly, quarterly and annual memberships are available, plus a single drop-in class if you'd like to feel the space first.",
+  },
+  {
+    q: "Where are you located?",
+    a: "We're in Lucknow, Uttar Pradesh. Reach out via the enquiry form or WhatsApp and we'll share the exact address and the best batch for you.",
+  },
+];
+
+export const manifestoLines = [
+  "Before the body moves, the breath moves.",
+  "Before the mind settles, the breath settles.",
+  "We do not chase the body —",
+  "we follow the breath inward,",
+  "until practice becomes presence.",
+];
+
+export const disciplines: Discipline[] = [
+  {
+    title: "Hatha & Vinyasa Yoga",
+    intention: "For the body",
+    description:
+      "Traditional asana, breath and flow. Build flexibility, strength and a steady mind through practice rooted in lineage.",
+    tags: ["All levels", "Dawn & dusk"],
+  },
+  {
+    title: "Fitness Training",
+    intention: "For the body",
+    description:
+      "Strength, conditioning and mobility, programmed to your body and your goals — structured, progressive, guided throughout.",
+    tags: ["Strength", "Conditioning"],
+  },
+  {
+    title: "Pranayama & Meditation",
+    intention: "For the breath",
+    description:
+      "The science of breath. Learn to lengthen, hold and direct the breath — the bridge between effort and stillness.",
+    tags: ["Breathwork", "Stillness"],
+  },
+  {
+    title: "Wellness Programs",
+    intention: "For the breath",
+    description:
+      "Holistic cycles blending movement, breath, meditation and rest — structured journeys that change how you feel and live.",
+    tags: ["Holistic", "Cyclical"],
+  },
+  {
+    title: "Therapeutic Yoga",
+    intention: "For healing",
+    description:
+      "Gentle, restorative practice for injury recovery and chronic conditions — shaped around your history and your limits.",
+    tags: ["Recovery", "By appointment"],
+  },
+  {
+    title: "Diet & Lifestyle",
+    intention: "For healing",
+    description:
+      "Nutrition, sleep and daily rhythm. Long-term guidance to build a life that sustains your wellbeing beyond the mat.",
+    tags: ["Nutrition", "Long-term"],
+  },
+];
+
+export const method = [
+  {
+    step: "01",
+    name: "Align",
+    body: "We read your body, your health and your goals — then set a foundation of posture and breath built for you alone.",
+  },
+  {
+    step: "02",
+    name: "Awaken",
+    body: "Practice deepens. Strength builds, stiffness releases, awareness grows. This is where the real change begins.",
+  },
+  {
+    step: "03",
+    name: "Ascend",
+    body: "Wellbeing becomes a way of living. You carry the practice off the mat and into every ordinary hour of the day.",
+  },
+];
+
+export const schedule: Record<string, ClassSlot[]> = {
+  Mon: [
+    { time: "6:00", batch: "Dawn", name: "Hatha Yoga", detail: "Asana & breath", level: "All levels" },
+    { time: "11:00", batch: "Midday", name: "Therapeutic Yoga", detail: "Recovery focus", level: "By appt" },
+    { time: "18:30", batch: "Dusk", name: "Strength Training", detail: "Resistance work", level: "All levels" },
+  ],
+  Tue: [
+    { time: "6:00", batch: "Dawn", name: "Vinyasa Flow", detail: "Dynamic sequence", level: "Intermediate" },
+    { time: "18:30", batch: "Dusk", name: "Pranayama", detail: "Breath & meditation", level: "Open" },
+  ],
+  Wed: [
+    { time: "6:00", batch: "Dawn", name: "Hatha Yoga", detail: "Asana & breath", level: "All levels" },
+    { time: "11:00", batch: "Midday", name: "Therapeutic Yoga", detail: "Recovery focus", level: "By appt" },
+    { time: "18:30", batch: "Dusk", name: "Conditioning", detail: "Endurance circuit", level: "All levels" },
+  ],
+  Thu: [
+    { time: "6:00", batch: "Dawn", name: "Vinyasa Flow", detail: "Dynamic sequence", level: "Intermediate" },
+    { time: "18:30", batch: "Dusk", name: "Power Yoga", detail: "Strength & heat", level: "All levels" },
+  ],
+  Fri: [
+    { time: "6:00", batch: "Dawn", name: "Hatha Yoga", detail: "Asana & breath", level: "All levels" },
+    { time: "11:00", batch: "Midday", name: "Therapeutic Yoga", detail: "Recovery focus", level: "By appt" },
+    { time: "18:30", batch: "Dusk", name: "Mobility", detail: "Joints & flexibility", level: "All levels" },
+  ],
+  Sat: [
+    { time: "6:00", batch: "Dawn", name: "Meditation & Pranayama", detail: "Stillness practice", level: "Open" },
+    { time: "18:30", batch: "Dusk", name: "Community Workshop", detail: "Rotating theme", level: "Open" },
+  ],
+};
+
+export const plans: Plan[] = [
+  {
+    name: "The Devotee",
+    price: "₹3,900",
+    cadence: "per quarter",
+    blurb: "All disciplines, three months. The complete practice.",
+    features: [
+      "All yoga & fitness batches",
+      "Personalised diet plan",
+      "Therapeutic sessions included",
+      "Progress & milestone tracking",
+      "Priority workshop access",
+    ],
+    featured: true,
+  },
+  {
+    name: "The Seeker",
+    price: "₹1,500",
+    cadence: "per month",
+    blurb: "One discipline, monthly. The simplest way to begin.",
+  },
+  {
+    name: "The Yogi",
+    price: "₹12,000",
+    cadence: "per year",
+    blurb: "Full annual access, one-on-one guidance, retreats & alumni circle.",
+  },
+  {
+    name: "Drop-in",
+    price: "₹200",
+    cadence: "per class",
+    blurb: "A single class, to feel the space before you commit.",
+  },
+];
+
+// The space & the practice — real photography from the academy in Lucknow.
+// Images live in public/studio and public/guru. width/height are the source
+// dimensions so next/image reserves space (no layout shift).
+export type GalleryShot = {
+  src: string;
+  alt: string;
+  w: number;
+  h: number;
+};
+
+export const studioGallery: GalleryShot[] = [
+  { src: "/studio/yc_18.webp", alt: "The practice hall, set beneath the studio's lotus emblem", w: 6000, h: 4000 },
+  { src: "/studio/yc_8.webp", alt: "The lamp-lit entrance to Divinity in Lucknow", w: 4000, h: 6000 },
+  { src: "/guru/guru_9.webp", alt: "A bound headstand, held with control before the class", w: 1141, h: 1141 },
+  { src: "/studio/yc_24.webp", alt: "Reception — where every visit to the academy begins", w: 4000, h: 6000 },
+  { src: "/studio/yc_12.webp", alt: "Mats rolled and ready for the next breath", w: 6000, h: 4000 },
+  { src: "/guru/guru_5.webp", alt: "Rooted in lineage — the asana as it has long been taught", w: 1140, h: 895 },
+  { src: "/studio/yc_10.webp", alt: "A corner of calm — water, shrine and props for therapeutic work", w: 6000, h: 4000 },
+  { src: "/studio/yc_5.webp", alt: "Blocks, bolsters and props for supported practice", w: 4000, h: 6000 },
+];
+
+// Real member stories only. Empty until verified testimonials are collected —
+// the UI shows a polished "coming soon" state rather than fabricated quotes.
+export const testimonials: Testimonial[] = [
+  {
+    quote: "[STAGING CONTENT] This is a high-quality demonstration testimonial. It represents how student stories will be displayed. Real member reflections will be loaded via Sanity CMS.",
+    name: "Staging Member A",
+    meta: "Staging Testimonial",
+  },
+  {
+    quote: "[STAGING CONTENT] This is a high-quality demonstration testimonial. It shows the layout for batch-specific feedback. Real student words will be synced from the CMS before public launch.",
+    name: "Staging Member B",
+    meta: "Staging Testimonial",
+  },
+  {
+    quote: "[STAGING CONTENT] This is a high-quality demonstration testimonial. It outlines how therapeutic-session feedback will be structured. Real testimonials will be published once consented.",
+    name: "Staging Member C",
+    meta: "Staging Testimonial",
+  },
+];
+
+// ── Routing / slugs ───────────────────────────────────────────────
+/** URL-safe slug from any title (used for /services/[slug] etc.). */
+export function slugify(input: string): string {
+  return input
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+export const disciplineSlug = (d: Discipline) => slugify(d.title);
+export const getDisciplineBySlug = (slug: string) =>
+  disciplines.find((d) => disciplineSlug(d) === slug);
+
+// ── Trainers ──────────────────────────────────────────────────────
+// Add real teachers here as bios are confirmed. The Trainers page renders
+// whatever exists and shows an empty state for the rest — never fabricated.
+export type Trainer = {
+  name: string;
+  role: string;
+  image?: string;
+  bio: string;
+  focus?: string[];
+};
+
+export const trainers: Trainer[] = [
+  {
+    name: site.founder,
+    role: site.founderRole,
+    image: site.founderImage,
+    bio: "Sachin Rajvanshi founded Divinity to bring breath-led yoga, fitness and therapeutic practice together under one roof in Lucknow — meeting each student where they are and guiding them, patiently, toward where they wish to be.",
+    focus: ["Hatha & Vinyasa", "Pranayama", "Therapeutic yoga"],
+  },
+];
+
+// ── Blog ──────────────────────────────────────────────────────────
+// CMS-ready. Empty by design — the /blog routes render an empty state until
+// real articles are published. No placeholder posts.
+export type Post = {
+  slug: string;
+  title: string;
+  excerpt: string;
+  body: string;
+  date: string; // ISO
+  author: string;
+  cover?: string;
+  tags?: string[];
+};
+
+export const posts: Post[] = [
+  {
+    slug: "science-of-prana-why-breath-comes-first",
+    title: "[STAGING] Science of Prana & Breathwork",
+    excerpt: "[STAGING CONTENT] This is a staging placeholder article explaining the physiological benefits of breathwork. Replace this in Sanity CMS.",
+    body: "[STAGING CONTENT] This is placeholder text for the breathing science article. The public marketing site renders this from the local staging model when Sanity CMS is offline, and overrides it when online. Replace this with a real article on Hatha/Pranayama before going live.",
+    date: "2026-06-28",
+    author: "Sachin Rajvanshi",
+  },
+  {
+    slug: "strength-meets-stillness-balancing-yoga-and-fitness",
+    title: "[STAGING] Strength Meets Stillness in Practice",
+    excerpt: "[STAGING CONTENT] Staging article exploring the balance of yoga flow and progressive resistance training. Replace this in Sanity CMS.",
+    body: "[STAGING CONTENT] This is placeholder text for the strength and stillness article. In production, this article description is fetched from Sanity CMS. Replace this staging event before going live.",
+    date: "2026-06-25",
+    author: "Sachin Rajvanshi",
+  },
+  {
+    slug: "guided-recovery-how-therapeutic-yoga-heals",
+    title: "[STAGING] Guided Recovery & Therapeutic Alignment",
+    excerpt: "[STAGING CONTENT] Staging article on supported postures and gentle restorative practices. Replace this in Sanity CMS.",
+    body: "[STAGING CONTENT] This is placeholder text for the therapeutic recovery article. In production, this article description is fetched from Sanity CMS. Replace this staging event before going live.",
+    date: "2026-06-20",
+    author: "Sachin Rajvanshi",
+  },
+];
+export const getPostBySlug = (slug: string) => posts.find((p) => p.slug === slug);
+
+// ── Events ────────────────────────────────────────────────────────
+// CMS-ready. Empty by design — the /events routes render an empty state.
+export type EventItem = {
+  slug: string;
+  title: string;
+  summary: string;
+  body: string;
+  date: string; // ISO start
+  endDate?: string;
+  location: string;
+  cover?: string;
+};
+
+export const events: EventItem[] = [
+  {
+    slug: "weekend-pranayama-intensive",
+    title: "[STAGING] Weekend Pranayama Workshop",
+    summary: "[STAGING CONTENT] Staging intensive focusing on breathing techniques. Replace this in Sanity CMS.",
+    body: "[STAGING CONTENT] This is placeholder text for the weekend pranayama workshop. In production, this workshop description is fetched from Sanity CMS. Replace this staging event before going live.",
+    date: "2026-07-18T07:30:00Z",
+    endDate: "2026-07-19T09:30:00Z",
+    location: "Lucknow Studio (Staging)",
+  },
+  {
+    slug: "joint-mobility-and-restorative-yoga",
+    title: "[STAGING] Joint Mobility & Restorative Yoga",
+    summary: "[STAGING CONTENT] Staging workshop focusing on joint release and alignment. Replace this in Sanity CMS.",
+    body: "[STAGING CONTENT] This is placeholder text for the joint mobility workshop. In production, this workshop description is fetched from Sanity CMS. Replace this staging event before going live.",
+    date: "2026-07-25T16:00:00Z",
+    endDate: "2026-07-25T18:30:00Z",
+    location: "Lucknow Studio (Staging)",
+  },
+  {
+    slug: "community-satsang-and-guided-meditation",
+    title: "[STAGING] Community Satsang & Guided Meditation",
+    summary: "[STAGING CONTENT] Staging monthly gathering for philosophy and meditation. Replace this in Sanity CMS.",
+    body: "[STAGING CONTENT] This is placeholder text for the community Satsang. In production, this event description is fetched from Sanity CMS. Replace this staging event before going live.",
+    date: "2026-08-08T18:00:00Z",
+    endDate: "2026-08-08T19:30:00Z",
+    location: "Lucknow Studio (Staging)",
+  },
+];
+export const getEventBySlug = (slug: string) => events.find((e) => e.slug === slug);
+
+/** Upcoming events, soonest first (today onward). */
+export const upcomingEvents = () => {
+  const now = Date.now();
+  return events
+    .filter((e) => new Date(e.date).getTime() >= now)
+    .sort((a, b) => +new Date(a.date) - +new Date(b.date));
+};
+
+export type SiteSettings = typeof site;
+
+const SITE_SETTINGS_Q = `*[_type == "siteSettings"][0]{
+  name,
+  full,
+  city,
+  entity,
+  founder,
+  founderRole,
+  founderImage,
+  est,
+  url,
+  phone,
+  whatsapp,
+  instagram,
+  logoMark,
+  logoFull
+}`;
+
+/** Fetches site settings from Sanity, falling back to local static values. */
+export async function fetchSiteSettings(): Promise<SiteSettings> {
+  const data = await fetchOrFallback<Partial<SiteSettings>>(SITE_SETTINGS_Q, {});
+  // Filter out null or undefined values from CMS to prevent breaking layout
+  const cleanData = Object.fromEntries(
+    Object.entries(data).filter(([_, v]) => v != null)
+  );
+  return {
+    ...site,
+    ...cleanData,
+  } as SiteSettings;
+}
