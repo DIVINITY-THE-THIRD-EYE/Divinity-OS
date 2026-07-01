@@ -1,16 +1,17 @@
 import { site, faqs, disciplines } from "@/lib/content";
 
-export default function JsonLd() {
+export default function JsonLd({ site: siteProp }: { site?: typeof site }) {
+  const activeSite = siteProp || site;
   const data = [
     {
       "@context": "https://schema.org",
       "@type": ["HealthAndBeautyBusiness", "SportsActivityLocation"],
-      name: site.full,
+      name: activeSite.full,
       description:
-        "A yoga, fitness and wellness academy in Lucknow guiding body and mind toward balance through breath, movement and stillness.",
-      url: site.url,
-      telephone: site.phone,
-      founder: { "@type": "Person", name: site.founder },
+        `A yoga, fitness and wellness academy in Lucknow guiding body and mind toward balance through breath, movement and stillness, founded by ${activeSite.founder}.`,
+      url: activeSite.url,
+      telephone: activeSite.phone,
+      founder: { "@type": "Person", name: activeSite.founder },
       address: {
         "@type": "PostalAddress",
         addressLocality: "Lucknow",
@@ -35,7 +36,7 @@ export default function JsonLd() {
       name: "Yoga, Fitness & Wellness Programs",
       description:
         "Hatha & Vinyasa yoga, fitness training, therapeutic yoga, pranayama, and wellness programs.",
-      provider: { "@type": "Organization", name: site.full, sameAs: site.url },
+      provider: { "@type": "Organization", name: activeSite.full, sameAs: activeSite.url },
     },
   ];
 

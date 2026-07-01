@@ -26,7 +26,7 @@ export default async function PricingPage() {
         intro="No contracts, no card gateway — pay by UPI and confirm with a screenshot. Start with a single class, or commit to the full journey."
         trail={[{ label: "Pricing", href: "/pricing" }]}
       />
-      <Membership plans={plans} />
+      <Membership plans={plans} showHeading={false} />
       <PlanCalculator />
     </>
   );

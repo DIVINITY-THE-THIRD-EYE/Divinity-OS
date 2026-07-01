@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant, Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
-import { site } from "@/lib/content";
+import { fetchSiteSettings } from "@/lib/content";
 import JsonLd from "@/components/JsonLd";
 import MotionProvider from "@/components/MotionProvider";
 import Ambient from "@/components/Ambient";
@@ -39,36 +39,36 @@ const mono = JetBrains_Mono({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(site.url),
-  title: "Divinity — The Third Eye | Yoga, Fitness & Wellness, Lucknow",
-  description:
-    "A yoga, fitness and wellness academy in Lucknow guided by Sachin Rajvanshi. Breath, movement and stillness — body and mind in balance.",
-  keywords: [
-    "yoga Lucknow",
-    "fitness Lucknow",
-    "wellness academy",
-    "therapeutic yoga",
-    "pranayama",
-    "Sachin Rajvanshi",
-  ],
-  alternates: { canonical: "/" },
-  openGraph: {
-    title: "Divinity — The Third Eye",
-    description:
-      "Breath, movement and stillness. A yoga, fitness and wellness academy in Lucknow.",
-    url: site.url,
-    siteName: "Divinity — The Third Eye",
-    type: "website",
-    locale: "en_IN",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Divinity — The Third Eye",
-    description:
-      "Breath, movement and stillness. A yoga, fitness and wellness academy in Lucknow.",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const site = await fetchSiteSettings();
+  return {
+    metadataBase: new URL(site.url),
+    title: `${site.full} | Yoga, Fitness & Wellness, Lucknow`,
+    description: `A yoga, fitness and wellness academy in Lucknow guided by ${site.founder}. Breath, movement and stillness — body and mind in balance.`,
+    keywords: [
+      "yoga Lucknow",
+      "fitness Lucknow",
+      "wellness academy",
+      "therapeutic yoga",
+      "pranayama",
+      site.founder,
+    ],
+    alternates: { canonical: "/" },
+    openGraph: {
+      title: site.full,
+      description: `Breath, movement and stillness. A yoga, fitness and wellness academy in Lucknow guided by ${site.founder}.`,
+      url: site.url,
+      siteName: site.full,
+      type: "website",
+      locale: "en_IN",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: site.full,
+      description: `Breath, movement and stillness. A yoga, fitness and wellness academy in Lucknow guided by ${site.founder}.`,
+    },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: "#15161e",
@@ -77,11 +77,13 @@ export const viewport: Viewport = {
   colorScheme: "dark",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const site = await fetchSiteSettings();
+
   return (
     <html
       lang="en-IN"
@@ -94,21 +96,21 @@ export default function RootLayout({
         >
           Skip to content
         </a>
-        <JsonLd />
+        <JsonLd site={site} />
         <MotionProvider>
           <Ambient />
           <ScrollProgress />
           <SmoothScroll />
           <Cursor />
-          <CommandPalette />
+          <CommandPalette site={site} />
           <PromoBar />
-          <Nav />
+          <Nav site={site} />
           <main id="main-content" tabIndex={-1} className="outline-none">
             {children}
           </main>
-          <Footer />
-          <WhatsAppFab />
-          <StickyCta />
+          <Footer site={site} />
+          <WhatsAppFab site={site} />
+          <StickyCta site={site} />
         </MotionProvider>
       </body>
     </html>

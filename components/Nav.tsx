@@ -14,7 +14,8 @@ function openPalette() {
   window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }));
 }
 
-export default function Nav() {
+export default function Nav({ site: siteProp }: { site?: typeof site }) {
+  const activeSite = siteProp || site;
   const pathname = usePathname();
   const [solid, setSolid] = useState(false);
   const [open, setOpen] = useState(false);
@@ -65,9 +66,9 @@ export default function Nav() {
             : "py-6"
         }`}
       >
-        <Link href="/" className="group flex items-center gap-2.5" aria-label={`${site.full} — home`}>
+        <Link href="/" className="group flex items-center gap-2.5" aria-label={`${activeSite.full} — home`}>
           <Image
-            src={site.logoMark}
+            src={activeSite.logoMark}
             alt=""
             width={30}
             height={30}
@@ -75,7 +76,7 @@ export default function Nav() {
             className="h-7 w-7 transition-transform duration-500 group-hover:scale-110"
           />
           <span className="font-mono text-[11px] uppercase tracking-label text-ember">
-            {site.name}
+            {activeSite.name}
             <span className="text-mist"> — the third eye</span>
           </span>
         </Link>

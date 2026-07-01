@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, m } from "framer-motion";
 import { waHref } from "@/lib/links";
+import { site } from "@/lib/content";
 
-export default function WhatsAppFab() {
+export default function WhatsAppFab({ site: siteProp }: { site?: typeof site }) {
+  const activeSite = siteProp || site;
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -14,7 +16,7 @@ export default function WhatsAppFab() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const href = waHref("Namaste — I'd like to know more about practising at Divinity.");
+  const href = waHref("Namaste — I'd like to know more about practising at Divinity.", activeSite.whatsapp);
 
   return (
     <AnimatePresence>

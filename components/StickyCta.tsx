@@ -5,13 +5,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { m, AnimatePresence } from "framer-motion";
 import { waHref } from "@/lib/links";
+import { site } from "@/lib/content";
 
-const whatsappHref = waHref("Namaste — I'd like to book a first class at Divinity.");
-
-export default function StickyCta() {
+export default function StickyCta({ site: siteProp }: { site?: typeof site }) {
+  const activeSite = siteProp || site;
   const pathname = usePathname();
   const [visible, setVisible] = useState(false);
   const [pastContact, setPastContact] = useState(false);
+  const whatsappHref = waHref("Namaste — I'd like to book a first class at Divinity.", activeSite.whatsapp);
 
   useEffect(() => {
     const onScroll = () => {

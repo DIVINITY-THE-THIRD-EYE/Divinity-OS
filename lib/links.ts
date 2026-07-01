@@ -5,7 +5,8 @@ import { site } from "./content";
  * (future) tracking params live in one place instead of being rebuilt in every
  * CTA component.
  */
-export function waHref(message?: string): string {
-  const base = `https://wa.me/${site.whatsapp}`;
+export function waHref(message?: string, whatsappNumber?: string): string {
+  const num = whatsappNumber || site.whatsapp;
+  const base = `https://wa.me/${num}`;
   return message ? `${base}?text=${encodeURIComponent(message)}` : base;
 }

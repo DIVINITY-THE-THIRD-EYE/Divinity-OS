@@ -1,18 +1,22 @@
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
-import { site } from "@/lib/content";
+import { fetchSiteSettings } from "@/lib/content";
 import { waHref } from "@/lib/links";
 import PageHeader from "@/components/layout/PageHeader";
 import Contact from "@/components/Contact";
 import Faq from "@/components/Faq";
 
-export const metadata: Metadata = pageMeta({
-  title: "Contact & Enquire",
-  description: `Get in touch with ${site.full} in ${site.city} — book a class, ask about a practice, or plan your first visit.`,
-  path: "/contact",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const site = await fetchSiteSettings();
+  return pageMeta({
+    title: "Contact & Enquire",
+    description: `Get in touch with ${site.full} in ${site.city} — book a class, ask about a practice, or plan your first visit.`,
+    path: "/contact",
+  });
+}
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const site = await fetchSiteSettings();
   return (
     <>
       <PageHeader
@@ -23,7 +27,7 @@ export default function ContactPage() {
         trail={[{ label: "Contact", href: "/contact" }]}
       >
         <div className="flex flex-wrap gap-x-8 gap-y-3 font-mono text-[11px] uppercase tracking-wide text-mist">
-          <a href={waHref("Namaste — I'd like to enquire about Divinity.")} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-ember">
+          <a href={waHref("Namaste — I'd like to enquire about Divinity.", site.whatsapp)} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-ember">
             WhatsApp
           </a>
           <a href={site.instagram} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-ember">
@@ -32,7 +36,7 @@ export default function ContactPage() {
           <span className="text-mist/70">{site.city}</span>
         </div>
       </PageHeader>
-      <Contact />
+      <Contact site={site} />
       <Faq />
     </>
   );

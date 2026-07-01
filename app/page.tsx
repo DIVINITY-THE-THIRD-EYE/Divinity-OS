@@ -6,6 +6,7 @@ import {
   trainers,
   posts,
   upcomingEvents,
+  fetchSiteSettings,
   type Discipline,
   type Plan,
   type Testimonial,
@@ -34,10 +35,11 @@ const PLANS_Q = `*[_type=="plan"]|order(order asc){name,price,cadence,blurb,feat
 const TESTIMONIALS_Q = `*[_type=="testimonial"]|order(order asc){quote,name,meta}`;
 
 export default async function Home() {
-  const [disciplines, plans, testimonials] = await Promise.all([
+  const [disciplines, plans, testimonials, site] = await Promise.all([
     fetchOrFallback<Discipline[]>(DISCIPLINES_Q, dDisciplines),
     fetchOrFallback<Plan[]>(PLANS_Q, dPlans),
     fetchOrFallback<Testimonial[]>(TESTIMONIALS_Q, dTestimonials),
+    fetchSiteSettings(),
   ]);
 
   const events = upcomingEvents();
@@ -49,7 +51,7 @@ export default async function Home() {
       <Marquee />
 
       {/* About preview */}
-      <About />
+      <About site={site} />
 
       {/* Featured services — signature horizontal scroll */}
       <Disciplines items={disciplines} />

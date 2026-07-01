@@ -5,7 +5,7 @@ import {
   disciplines,
   disciplineSlug,
   getDisciplineBySlug,
-  site,
+  fetchSiteSettings,
 } from "@/lib/content";
 import PageHeader from "@/components/layout/PageHeader";
 import ServiceCard from "@/components/cards/ServiceCard";
@@ -25,10 +25,11 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   });
 }
 
-export default function ServiceDetail({ params }: { params: { slug: string } }) {
+export default async function ServiceDetail({ params }: { params: { slug: string } }) {
   const d = getDisciplineBySlug(params.slug);
   if (!d) notFound();
 
+  const site = await fetchSiteSettings();
   const related = disciplines.filter((x) => x.title !== d.title).slice(0, 3);
 
   const jsonLd = {

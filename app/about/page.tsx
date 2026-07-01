@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
-import { site } from "@/lib/content";
+import { fetchSiteSettings } from "@/lib/content";
 import PageHeader from "@/components/layout/PageHeader";
 import About from "@/components/About";
 import Manifesto from "@/components/Manifesto";
@@ -8,23 +8,27 @@ import Method from "@/components/Method";
 import StatsBand from "@/components/StatsBand";
 import CtaLink from "@/components/ui/CtaLink";
 
-export const metadata: Metadata = pageMeta({
-  title: "About the Academy",
-  description: `The story, philosophy and founder behind ${site.full} — a yoga, fitness and wellness academy in ${site.city}.`,
-  path: "/about",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const site = await fetchSiteSettings();
+  return pageMeta({
+    title: "About the Academy",
+    description: `The story, philosophy and founder behind ${site.full} — a yoga, fitness and wellness academy in ${site.city}.`,
+    path: "/about",
+  });
+}
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const site = await fetchSiteSettings();
   return (
     <>
       <PageHeader
         eyebrow="The academy"
         title="A practice rooted in"
         titleAccent="breath."
-        intro="Divinity — The Third Eye brings traditional yoga, modern fitness and therapeutic care together under one roof in Lucknow. This is our story, our belief, and the path we walk with every student."
+        intro={`Divinity — The Third Eye brings traditional yoga, modern fitness and therapeutic care together under one roof in ${site.city || "Lucknow"}. This is our story, our belief, and the path we walk with every student.`}
         trail={[{ label: "About", href: "/about" }]}
       />
-      <About />
+      <About site={site} />
       <Manifesto />
       <Method />
       <StatsBand />

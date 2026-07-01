@@ -1,22 +1,25 @@
 import type { Metadata } from "next";
 import { site } from "./content";
 
-const BASE = site.url.replace(/\/$/, "");
-
 /**
  * Per-page metadata builder. metadataBase is set in the root layout, so
  * canonical/OG URLs resolve from the relative `path`.
  */
-export function pageMeta(opts: {
-  title: string;
-  description: string;
-  path: string;
-  type?: "website" | "article";
-  image?: string;
-}): Metadata {
+export function pageMeta(
+  opts: {
+    title: string;
+    description: string;
+    path: string;
+    type?: "website" | "article";
+    image?: string;
+  },
+  siteProp?: typeof site
+): Metadata {
+  const activeSite = siteProp || site;
+  const base = activeSite.url.replace(/\/$/, "");
   const { title, description, path, type = "website", image } = opts;
-  const fullTitle = title === site.full ? title : `${title} · ${site.full}`;
-  const url = path === "/" ? BASE + "/" : `${BASE}${path}`;
+  const fullTitle = title === activeSite.full ? title : `${title} · ${activeSite.full}`;
+  const url = path === "/" ? base + "/" : `${base}${path}`;
   return {
     title: fullTitle,
     description,
@@ -25,7 +28,7 @@ export function pageMeta(opts: {
       title: fullTitle,
       description,
       url,
-      siteName: site.full,
+      siteName: activeSite.full,
       type,
       locale: "en_IN",
       ...(image ? { images: [{ url: image }] } : {}),
@@ -39,5 +42,8 @@ export function pageMeta(opts: {
 }
 
 /** Absolute URL for a path (for structured data). */
-export const absUrl = (path: string) =>
-  path === "/" ? BASE + "/" : `${BASE}${path}`;
+export const absUrl = (path: string, siteProp?: typeof site) => {
+  const activeSite = siteProp || site;
+  const base = activeSite.url.replace(/\/$/, "");
+  return path === "/" ? base + "/" : `${base}${path}`;
+};

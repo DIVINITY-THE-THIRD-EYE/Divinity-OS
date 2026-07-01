@@ -1,16 +1,19 @@
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
-import { site } from "@/lib/content";
+import { fetchSiteSettings } from "@/lib/content";
 import PageHeader from "@/components/layout/PageHeader";
 import VerifyForm from "@/components/VerifyForm";
 
-export const metadata: Metadata = pageMeta({
-  title: "Verify a Certificate",
-  description: `Confirm the authenticity of a certificate issued by ${site.full}.`,
-  path: "/verify",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const site = await fetchSiteSettings();
+  return pageMeta({
+    title: "Verify a Certificate",
+    description: `Confirm the authenticity of a certificate issued by ${site.full}.`,
+    path: "/verify",
+  });
+}
 
-export default function VerifyPage() {
+export default async function VerifyPage() {
   return (
     <>
       <PageHeader

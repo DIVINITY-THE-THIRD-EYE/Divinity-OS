@@ -22,7 +22,7 @@ export default function SchedulePage() {
         intro="Dawn for stillness, dusk for strength. Browse the week below, then enquire about the batch that fits your day."
         trail={[{ label: "Schedule", href: "/schedule" }]}
       />
-      <Schedule data={schedule} />
+      <Schedule data={schedule} showHeading={false} />
       <section className="border-t border-[var(--line-dark)] bg-void px-6 py-24 text-center md:px-10 md:py-32">
         <h2 className="mx-auto max-w-2xl font-display text-[clamp(30px,4.5vw,56px)] font-light leading-tight tracking-tight text-bone">
           Reserve your <em className="text-ember">place.</em>

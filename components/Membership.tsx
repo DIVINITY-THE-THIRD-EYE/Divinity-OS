@@ -5,7 +5,13 @@ import Link from "next/link";
 import Reveal from "./Reveal";
 import { payment, type Plan } from "@/lib/content";
 
-export default function Membership({ plans }: { plans: Plan[] }) {
+export default function Membership({
+  plans,
+  showHeading = true,
+}: {
+  plans: Plan[];
+  showHeading?: boolean;
+}) {
   if (plans.length === 0) return null; // guard against an empty CMS result
   const featured = plans.find((p) => p.featured) ?? plans[0];
   const rest = plans.filter((p) => p !== featured);
@@ -13,12 +19,14 @@ export default function Membership({ plans }: { plans: Plan[] }) {
   return (
     <section id="membership" className="bg-bone px-6 py-28 text-ink md:px-10 md:py-40">
       <div className="mx-auto max-w-6xl">
-        <Reveal className="mb-16">
-          <p className="eyebrow mb-6 text-ember-deep">Membership</p>
-          <h2 className="font-display text-[clamp(38px,5.5vw,78px)] font-light leading-none tracking-tight">
-            Choose your <em className="text-ember-deep">path.</em>
-          </h2>
-        </Reveal>
+        {showHeading && (
+          <Reveal className="mb-16">
+            <p className="eyebrow mb-6 text-ember-deep">Membership</p>
+            <h2 className="font-display text-[clamp(38px,5.5vw,78px)] font-light leading-none tracking-tight">
+              Choose your <em className="text-ember-deep">path.</em>
+            </h2>
+          </Reveal>
+        )}
 
         <div className="grid gap-8 md:grid-cols-[1.05fr_0.95fr] md:items-stretch">
           {/* Featured */}

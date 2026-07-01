@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
-import { site } from "@/lib/content";
+import { fetchSiteSettings } from "@/lib/content";
 import PageHeader from "@/components/layout/PageHeader";
 
 /*
@@ -10,11 +10,14 @@ import PageHeader from "@/components/layout/PageHeader";
  * launch, and add a registered business address.
  */
 
-export const metadata: Metadata = pageMeta({
-  title: "Terms & Conditions",
-  description: `The terms that apply when you use the ${site.full} website and attend classes.`,
-  path: "/terms",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const site = await fetchSiteSettings();
+  return pageMeta({
+    title: "Terms & Conditions",
+    description: `The terms that apply when you use the ${site.full} website and attend classes.`,
+    path: "/terms",
+  });
+}
 
 const updated = "30 June 2026";
 
@@ -25,7 +28,8 @@ function P({ children }: { children: React.ReactNode }) {
   return <p className="mt-4 font-body text-[15px] leading-[1.85] text-mist">{children}</p>;
 }
 
-export default function TermsPage() {
+export default async function TermsPage() {
+  const site = await fetchSiteSettings();
   return (
     <>
       <PageHeader

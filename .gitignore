@@ -13,3 +13,12 @@ out
 *.report.json
 coverage
 *.tsbuildinfo
+
+# playwright e2e artifacts
+/test-results
+/playwright-report
+/blob-report
+/playwright/.cache
+
+.vercel
+.env*

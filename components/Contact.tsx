@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import Reveal from "./Reveal";
-import { site } from "@/lib/content";
+import { site, locationConfig } from "@/lib/content";
 import { formErrorMessage } from "@/lib/form-error";
+import WeatherWidget from "./WeatherWidget";
 
 type Status = "idle" | "sending" | "done" | "error";
 
@@ -16,7 +17,8 @@ const intentions = [
   "Not sure yet",
 ];
 
-export default function Contact() {
+export default function Contact({ site: siteProp }: { site?: typeof site }) {
+  const activeSite = siteProp || site;
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
   const abortRef = useRef<AbortController | null>(null);
@@ -83,12 +85,49 @@ export default function Contact() {
             <em className="text-ember">breath</em> with us.
           </h2>
           <p className="mt-8 max-w-sm font-body text-base leading-relaxed text-mist">
-            Visit us in {site.city}, or send a note below. The first step is the
+            Visit us in {activeSite.city}, or send a note below. The first step is the
             simplest — and it is yours to take.
           </p>
           <div className="mt-10 space-y-1 font-mono text-[12px] uppercase tracking-wide text-mist">
-            <p>{site.city}</p>
-            <p>{site.entity}</p>
+            <p>{activeSite.city}</p>
+            <p>{activeSite.entity}</p>
+          </div>
+          
+          <div className="mt-12 space-y-8">
+            <WeatherWidget />
+            
+            <div className="space-y-4">
+              <div className="relative h-[280px] w-full overflow-hidden border border-[var(--line-dark)]">
+                <iframe
+                  title={`Interactive location map of Divinity in ${locationConfig.name}`}
+                  src={`https://maps.google.com/maps?q=${encodeURIComponent(locationConfig.name + ", " + locationConfig.city)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  className="opacity-85 hover:opacity-100 transition-opacity"
+                />
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <a
+                  href={`https://maps.google.com/?q=${encodeURIComponent(locationConfig.name + ", " + locationConfig.city)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block border border-[var(--line-dark)] px-4 py-2.5 font-mono text-[10px] uppercase tracking-wider text-bone hover:border-ember hover:text-ember transition-colors"
+                >
+                  Open in Google Maps
+                </a>
+                <a
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${locationConfig.latitude},${locationConfig.longitude}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block bg-ember px-4 py-2.5 font-mono text-[10px] uppercase tracking-wider text-void hover:bg-ember-pale transition-colors"
+                >
+                  Directions
+                </a>
+              </div>
+            </div>
           </div>
         </Reveal>
 

@@ -4,7 +4,8 @@ import Image from "next/image";
 import Reveal from "./Reveal";
 import { site } from "@/lib/content";
 
-export default function About() {
+export default function About({ site: siteProp }: { site?: typeof site }) {
+  const activeSite = siteProp || site;
   return (
     <section id="about" className="relative overflow-hidden bg-bone px-6 py-28 text-ink md:px-10 md:py-40">
       {/* faint Devanagari watermark — आज्ञा (Ajna, the third eye). Rendered as
@@ -28,8 +29,8 @@ export default function About() {
           <div className="relative mt-12 max-w-sm">
             <div className="overflow-hidden border border-[var(--line-light)]">
               <Image
-                src={site.founderImage}
-                alt={`${site.founder}, ${site.founderRole} of ${site.full}`}
+                src={activeSite.founderImage}
+                alt={`${activeSite.founder}, ${activeSite.founderRole} of ${activeSite.full}`}
                 width={860}
                 height={1571}
                 sizes="(max-width: 768px) 90vw, 380px"
@@ -38,10 +39,10 @@ export default function About() {
             </div>
             <div className="absolute -bottom-4 left-4 bg-bone px-4 py-2.5 shadow-sm ring-1 ring-[var(--line-light)]">
               <span className="block font-display text-lg italic leading-none text-ink">
-                {site.founder}
+                {activeSite.founder}
               </span>
               <span className="font-mono text-[10px] uppercase tracking-wide text-ink-mute">
-                {site.founderRole}
+                {activeSite.founderRole}
               </span>
             </div>
           </div>
@@ -51,11 +52,11 @@ export default function About() {
           <Reveal delay={0.1}>
             <p className="mb-6 max-w-md font-body text-[17px] leading-[1.85] text-ink-mute">
               The Ajna — the third eye — is the seat of intuition and inner
-              sight. {site.full} is built on that idea: a place where the
+              sight. {activeSite.full} is built on that idea: a place where the
               physical and the formless meet, where movement becomes meditation.
             </p>
             <p className="max-w-md font-body text-[17px] leading-[1.85] text-ink-mute">
-              Here in {site.city} we guide each student through yoga, breath,
+              Here in {activeSite.city} we guide each student through yoga, breath,
               fitness and mindful living — meeting you where you are, and walking
               with you toward where you wish to be.
             </p>
@@ -68,10 +69,10 @@ export default function About() {
               </span>
               <span>
                 <span className="block font-display text-2xl italic">
-                  Est. {site.est}
+                  Est. {activeSite.est}
                 </span>
                 <span className="font-mono text-[10px] uppercase tracking-wide text-ink-mute">
-                  {site.city}
+                  {activeSite.city}
                 </span>
               </span>
             </div>

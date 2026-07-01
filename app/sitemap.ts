@@ -1,13 +1,14 @@
 import type { MetadataRoute } from "next";
 import {
-  site,
   disciplines,
   disciplineSlug,
   posts,
   events,
+  fetchSiteSettings,
 } from "@/lib/content";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const site = await fetchSiteSettings();
   const base = site.url.replace(/\/$/, "");
   const now = new Date();
 

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
-import { site } from "@/lib/content";
+import { fetchSiteSettings } from "@/lib/content";
 import PageHeader from "@/components/layout/PageHeader";
 
 /*
@@ -11,11 +11,14 @@ import PageHeader from "@/components/layout/PageHeader";
  * a dedicated privacy contact email if available.
  */
 
-export const metadata: Metadata = pageMeta({
-  title: "Privacy Policy",
-  description: `How ${site.full} collects, uses and protects your information.`,
-  path: "/privacy",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const site = await fetchSiteSettings();
+  return pageMeta({
+    title: "Privacy Policy",
+    description: `How ${site.full} collects, uses and protects your information.`,
+    path: "/privacy",
+  });
+}
 
 const updated = "30 June 2026";
 
@@ -26,7 +29,8 @@ function P({ children }: { children: React.ReactNode }) {
   return <p className="mt-4 font-body text-[15px] leading-[1.85] text-mist">{children}</p>;
 }
 
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  const site = await fetchSiteSettings();
   return (
     <>
       <PageHeader

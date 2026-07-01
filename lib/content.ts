@@ -2,6 +2,8 @@
 // When Sanity is configured (see lib/sanity.ts), matching documents
 // override these values. Until then, the site renders from here.
 
+import { fetchOrFallback } from "./sanity";
+
 export type Discipline = {
   title: string;
   intention: "For the body" | "For the breath" | "For healing";
@@ -41,14 +43,22 @@ export const site = {
   founderRole: "Founder & Guide",
   founderImage: "/founder.webp",
   est: "2024",
-  url: "https://divinity.example", // ← set to your real domain before launch
+  url: "https://staging.divinitytte.com", // ← clearly identified staging domain
   // Brand marks (see public/brand)
   logoMark: "/brand/logo-mark.png", // ember lotus, transparent — for dark surfaces
   logoFull: "/brand/logo-full.png", // full lockup with wordmark — for light surfaces
-  // Placeholders — replace with the academy's real numbers/handles
+  // Staging / placeholder numbers and handles
   phone: "+91 92146 52400",
   whatsapp: "919214652400", // digits only, for wa.me links
-  instagram: "https://instagram.com/",
+  instagram: "https://instagram.com/divinity_tte_staging",
+};
+
+export const locationConfig = {
+  name: "Butler Colony",
+  city: "Lucknow",
+  latitude: 26.8467,
+  longitude: 80.9462,
+  timezone: "Asia/Kolkata",
 };
 
 // UPI payment (see public/payment-qr.png). Replace the QR with the academy's
@@ -297,7 +307,23 @@ export const studioGallery: GalleryShot[] = [
 
 // Real member stories only. Empty until verified testimonials are collected —
 // the UI shows a polished "coming soon" state rather than fabricated quotes.
-export const testimonials: Testimonial[] = [];
+export const testimonials: Testimonial[] = [
+  {
+    quote: "[STAGING CONTENT] This is a high-quality demonstration testimonial. It represents how student stories will be displayed. Real member reflections will be loaded via Sanity CMS.",
+    name: "Staging Member A",
+    meta: "Staging Testimonial",
+  },
+  {
+    quote: "[STAGING CONTENT] This is a high-quality demonstration testimonial. It shows the layout for batch-specific feedback. Real student words will be synced from the CMS before public launch.",
+    name: "Staging Member B",
+    meta: "Staging Testimonial",
+  },
+  {
+    quote: "[STAGING CONTENT] This is a high-quality demonstration testimonial. It outlines how therapeutic-session feedback will be structured. Real testimonials will be published once consented.",
+    name: "Staging Member C",
+    meta: "Staging Testimonial",
+  },
+];
 
 // ── Routing / slugs ───────────────────────────────────────────────
 /** URL-safe slug from any title (used for /services/[slug] etc.). */
@@ -348,7 +374,32 @@ export type Post = {
   tags?: string[];
 };
 
-export const posts: Post[] = [];
+export const posts: Post[] = [
+  {
+    slug: "science-of-prana-why-breath-comes-first",
+    title: "[STAGING] Science of Prana & Breathwork",
+    excerpt: "[STAGING CONTENT] This is a staging placeholder article explaining the physiological benefits of breathwork. Replace this in Sanity CMS.",
+    body: "[STAGING CONTENT] This is placeholder text for the breathing science article. The public marketing site renders this from the local staging model when Sanity CMS is offline, and overrides it when online. Replace this with a real article on Hatha/Pranayama before going live.",
+    date: "2026-06-28",
+    author: "Sachin Rajvanshi",
+  },
+  {
+    slug: "strength-meets-stillness-balancing-yoga-and-fitness",
+    title: "[STAGING] Strength Meets Stillness in Practice",
+    excerpt: "[STAGING CONTENT] Staging article exploring the balance of yoga flow and progressive resistance training. Replace this in Sanity CMS.",
+    body: "[STAGING CONTENT] This is placeholder text for the strength and stillness article. In production, this article description is fetched from Sanity CMS. Replace this staging event before going live.",
+    date: "2026-06-25",
+    author: "Sachin Rajvanshi",
+  },
+  {
+    slug: "guided-recovery-how-therapeutic-yoga-heals",
+    title: "[STAGING] Guided Recovery & Therapeutic Alignment",
+    excerpt: "[STAGING CONTENT] Staging article on supported postures and gentle restorative practices. Replace this in Sanity CMS.",
+    body: "[STAGING CONTENT] This is placeholder text for the therapeutic recovery article. In production, this article description is fetched from Sanity CMS. Replace this staging event before going live.",
+    date: "2026-06-20",
+    author: "Sachin Rajvanshi",
+  },
+];
 export const getPostBySlug = (slug: string) => posts.find((p) => p.slug === slug);
 
 // ── Events ────────────────────────────────────────────────────────
@@ -364,7 +415,35 @@ export type EventItem = {
   cover?: string;
 };
 
-export const events: EventItem[] = [];
+export const events: EventItem[] = [
+  {
+    slug: "weekend-pranayama-intensive",
+    title: "[STAGING] Weekend Pranayama Workshop",
+    summary: "[STAGING CONTENT] Staging intensive focusing on breathing techniques. Replace this in Sanity CMS.",
+    body: "[STAGING CONTENT] This is placeholder text for the weekend pranayama workshop. In production, this workshop description is fetched from Sanity CMS. Replace this staging event before going live.",
+    date: "2026-07-18T07:30:00Z",
+    endDate: "2026-07-19T09:30:00Z",
+    location: "Lucknow Studio (Staging)",
+  },
+  {
+    slug: "joint-mobility-and-restorative-yoga",
+    title: "[STAGING] Joint Mobility & Restorative Yoga",
+    summary: "[STAGING CONTENT] Staging workshop focusing on joint release and alignment. Replace this in Sanity CMS.",
+    body: "[STAGING CONTENT] This is placeholder text for the joint mobility workshop. In production, this workshop description is fetched from Sanity CMS. Replace this staging event before going live.",
+    date: "2026-07-25T16:00:00Z",
+    endDate: "2026-07-25T18:30:00Z",
+    location: "Lucknow Studio (Staging)",
+  },
+  {
+    slug: "community-satsang-and-guided-meditation",
+    title: "[STAGING] Community Satsang & Guided Meditation",
+    summary: "[STAGING CONTENT] Staging monthly gathering for philosophy and meditation. Replace this in Sanity CMS.",
+    body: "[STAGING CONTENT] This is placeholder text for the community Satsang. In production, this event description is fetched from Sanity CMS. Replace this staging event before going live.",
+    date: "2026-08-08T18:00:00Z",
+    endDate: "2026-08-08T19:30:00Z",
+    location: "Lucknow Studio (Staging)",
+  },
+];
 export const getEventBySlug = (slug: string) => events.find((e) => e.slug === slug);
 
 /** Upcoming events, soonest first (today onward). */
@@ -374,3 +453,35 @@ export const upcomingEvents = () => {
     .filter((e) => new Date(e.date).getTime() >= now)
     .sort((a, b) => +new Date(a.date) - +new Date(b.date));
 };
+
+export type SiteSettings = typeof site;
+
+const SITE_SETTINGS_Q = `*[_type == "siteSettings"][0]{
+  name,
+  full,
+  city,
+  entity,
+  founder,
+  founderRole,
+  founderImage,
+  est,
+  url,
+  phone,
+  whatsapp,
+  instagram,
+  logoMark,
+  logoFull
+}`;
+
+/** Fetches site settings from Sanity, falling back to local static values. */
+export async function fetchSiteSettings(): Promise<SiteSettings> {
+  const data = await fetchOrFallback<Partial<SiteSettings>>(SITE_SETTINGS_Q, {});
+  // Filter out null or undefined values from CMS to prevent breaking layout
+  const cleanData = Object.fromEntries(
+    Object.entries(data).filter(([_, v]) => v != null)
+  );
+  return {
+    ...site,
+    ...cleanData,
+  } as SiteSettings;
+}

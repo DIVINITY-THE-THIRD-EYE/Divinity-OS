@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { pageMeta, absUrl } from "@/lib/seo";
-import { posts, getPostBySlug, site } from "@/lib/content";
+import { posts, getPostBySlug, fetchSiteSettings } from "@/lib/content";
 import PageHeader from "@/components/layout/PageHeader";
 import CtaLink from "@/components/ui/CtaLink";
 
@@ -21,10 +21,11 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   });
 }
 
-export default function BlogPost({ params }: { params: { slug: string } }) {
+export default async function BlogPost({ params }: { params: { slug: string } }) {
   const p = getPostBySlug(params.slug);
   if (!p) notFound();
 
+  const site = await fetchSiteSettings();
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",

@@ -15,18 +15,6 @@ type Item = {
   target: string;
 };
 
-const ITEMS: Item[] = [
-  { label: "Home", hint: "Return home", kind: "route", target: "/" },
-  ...navItems.map((n): Item => ({
-    label: n.label,
-    hint: hintFor(n.href),
-    kind: "route",
-    target: n.href,
-  })),
-  { label: "WhatsApp", hint: "Chat with us now", kind: "link", target: waHref() },
-  { label: "Instagram", hint: "Follow the practice", kind: "link", target: site.instagram },
-];
-
 function hintFor(href: string): string {
   const map: Record<string, string> = {
     "/about": "Our story & founder",
@@ -42,7 +30,8 @@ function hintFor(href: string): string {
   return map[href] ?? "Open page";
 }
 
-export default function CommandPalette() {
+export default function CommandPalette({ site: siteProp }: { site?: typeof site }) {
+  const activeSite = siteProp || site;
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
@@ -50,6 +39,18 @@ export default function CommandPalette() {
   const inputRef = useRef<HTMLInputElement>(null);
   // Remember what had focus before opening so it can be restored on close.
   const lastFocused = useRef<HTMLElement | null>(null);
+
+  const ITEMS: Item[] = useMemo(() => [
+    { label: "Home", hint: "Return home", kind: "route", target: "/" },
+    ...navItems.map((n): Item => ({
+      label: n.label,
+      hint: hintFor(n.href),
+      kind: "route",
+      target: n.href,
+    })),
+    { label: "WhatsApp", hint: "Chat with us now", kind: "link", target: waHref("Namaste — I'd like to chat about Divinity.", activeSite.whatsapp) },
+    { label: "Instagram", hint: "Follow the practice", kind: "link", target: activeSite.instagram },
+  ], [activeSite]);
 
   const go = (item: Item) => {
     setOpen(false);
@@ -67,7 +68,7 @@ export default function CommandPalette() {
       (i) =>
         i.label.toLowerCase().includes(s) || i.hint.toLowerCase().includes(s)
     );
-  }, [q]);
+  }, [q, ITEMS]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

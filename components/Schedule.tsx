@@ -6,7 +6,13 @@ import type { ClassSlot } from "@/lib/content";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-export default function Schedule({ data }: { data: Record<string, ClassSlot[]> }) {
+export default function Schedule({
+  data,
+  showHeading = true,
+}: {
+  data: Record<string, ClassSlot[]>;
+  showHeading?: boolean;
+}) {
   const [day, setDay] = useState("Mon");
   const slots = data[day] ?? [];
 
@@ -17,12 +23,14 @@ export default function Schedule({ data }: { data: Record<string, ClassSlot[]> }
     >
       <div className="mx-auto max-w-5xl">
         <div className="mb-14 flex flex-wrap items-end justify-between gap-8">
-          <div>
-            <p className="eyebrow mb-6 text-ember">Weekly rhythm</p>
-            <h2 className="font-display text-[clamp(38px,5.5vw,72px)] font-light leading-none tracking-tight">
-              Find your <em className="text-ember">hour.</em>
-            </h2>
-          </div>
+          {showHeading && (
+            <div>
+              <p className="eyebrow mb-6 text-ember">Weekly rhythm</p>
+              <h2 className="font-display text-[clamp(38px,5.5vw,72px)] font-light leading-none tracking-tight">
+                Find your <em className="text-ember">hour.</em>
+              </h2>
+            </div>
+          )}
 
           <div className="flex flex-wrap gap-1.5" role="group" aria-label="Choose a day">
             {DAYS.map((d) => (

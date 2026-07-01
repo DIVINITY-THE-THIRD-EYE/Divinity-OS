@@ -5,6 +5,8 @@ All notable changes to Divinity — The Third Eye website.
 ## [Unreleased] — Phase 1: Conversion & Trust
 
 ### Added
+- **WeatherWidget** — Open-Meteo Weather & Air Quality monitoring card on the Contact page with 15-minute client-side `localStorage` caching, fallback offline support, loading shimmers, and combined weather/AQI wellness recommendations.
+- **Accessible Maps Embed** — Responsive Google Maps iframe container on the Contact page with proper accessibility titles, lazy-loading, "Open in Google Maps" redirect, and "Directions" buttons driven by location configurations.
 - **PromoBar** — dismissible amber promo banner (₹99 first-week offer) at page top
 - **StickyCta** — mobile sticky bottom bar (WhatsApp + Book a class) visible mid-scroll, hidden past contact section
 - **StatsBand** — animated count-up proof band (200+ members · 6 disciplines · 3 batches · 2+ years) between hero and marquee

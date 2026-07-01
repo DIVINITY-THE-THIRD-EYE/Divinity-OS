@@ -1,25 +1,29 @@
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
-import { trainers, site } from "@/lib/content";
+import { trainers, fetchSiteSettings } from "@/lib/content";
 import PageHeader from "@/components/layout/PageHeader";
 import TrainerCard from "@/components/cards/TrainerCard";
 import EmptyState from "@/components/ui/EmptyState";
 import CtaLink from "@/components/ui/CtaLink";
 
-export const metadata: Metadata = pageMeta({
-  title: "Trainers & Teachers",
-  description: `Meet the teachers behind ${site.full} — guiding breath, movement and recovery in ${site.city}.`,
-  path: "/trainers",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const site = await fetchSiteSettings();
+  return pageMeta({
+    title: "Trainers & Teachers",
+    description: `Meet the teachers behind ${site.full} — guiding breath, movement and recovery in ${site.city}.`,
+    path: "/trainers",
+  });
+}
 
-export default function TrainersPage() {
+export default async function TrainersPage() {
+  const site = await fetchSiteSettings();
   return (
     <>
       <PageHeader
         eyebrow="Who guides you"
         title="Taught by"
         titleAccent="hand."
-        intro="Small batches, close attention. Every session is led personally — your practice is watched, corrected and cared for."
+        intro={`Small batches, close attention in ${site.city || "Lucknow"}. Every session is led personally — your practice is watched, corrected and cared for.`}
         trail={[{ label: "Trainers", href: "/trainers" }]}
       />
 

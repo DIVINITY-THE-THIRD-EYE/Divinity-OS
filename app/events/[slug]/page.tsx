@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { pageMeta, absUrl } from "@/lib/seo";
-import { events, getEventBySlug, site } from "@/lib/content";
+import { events, getEventBySlug, fetchSiteSettings } from "@/lib/content";
 import PageHeader from "@/components/layout/PageHeader";
 import CtaLink from "@/components/ui/CtaLink";
 
@@ -21,10 +21,11 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   });
 }
 
-export default function EventDetail({ params }: { params: { slug: string } }) {
+export default async function EventDetail({ params }: { params: { slug: string } }) {
   const e = getEventBySlug(params.slug);
   if (!e) notFound();
 
+  const site = await fetchSiteSettings();
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Event",

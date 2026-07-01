@@ -75,10 +75,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, delivered: false });
   }
 
-  const toEmail = process.env.BREVO_TO_EMAIL || "hello@divinity.example";
-  const toName = process.env.BREVO_TO_NAME || "Divinity";
-  const fromEmail = process.env.BREVO_FROM_EMAIL || "no-reply@divinity.example";
-  const fromName = process.env.BREVO_FROM_NAME || "Divinity Website";
+  const toEmail = process.env.BREVO_TO_EMAIL || "hello@staging.divinitytte.com";
+  const toName = process.env.BREVO_TO_NAME || "Divinity (Staging)";
+  const fromEmail = process.env.BREVO_FROM_EMAIL || "no-reply@staging.divinitytte.com";
+  const fromName = process.env.BREVO_FROM_NAME || "Divinity Website (Staging)";
 
   const safeName = name.replace(/[^\p{L}\p{N}\s.\-']/gu, '').slice(0, 80);
 
