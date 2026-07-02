@@ -7,9 +7,18 @@ Nothing secret lives in git — keystores and `key.properties` are git-ignored.
 
 ## Android signing (already wired)
 
+**Status (verified 2026-07-02): steps 1–2 below are already done.** An upload
+keystore exists at `android/app/upload-keystore.jks` with a matching
+`android/key.properties` (both git-ignored, not committed). The corresponding
+secrets (`ANDROID_KEYSTORE_BASE64`, `ANDROID_STORE_PASSWORD`,
+`ANDROID_KEY_PASSWORD`, `ANDROID_KEY_ALIAS`) are set in GitHub Actions on
+`DIVINITY-THE-THIRD-EYE/Divinity-OS` (confirmed via `gh secret list`). CI can
+already build a signed AAB. What's still missing is a Play Console app listing
+to actually publish it (see the root [`docs/VERIFIED_AUDIT_2026-07-02.md`](../../docs/VERIFIED_AUDIT_2026-07-02.md), item O8).
+
 `android/app/build.gradle.kts` reads `android/key.properties` and applies a
 `release` signing config; if `key.properties` is absent it falls back to debug
-signing (so CI / fresh clones still build). To produce a **store-ready** release:
+signing (so CI / fresh clones still build). To (re)produce a **store-ready** release:
 
 ### 1. Generate an upload keystore (one time)
 

@@ -1,6 +1,6 @@
 # Phase 8 — Backend
 
-> The app has **no bespoke API server** — Supabase *is* the backend. The website has two serverless API routes. Sources: [`supabase/`](../divinity_flutter/supabase/), [`app/api/`](../divinity-third-eye/divinity/app/api/), [`lib/`](../divinity-third-eye/divinity/lib/).
+> The app has **no bespoke API server** — Supabase *is* the backend. The website has two serverless API routes. Sources: [`supabase/`](../../supabase/), [`app/api/`](../website/app/api/), [`lib/`](../website/lib/).
 
 ## API Architecture
 
@@ -29,7 +29,7 @@
 
 ## Middleware
 
-- **Web:** security headers + CSP set in [`next.config.mjs`](../divinity-third-eye/divinity/next.config.mjs); per-route guards in the handlers (`lib/rate-limit.ts`, honeypot, validation).
+- **Web:** security headers + CSP set in [`next.config.mjs`](../website/next.config.mjs); per-route guards in the handlers (`lib/rate-limit.ts`, honeypot, validation).
 - **DB:** RLS acts as the authorization "middleware" for all data access; triggers act as write-time middleware.
 - **App:** GoRouter redirect logic acts as client-side route guard (auth/role); the DB remains the source of truth.
 

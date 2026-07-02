@@ -1,6 +1,6 @@
 # Phase 11 — UI/UX & Design System
 
-> Sources: website [README](../divinity-third-eye/divinity/README.md), [design/08-design-tokens.md](../divinity-third-eye/divinity/design/08-design-tokens.md), [design/phase0/tokens.json](../divinity-third-eye/divinity/design/phase0/tokens.json), `app/globals.css`, Flutter `core/theme/`.
+> Sources: website [README](../website/README.md), [design/08-design-tokens.md](../website/design/08-design-tokens.md), [design/phase0/tokens.json](../website/design/phase0/tokens.json), `app/globals.css`, Flutter `core/theme/`.
 
 ## Brand
 
@@ -22,7 +22,7 @@
 - **Hanken Grotesk** — body.
 - **JetBrains Mono** — labels + the breath counter.
 
-Loaded via `next/font` (web, no CLS) and `google_fonts` (app). Type scale: [design/08-design-tokens.md](../divinity-third-eye/divinity/design/08-design-tokens.md).
+Loaded via `next/font` (web, no CLS) and `google_fonts` (app). Type scale: [design/08-design-tokens.md](../website/design/08-design-tokens.md).
 
 ## Icons
 
@@ -30,13 +30,13 @@ Lotus brand mark (`public/brand/logo-mark.png`); app uses a custom `third_eye_ic
 
 ## Components
 
-- **Web:** see [04_Public_Website](04_Public_Website.md) component list + [design/07-visual-pattern-library.md](../divinity-third-eye/divinity/design/07-visual-pattern-library.md) and [design/14-component-dependency-map.md](../divinity-third-eye/divinity/design/14-component-dependency-map.md).
+- **Web:** see [04_Public_Website](04_Public_Website.md) component list + [design/07-visual-pattern-library.md](../website/design/07-visual-pattern-library.md) and [design/14-component-dependency-map.md](../website/design/14-component-dependency-map.md).
 - **App:** `shared/widgets/` reusable set — `spring_tap` (tactile press), `shimmer_loading` (skeletons), `animated_list_item`, `loading_widget`, `notification_bell`, `third_eye_icon`.
 
 ## Motion
 
 - **Principle:** restrained; every motion ties to "Breathe"; `prefers-reduced-motion` always respected.
-- **Web:** Framer Motion + GSAP/ScrollTrigger + Lenis. Signatures: breathing hero (4-4-6), horizontal-scroll disciplines, velocity marquee, manifesto reveal, magnetic CTA, custom cursor, scroll progress, intro curtain. Spec: [design/10-motion-spec.md](../divinity-third-eye/divinity/design/10-motion-spec.md), inventory: [design/phase0/motion-inventory.md](../divinity-third-eye/divinity/design/phase0/motion-inventory.md).
+- **Web:** Framer Motion + GSAP/ScrollTrigger + Lenis. Signatures: breathing hero (4-4-6), horizontal-scroll disciplines, velocity marquee, manifesto reveal, magnetic CTA, custom cursor, scroll progress, intro curtain. Spec: [design/10-motion-spec.md](../website/design/10-motion-spec.md), inventory: [design/phase0/motion-inventory.md](../website/design/phase0/motion-inventory.md).
 - **App:** `flutter_animate` + custom `app_transitions` + `app_motion.dart` (`core/theme`).
 
 ## Spacing
@@ -49,11 +49,11 @@ Mobile-first; web responsive to mobile (README accessibility note). Breakpoints 
 
 ## Accessibility Standards
 
-WCAG 2.2 AA target. Keyboard focus rings, focus trap, reduced-motion, semantic landmarks. Audit + baseline: [design/09-accessibility-audit.md](../divinity-third-eye/divinity/design/09-accessibility-audit.md), [design/phase0/accessibility-baseline.md](../divinity-third-eye/divinity/design/phase0/accessibility-baseline.md). See also the scoped `Divinity:accessibility` and `Divinity:10k-checklist` skills.
+WCAG 2.2 AA target. Keyboard focus rings, focus trap, reduced-motion, semantic landmarks. Audit + baseline: [design/09-accessibility-audit.md](../website/design/09-accessibility-audit.md), [design/phase0/accessibility-baseline.md](../website/design/phase0/accessibility-baseline.md). See also the scoped `Divinity:accessibility` and `Divinity:10k-checklist` skills.
 
 ## Design Tokens
 
-Frozen in [design/phase0/design-token-freeze.md](../divinity-third-eye/divinity/design/phase0/design-token-freeze.md) + `tokens.json`. Single source feeding `globals.css` (web) and `app_theme.dart` (app). **Do not** introduce ad-hoc colors — extend tokens. (Locked per AI_CONTEXT §8.)
+Frozen in [design/phase0/design-token-freeze.md](../website/design/phase0/design-token-freeze.md) + `tokens.json`. Single source feeding `globals.css` (web) and `app_theme.dart` (app). **Do not** introduce ad-hoc colors — extend tokens. (Locked per AI_CONTEXT §8.)
 
 ## Theme
 

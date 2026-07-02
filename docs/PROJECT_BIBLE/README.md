@@ -13,7 +13,7 @@
 2. A cross-platform **mobile app** (the "Academy Operating System") for Students, Trainers, and Admins.
 3. A **Supabase + Firebase** backend with row-level security, geofenced attendance, and a payment-verification workflow.
 
-The product philosophy comes straight from the practice: **"Breathe."** Pranayama (breath control) is the heart of the academy, and it is the organizing metaphor for the brand, the UI motion, and the calm, deliberate UX. (Source: [website README](../divinity-third-eye/divinity/README.md))
+The product philosophy comes straight from the practice: **"Breathe."** Pranayama (breath control) is the heart of the academy, and it is the organizing metaphor for the brand, the UI motion, and the calm, deliberate UX. (Source: [website README](../website/README.md))
 
 ---
 
@@ -21,8 +21,8 @@ The product philosophy comes straight from the practice: **"Breathe."** Pranayam
 
 | Product | Location | Stack | Git remote |
 |---|---|---|---|
-| **Website** ("The Third Eye") | `divinity-third-eye/divinity/` | Next.js 14 (App Router), Tailwind, Framer Motion + GSAP + Lenis, Sanity (optional), Brevo | `github.com/divinitythethirdeye-ux/divinity-website` |
-| **Mobile app** ("Academy OS") | `divinity_flutter/` | Flutter, Riverpod, GoRouter, Supabase, Firebase | `github.com/divinitythethirdeye-ux/divinity-app` |
+| **Website** ("The Third Eye") | `website/` | Next.js 14 (App Router), Tailwind, Framer Motion + GSAP + Lenis, Sanity (optional), Brevo | `github.com/divinitythethirdeye-ux/divinity-website` |
+| **Mobile app** ("Academy OS") | `flutter-app/` | Flutter, Riverpod, GoRouter, Supabase, Firebase | `github.com/divinitythethirdeye-ux/divinity-app` |
 
 A third tree, `Divinity/`, is the **monorepo / workspace** that also holds documentation (`docs/`), an agentic-OS layer (`CLAUDE.md`, `ANTIGRAVITY/`, `data/`), build scripts, and parallel copies of the apps. See [02_Repository_Discovery](02_Repository_Discovery.md) for the full map and [EXTRA_FILES/MIGRATION_REPORT.md](../EXTRA_FILES/MIGRATION_REPORT.md) for the cleanup that produced the current layout.
 

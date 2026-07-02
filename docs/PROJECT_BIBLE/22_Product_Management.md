@@ -1,6 +1,6 @@
 # Phase 22 — Product Management
 
-> Bridge between business and engineering. Sources: [design/17-feature-inventory.md](../divinity-third-eye/divinity/design/17-feature-inventory.md), [design/12-implementation-planning.md], feature code, `Divinity/docs/task.md`.
+> Bridge between business and engineering. Sources: [design/17-feature-inventory.md](../website/design/17-feature-inventory.md), [design/12-implementation-planning.md], feature code, `Divinity/docs/task.md`.
 
 ## Product Requirements (PRD pointers)
 

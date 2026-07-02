@@ -1,6 +1,54 @@
 # DIVINITY BUILD STATUS
-Session completed: 24 — Real Supabase project connected end-to-end
+Session completed: 25 — Independent live-state re-verification + doc sync
 Date: 2026-07-02
+
+## Done this session (Session 25 — Independent live-state re-verification + doc sync)
+
+Re-verified every claim in this file and in `docs/VERIFIED_AUDIT_2026-07-02.md`
+against live systems, from scratch, without trusting the prior session's
+written claims — then synced all `.md` files across the repo to match.
+
+- **Re-ran every CI gate locally:** `flutter analyze` (+ `--fatal-infos
+  --fatal-warnings`), `dart format --set-exit-if-changed` (142 files, 0
+  changed), `flutter test` (262/262), website `tsc --noEmit`/`lint`/`vitest`
+  (61/61)/`build`, and `supabase test db` (16 files, 117 pgTAP assertions,
+  applying all 36 migrations to a fresh local Postgres). All green.
+- **Independently confirmed Session 24's production claims, not just read
+  them:** `gh secret list` → all 8 GitHub Secrets present; `supabase
+  migration list --linked` + `supabase db diff --linked` → all 36 migrations
+  live on `divinity-tte`, zero drift; direct SQL query on
+  `storage.buckets.public` → `false` for `payment_screenshots`; `supabase
+  functions list` → `verify-certificate` is `ACTIVE`; live anonymous REST
+  call to `/rest/v1/users` → `[]` (RLS enforced).
+- **Found two new, real CI issues Session 24 hadn't flagged:**
+  `Release Please (Flutter App)` and (implicitly) `Release Please (Website)`
+  fail on every `main` push — `release-please-action@v4` no longer accepts
+  the `package-name`/`changelog-types` inputs both workflows use, and errors
+  with "Missing required file: pubspec.yaml". Needs migrating to the
+  action's manifest-based config (`release-please-config.json` +
+  `.release-please-manifest.json`) — not yet fixed, flagged as O9 in
+  `docs/VERIFIED_AUDIT_2026-07-02.md`. Separately, `CodeQL Security Scan
+  (Flutter/Android)` failed on the same push with "runner lost communication
+  with the server" after 1h3m — transient CI infra/timeout, not a code
+  issue; worth adding `timeout-minutes` if it recurs.
+- **Updated every stale `.md` file found:** root `README.md` (removed false
+  "broken"/"NXDOMAIN" Supabase claims, table count 18→20), `docs/AUDIT1JULY.MD`
+  + `docs/IMPLEMENTATION1JULY.MD` (added superseded banners, preserved body),
+  `docs/PROJECT_BIBLE/MODULE_INDEX.md` (added events/workouts/certificates/
+  analytics/feedback/support), `docs/PROJECT_BIBLE/ARCHITECTURE_COMPLIANCE.md`
+  (full rewrite — 16/16 modules, correct paths/counts, live prod facts),
+  `docs/PROJECT_BIBLE/AI_CONTEXT.md` (§1 repo shape, §7 current priorities),
+  `docs/PROJECT_BIBLE/EXECUTIVE_SUMMARY.md` + `COMPLETENESS_AUDIT.md` +
+  `FINAL_INDEPENDENT_VALIDATION_REPORT.md` (superseded banners — these are
+  pre-monorepo-merge forensic snapshots, preserved as historical record, not
+  rewritten), `docs/SUPABASE_SETUP.md` (fixed one stale conditional sentence),
+  `docs/VERIFIED_AUDIT_2026-07-02.md` (major revision — O1/O6 moved from
+  "blocked" to "done, confirmed live"; O9 CI bug added).
+
+Gates: all of the above, confirmed passing/failing as stated — nothing in
+this entry is asserted without a command run this session.
+
+## Done previous session (Session 24 — Real Supabase project connected end-to-end)
 
 ## Done this session (Session 24 — Real Supabase project connected end-to-end)
 

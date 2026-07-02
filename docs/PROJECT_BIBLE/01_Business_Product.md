@@ -19,7 +19,7 @@ Membership plans paid via **UPI** (manual QR + screenshot verification — ADR-0
 | Trainer | Mark attendance, manage students, guide | App (trainer shell) |
 | Admin/owner | Run academy: members, payments, reports, content | App (admin shell) + Sanity |
 
-Detailed journeys: [design/15-user-journeys.md](../divinity-third-eye/divinity/design/15-user-journeys.md).
+Detailed journeys: [design/15-user-journeys.md](../website/design/15-user-journeys.md).
 
 ## Customer Journey
 
@@ -37,7 +37,7 @@ graph LR
 
 ## Market Position
 
-Premium, breath-centred, design-led academy presence (award-quality web). Differentiator = experience quality + integrated ops app. Benchmarks: [design/05-benchmark-product-leaders.md](../divinity-third-eye/divinity/design/05-benchmark-product-leaders.md).
+Premium, breath-centred, design-led academy presence (award-quality web). Differentiator = experience quality + integrated ops app. Benchmarks: [design/05-benchmark-product-leaders.md](../website/design/05-benchmark-product-leaders.md).
 
 ## Competitor Analysis
 
@@ -60,7 +60,7 @@ Plan recommendation is code: `lib/recommend.ts` (pure, tested) maps user inputs 
 
 ## KPIs
 
-Enquiry volume, conversion rate, active members, attendance rate, streaks, payment completion, renewal rate. Metric sources in [23_Data_Analytics](23_Data_Analytics.md); success metrics in [design/24-success-metrics.md](../divinity-third-eye/divinity/design/24-success-metrics.md).
+Enquiry volume, conversion rate, active members, attendance rate, streaks, payment completion, renewal rate. Metric sources in [23_Data_Analytics](23_Data_Analytics.md); success metrics in [design/24-success-metrics.md](../website/design/24-success-metrics.md).
 
 ## Future Vision
 

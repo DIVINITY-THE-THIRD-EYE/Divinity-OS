@@ -1,5 +1,12 @@
 # Final Independent Validation & Release Audit Report
 
+> **⚠️ SUPERSEDED (2026-07-02):** predates the monorepo consolidation, real production
+> Supabase connection, and CI secret configuration. For current, live-verified status
+> (all gates green, production DB linked, GitHub Secrets configured, remaining blockers
+> narrowed to store-signing/App-Check/Vercel-env-var) see
+> [../VERIFIED_AUDIT_2026-07-02.md](../VERIFIED_AUDIT_2026-07-02.md). Body preserved as
+> the original forensic snapshot.
+
 **Date of Audit**: June 30, 2026  
 **Auditor**: AI-Assisted Repository Validation Report  
 **Audit Standard**: Big Four Independent Forensic Codebase Validation  
@@ -34,13 +41,13 @@ The workspace root is organized into exactly six logical directories:
 - `.claude/` (contains launch configuration)
 - `.agents/` (workspace customizations rule-set)
 - `Divinity/` (monorepo containing `apps/calling_app`, `reference/divinity-website`, docs, and build scripts)
-- `divinity_flutter/` (live Flutter application)
-- `divinity-third-eye/divinity/` (live Next.js Sanity website)
+- `flutter-app/` (live Flutter application)
+- `website/` (live Next.js Sanity website)
 - `EXTRA_FILES/` (quarantined assets/logs/duplicates)
 
 We verified the git state of each active folder:
-*   `divinity_flutter/` is an active Git repository tracking `divinity-app.git`, checked out on branch `Divinity`, clean at commit `33c82a9` (representing the live app).
-*   `divinity-third-eye/divinity/` is an active Git repository tracking `divinity-website.git`, checked out on branch `main`, containing 74 uncommitted local changes (representing the live staging website).
+*   `flutter-app/` is an active Git repository tracking `divinity-app.git`, checked out on branch `Divinity`, clean at commit `33c82a9` (representing the live app).
+*   `website/` is an active Git repository tracking `divinity-website.git`, checked out on branch `main`, containing 74 uncommitted local changes (representing the live staging website).
 *   `Divinity/reference/divinity-website/` is an active Git repository tracking the Prisma-based portal, checked out on branch `Divinity` with untracked local files.
 *   The workspace root itself is not a git repository, which is correct for a multi-project workspace folder.
 
@@ -69,12 +76,12 @@ We reviewed the `EXTRA_FILES/` directory to verify that no active assets, live c
 
 | Relocated File / Folder | Original Location | Classification | Reason for Move & Audit Verification | Restorable? |
 |---|---|---|---|---|
-| `divinity_flutter (nested aefdf77)` | `divinity_flutter\divinity_flutter\` | **Duplicate** | Untracked git clone of clean commit `aefdf77`. Live app runs from `divinity_flutter/` root at `33c82a9`. | No value |
+| `divinity_flutter (nested aefdf77)` | `divinity_flutter\divinity_flutter\` | **Duplicate** | Untracked git clone of clean commit `aefdf77`. Live app runs from `flutter-app/` root at `33c82a9`. | No value |
 | `divinity_flutter (monorepo older duplicate aefdf77)` | `Divinity\apps\divinity_flutter\` | **Duplicate** | Clean duplicate tracking `aefdf77`, which is an ancestor of the live `33c82a9`. | No value |
 | `Divinity The third eye (old snapshots)` | `Divinity\ANTIGRAVITY\Divinity The third eye\` | **Historical Snapshot** | Legacy, non-git snapshots of older websites and app prototypes. | Reference only |
 | `android (flutter-host stray)` | `android\` | **Generated File** | Stray android platform project folder. The live Flutter app has its own `android/` directory. | No value |
 | `ios (flutter-runner stray)` | `ios\` | **Generated File** | Stray iOS runner directory. The live Flutter app contains its own `ios/` folder. | No value |
-| `assets (old png, dup x3)` | `assets\` | **Duplicate** | 47 loose images. All critical assets (`payment-qr.png`, etc.) are byte-identical to files inside `divinity-third-eye/divinity/public/`. | No value |
+| `assets (old png, dup x3)` | `assets\` | **Duplicate** | 47 loose images. All critical assets (`payment-qr.png`, etc.) are byte-identical to files inside `website/public/`. | No value |
 | `android-mcp.log` | `android-mcp.log` (root) | **Log** | MCA debug log. | No value |
 | `android-mcp-monorepo.log` | `Divinity\android-mcp.log` | **Log** | Monorepo log file. | No value |
 | `android-mcp-root.log` | `android-mcp.log` (root) | **Log** | Automatically re-generated root debug log. | No value |
@@ -150,8 +157,8 @@ We audited the coverage of the repository's components. We found that all active
 
 We randomly selected the following items to verify documentation alignment:
 
-1.  **File Sample**: `divinity_flutter/lib/features/attendance/data/attendance_repository.dart` — documented in Phase 05. Alignments match.
-2.  **File Sample**: `divinity-third-eye/divinity/app/sitemap.ts` — documented in Phase 04. Alignments match.
+1.  **File Sample**: `flutter-app/lib/features/attendance/data/attendance_repository.dart` — documented in Phase 05. Alignments match.
+2.  **File Sample**: `website/app/sitemap.ts` — documented in Phase 04. Alignments match.
 3.  **API Sample**: `POST /api/contact` — documented in Phase 08. Handlers match.
 4.  **Database Trigger**: `recalculate_student_streaks` (014) — documented in Phase 09. Trigger variables match.
 5.  **Script Sample**: `Divinity/build_all.ps1` — documented in Phase 15. Commands match.

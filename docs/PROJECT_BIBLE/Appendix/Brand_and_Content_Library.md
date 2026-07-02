@@ -1,6 +1,6 @@
 # Appendix — Brand & Content Library
 
-> Approved brand identity, voice, and content references. Sources: website [README](../../divinity-third-eye/divinity/README.md), `design/08-design-tokens.md`, `lib/content.ts`, `public/`.
+> Approved brand identity, voice, and content references. Sources: website [README](../../website/README.md), `design/08-design-tokens.md`, `lib/content.ts`, `public/`.
 
 ## Identity
 

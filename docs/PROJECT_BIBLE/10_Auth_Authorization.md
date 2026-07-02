@@ -1,6 +1,6 @@
 # Phase 10 — Authentication & Authorization
 
-> Sources: [`lib/features/auth/`](../divinity_flutter/lib/features/auth/), migrations 001/012/017/018/019/025, [SECURITY_REVIEW_C1_C2](../Divinity/docs/SECURITY_REVIEW_C1_C2.md), [auth_migration_strategy](auth_migration_strategy.md).
+> Sources: [`lib/features/auth/`](../flutter-app/lib/features/auth/), migrations 001/012/017/018/019/025, [SECURITY_REVIEW_C1_C2](../Divinity/docs/SECURITY_REVIEW_C1_C2.md), [auth_migration_strategy](auth_migration_strategy.md).
 
 ## Login & Extensible Authentication
 

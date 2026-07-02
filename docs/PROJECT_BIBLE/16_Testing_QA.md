@@ -1,6 +1,6 @@
 # Phase 16 — Testing & QA
 
-> Sources: website `lib/*.test.ts` (vitest), `vitest.config.ts`; app `test/`, `integration_test` (pubspec), `supabase/tests/c1–c8`; [design/20-visual-regression.md](../divinity-third-eye/divinity/design/20-visual-regression.md), [design/23-launch-readiness.md](../divinity-third-eye/divinity/design/23-launch-readiness.md).
+> Sources: website `lib/*.test.ts` (vitest), `vitest.config.ts`; app `test/`, `integration_test` (pubspec), `supabase/tests/c1–c8`; [design/20-visual-regression.md](../website/design/20-visual-regression.md), [design/23-launch-readiness.md](../website/design/23-launch-readiness.md).
 
 ## Unit Tests
 
@@ -20,7 +20,7 @@ Flutter widget tests via `flutter_test`. `[Needs Verification]` for coverage of 
 
 ## E2E Tests
 
-`[Needs Verification]`: no committed Playwright/E2E suite found for the website. Playwright skills are available if added. Visual-regression plan documented in [design/20-visual-regression.md](../divinity-third-eye/divinity/design/20-visual-regression.md).
+`[Needs Verification]`: no committed Playwright/E2E suite found for the website. Playwright skills are available if added. Visual-regression plan documented in [design/20-visual-regression.md](../website/design/20-visual-regression.md).
 
 ## Accessibility Tests
 
@@ -46,4 +46,4 @@ Lighthouse baselines committed in `design/phase0/reports/`. Budgets in `design/1
 
 ## QA Checklist
 
-Pre-launch QA lives in [BETA_LAUNCH_CHECKLIST.md](../Divinity/docs/BETA_LAUNCH_CHECKLIST.md) and [design/23-launch-readiness.md](../divinity-third-eye/divinity/design/23-launch-readiness.md). Quality gates: web → `npm test` + `npm run lint` + `tsc --noEmit`; app → `flutter analyze` + `flutter test`.
+Pre-launch QA lives in [BETA_LAUNCH_CHECKLIST.md](../Divinity/docs/BETA_LAUNCH_CHECKLIST.md) and [design/23-launch-readiness.md](../website/design/23-launch-readiness.md). Quality gates: web → `npm test` + `npm run lint` + `tsc --noEmit`; app → `flutter analyze` + `flutter test`.

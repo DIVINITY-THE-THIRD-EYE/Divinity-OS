@@ -1,6 +1,6 @@
 # Phase 23 — Data & Analytics
 
-> Business analytics (not the DB). Sources: [design/16-analytics-taxonomy.md](../divinity-third-eye/divinity/design/16-analytics-taxonomy.md), `services/analytics_service.dart`, [design/24-success-metrics.md].
+> Business analytics (not the DB). Sources: [design/16-analytics-taxonomy.md](../website/design/16-analytics-taxonomy.md), `services/analytics_service.dart`, [design/24-success-metrics.md].
 
 ## Business KPIs
 
@@ -16,7 +16,7 @@
 
 ## Event Taxonomy
 
-Defined in [design/16-analytics-taxonomy.md](../divinity-third-eye/divinity/design/16-analytics-taxonomy.md). App events flow through `analytics_service.dart` (Firebase Analytics). **`[Needs Verification]`:** transcribe the canonical event names/params and confirm web event wiring.
+Defined in [design/16-analytics-taxonomy.md](../website/design/16-analytics-taxonomy.md). App events flow through `analytics_service.dart` (Firebase Analytics). **`[Needs Verification]`:** transcribe the canonical event names/params and confirm web event wiring.
 
 ## Analytics Events (app)
 

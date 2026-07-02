@@ -5,7 +5,7 @@ Welcome to the canonical workspace for **Divinity — The Third Eye**, a premium
 This is a single monorepo — the entire software architecture lives here, and this repo is the single source of truth:
 1.  **Public Marketing Website**: Next.js 14, TailwindCSS, Framer Motion, GSAP, and Sanity CMS.
 2.  **Academy Operating System (App)**: Flutter client using Riverpod, GoRouter, Supabase (data & RLS), and Firebase (FCM & Crashlytics).
-3.  **Supabase Postgres Engine**: shared by both apps — 18 operational tables, row-level security (RLS), automated database triggers, and Edge Functions.
+3.  **Supabase Postgres Engine**: shared by both apps — 20 operational tables, row-level security (RLS) on all of them, automated database triggers, and Edge Functions. Connected to a real production project (`divinity-tte`), all 36 migrations applied, verified live 2026-07-02.
 
 ---
 
@@ -73,7 +73,8 @@ The [`docs/PROJECT_BIBLE/`](docs/PROJECT_BIBLE/) directory contains a complete, 
 *   [**Comparative Website Analysis**](docs/PROJECT_BIBLE/COMPARATIVE_WEBSITE_ANALYSIS.md): Comprehensive forensic review comparing the live Sanity website with the Prisma/tRPC reference dashboard.
 *   [**Completeness & Onboarding Audit**](docs/PROJECT_BIBLE/COMPLETENESS_AUDIT.md): Detailed documentation coverage matrix alongside instructions to clone, build, run, and test every application module.
 *   [**AI-Assisted Repository Validation Report**](docs/PROJECT_BIBLE/FINAL_INDEPENDENT_VALIDATION_REPORT.md): Final forensic validation audit verifying git commit histories, environmental configurations, and data integrity.
-*   [**Supabase Setup**](docs/SUPABASE_SETUP.md): How both apps connect to one shared Supabase project, and the current (broken) state of that connection.
+*   [**Supabase Setup**](docs/SUPABASE_SETUP.md): How both apps connect to one shared Supabase project — connected and verified live as of 2026-07-02.
+*   [**Verified Production Audit**](docs/VERIFIED_AUDIT_2026-07-02.md): Latest evidence-based audit — every claim verified by running the actual build/test/lint/pgTAP gates and live production checks. Supersedes older audit docs.
 
 ---
 
@@ -117,7 +118,7 @@ supabase db reset   # Applies SQL migrations 001 to 036
 supabase test db    # Run security regression tests (c1 to c16, 117 assertions)
 ```
 
-To connect to the real (production) project instead of local dev, see [`docs/SUPABASE_SETUP.md`](docs/SUPABASE_SETUP.md) — **as of this writing that project does not resolve (DNS NXDOMAIN) and needs attention.**
+To connect to the real (production) project instead of local dev, see [`docs/SUPABASE_SETUP.md`](docs/SUPABASE_SETUP.md) — **the production project (`divinity-tte`, ref `ryvilbtrsnjncyfeskqm`) is linked, migrated, and verified live as of 2026-07-02.**
 
 ---
 

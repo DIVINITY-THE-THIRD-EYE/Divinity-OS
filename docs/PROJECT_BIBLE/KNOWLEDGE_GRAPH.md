@@ -12,9 +12,9 @@ The diagram below visualizes the dependencies and relationships across the stack
 graph TD
   %% Repositories Layer
   subgraph Repositories
-    DF[divinity_flutter]
-    DTE[divinity-third-eye/divinity]
-    DIV[Divinity Monorepo]
+    DF[flutter-app]
+    DTE[website]
+    DIV[Divinity Monorepo - archived reference only]
   end
 
   %% Modules Layer
@@ -97,8 +97,8 @@ graph TD
 ## 2. Layer Definitions & Relationships
 
 ### A. Repositories
-*   [`divinity_flutter/`](file:///C:/Users/PC/OneDrive/Documents/Divinity%20TTE/divinity_flutter) — The live production Flutter repository representing the operational app.
-*   [`divinity-third-eye/divinity/`](file:///C:/Users/PC/OneDrive/Documents/Divinity%20TTE/divinity-third-eye/divinity) — The live marketing website built on Next.js 14 App Router.
+*   [`flutter-app/`](../../flutter-app/) — The live production Flutter app (package `divinity_app`).
+*   [`website/`](../../website/) — The live marketing website built on Next.js 14 App Router.
 *   [`Divinity/`](file:///C:/Users/PC/OneDrive/Documents/Divinity%20TTE/Divinity) — The workspace root monorepo, holding developer guides, build scripts, archived `calling_app`, and the archived high-fidelity [`reference/divinity-website`](file:///C:/Users/PC/OneDrive/Documents/Divinity%20TTE/Divinity/reference/divinity-website).
 
 ### B. Modules

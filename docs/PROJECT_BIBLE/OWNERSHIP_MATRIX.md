@@ -15,8 +15,8 @@
 
 | Area | System of record | Doc |
 |---|---|---|
-| Website | `divinity-third-eye/divinity` (Vercel) | [04](04_Public_Website.md) |
-| Mobile app | `divinity_flutter` (stores) | [05](05_Student_Mobile_App.md)–[07](07_Admin_Panel.md) |
+| Website | `website/` (Vercel) | [04](04_Public_Website.md) |
+| Mobile app | `flutter-app/` (stores) | [05](05_Student_Mobile_App.md)–[07](07_Admin_Panel.md) |
 | Database & RLS | Supabase (`supabase/migrations`) | [09](09_Database.md) |
 | Auth | Supabase Auth + JWT sync | [10](10_Auth_Authorization.md) |
 | Push/analytics/crash | Firebase | [14](14_Integrations.md), [28](28_Observability.md) |

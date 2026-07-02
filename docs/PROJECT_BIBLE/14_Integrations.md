@@ -5,7 +5,7 @@
 ## Supabase (primary backend)
 
 - **Used by:** Flutter app (`supabase_flutter`). **Not** used by the website (deliberate scope).
-- **Surfaces:** Auth (OTP), Postgres (12 tables + RLS + RPC), Storage (payment screenshots), realtime.
+- **Surfaces:** Auth (OTP), Postgres (20 tables + RLS + RPC), Storage (payment screenshots, private), realtime.
 - **Config:** URL + anon key in app `.env`. Anon key is safe client-side because RLS gates everything.
 - See [08_Backend](08_Backend.md), [09_Database](09_Database.md), [10_Auth_Authorization](10_Auth_Authorization.md).
 

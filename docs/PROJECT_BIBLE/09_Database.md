@@ -1,6 +1,9 @@
 # Phase 9 — Database
 
-> Source of truth: [`divinity_flutter/supabase/migrations/`](../divinity_flutter/supabase/migrations/) (001–023) and [`supabase/tests/`](../divinity_flutter/supabase/tests/) (c1–c8). Engine: **Supabase Postgres** with Row-Level Security on every table.
+> Source of truth: [`supabase/migrations/`](../../supabase/migrations/) (001–036, shared at the
+> repo root by both `flutter-app/` and `website/` — not nested inside either app) and
+> [`supabase/tests/`](../../supabase/tests/) (c1–c16, 117 assertions). Engine: **Supabase
+> Postgres** with Row-Level Security on all 20 tables.
 
 ## ER Diagram
 

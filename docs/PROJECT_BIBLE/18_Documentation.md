@@ -4,14 +4,14 @@
 
 ## Developer Guide
 
-- Website: [README](../divinity-third-eye/divinity/README.md) (run/build/test/deploy, structure).
+- Website: [README](../website/README.md) (run/build/test/deploy, structure).
 - App: pubspec + feature-first conventions (see [02_Repository_Discovery](02_Repository_Discovery.md), [AI_CONTEXT](AI_CONTEXT.md)).
 - Monorepo: [Divinity/README](../Divinity/README.md), [Divinity/CLAUDE.md](../Divinity/CLAUDE.md) (agentic-OS orchestration).
 
 ## API Docs
 
 - App "API" = Supabase tables/RPCs (see [08_Backend](08_Backend.md), [09_Database](09_Database.md)).
-- Web API routes documented in [04_Public_Website](04_Public_Website.md) + [design/18-api-data-contracts.md](../divinity-third-eye/divinity/design/18-api-data-contracts.md).
+- Web API routes documented in [04_Public_Website](04_Public_Website.md) + [design/18-api-data-contracts.md](../website/design/18-api-data-contracts.md).
 
 ## User Manual
 

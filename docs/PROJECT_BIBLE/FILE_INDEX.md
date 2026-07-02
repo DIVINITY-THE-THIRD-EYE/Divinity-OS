@@ -2,7 +2,7 @@
 
 Key files across the live products and where they're documented. Paths relative to the workspace root.
 
-## Website — `divinity-third-eye/divinity/`
+## Website — `website/`
 
 | File | Purpose | Phase |
 |---|---|---|
@@ -25,7 +25,7 @@ Key files across the live products and where they're documented. Paths relative 
 | `design/adr/*` | 12 ADRs | 03, 19 |
 | `design/phase0/*` | quality gates, perf/a11y baselines | 13, 16 |
 
-## App — `divinity_flutter/`
+## App — `flutter-app/`
 
 | File | Purpose | Phase |
 |---|---|---|
