@@ -107,13 +107,13 @@ select throws_ok(
   'C12.8 Student is blocked from calling get_reports_data'
 );
 
--- ── Test 9: Trainer cannot run get_reports_data ───────────────────────────────
+-- ── Test 9: Trainer can run get_reports_data (044_trainer_surfaces.sql
+--    opened this up, forced-scoped to the trainer's own data — see c22
+--    for the scoping assertions) ────────────────────────────────────────────
 select pg_temp.act_as('33333333-3333-3333-3333-333333333333');
-select throws_ok(
+select lives_ok(
   $$ select public.get_reports_data() $$,
-  '42501',
-  null,
-  'C12.9 Trainer is blocked from calling get_reports_data'
+  'C12.9 Trainer can call get_reports_data (scoped to their own batches)'
 );
 
 -- ── Test 10: Admin can run get_reports_data ──────────────────────────────────
