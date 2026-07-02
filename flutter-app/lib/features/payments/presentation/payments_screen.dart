@@ -205,7 +205,6 @@ class _PaymentTile extends StatelessWidget {
     PaymentMethod.cash => Icons.money_outlined,
     PaymentMethod.upi => Icons.qr_code_outlined,
     PaymentMethod.bankTransfer => Icons.account_balance_outlined,
-    PaymentMethod.razorpay => Icons.payment_outlined,
   };
 }
 

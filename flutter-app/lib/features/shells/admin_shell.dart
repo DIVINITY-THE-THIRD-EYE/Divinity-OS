@@ -12,6 +12,7 @@ import '../../features/events/presentation/admin_events_screen.dart';
 import '../../features/holidays/presentation/holidays_screen.dart';
 import '../../features/leave/presentation/leave_approval_screen.dart';
 import '../../features/payments/presentation/admin_payments_screen.dart';
+import '../../features/plans/presentation/admin_plans_screen.dart';
 import '../../features/shared/students_screen.dart';
 import '../../services/fcm_provider.dart';
 import '../../shared/widgets/lazy_indexed_stack.dart';
@@ -79,6 +80,13 @@ class _AdminShellState extends ConsumerState<AdminShell> {
         ),
         actions: [
           const NotificationBell(),
+          IconButton(
+            icon: const Icon(Icons.card_membership_outlined),
+            tooltip: 'Plans',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const AdminPlansScreen()),
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.celebration_outlined),
             tooltip: 'Events',

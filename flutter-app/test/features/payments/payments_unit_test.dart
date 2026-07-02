@@ -95,7 +95,6 @@ void main() {
         PaymentMethod.fromString('BANK_TRANSFER'),
         PaymentMethod.bankTransfer,
       );
-      expect(PaymentMethod.fromString('RAZORPAY'), PaymentMethod.razorpay);
     });
 
     test('defaults to cash for unknown', () {
@@ -160,7 +159,6 @@ void main() {
       });
       expect(record.referenceNumber, isNull);
       expect(record.notes, isNull);
-      expect(record.razorpayOrderId, isNull);
       expect(record.studentName, isNull);
     });
 

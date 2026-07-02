@@ -84,6 +84,7 @@ class AllPaymentsNotifier extends AsyncNotifier<List<PaymentRecord>> {
     required PaymentMethod method,
     String? referenceNumber,
     String? notes,
+    String? planId,
   }) async {
     final uid = ref.read(currentUserIdProvider);
     final created = await ref
@@ -95,6 +96,7 @@ class AllPaymentsNotifier extends AsyncNotifier<List<PaymentRecord>> {
           referenceNumber: referenceNumber,
           notes: notes,
           recordedBy: uid,
+          planId: planId,
         );
     state = AsyncData([created, ...state.value ?? []]);
   }
