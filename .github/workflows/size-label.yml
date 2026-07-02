@@ -18,22 +18,10 @@ jobs:
         with:
           sizes: >
             {
-              "XS": 10,
-              "S": 50,
-              "M": 150,
-              "L": 500,
-              "XL": 1000,
-              "XXL": 2000
+              "0": "XS",
+              "10": "S",
+              "50": "M",
+              "150": "L",
+              "500": "XL",
+              "1000": "XXL"
             }
-          labels: >
-            {
-              "XS": "size/XS",
-              "S": "size/S",
-              "M": "size/M",
-              "L": "size/L",
-              "XL": "size/XL",
-              "XXL": "size/XXL"
-            }
-          fail_if_xl: false
-          message_if_xl: |
-            ⚠️ This PR is very large (+1000 lines). Consider splitting it into smaller PRs for easier review.
