@@ -4,6 +4,7 @@ import { fetchSiteSettings } from "@/lib/content";
 import JsonLd from "@/components/JsonLd";
 import MotionProvider from "@/components/MotionProvider";
 import { LocaleProvider } from "@/lib/i18n/LocaleContext";
+import { ThemeProvider } from "@/lib/theme/ThemeContext";
 import Ambient from "@/components/Ambient";
 import ScrollProgress from "@/components/ScrollProgress";
 import SmoothScroll from "@/components/SmoothScroll";
@@ -88,6 +89,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en-IN"
+      suppressHydrationWarning
       className={`${display.variable} ${body.variable} ${mono.variable}`}
     >
       <body>
@@ -98,23 +100,25 @@ export default async function RootLayout({
           Skip to content
         </a>
         <JsonLd site={site} />
-        <LocaleProvider>
-          <MotionProvider>
-            <Ambient />
-            <ScrollProgress />
-            <SmoothScroll />
-            <Cursor />
-            <CommandPalette site={site} />
-            <PromoBar />
-            <Nav site={site} />
-            <main id="main-content" tabIndex={-1} className="outline-none">
-              {children}
-            </main>
-            <Footer site={site} />
-            <WhatsAppFab site={site} />
-            <StickyCta site={site} />
-          </MotionProvider>
-        </LocaleProvider>
+        <ThemeProvider>
+          <LocaleProvider>
+            <MotionProvider>
+              <Ambient />
+              <ScrollProgress />
+              <SmoothScroll />
+              <Cursor />
+              <CommandPalette site={site} />
+              <PromoBar />
+              <Nav site={site} />
+              <main id="main-content" tabIndex={-1} className="outline-none">
+                {children}
+              </main>
+              <Footer site={site} />
+              <WhatsAppFab site={site} />
+              <StickyCta site={site} />
+            </MotionProvider>
+          </LocaleProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
