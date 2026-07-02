@@ -78,6 +78,8 @@ create table if not exists public.leave_days (
 create index if not exists idx_leave_days_student_date on public.leave_days (student_id, date);
 create index if not exists idx_leave_days_request on public.leave_days (leave_request_id);
 
+grant select, insert, update, delete on public.leave_days to authenticated, service_role;
+
 alter table public.leave_days enable row level security;
 
 create policy "leave_days_select"

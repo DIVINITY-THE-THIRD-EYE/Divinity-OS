@@ -82,6 +82,8 @@ create table if not exists public.batch_waitlist (
 
 create index if not exists idx_batch_waitlist_batch on public.batch_waitlist (batch_id, status);
 
+grant select, insert, update, delete on public.batch_waitlist to authenticated, service_role;
+
 create or replace trigger batch_waitlist_updated_at
   before update on public.batch_waitlist
   for each row execute function public.set_updated_at();

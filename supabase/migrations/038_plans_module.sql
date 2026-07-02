@@ -20,6 +20,8 @@ create table if not exists public.plans (
 
 create index if not exists idx_plans_is_active on public.plans (is_active);
 
+grant select, insert, update, delete on public.plans to authenticated, service_role;
+
 alter table public.plans enable row level security;
 
 -- Everyone (any authenticated role) can read active plans to pick one at

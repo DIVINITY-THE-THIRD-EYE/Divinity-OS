@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/theme_provider.dart';
+import '../../features/admissions/presentation/leads_screen.dart';
 import '../../features/auth/presentation/auth_provider.dart';
 import '../../features/batches/presentation/batches_screen.dart';
 import '../../features/leave/presentation/leave_approval_screen.dart';
@@ -64,6 +65,13 @@ class _TrainerShellState extends ConsumerState<TrainerShell> {
         ),
         actions: [
           const NotificationBell(),
+          IconButton(
+            icon: const Icon(Icons.how_to_reg_outlined),
+            tooltip: 'Leads',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const LeadsScreen()),
+            ),
+          ),
           IconButton(
             icon: Icon(
               themeMode == ThemeMode.dark

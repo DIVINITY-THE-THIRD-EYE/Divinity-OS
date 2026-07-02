@@ -45,7 +45,7 @@ select throws_ok(
        '33333333-3333-3333-3333-333333333333'::uuid
      ) $$,
   '42501',
-  'only admins can convert leads',
+  'only admin or trainer staff can convert leads',
   'C6.1 student cannot call convert_lead_to_member'
 );
 
