@@ -6,6 +6,7 @@ import '../../features/admissions/presentation/leads_screen.dart';
 import '../../features/analytics/presentation/reports_screen.dart';
 import '../../features/auth/presentation/auth_provider.dart';
 import '../../features/batches/presentation/admin_batches_screen.dart';
+import '../../features/batches/presentation/enrollment_requests_screen.dart';
 import '../../features/certificates/presentation/admin_certificates_screen.dart';
 import '../../features/dashboard/presentation/admin_dashboard_screen.dart';
 import '../../features/events/presentation/admin_events_screen.dart';
@@ -85,6 +86,15 @@ class _AdminShellState extends ConsumerState<AdminShell> {
             tooltip: 'Plans',
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<void>(builder: (_) => const AdminPlansScreen()),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.pending_actions_outlined),
+            tooltip: 'Enrollment Requests',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const EnrollmentRequestsScreen(),
+              ),
             ),
           ),
           IconButton(

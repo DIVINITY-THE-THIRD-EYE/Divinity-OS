@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/theme_provider.dart';
 import '../../features/attendance/presentation/check_in_screen.dart';
 import '../../features/auth/presentation/auth_provider.dart';
+import '../../features/batches/presentation/student_batches_screen.dart';
 import '../../features/certificates/presentation/certificates_screen.dart';
 import '../../features/events/presentation/student_events_screen.dart';
 import '../../features/home/presentation/student_home_screen.dart';
@@ -79,6 +80,15 @@ class _StudentShellState extends ConsumerState<StudentShell> {
         ),
         actions: [
           const NotificationBell(),
+          IconButton(
+            icon: const Icon(Icons.groups_outlined),
+            tooltip: 'Join a Batch',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const StudentBatchesScreen(),
+              ),
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.celebration_outlined),
             tooltip: 'Events',
