@@ -60,3 +60,9 @@ jobs:
         uses: github/codeql-action/analyze@v3
         with:
           category: /language:java-kotlin
+          # GitHub Advanced Security (required to upload results to the
+          # Security tab on a private repo) isn't purchased for this org.
+          # Analysis still runs in full; upload just fails with a 403/422
+          # otherwise. Flip this back to true (or remove) once GHAS is
+          # enabled or the repo goes public.
+          upload: false
