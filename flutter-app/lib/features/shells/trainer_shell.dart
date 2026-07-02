@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/theme_provider.dart';
+import '../../features/admissions/presentation/leads_screen.dart';
 import '../../features/auth/presentation/auth_provider.dart';
 import '../../features/batches/presentation/batches_screen.dart';
 import '../../features/leave/presentation/leave_approval_screen.dart';
@@ -10,6 +11,7 @@ import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/therapeutic_logs/presentation/therapeutic_logs_screen.dart';
 import '../../features/trainer/presentation/trainer_dashboard_screen.dart';
 import '../../features/workouts/presentation/trainer_workouts_screen.dart';
+import '../../l10n/app_localizations.dart';
 import '../../services/fcm_provider.dart';
 import '../../shared/widgets/lazy_indexed_stack.dart';
 import '../../shared/widgets/notification_bell.dart';
@@ -25,14 +27,14 @@ class TrainerShell extends ConsumerStatefulWidget {
 class _TrainerShellState extends ConsumerState<TrainerShell> {
   int _index = 0;
 
-  static const _tabs = [
-    _Tab(label: 'Dashboard', icon: Icons.dashboard_outlined),
-    _Tab(label: 'Leaves', icon: Icons.event_busy_outlined),
-    _Tab(label: 'Batches', icon: Icons.groups_outlined),
-    _Tab(label: 'Workouts', icon: Icons.fitness_center_outlined),
-    _Tab(label: 'Logs', icon: Icons.sticky_note_2_outlined),
-    _Tab(label: 'Payments', icon: Icons.receipt_long_outlined),
-    _Tab(label: 'Profile', icon: Icons.person_outline),
+  List<_Tab> _tabs(AppLocalizations l10n) => [
+    _Tab(label: l10n.navDashboard, icon: Icons.dashboard_outlined),
+    _Tab(label: l10n.navLeaves, icon: Icons.event_busy_outlined),
+    _Tab(label: l10n.navBatches, icon: Icons.groups_outlined),
+    _Tab(label: l10n.navWorkouts, icon: Icons.fitness_center_outlined),
+    _Tab(label: l10n.navLogs, icon: Icons.sticky_note_2_outlined),
+    _Tab(label: l10n.navPayments, icon: Icons.receipt_long_outlined),
+    _Tab(label: l10n.navProfile, icon: Icons.person_outline),
   ];
 
   static int _targetToIndex(String target) => switch (target) {
@@ -53,17 +55,26 @@ class _TrainerShellState extends ConsumerState<TrainerShell> {
       );
     });
     final themeMode = ref.watch(themeModeProvider);
+    final l10n = AppLocalizations.of(context)!;
+    final tabs = _tabs(l10n);
     return Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
             const ThirdEyeIcon(size: 22),
             const SizedBox(width: 8),
-            Text(_tabs[_index].label),
+            Text(tabs[_index].label),
           ],
         ),
         actions: [
           const NotificationBell(),
+          IconButton(
+            icon: const Icon(Icons.how_to_reg_outlined),
+            tooltip: 'Leads',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const LeadsScreen()),
+            ),
+          ),
           IconButton(
             icon: Icon(
               themeMode == ThemeMode.dark
@@ -95,7 +106,7 @@ class _TrainerShellState extends ConsumerState<TrainerShell> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
         onDestinationSelected: (i) => setState(() => _index = i),
-        destinations: _tabs
+        destinations: tabs
             .map(
               (t) => NavigationDestination(icon: Icon(t.icon), label: t.label),
             )

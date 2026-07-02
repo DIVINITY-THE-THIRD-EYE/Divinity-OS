@@ -14,6 +14,8 @@ abstract interface class PaymentRepository {
     String? notes,
     String? recordedBy,
     String? screenshotUrl,
+    String? planId,
+    String? eventId,
     PaymentStatus status = PaymentStatus.paid,
     bool adminApproved = false,
     bool receiptGivenByTrainer = false,
@@ -68,6 +70,8 @@ class SupabasePaymentRepository implements PaymentRepository {
     String? notes,
     String? recordedBy,
     String? screenshotUrl,
+    String? planId,
+    String? eventId,
     PaymentStatus status = PaymentStatus.paid,
     bool adminApproved = false,
     bool receiptGivenByTrainer = false,
@@ -85,6 +89,8 @@ class SupabasePaymentRepository implements PaymentRepository {
     if (notes != null) insert['notes'] = notes;
     if (recordedBy != null) insert['recorded_by'] = recordedBy;
     if (screenshotUrl != null) insert['screenshot_url'] = screenshotUrl;
+    if (planId != null) insert['plan_id'] = planId;
+    if (eventId != null) insert['event_id'] = eventId;
     if (planExpirationDate != null) {
       insert['plan_expiration_date'] = DateFormat(
         'yyyy-MM-dd',

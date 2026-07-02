@@ -5,9 +5,11 @@ import Link from "next/link";
 import { site } from "@/lib/content";
 import { footerGroups, legalItems } from "@/lib/nav";
 import { waHref } from "@/lib/links";
+import { useLocale } from "@/lib/i18n/LocaleContext";
 
 export default function Footer({ site: siteProp }: { site?: typeof site }) {
   const activeSite = siteProp || site;
+  const { t } = useLocale();
   const whatsappHref = waHref("Namaste — I'd like to know more about practising at Divinity.", activeSite.whatsapp);
 
   return (
@@ -28,28 +30,28 @@ export default function Footer({ site: siteProp }: { site?: typeof site }) {
 
         {footerGroups.map((c) => (
           <div key={c.title}>
-            <h2 className="eyebrow mb-5 text-ember">{c.title}</h2>
+            <h2 className="eyebrow mb-5 text-ember">{t(c.title)}</h2>
             {c.items.map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
                 className="mb-2.5 block font-body text-[13px] text-mist transition-colors hover:text-bone"
               >
-                {l.label}
+                {t(l.label)}
               </Link>
             ))}
           </div>
         ))}
 
         <div>
-          <h2 className="eyebrow mb-5 text-ember">Visit &amp; connect</h2>
+          <h2 className="eyebrow mb-5 text-ember">{t("Visit & connect")}</h2>
           <p className="mb-2.5 font-body text-[13px] text-mist">{activeSite.city}</p>
           <p className="mb-2.5 font-body text-[13px] text-mist">{activeSite.entity}</p>
           <Link
             href="/contact"
             className="mb-2.5 block font-body text-[13px] text-mist transition-colors hover:text-bone"
           >
-            Contact &amp; enquire
+            {t("Contact & enquire")}
           </Link>
           <a
             href={activeSite.instagram}
@@ -57,7 +59,7 @@ export default function Footer({ site: siteProp }: { site?: typeof site }) {
             rel="noopener noreferrer"
             className="mb-2.5 block font-body text-[13px] text-mist transition-colors hover:text-bone"
           >
-            Instagram
+            {t("Instagram")}
           </a>
           <a
             href={whatsappHref}
@@ -65,7 +67,7 @@ export default function Footer({ site: siteProp }: { site?: typeof site }) {
             rel="noopener noreferrer"
             className="block font-body text-[13px] text-mist transition-colors hover:text-bone"
           >
-            WhatsApp
+            {t("WhatsApp")}
           </a>
         </div>
       </div>
@@ -81,7 +83,7 @@ export default function Footer({ site: siteProp }: { site?: typeof site }) {
               href={l.href}
               className="font-mono text-[11px] text-mist transition-colors hover:text-bone"
             >
-              {l.label}
+              {t(l.label)}
             </Link>
           ))}
           <span className="font-mono text-[11px] uppercase tracking-label text-ember">

@@ -1,23 +1,40 @@
 import type { Config } from "tailwindcss";
 
+// Each brand color resolves through a CSS variable (defined in
+// app/globals.css, `:root` for dark / `[data-theme="light"]` for light) so
+// the theme toggle can swap values at runtime — see ThemeContext. The
+// `-rgb` (space-separated channel) variant plus this opacityValue function
+// is required to keep Tailwind's opacity-modifier utilities working
+// (bg-void/85 etc.), which a plain `var(--void)` string can't support.
+function withOpacity(cssVar: string) {
+  return ({ opacityValue }: { opacityValue?: string }) =>
+    opacityValue !== undefined
+      ? `rgb(var(${cssVar}) / ${opacityValue})`
+      : `rgb(var(${cssVar}))`;
+}
+
 const config: Config = {
   content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
   theme: {
     extend: {
+      // Tailwind v3 supports function-value colors at runtime (this is the
+      // documented pattern for CSS-variable + opacity-modifier support),
+      // but this version's Config type doesn't model that variant — hence
+      // the cast. See withOpacity() above.
       colors: {
-        void: "#15161E",
-        deep: "#1E2029",
-        smoke: "#2A2D38",
-        bone: "#ECE7DB",
-        "bone-2": "#E2DCCB",
-        ember: "#D08A3E",
-        "ember-deep": "#A85E2A",
-        "ember-pale": "#E8C490",
-        clay: "#9C4A2A",
-        mist: "#8E93A6",
-        ink: "#20242F",
-        "ink-mute": "#5C5F52",
-      },
+        void: withOpacity("--void-rgb"),
+        deep: withOpacity("--deep-rgb"),
+        smoke: withOpacity("--smoke-rgb"),
+        bone: withOpacity("--bone-rgb"),
+        "bone-2": withOpacity("--bone-2-rgb"),
+        ember: withOpacity("--ember-rgb"),
+        "ember-deep": withOpacity("--ember-deep-rgb"),
+        "ember-pale": withOpacity("--ember-pale-rgb"),
+        clay: withOpacity("--clay-rgb"),
+        mist: withOpacity("--mist-rgb"),
+        ink: withOpacity("--ink-rgb"),
+        "ink-mute": withOpacity("--ink-mute-rgb"),
+      } as unknown as Record<string, string>,
       fontFamily: {
         display: ["var(--font-display)", "Georgia", "serif"],
         body: ["var(--font-body)", "system-ui", "sans-serif"],

@@ -31,13 +31,11 @@ enum PaymentStatus {
 enum PaymentMethod {
   cash,
   upi,
-  bankTransfer,
-  razorpay;
+  bankTransfer;
 
   static PaymentMethod fromString(String v) => switch (v.toUpperCase()) {
     'UPI' => PaymentMethod.upi,
     'BANK_TRANSFER' => PaymentMethod.bankTransfer,
-    'RAZORPAY' => PaymentMethod.razorpay,
     _ => PaymentMethod.cash,
   };
 
@@ -45,14 +43,12 @@ enum PaymentMethod {
     PaymentMethod.cash => 'CASH',
     PaymentMethod.upi => 'UPI',
     PaymentMethod.bankTransfer => 'BANK_TRANSFER',
-    PaymentMethod.razorpay => 'RAZORPAY',
   };
 
   String get label => switch (this) {
     PaymentMethod.cash => 'Cash',
     PaymentMethod.upi => 'UPI',
     PaymentMethod.bankTransfer => 'Bank Transfer',
-    PaymentMethod.razorpay => 'Razorpay',
   };
 }
 
@@ -69,8 +65,7 @@ class PaymentRecord {
     this.referenceNumber,
     this.notes,
     this.screenshotUrl,
-    this.razorpayOrderId,
-    this.razorpayPaymentId,
+    this.planId,
     required this.paidAt,
     required this.createdAt,
     this.adminApproved = false,
@@ -89,8 +84,7 @@ class PaymentRecord {
   final String? referenceNumber;
   final String? notes;
   final String? screenshotUrl;
-  final String? razorpayOrderId;
-  final String? razorpayPaymentId;
+  final String? planId;
   final DateTime paidAt;
   final DateTime createdAt;
   final bool adminApproved;
@@ -113,8 +107,7 @@ class PaymentRecord {
       referenceNumber: m['reference_number'] as String?,
       notes: m['notes'] as String?,
       screenshotUrl: m['screenshot_url'] as String?,
-      razorpayOrderId: m['razorpay_order_id'] as String?,
-      razorpayPaymentId: m['razorpay_payment_id'] as String?,
+      planId: m['plan_id'] as String?,
       paidAt: DateTime.parse(
         m['paid_at'] as String? ?? DateTime.now().toIso8601String(),
       ),

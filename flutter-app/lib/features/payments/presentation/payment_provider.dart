@@ -27,6 +27,7 @@ class MyPaymentsNotifier extends AsyncNotifier<List<PaymentRecord>> {
     required String filename,
     required List<int> bytes,
     String? notes,
+    String? eventId,
   }) async {
     final uid = ref.read(supabaseClientProvider).auth.currentUser?.id;
     if (uid == null) throw Exception('Not signed in');
@@ -49,7 +50,16 @@ class MyPaymentsNotifier extends AsyncNotifier<List<PaymentRecord>> {
             notes: notes,
             screenshotUrl: screenshotUrl,
             status: PaymentStatus.pending,
+            eventId: eventId,
           );
+
+      // Event payments never touch membership plan_status — only a
+      // membership payment (no eventId) moves the student into the
+      // PENDING_ADMIN onboarding/renewal state.
+      if (eventId != null) {
+        ref.invalidate(myProfileProvider);
+        return [record, ...state.value ?? []];
+      }
 
       // 3. Update student's plan_status to PENDING_ADMIN
       await ref
@@ -84,6 +94,7 @@ class AllPaymentsNotifier extends AsyncNotifier<List<PaymentRecord>> {
     required PaymentMethod method,
     String? referenceNumber,
     String? notes,
+    String? planId,
   }) async {
     final uid = ref.read(currentUserIdProvider);
     final created = await ref
@@ -95,6 +106,7 @@ class AllPaymentsNotifier extends AsyncNotifier<List<PaymentRecord>> {
           referenceNumber: referenceNumber,
           notes: notes,
           recordedBy: uid,
+          planId: planId,
         );
     state = AsyncData([created, ...state.value ?? []]);
   }

@@ -34,6 +34,14 @@ class PaymentsScreen extends ConsumerWidget {
                 planStatus == 'PENDING_TRAINER';
             final isUnpaidOrExpired =
                 planStatus == 'UNPAID' || planStatus == 'EXPIRED';
+            final expiresSoon =
+                planStatus == 'ACTIVE' &&
+                profile.expirationDate != null &&
+                !profile.expirationDate!.isBefore(DateTime.now()) &&
+                profile.expirationDate!
+                        .difference(DateTime.now())
+                        .inDays <=
+                    7;
 
             return CustomScrollView(
               slivers: [
@@ -42,6 +50,13 @@ class PaymentsScreen extends ConsumerWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: _UnpaidRenewalCard(profile: profile),
+                    ),
+                  ),
+                if (expiresSoon)
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: _RenewSoonCard(profile: profile),
                     ),
                   ),
                 if (hasPending)
@@ -205,8 +220,54 @@ class _PaymentTile extends StatelessWidget {
     PaymentMethod.cash => Icons.money_outlined,
     PaymentMethod.upi => Icons.qr_code_outlined,
     PaymentMethod.bankTransfer => Icons.account_balance_outlined,
-    PaymentMethod.razorpay => Icons.payment_outlined,
   };
+}
+
+// ── Renew Soon Card (proactive, still ACTIVE) ───────────────────────────────
+
+class _RenewSoonCard extends StatelessWidget {
+  const _RenewSoonCard({required this.profile});
+  final UserProfile profile;
+
+  @override
+  Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
+    final daysLeft = profile.expirationDate!
+        .difference(DateTime.now())
+        .inDays;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.accentGold.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.accentGold.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.notifications_active_outlined, color: AppColors.accentGold),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              daysLeft <= 1
+                  ? 'Your membership expires tomorrow. Renew now to avoid losing access.'
+                  : 'Your membership expires in $daysLeft days. Renew early to avoid any gap.',
+              style: tt.bodyMedium,
+            ),
+          ),
+          TextButton(
+            onPressed: () => showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              useSafeArea: true,
+              builder: (_) => const _UploadPaymentSheet(),
+            ),
+            child: const Text('Renew'),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 // ── Unpaid / Renewal Card ─────────────────────────────────────────────────────

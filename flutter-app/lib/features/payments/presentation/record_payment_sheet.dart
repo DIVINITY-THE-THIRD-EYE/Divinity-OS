@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../services/analytics_service.dart';
+import '../../plans/domain/plan.dart';
+import '../../plans/presentation/plans_provider.dart';
 import '../../shared/students_screen.dart' show studentsProvider;
 import '../domain/payment_record.dart';
 import 'payment_provider.dart';
@@ -24,6 +26,7 @@ class _RecordPaymentSheetState extends ConsumerState<RecordPaymentSheet> {
   final _refCtrl = TextEditingController();
   final _notesCtrl = TextEditingController();
   PaymentMethod _method = PaymentMethod.cash;
+  String? _planId;
 
   // Only tracks student ID when no studentId passed in from parent.
   String? _pickedStudentId;
@@ -68,6 +71,7 @@ class _RecordPaymentSheetState extends ConsumerState<RecordPaymentSheet> {
             notes: _notesCtrl.text.trim().isEmpty
                 ? null
                 : _notesCtrl.text.trim(),
+            planId: _planId,
           );
       unawaited(
         AnalyticsService.logPaymentRecord(
@@ -137,6 +141,19 @@ class _RecordPaymentSheetState extends ConsumerState<RecordPaymentSheet> {
                     ),
                     const SizedBox(height: 16),
                   ],
+
+                  _PlanPicker(
+                    selectedId: _planId,
+                    onChanged: (id, price) {
+                      setState(() {
+                        _planId = id;
+                        if (price != null) {
+                          _amountCtrl.text = price.toStringAsFixed(0);
+                        }
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 16),
 
                   TextFormField(
                     controller: _amountCtrl,
@@ -254,6 +271,48 @@ class _StudentPicker extends ConsumerWidget {
           if (id != null) onChanged(id);
         },
         validator: (v) => v == null ? 'Select a student' : null,
+      ),
+    );
+  }
+}
+
+// ── Plan picker widget ────────────────────────────────────────────────────────
+
+class _PlanPicker extends ConsumerWidget {
+  const _PlanPicker({required this.selectedId, required this.onChanged});
+  final String? selectedId;
+  final void Function(String? id, double? price) onChanged;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final plansAsync = ref.watch(activePlansProvider);
+
+    return plansAsync.when(
+      loading: () => const LinearProgressIndicator(),
+      error: (e, _) => Text('Failed to load plans: $e'),
+      data: (plans) => DropdownButtonFormField<String>(
+        key: ValueKey(selectedId),
+        initialValue: selectedId,
+        decoration: const InputDecoration(
+          labelText: 'Plan (optional)',
+          prefixIcon: Icon(Icons.card_membership_outlined),
+        ),
+        hint: const Text('No plan — custom amount'),
+        items: plans
+            .map(
+              (p) => DropdownMenuItem(
+                value: p.id,
+                child: Text('${p.name} (₹${p.discountedPrice.toStringAsFixed(0)})'),
+              ),
+            )
+            .toList(),
+        onChanged: (id) {
+          final plan = plans.cast<Plan?>().firstWhere(
+            (p) => p?.id == id,
+            orElse: () => null,
+          );
+          onChanged(id, plan?.discountedPrice);
+        },
       ),
     );
   }

@@ -30,6 +30,7 @@ class LeaveRequest {
     this.reason,
     required this.status,
     this.approvedBy,
+    this.isAutoApproved = false,
     required this.createdAt,
   });
 
@@ -41,6 +42,7 @@ class LeaveRequest {
   final String? reason;
   final LeaveStatus status;
   final String? approvedBy;
+  final bool isAutoApproved;
   final DateTime createdAt;
 
   int get durationDays => endDate.difference(startDate).inDays + 1;
@@ -65,6 +67,7 @@ class LeaveRequest {
       reason: m['reason'] as String?,
       status: LeaveStatus.fromString(m['status'] as String? ?? 'PENDING'),
       approvedBy: m['approved_by'] as String?,
+      isAutoApproved: m['is_auto_approved'] as bool? ?? false,
       createdAt: DateTime.parse(m['created_at'] as String),
     );
   }

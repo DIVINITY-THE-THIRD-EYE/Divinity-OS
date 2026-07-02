@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../shared/widgets/loading_widget.dart' show ChakraLoader;
+import '../../payments/domain/payment_record.dart';
+import '../../payments/presentation/payment_provider.dart';
 import '../domain/event.dart';
 import 'event_provider.dart';
 
@@ -62,6 +66,19 @@ class _EventCardState extends ConsumerState<_EventCard> {
   bool _busy = false;
 
   Future<void> _toggle() async {
+    if (!widget.event.isRegistered && !widget.event.isFree) {
+      // Paid + not yet registered: pay via the same UPI QR + screenshot +
+      // Admin verification flow used for memberships (decision #38).
+      await showModalBottomSheet<void>(
+        context: context,
+        isScrollControlled: true,
+        useSafeArea: true,
+        builder: (_) => _EventPaymentSheet(event: widget.event),
+      );
+      ref.read(studentEventsProvider.notifier).refresh();
+      return;
+    }
+
     setState(() => _busy = true);
     try {
       await ref
@@ -125,6 +142,10 @@ class _EventCardState extends ConsumerState<_EventCard> {
             _InfoRow(icon: Icons.schedule, text: e.whenLabel),
             if (e.location != null && e.location!.isNotEmpty)
               _InfoRow(icon: Icons.place_outlined, text: e.location!),
+            _InfoRow(
+              icon: Icons.currency_rupee,
+              text: e.isFree ? 'Free' : '₹${e.price?.toStringAsFixed(0)}',
+            ),
             if (e.capacity != null)
               _InfoRow(
                 icon: Icons.event_seat_outlined,
@@ -154,7 +175,11 @@ class _EventCardState extends ConsumerState<_EventCard> {
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : const Icon(Icons.how_to_reg, size: 18),
-                      label: Text(full ? 'Full' : 'Register'),
+                      label: Text(
+                        full
+                            ? 'Full'
+                            : (e.isFree ? 'Register' : 'Pay & Register'),
+                      ),
                     ),
             ),
           ],
@@ -184,6 +209,174 @@ class _InfoRow extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(child: Text(text, style: tt.bodySmall)),
         ],
+      ),
+    );
+  }
+}
+
+// ── Event payment sheet (reuses the manual UPI QR + screenshot + Admin
+// verification flow already built for memberships — decision #38) ──────────
+
+class _EventPaymentSheet extends ConsumerStatefulWidget {
+  const _EventPaymentSheet({required this.event});
+  final Event event;
+
+  @override
+  ConsumerState<_EventPaymentSheet> createState() => _EventPaymentSheetState();
+}
+
+class _EventPaymentSheetState extends ConsumerState<_EventPaymentSheet> {
+  final _refCtrl = TextEditingController();
+  static const _allowedExtensions = {'jpg', 'jpeg', 'png', 'webp'};
+  static const _maxFileSizeBytes = 5 * 1024 * 1024;
+  XFile? _pickedImage;
+  bool _submitting = false;
+
+  @override
+  void dispose() {
+    _refCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final source = await showDialog<ImageSource>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Select Receipt Image'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, ImageSource.camera),
+            child: const Text('Camera'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, ImageSource.gallery),
+            child: const Text('Gallery'),
+          ),
+        ],
+      ),
+    );
+    if (source == null) return;
+    final image = await picker.pickImage(source: source, imageQuality: 70);
+    if (image == null) return;
+
+    final ext = image.name.split('.').last.toLowerCase();
+    if (!_allowedExtensions.contains(ext)) {
+      _snack('Invalid file type. Please upload a JPG, PNG, or WebP image.');
+      return;
+    }
+    final bytes = await image.readAsBytes();
+    if (bytes.length > _maxFileSizeBytes) {
+      _snack('Image is too large. Please upload a file smaller than 5 MB.');
+      return;
+    }
+    setState(() => _pickedImage = image);
+  }
+
+  void _snack(String msg) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+    }
+  }
+
+  Future<void> _submit() async {
+    if (_refCtrl.text.trim().isEmpty) {
+      _snack('Please enter the UPI reference number.');
+      return;
+    }
+    if (_pickedImage == null) {
+      _snack('Please upload your payment screenshot.');
+      return;
+    }
+    setState(() => _submitting = true);
+    try {
+      final bytes = await _pickedImage!.readAsBytes();
+      final ext = _pickedImage!.name.split('.').last.toLowerCase();
+      final filename = '${DateTime.now().millisecondsSinceEpoch}.$ext';
+
+      await ref
+          .read(myPaymentsProvider.notifier)
+          .submitManualPayment(
+            amount: widget.event.price ?? 0,
+            method: PaymentMethod.upi,
+            referenceNumber: _refCtrl.text.trim(),
+            filename: filename,
+            bytes: bytes.toList(),
+            eventId: widget.event.id,
+          );
+
+      if (mounted) {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Payment submitted! You\'ll be registered once Admin verifies it.',
+            ),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      _snack('Submission failed: $e');
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final tt = Theme.of(context).textTheme;
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Pay for ${widget.event.title}', style: tt.headlineSmall),
+            const SizedBox(height: 8),
+            Text(
+              'Amount: ₹${widget.event.price?.toStringAsFixed(0)} · pay via the UPI QR at the studio, then upload your screenshot.',
+              style: tt.bodyMedium,
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: _refCtrl,
+              inputFormatters: [FilteringTextInputFormatter.singleLineFormatter],
+              decoration: const InputDecoration(
+                labelText: 'UPI reference number',
+                prefixIcon: Icon(Icons.tag_outlined),
+              ),
+            ),
+            const SizedBox(height: 16),
+            OutlinedButton.icon(
+              onPressed: _pickImage,
+              icon: const Icon(Icons.upload_outlined),
+              label: Text(
+                _pickedImage == null
+                    ? 'Upload payment screenshot'
+                    : 'Screenshot selected ✓',
+              ),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: _submitting ? null : _submit,
+                child: _submitting
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text('Submit Payment'),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

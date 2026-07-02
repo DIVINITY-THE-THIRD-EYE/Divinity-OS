@@ -7,6 +7,7 @@ import '../../auth/domain/auth_state.dart';
 import '../../auth/presentation/auth_provider.dart';
 import '../domain/lead.dart';
 import 'leads_provider.dart';
+import 'trial_attendance_provider.dart';
 
 // ── Palette for pipeline columns ─────────────────────────────────────────────
 
@@ -27,6 +28,7 @@ class LeadsScreen extends ConsumerWidget {
     final leadsAsync = ref.watch(leadsProvider);
     final authState = ref.watch(authStateProvider);
     final adminId = authState is AuthAuthenticated ? authState.user.id : null;
+    final isAdmin = ref.watch(currentUserRoleProvider) == UserRole.admin;
 
     return Scaffold(
       body: leadsAsync.when(
@@ -48,7 +50,7 @@ class LeadsScreen extends ConsumerWidget {
         ),
         data: (leads) => _PipelineBoard(leads: leads),
       ),
-      floatingActionButton: adminId == null
+      floatingActionButton: (adminId == null || !isAdmin)
           ? null
           : FloatingActionButton.extended(
               onPressed: () => _showAddLead(context, ref, adminId),
@@ -303,6 +305,11 @@ class _LeadDetailSheetState extends ConsumerState<_LeadDetailSheet> {
               const SizedBox(height: 4),
               Text(lead.email!, style: tt.bodyMedium),
             ],
+            if (lead.pipelineStatus != LeadStatus.admitted &&
+                lead.pipelineStatus != LeadStatus.lost) ...[
+              const SizedBox(height: 12),
+              _TrialAttendanceRow(leadId: lead.id),
+            ],
             const SizedBox(height: 16),
             TextField(
               controller: _notesCtrl,
@@ -347,6 +354,54 @@ class _LeadDetailSheetState extends ConsumerState<_LeadDetailSheet> {
           ],
         ),
       ),
+    );
+  }
+}
+
+// ── Trial attendance row ──────────────────────────────────────────────────────
+
+class _TrialAttendanceRow extends ConsumerWidget {
+  const _TrialAttendanceRow({required this.leadId});
+  final String leadId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final countAsync = ref.watch(trialAttendanceCountProvider(leadId));
+    return Row(
+      children: [
+        Icon(
+          Icons.fitness_center_outlined,
+          size: 16,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+        const SizedBox(width: 6),
+        Text(
+          countAsync.when(
+            data: (n) => n == 0 ? 'No trial classes yet' : '$n trial class${n == 1 ? '' : 'es'} attended',
+            loading: () => 'Loading…',
+            error: (_, _) => 'Trials: —',
+          ),
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        const Spacer(),
+        TextButton(
+          onPressed: () async {
+            try {
+              await ref
+                  .read(trialAttendanceRepositoryProvider)
+                  .markAttended(leadId);
+              ref.invalidate(trialAttendanceCountProvider(leadId));
+            } catch (e) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text('Error: $e')));
+              }
+            }
+          },
+          child: const Text('Mark Trial Attended'),
+        ),
+      ],
     );
   }
 }

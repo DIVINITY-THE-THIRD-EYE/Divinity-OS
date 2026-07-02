@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/theme_provider.dart';
 import '../../features/attendance/presentation/check_in_screen.dart';
 import '../../features/auth/presentation/auth_provider.dart';
+import '../../features/batches/presentation/student_batches_screen.dart';
 import '../../features/certificates/presentation/certificates_screen.dart';
 import '../../features/events/presentation/student_events_screen.dart';
 import '../../features/home/presentation/student_home_screen.dart';
@@ -12,6 +13,7 @@ import '../../features/payments/presentation/payments_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/transformation/presentation/third_eye_dashboard_screen.dart';
 import '../../features/workouts/presentation/student_workouts_screen.dart';
+import '../../l10n/app_localizations.dart';
 import '../../services/fcm_provider.dart';
 import '../../shared/widgets/lazy_indexed_stack.dart';
 import '../../shared/widgets/notification_bell.dart';
@@ -27,15 +29,18 @@ class StudentShell extends ConsumerStatefulWidget {
 class _StudentShellState extends ConsumerState<StudentShell> {
   int _index = 0;
 
-  static const _tabs = [
-    _Tab(label: 'Home', icon: Icons.home_outlined),
-    _Tab(label: 'Third Eye', icon: Icons.self_improvement_outlined),
-    _Tab(label: 'Workouts', icon: Icons.fitness_center_outlined),
-    _Tab(label: 'Attendance', icon: Icons.check_circle_outline),
-    _Tab(label: 'Leaves', icon: Icons.event_busy_outlined),
-    _Tab(label: 'Payments', icon: Icons.account_balance_wallet_outlined),
-    _Tab(label: 'Profile', icon: Icons.person_outline),
-    _Tab(label: 'Certificates', icon: Icons.workspace_premium_outlined),
+  List<_Tab> _tabs(AppLocalizations l10n) => [
+    _Tab(label: l10n.navHome, icon: Icons.home_outlined),
+    _Tab(label: l10n.navThirdEye, icon: Icons.self_improvement_outlined),
+    _Tab(label: l10n.navWorkouts, icon: Icons.fitness_center_outlined),
+    _Tab(label: l10n.navAttendance, icon: Icons.check_circle_outline),
+    _Tab(label: l10n.navLeaves, icon: Icons.event_busy_outlined),
+    _Tab(label: l10n.navPayments, icon: Icons.account_balance_wallet_outlined),
+    _Tab(label: l10n.navProfile, icon: Icons.person_outline),
+    _Tab(
+      label: l10n.navCertificates,
+      icon: Icons.workspace_premium_outlined,
+    ),
   ];
 
   static int _targetToIndex(String target) => switch (target) {
@@ -68,17 +73,28 @@ class _StudentShellState extends ConsumerState<StudentShell> {
       });
     });
     final themeMode = ref.watch(themeModeProvider);
+    final l10n = AppLocalizations.of(context)!;
+    final tabs = _tabs(l10n);
     return Scaffold(
       appBar: AppBar(
-        title: const Row(
+        title: Row(
           children: [
-            ThirdEyeIcon(size: 22),
-            SizedBox(width: 8),
-            Text('Divinity'),
+            const ThirdEyeIcon(size: 22),
+            const SizedBox(width: 8),
+            Text(l10n.appTitle),
           ],
         ),
         actions: [
           const NotificationBell(),
+          IconButton(
+            icon: const Icon(Icons.groups_outlined),
+            tooltip: 'Join a Batch',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const StudentBatchesScreen(),
+              ),
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.celebration_outlined),
             tooltip: 'Events',
@@ -116,7 +132,7 @@ class _StudentShellState extends ConsumerState<StudentShell> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
         onDestinationSelected: (i) => setState(() => _index = i),
-        destinations: _tabs
+        destinations: tabs
             .map(
               (t) => NavigationDestination(icon: Icon(t.icon), label: t.label),
             )

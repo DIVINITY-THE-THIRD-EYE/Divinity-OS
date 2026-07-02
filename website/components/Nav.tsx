@@ -8,6 +8,8 @@ import { AnimatePresence, m } from "framer-motion";
 import { site } from "@/lib/content";
 import { navItems, primaryNav } from "@/lib/nav";
 import { trapTab } from "@/lib/focus-trap";
+import { useLocale } from "@/lib/i18n/LocaleContext";
+import { useTheme } from "@/lib/theme/ThemeContext";
 import Magnetic from "./Magnetic";
 
 function openPalette() {
@@ -17,6 +19,8 @@ function openPalette() {
 export default function Nav({ site: siteProp }: { site?: typeof site }) {
   const activeSite = siteProp || site;
   const pathname = usePathname();
+  const { locale, setLocale, t } = useLocale();
+  const { theme, toggleTheme } = useTheme();
   const [solid, setSolid] = useState(false);
   const [open, setOpen] = useState(false);
   const menuBtnRef = useRef<HTMLButtonElement>(null);
@@ -91,7 +95,7 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
                 isActive(l.href) ? "text-ember" : "text-mist"
               }`}
             >
-              {l.label}
+              {t(l.label)}
             </Link>
           ))}
           <button
@@ -101,12 +105,26 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
           >
             <span className="kbd">⌘K</span>
           </button>
+          <button
+            onClick={() => setLocale(locale === "en" ? "hi" : "en")}
+            className="font-mono text-[11px] uppercase tracking-wide text-mist transition-colors hover:text-ember"
+            aria-label={t("Language")}
+          >
+            {locale === "en" ? "हिं" : "EN"}
+          </button>
+          <button
+            onClick={toggleTheme}
+            className="font-mono text-[11px] uppercase tracking-wide text-mist transition-colors hover:text-ember"
+            aria-label="Toggle theme"
+          >
+            {theme === "dark" ? "☀" : "☾"}
+          </button>
           <Magnetic>
             <Link
               href="/contact"
               className="border border-ember px-5 py-2 font-mono text-[11px] uppercase tracking-wide text-ember transition-colors hover:bg-ember hover:text-void"
             >
-              Begin
+              {t("Begin")}
             </Link>
           </Magnetic>
         </div>
@@ -119,7 +137,7 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
           aria-expanded={open}
           aria-controls="mobile-menu"
         >
-          Menu
+          {t("Menu")}
         </button>
       </m.nav>
 
@@ -142,7 +160,7 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
               className="absolute right-6 top-6 font-mono text-[11px] uppercase tracking-wide text-mist"
               aria-label="Close menu"
             >
-              Close
+              {t("Close")}
             </button>
             {navItems.map((l, i) => (
               <m.div
@@ -158,7 +176,7 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
                     isActive(l.href) ? "text-ember" : "text-bone"
                   }`}
                 >
-                  {l.label}
+                  {t(l.label)}
                 </Link>
               </m.div>
             ))}
@@ -172,8 +190,28 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
                 href="/contact"
                 className="border border-ember px-7 py-3 font-mono text-[11px] uppercase tracking-wide text-ember"
               >
-                Begin
+                {t("Begin")}
               </Link>
+            </m.div>
+            <m.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.04 * (navItems.length + 1) }}
+              className="flex items-center gap-6"
+            >
+              <button
+                onClick={() => setLocale(locale === "en" ? "hi" : "en")}
+                className="font-mono text-[11px] uppercase tracking-wide text-mist"
+              >
+                {locale === "en" ? "हिंदी में देखें" : "View in English"}
+              </button>
+              <button
+                onClick={toggleTheme}
+                className="font-mono text-[11px] uppercase tracking-wide text-mist"
+                aria-label="Toggle theme"
+              >
+                {theme === "dark" ? "☀ Light" : "☾ Dark"}
+              </button>
             </m.div>
           </m.div>
         )}

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/l10n/locale_provider.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../features/auth/presentation/auth_provider.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/loading_widget.dart';
 import '../domain/user_profile.dart';
 import 'profile_provider.dart';
@@ -79,6 +81,35 @@ class _ProfileBody extends ConsumerWidget {
               ),
           ],
         ),
+        if (profile.role.toUpperCase() == 'TRAINER') ...[
+          const SizedBox(height: 16),
+          _InfoSection(
+            title: 'Certifications',
+            action: TextButton.icon(
+              icon: const Icon(Icons.edit_outlined, size: 16),
+              label: const Text('Edit'),
+              onPressed: () => _editCertifications(context, ref),
+            ),
+            children: [
+              _InfoRow(
+                label: 'Status',
+                value: profile.certificationsPublished
+                    ? 'Published on website'
+                    : (profile.certifications == null
+                          ? 'Not submitted yet'
+                          : 'Pending Admin approval'),
+                icon: profile.certificationsPublished
+                    ? Icons.public_outlined
+                    : Icons.hourglass_empty_outlined,
+              ),
+              _InfoRow(
+                label: 'Details',
+                value: profile.certifications ?? '—',
+                icon: Icons.workspace_premium_outlined,
+              ),
+            ],
+          ),
+        ],
         const SizedBox(height: 16),
         _InfoSection(
           title: 'Journey',
@@ -173,6 +204,8 @@ class _ProfileBody extends ConsumerWidget {
             ],
           ),
         ],
+        const SizedBox(height: 16),
+        const _LanguageSelector(),
         const SizedBox(height: 24),
         OutlinedButton.icon(
           icon: const Icon(Icons.lock_reset_outlined),
@@ -282,6 +315,40 @@ class _ProfileBody extends ConsumerWidget {
     }
   }
 
+  Future<void> _editCertifications(BuildContext context, WidgetRef ref) async {
+    final ctrl = TextEditingController(text: profile.certifications ?? '');
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Certifications'),
+        content: TextField(
+          controller: ctrl,
+          maxLines: 5,
+          decoration: const InputDecoration(
+            labelText: 'Certifications, experience, specializations',
+            alignLabelWithHint: true,
+            hintText:
+                'e.g. 500hr RYT, 5 years teaching Hatha & Vinyasa, therapeutic yoga specialist',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Submit for approval'),
+          ),
+        ],
+      ),
+    );
+    ctrl.dispose();
+    if (saved == true) {
+      ref.read(myProfileProvider.notifier).updateCertifications(ctrl.text);
+    }
+  }
+
   static String _memberSince(DateTime dt) {
     const months = [
       'Jan',
@@ -298,6 +365,40 @@ class _ProfileBody extends ConsumerWidget {
       'Dec',
     ];
     return '${months[dt.month - 1]} ${dt.year}';
+  }
+}
+
+// ── Language selector ─────────────────────────────────────────────────────────
+
+class _LanguageSelector extends ConsumerWidget {
+  const _LanguageSelector();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final locale = ref.watch(localeProvider);
+    final l10n = AppLocalizations.of(context)!;
+    return Row(
+      children: [
+        Icon(
+          Icons.language_outlined,
+          size: 20,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+        const SizedBox(width: 12),
+        Text(l10n.language, style: Theme.of(context).textTheme.bodyMedium),
+        const Spacer(),
+        SegmentedButton<String>(
+          segments: [
+            ButtonSegment(value: 'en', label: Text(l10n.english)),
+            ButtonSegment(value: 'hi', label: Text(l10n.hindi)),
+          ],
+          selected: {locale.languageCode},
+          onSelectionChanged: (s) => ref
+              .read(localeProvider.notifier)
+              .setLocale(Locale(s.first)),
+        ),
+      ],
+    );
   }
 }
 
