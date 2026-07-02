@@ -302,7 +302,9 @@ class _PlanPicker extends ConsumerWidget {
             .map(
               (p) => DropdownMenuItem(
                 value: p.id,
-                child: Text('${p.name} (₹${p.discountedPrice.toStringAsFixed(0)})'),
+                child: Text(
+                  '${p.name} (₹${p.discountedPrice.toStringAsFixed(0)})',
+                ),
               ),
             )
             .toList(),

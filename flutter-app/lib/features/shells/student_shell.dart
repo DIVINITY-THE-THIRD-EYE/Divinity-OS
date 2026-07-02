@@ -37,10 +37,7 @@ class _StudentShellState extends ConsumerState<StudentShell> {
     _Tab(label: l10n.navLeaves, icon: Icons.event_busy_outlined),
     _Tab(label: l10n.navPayments, icon: Icons.account_balance_wallet_outlined),
     _Tab(label: l10n.navProfile, icon: Icons.person_outline),
-    _Tab(
-      label: l10n.navCertificates,
-      icon: Icons.workspace_premium_outlined,
-    ),
+    _Tab(label: l10n.navCertificates, icon: Icons.workspace_premium_outlined),
   ];
 
   static int _targetToIndex(String target) => switch (target) {

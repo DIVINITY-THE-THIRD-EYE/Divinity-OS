@@ -40,7 +40,8 @@ abstract final class AppColors {
   static const Color bgLight = Color(0xFFFDFBF6);
   static const Color surfaceLight = Color(0xFFF5EFE0);
   static const Color surfaceAltLight = Color(0xFFEAE2CC);
-  static const Color accentGold = DivinityPalette.ember; // same accent, both modes
+  static const Color accentGold =
+      DivinityPalette.ember; // same accent, both modes
   static const Color accentGoldHover = DivinityPalette.emberDeep;
   static const Color accentGoldLight = Color(0x29D08A3E); // ember @ 16%
   static const Color textLight = Color(0xFF1B1D24);
