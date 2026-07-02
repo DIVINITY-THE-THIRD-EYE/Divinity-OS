@@ -123,7 +123,8 @@ class _BatchRequestCardState extends ConsumerState<_BatchRequestCard> {
     if (status == EnrollmentStatus.confirmed) {
       return const Chip(label: Text('Joined'));
     }
-    if (status == EnrollmentStatus.pending || _justRequestedResult == 'PENDING') {
+    if (status == EnrollmentStatus.pending ||
+        _justRequestedResult == 'PENDING') {
       return const Chip(label: Text('Pending'));
     }
     return FilledButton(

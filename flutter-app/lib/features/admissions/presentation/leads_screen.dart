@@ -377,7 +377,9 @@ class _TrialAttendanceRow extends ConsumerWidget {
         const SizedBox(width: 6),
         Text(
           countAsync.when(
-            data: (n) => n == 0 ? 'No trial classes yet' : '$n trial class${n == 1 ? '' : 'es'} attended',
+            data: (n) => n == 0
+                ? 'No trial classes yet'
+                : '$n trial class${n == 1 ? '' : 'es'} attended',
             loading: () => 'Loading…',
             error: (_, _) => 'Trials: —',
           ),

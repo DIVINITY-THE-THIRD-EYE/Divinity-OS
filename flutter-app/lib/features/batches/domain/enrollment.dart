@@ -46,7 +46,9 @@ class Enrollment {
       studentPhone: user['phone'] as String?,
       studentEmail: user['email'] as String?,
       batchId: m['batch_id'] as String,
-      status: EnrollmentStatus.fromString(m['status'] as String? ?? 'CONFIRMED'),
+      status: EnrollmentStatus.fromString(
+        m['status'] as String? ?? 'CONFIRMED',
+      ),
       assignedAt: DateTime.parse(m['assigned_at'] as String),
     );
   }

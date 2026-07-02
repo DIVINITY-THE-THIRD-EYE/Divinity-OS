@@ -176,7 +176,9 @@ class _PlanEditSheetState extends ConsumerState<_PlanEditSheet> {
     final duration = int.tryParse(_durationCtrl.text.trim());
     if (name.isEmpty || price == null || duration == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Name, price, and duration are required.')),
+        const SnackBar(
+          content: Text('Name, price, and duration are required.'),
+        ),
       );
       return;
     }
@@ -192,26 +194,30 @@ class _PlanEditSheetState extends ConsumerState<_PlanEditSheet> {
     setState(() => _saving = true);
     try {
       if (widget.plan == null) {
-        await ref.read(plansProvider.notifier).create(
-          name: name,
-          price: price,
-          durationDays: duration,
-          discountPercent: discount,
-          couponCode: coupon.isEmpty ? null : coupon,
-          programs: programs,
-          maxLeaveDaysPerMonth: leaveCap,
-        );
+        await ref
+            .read(plansProvider.notifier)
+            .create(
+              name: name,
+              price: price,
+              durationDays: duration,
+              discountPercent: discount,
+              couponCode: coupon.isEmpty ? null : coupon,
+              programs: programs,
+              maxLeaveDaysPerMonth: leaveCap,
+            );
       } else {
-        await ref.read(plansProvider.notifier).editPlan(
-          widget.plan!.id,
-          name: name,
-          price: price,
-          durationDays: duration,
-          discountPercent: discount,
-          couponCode: coupon.isEmpty ? null : coupon,
-          programs: programs,
-          maxLeaveDaysPerMonth: leaveCap,
-        );
+        await ref
+            .read(plansProvider.notifier)
+            .editPlan(
+              widget.plan!.id,
+              name: name,
+              price: price,
+              durationDays: duration,
+              discountPercent: discount,
+              couponCode: coupon.isEmpty ? null : coupon,
+              programs: programs,
+              maxLeaveDaysPerMonth: leaveCap,
+            );
       }
       if (mounted) Navigator.of(context).pop();
     } catch (e) {

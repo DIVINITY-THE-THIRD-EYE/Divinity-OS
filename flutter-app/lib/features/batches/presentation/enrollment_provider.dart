@@ -114,7 +114,9 @@ class WaitlistNotifier extends AsyncNotifier<List<WaitlistEntry>> {
   }
 
   Future<void> convert(String waitlistId) async {
-    await ref.read(enrollmentRepositoryProvider).convertWaitlistEntry(waitlistId);
+    await ref
+        .read(enrollmentRepositoryProvider)
+        .convertWaitlistEntry(waitlistId);
     state = AsyncData(
       (state.value ?? []).where((w) => w.id != waitlistId).toList(),
     );

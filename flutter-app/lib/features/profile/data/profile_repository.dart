@@ -44,7 +44,10 @@ class SupabaseProfileRepository implements ProfileRepository {
   }
 
   @override
-  Future<void> updateCertifications(String userId, String certifications) async {
+  Future<void> updateCertifications(
+    String userId,
+    String certifications,
+  ) async {
     await _client
         .from('users')
         .update({'certifications': certifications.trim()})

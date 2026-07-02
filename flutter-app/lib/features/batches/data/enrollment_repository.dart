@@ -20,7 +20,10 @@ abstract interface class EnrollmentRepository {
 
   Future<List<Enrollment>> fetchMyEnrollments(String studentId);
   Future<List<Enrollment>> fetchPendingRequests();
-  Future<Enrollment> respondToRequest(String enrollmentId, {required bool approve});
+  Future<Enrollment> respondToRequest(
+    String enrollmentId, {
+    required bool approve,
+  });
 
   Future<List<WaitlistEntry>> fetchWaitlist();
   Future<void> convertWaitlistEntry(String waitlistId);

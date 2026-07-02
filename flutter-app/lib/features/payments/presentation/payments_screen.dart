@@ -38,10 +38,7 @@ class PaymentsScreen extends ConsumerWidget {
                 planStatus == 'ACTIVE' &&
                 profile.expirationDate != null &&
                 !profile.expirationDate!.isBefore(DateTime.now()) &&
-                profile.expirationDate!
-                        .difference(DateTime.now())
-                        .inDays <=
-                    7;
+                profile.expirationDate!.difference(DateTime.now()).inDays <= 7;
 
             return CustomScrollView(
               slivers: [
@@ -232,9 +229,7 @@ class _RenewSoonCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tt = Theme.of(context).textTheme;
-    final daysLeft = profile.expirationDate!
-        .difference(DateTime.now())
-        .inDays;
+    final daysLeft = profile.expirationDate!.difference(DateTime.now()).inDays;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -245,7 +240,10 @@ class _RenewSoonCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.notifications_active_outlined, color: AppColors.accentGold),
+          const Icon(
+            Icons.notifications_active_outlined,
+            color: AppColors.accentGold,
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(

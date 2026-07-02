@@ -18,12 +18,13 @@ class EnrollmentRequestsScreen extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Enrollment Requests'),
           bottom: const TabBar(
-            tabs: [Tab(text: 'Pending'), Tab(text: 'Waitlist')],
+            tabs: [
+              Tab(text: 'Pending'),
+              Tab(text: 'Waitlist'),
+            ],
           ),
         ),
-        body: const TabBarView(
-          children: [_PendingTab(), _WaitlistTab()],
-        ),
+        body: const TabBarView(children: [_PendingTab(), _WaitlistTab()]),
       ),
     );
   }
@@ -109,9 +110,7 @@ class _WaitlistTab extends ConsumerWidget {
               trailing: FilledButton(
                 onPressed: () async {
                   try {
-                    await ref
-                        .read(waitlistProvider.notifier)
-                        .convert(w.id);
+                    await ref.read(waitlistProvider.notifier).convert(w.id);
                   } catch (e) {
                     if (context.mounted) {
                       ScaffoldMessenger.of(
