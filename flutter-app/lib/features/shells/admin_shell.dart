@@ -18,6 +18,7 @@ import '../../features/notifications/presentation/broadcast_screen.dart';
 import '../../features/payments/presentation/admin_payments_screen.dart';
 import '../../features/plans/presentation/admin_plans_screen.dart';
 import '../../features/shared/students_screen.dart';
+import '../../l10n/app_localizations.dart';
 import '../../services/fcm_provider.dart';
 import '../../shared/widgets/lazy_indexed_stack.dart';
 import '../../shared/widgets/notification_bell.dart';
@@ -33,15 +34,15 @@ class AdminShell extends ConsumerStatefulWidget {
 class _AdminShellState extends ConsumerState<AdminShell> {
   int _index = 0;
 
-  static const _tabs = [
-    _Tab(label: 'Dashboard', icon: Icons.dashboard_outlined),
-    _Tab(label: 'Payments', icon: Icons.account_balance_wallet_outlined),
-    _Tab(label: 'Admissions', icon: Icons.how_to_reg_outlined),
-    _Tab(label: 'Students', icon: Icons.people_outline),
-    _Tab(label: 'Leaves', icon: Icons.event_busy_outlined),
-    _Tab(label: 'Batches', icon: Icons.groups_outlined),
-    _Tab(label: 'Certs', icon: Icons.workspace_premium_outlined),
-    _Tab(label: 'Reports', icon: Icons.analytics_outlined),
+  List<_Tab> _tabs(AppLocalizations l10n) => [
+    _Tab(label: l10n.navDashboard, icon: Icons.dashboard_outlined),
+    _Tab(label: l10n.navPayments, icon: Icons.account_balance_wallet_outlined),
+    _Tab(label: l10n.navAdmissions, icon: Icons.how_to_reg_outlined),
+    _Tab(label: l10n.navStudents, icon: Icons.people_outline),
+    _Tab(label: l10n.navLeaves, icon: Icons.event_busy_outlined),
+    _Tab(label: l10n.navBatches, icon: Icons.groups_outlined),
+    _Tab(label: l10n.navCerts, icon: Icons.workspace_premium_outlined),
+    _Tab(label: l10n.navReports, icon: Icons.analytics_outlined),
   ];
 
   static int _targetToIndex(String target) => switch (target) {
@@ -73,13 +74,15 @@ class _AdminShellState extends ConsumerState<AdminShell> {
       });
     });
     final themeMode = ref.watch(themeModeProvider);
+    final l10n = AppLocalizations.of(context)!;
+    final tabs = _tabs(l10n);
     return Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
             const ThirdEyeIcon(size: 22),
             const SizedBox(width: 8),
-            Text(_tabs[_index].label),
+            Text(tabs[_index].label),
           ],
         ),
         actions: [
@@ -171,7 +174,7 @@ class _AdminShellState extends ConsumerState<AdminShell> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
         onDestinationSelected: (i) => setState(() => _index = i),
-        destinations: _tabs
+        destinations: tabs
             .map(
               (t) => NavigationDestination(icon: Icon(t.icon), label: t.label),
             )

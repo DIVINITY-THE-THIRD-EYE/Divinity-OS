@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/l10n/locale_provider.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../features/auth/presentation/auth_provider.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/loading_widget.dart';
 import '../domain/user_profile.dart';
 import 'profile_provider.dart';
@@ -202,6 +204,8 @@ class _ProfileBody extends ConsumerWidget {
             ],
           ),
         ],
+        const SizedBox(height: 16),
+        const _LanguageSelector(),
         const SizedBox(height: 24),
         OutlinedButton.icon(
           icon: const Icon(Icons.lock_reset_outlined),
@@ -361,6 +365,40 @@ class _ProfileBody extends ConsumerWidget {
       'Dec',
     ];
     return '${months[dt.month - 1]} ${dt.year}';
+  }
+}
+
+// ── Language selector ─────────────────────────────────────────────────────────
+
+class _LanguageSelector extends ConsumerWidget {
+  const _LanguageSelector();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final locale = ref.watch(localeProvider);
+    final l10n = AppLocalizations.of(context)!;
+    return Row(
+      children: [
+        Icon(
+          Icons.language_outlined,
+          size: 20,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+        const SizedBox(width: 12),
+        Text(l10n.language, style: Theme.of(context).textTheme.bodyMedium),
+        const Spacer(),
+        SegmentedButton<String>(
+          segments: [
+            ButtonSegment(value: 'en', label: Text(l10n.english)),
+            ButtonSegment(value: 'hi', label: Text(l10n.hindi)),
+          ],
+          selected: {locale.languageCode},
+          onSelectionChanged: (s) => ref
+              .read(localeProvider.notifier)
+              .setLocale(Locale(s.first)),
+        ),
+      ],
+    );
   }
 }
 
