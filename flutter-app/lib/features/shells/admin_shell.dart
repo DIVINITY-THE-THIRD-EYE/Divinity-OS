@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/theme_provider.dart';
+import '../../features/admin_ops/presentation/audit_log_screen.dart';
 import '../../features/admissions/presentation/leads_screen.dart';
 import '../../features/analytics/presentation/reports_screen.dart';
 import '../../features/auth/presentation/auth_provider.dart';
@@ -12,6 +13,7 @@ import '../../features/dashboard/presentation/admin_dashboard_screen.dart';
 import '../../features/events/presentation/admin_events_screen.dart';
 import '../../features/holidays/presentation/holidays_screen.dart';
 import '../../features/leave/presentation/leave_approval_screen.dart';
+import '../../features/notifications/presentation/broadcast_screen.dart';
 import '../../features/payments/presentation/admin_payments_screen.dart';
 import '../../features/plans/presentation/admin_plans_screen.dart';
 import '../../features/shared/students_screen.dart';
@@ -95,6 +97,20 @@ class _AdminShellState extends ConsumerState<AdminShell> {
               MaterialPageRoute<void>(
                 builder: (_) => const EnrollmentRequestsScreen(),
               ),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.campaign_outlined),
+            tooltip: 'Broadcast',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const BroadcastScreen()),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.fact_check_outlined),
+            tooltip: 'Audit Log',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const AuditLogScreen()),
             ),
           ),
           IconButton(
