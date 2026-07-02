@@ -11,3 +11,6 @@ Thumbs.db
 .supabase_db_password.txt
 .vercel
 .env*
+
+# Real secrets handed off out-of-band — never commit.
+/keyfile/

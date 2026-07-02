@@ -1,130 +1,118 @@
 # Supabase Setup — Single Project, Both Apps
 
 This monorepo has **one** `supabase/` directory at the repo root (migrations,
-pgTAP tests, Edge Functions). Both `flutter-app/` and `website/` are meant to
-point at the **same** Supabase project — there is no "flutter's database" and
-"website's database."
+pgTAP tests, Edge Functions). Both `flutter-app/` and `website/` point at the
+**same** Supabase project — there is no "flutter's database" and "website's
+database."
 
-## Current state (as of this writing)
+## Current state — CONNECTED AND VERIFIED (2026-07-02)
 
-- `flutter-app/.env` (gitignored, not committed) contains:
-  ```
-  SUPABASE_URL=https://wimjviyvtgkfmlesxted.supabase.co
-  SUPABASE_ANON_KEY=sb_publishable_XFUNQgaTZKV0XM0F2CSviQ_5Rn9jHN7
-  ```
-- **This project does not currently resolve.** `wimjviyvtgkfmlesxted.supabase.co`
-  returns `NXDOMAIN` (non-existent domain) — confirmed with `nslookup` and `curl`
-  from a network that can otherwise reach `supabase.com` and other hosts fine.
-  This means the project referenced by that URL has been deleted, paused in a
-  way that also drops DNS (unusual), or was never actually created and the
-  value is a placeholder someone typed in.
-- `supabase/config.toml` does not exist in this repo — the project has never
-  been `supabase link`-ed from a development machine that committed the link.
-- A `.supabase_db_password.txt` (gitignored, repo root) appeared during this
-  session containing a database password. On its own this doesn't unblock
-  anything — the CLI's `supabase link`/`db push` auth path needs an **access
-  token** (`supabase login` or `SUPABASE_ACCESS_TOKEN`), not just a DB
-  password, and regardless the project still doesn't resolve over DNS (see
-  above). Keep it for when the project situation is resolved.
-- No `SUPABASE_ACCESS_TOKEN` or project ref was available in this session, so
-  none of the following could be done against a real cloud project:
-  - Applying `supabase/migrations/*.sql` to production (`supabase db push`)
-  - Verifying RLS policies via the Supabase dashboard/API on the real project
-  - Deploying `supabase/functions/verify-certificate`
-  - Confirming Storage bucket configuration (`payment_screenshots` private +
-    signed URLs, per migration `031_payment_screenshots_bucket_private.sql`)
+**Project:** `divinity-tte`, ref `ryvilbtrsnjncyfeskqm`, region `ap-south-1`,
+status `ACTIVE_HEALTHY`, Postgres 17.6.1.
 
-Everything below **has** been verified against a local Supabase stack (Docker)
-via `supabase db reset` + `supabase test db` — 36 migrations apply cleanly, all
-16 pgTAP files (117 assertions) pass, and the `verify-certificate` Edge
-Function was smoke-tested with `supabase functions serve`. None of that proves
-the *production* project is in this state — only that the code is correct.
+(An earlier project ref, `wimjviyvtgkfmlesxted`, found in an old `.env`, no
+longer resolves over DNS — it's gone. `ryvilbtrsnjncyfeskqm` is the real,
+current one. Don't confuse the two if you see the old ref anywhere in
+history/docs.)
 
-## What you need to do to actually finish this
+Everything below was checked **against the live project itself**, not just
+locally:
 
-### 1. Confirm or create the production Supabase project
+- `supabase link --project-ref ryvilbtrsnjncyfeskqm` — linked successfully.
+- `supabase migration list --linked` — **all 36 migrations (001–036) are
+  applied and match exactly** between local and remote. `supabase db diff
+  --linked` reports "No schema changes found."
+- RLS confirmed live: anonymous REST requests to `/rest/v1/users` and
+  `/rest/v1/library_books` both return `[]` (blocked, not erroring/leaking).
+- `verify-certificate` Edge Function: was **not deployed** — deployed this
+  session (`supabase functions deploy verify-certificate --no-verify-jwt`),
+  confirmed live at
+  `https://ryvilbtrsnjncyfeskqm.supabase.co/functions/v1/verify-certificate`
+  with correct responses for bad-format and not-found codes.
+- **Fixed a real, live security issue:** the `payment_screenshots` Storage
+  bucket was `public: true` on the actual project — migration `031` can only
+  add RLS *policies* via SQL, it cannot flip a bucket's public/private flag
+  (that's a Management API-only setting). Fixed via
+  `PUT /storage/v1/bucket/payment_screenshots` with `{"public": false}`,
+  confirmed via a follow-up `GET` that it's now `"public": false`. This was
+  LB-5 from the earlier audit — it is now actually resolved, not just coded.
+- Only one Storage bucket exists (`payment_screenshots`) — there's no
+  separate avatars/other bucket to worry about.
 
-Log into https://supabase.com/dashboard and check whether a project already
-exists for Divinity. If `wimjviyvtgkfmlesxted` is genuinely gone, either:
-- restore it if it was deleted by mistake (Supabase support, within their
-  retention window), or
-- create a new project — **do not** do this without telling whoever's
-  coordinating this work, since the instruction was explicitly not to spin up
-  a new project without being asked.
+### GitHub Secrets — set on `DIVINITY-THE-THIRD-EYE/Divinity-OS`
 
-Once you have a real project, get from **Project Settings → API**:
-- Project URL (`https://<ref>.supabase.co`)
-- `anon`/`publishable` key
-- `service_role`/`secret` key (server-only, never client-side)
-- Project ref (the `<ref>` part of the URL)
+| Secret | Status |
+|---|---|
+| `SUPABASE_URL` | ✅ set — `https://ryvilbtrsnjncyfeskqm.supabase.co` |
+| `SUPABASE_ANON_KEY` | ✅ set — the real publishable key |
+| `SUPABASE_PROJECT_REF` | ✅ set — `ryvilbtrsnjncyfeskqm` |
+| `ANDROID_KEYSTORE_BASE64` | ✅ set — freshly generated this session (previous session's keystore was lost when its source folder was cleaned up; regenerated, safe since this app was never submitted to Play Store) |
+| `ANDROID_STORE_PASSWORD` | ✅ set |
+| `ANDROID_KEY_PASSWORD` | ✅ set (same value as store password — PKCS12 keystores only support one) |
+| `ANDROID_KEY_ALIAS` | ✅ set — `divinity-upload` |
+| `SUPABASE_ACCESS_TOKEN` | ✅ set — verified valid (`supabase projects list` succeeds with it), and `supabase-deploy.yml` was manually triggered (`gh workflow run`) and **completed successfully end-to-end**: linked the project, pushed migrations, deployed the Edge Function, all green. |
 
-And from **Project Settings → Database**: the database password (needed for
-`supabase link` in some flows).
+**All 8 secrets are set and the full CI/CD pipeline is verified working, not just configured.** Every push to `main` touching `supabase/migrations/**` or `supabase/functions/**` now auto-deploys to production.
 
-### 2. Link this repo to the project locally
+The local `flutter-app/.env` (gitignored) has been updated to the real
+project's URL/anon key, replacing the old dead `wimjviyvtgkfmlesxted` values.
+
+### Website `CERT_VERIFY_ENDPOINT`
+
+Still needs to be set on the website's Vercel project (Settings →
+Environment Variables), since that's outside this repo/CI:
+```
+CERT_VERIFY_ENDPOINT=https://ryvilbtrsnjncyfeskqm.supabase.co/functions/v1/verify-certificate
+```
+
+## If you need to re-link from a fresh machine/session
 
 Run from the **repo root** — the Supabase CLI expects to be run from the
 directory that *contains* `supabase/`, not from inside it.
 
 ```bash
 supabase login
-supabase link --project-ref <your-project-ref>
+supabase link --project-ref ryvilbtrsnjncyfeskqm
 ```
 
-### 3. Apply all migrations
+## Local Docker-based dev stack (separate from the real project)
+
+This is what `pgtap.yml` in CI uses, and what you'd use to test a new
+migration before pushing it live:
 
 ```bash
-supabase db push
+# from the repo root
+supabase start      # spins up an ephemeral local Postgres in Docker
+supabase db reset    # applies 001-036 fresh
+supabase test db     # runs all 16 pgTAP files, 117 assertions
+supabase stop
 ```
 
-This applies `supabase/migrations/001_users_rls.sql` through
-`036_batch_enrollment_capacity.sql` in order. They're all idempotent
-(`create table if not exists`, `create or replace function`, etc.) so this is
-safe to re-run.
+This never touches the real `ryvilbtrsnjncyfeskqm` project — it's a fully
+separate, disposable local instance.
 
-### 4. Verify RLS policies on the real project
-
-Run the same pgTAP suite against the *linked* remote project instead of local:
+## Deploying a new migration or Edge Function change to production
 
 ```bash
-supabase test db --linked
+# from the repo root, already linked (see above)
+supabase db push                                          # migrations
+supabase functions deploy verify-certificate --no-verify-jwt  # if the function changed
 ```
 
-If that flag/flow isn't available in your CLI version, at minimum manually spot
-check the high-risk tables in the dashboard's SQL editor:
-- `payment_screenshots` storage bucket is **private** (not public), matches
-  migration `031`
-- `library_books` UPDATE policy is scoped to the student's own rows, not
-  everyone (migration `030`)
-- `users.is_active` can only be changed by an admin (migration `032`)
+Once `SUPABASE_ACCESS_TOKEN` is added to GitHub Secrets, `supabase-deploy.yml`
+does this automatically on every push to `main` that touches
+`supabase/migrations/**` or `supabase/functions/**` — manual deploy is only
+needed until that secret exists, or if you want to push out-of-band.
 
-### 5. Deploy the Edge Function
+## Remaining open items
 
-```bash
-supabase functions deploy verify-certificate --no-verify-jwt
-```
+1. `CERT_VERIFY_ENDPOINT` on Vercel (website project) — value is in the
+   table above.
+2. A4/A5 (Play Store / App Store signing) — the Android keystore secrets are
+   in place and CI can build a signed AAB, but there's still no Play Console
+   app / Apple Developer account connected to actually publish it.
 
-Then set on the **website's** Vercel project (Settings → Environment
-Variables): `CERT_VERIFY_ENDPOINT` = `https://<project-ref>.supabase.co/functions/v1/verify-certificate`
-
-### 6. Configure environment variables everywhere that needs them
-
-| Where | Variable(s) | Value |
-|---|---|---|
-| `flutter-app/dart_defines.json` (local, gitignored — copy from `.example`) | `SUPABASE_URL`, `SUPABASE_ANON_KEY` | from step 1 |
-| GitHub Secrets on this repo (`.github/workflows/flutter.yml`, `release-flutter.yml`) | `SUPABASE_URL`, `SUPABASE_ANON_KEY` | same values, for CI release builds |
-| GitHub Secrets on this repo (`supabase-deploy.yml`) | `SUPABASE_ACCESS_TOKEN`, `SUPABASE_PROJECT_REF` | personal access token from https://supabase.com/dashboard/account/tokens + the project ref |
-| Vercel project settings (website) | `CERT_VERIFY_ENDPOINT` | from step 5 |
-| Vercel project settings (website) | `BREVO_*`, `NEXT_PUBLIC_SANITY_*` | unrelated to Supabase — see `website/.env.local.example` |
-
-Both `flutter-app` and `website` now read from the **same** project once these
-are all filled in with the same URL/ref — there is no separate project for
-either app, by design.
-
-### 7. Confirm CI is green end to end
-
-Once GitHub Secrets are set, push to `main` and check:
-- `flutter.yml` → `build-android` job succeeds (needs Android keystore secrets too — see `STATUS.md`)
-- `website.yml` → `build` job succeeds
-- `pgtap.yml` → runs `supabase start` + `supabase test db` against an **ephemeral** local stack in the CI runner (not your production project — this is intentional, it never touches prod)
-- `supabase-deploy.yml` → pushes migrations + deploys the Edge Function to production on every push to `main` that touches `supabase/migrations/**` or `supabase/functions/**`
+Supabase itself is fully wired: real project connected, migrations synced,
+RLS verified live, Edge Function deployed, one live security bug (public
+storage bucket) fixed, and the deploy pipeline proven working via an actual
+GitHub Actions run.

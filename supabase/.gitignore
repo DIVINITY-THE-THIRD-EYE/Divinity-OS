@@ -1,2 +1,11 @@
 # Local Supabase CLI runtime state — machine-specific, never commit.
 .temp/
+
+# Supabase
+.branches
+.temp
+
+# dotenvx
+.env.keys
+.env.local
+.env.*.local

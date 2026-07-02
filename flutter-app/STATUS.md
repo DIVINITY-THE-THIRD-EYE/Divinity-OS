@@ -1,8 +1,60 @@
 # DIVINITY BUILD STATUS
-Session completed: 23 — Cert verification, Android keystore, pushed to origin
+Session completed: 24 — Real Supabase project connected end-to-end
 Date: 2026-07-02
 
-## Done this session (Session 23 — Cert verification, Android keystore, pushed to origin)
+## Done this session (Session 24 — Real Supabase project connected end-to-end)
+
+The user provided a Supabase Personal Access Token (already authenticated via
+`supabase login` locally) and GitHub CLI access. This unblocked everything
+that Session 22/23 had documented as "can't verify without live credentials."
+
+- **Found the real project:** `supabase projects list` surfaced `divinity-tte`
+  (ref `ryvilbtrsnjncyfeskqm`, ACTIVE_HEALTHY) — a different, working project
+  from the dead `wimjviyvtgkfmlesxted` ref found in the old `.env`.
+- **Linked and verified migrations:** `supabase link --project-ref
+  ryvilbtrsnjncyfeskqm` then `supabase migration list --linked` — all 36
+  migrations already applied and matching exactly (`db diff --linked` →
+  "No schema changes found"). Someone had already run `db push` against this
+  project before this session.
+- **Verified RLS live, not just in code:** anonymous REST calls to
+  `/rest/v1/users` and `/rest/v1/library_books` both return `[]` — blocked
+  correctly.
+- **Deployed `verify-certificate`:** it wasn't live yet; deployed via
+  `supabase functions deploy verify-certificate --no-verify-jwt`, confirmed
+  working with real HTTP calls against the production URL.
+- **Fixed a real, live security bug:** the `payment_screenshots` Storage
+  bucket was `public: true` on the actual project (migration 031 could only
+  add RLS policies via SQL — flipping public/private needs the Management
+  API, which nobody had done). Fixed via `PUT /storage/v1/bucket/...
+  {"public": false}`, confirmed via follow-up GET. This is LB-5, now actually
+  resolved in production, not just in migration code.
+- **Regenerated the Android keystore.** The one from Session 23 didn't
+  survive — it lived in the old `divinity_flutter/` folder (gitignored,
+  never committed) which got deleted during the monorepo restructure before
+  its contents were copied anywhere else. Regenerated fresh (safe — this app
+  has never been submitted to Play Store), verified with a real
+  `flutter build appbundle --release` that produces a correctly signed AAB.
+- **Set 7 of 8 GitHub Secrets directly via `gh secret set`** (the user's `gh`
+  session turned out to already be authenticated as
+  `DIVINITY-THE-THIRD-EYE` with full repo scope): `SUPABASE_URL`,
+  `SUPABASE_ANON_KEY`, `SUPABASE_PROJECT_REF`, `ANDROID_KEYSTORE_BASE64`,
+  `ANDROID_STORE_PASSWORD`, `ANDROID_KEY_PASSWORD`, `ANDROID_KEY_ALIAS`.
+  **Missing:** `SUPABASE_ACCESS_TOKEN` — the locally-cached CLI session token
+  isn't retrievable in plaintext; needs a fresh PAT generated specifically
+  for this secret. `supabase-deploy.yml` skips cleanly without it.
+- **Fixed `supabase/config.toml`:** it didn't exist in the repo (never
+  committed), so an earlier `supabase start` auto-generated one using a
+  config schema newer than the installed CLI (v2.107.0) understands —
+  `[local_smtp]` should have been `[inbucket]`, which caused every command to
+  fail with a parse error until fixed. Now committed so this doesn't
+  regenerate wrong again.
+- Updated `flutter-app/.env` (gitignored) to the real project's URL/anon key.
+
+See `docs/SUPABASE_SETUP.md` for the full current state and remaining items
+(`SUPABASE_ACCESS_TOKEN`, `CERT_VERIFY_ENDPOINT` on Vercel, Play Console/Apple
+Developer accounts still needed for an actual store release).
+
+## Done previous session (Session 23 — Cert verification, Android keystore, pushed to origin)
 
 - **LB-3 resolved:** Built `supabase/functions/verify-certificate/index.ts` — a public, PII-safe Supabase Edge Function backing the website's `/verify` page. Takes `?code=DIV-XXXX-XXXX`, returns `{valid, holder, programme, issuedOn}`; `holder` is masked to first-name + last-initial (e.g. "Priya S.") — never phone/email/full profile. Deployed with `--no-verify-jwt` so the public website can call it without a Supabase key. Verified locally end-to-end via `supabase functions serve` against the local stack: bad-format code → graceful message, unknown code → `{valid:false}`, a real inserted-then-deleted test certificate → correct masked response.
   - **Still needed from you:** run `supabase functions deploy verify-certificate --no-verify-jwt` (needs a linked Supabase project + `supabase login`), then set `CERT_VERIFY_ENDPOINT` on the website's Vercel project to `https://<project-ref>.supabase.co/functions/v1/verify-certificate`.
