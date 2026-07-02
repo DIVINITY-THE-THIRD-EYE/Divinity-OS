@@ -46,6 +46,18 @@ class MyProfileNotifier extends AsyncNotifier<UserProfile> {
     });
   }
 
+  Future<void> updateCertifications(String certifications) async {
+    final userId = ref.read(currentUserIdProvider);
+    if (userId == null) return;
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      await ref
+          .read(profileRepositoryProvider)
+          .updateCertifications(userId, certifications);
+      return ref.read(profileRepositoryProvider).fetchProfile(userId);
+    });
+  }
+
   Future<void> pauseMembership() async {
     final userId = ref.read(currentUserIdProvider);
     if (userId == null) return;

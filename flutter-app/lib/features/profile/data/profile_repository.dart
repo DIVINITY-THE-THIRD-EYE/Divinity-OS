@@ -10,6 +10,7 @@ abstract interface class ProfileRepository {
     required String name,
     required String phone,
   });
+  Future<void> updateCertifications(String userId, String certifications);
 }
 
 class SupabaseProfileRepository implements ProfileRepository {
@@ -39,6 +40,14 @@ class SupabaseProfileRepository implements ProfileRepository {
           'emergency_contact_name': name.trim(),
           'emergency_contact_phone': phone.trim(),
         })
+        .eq('id', userId);
+  }
+
+  @override
+  Future<void> updateCertifications(String userId, String certifications) async {
+    await _client
+        .from('users')
+        .update({'certifications': certifications.trim()})
         .eq('id', userId);
   }
 }

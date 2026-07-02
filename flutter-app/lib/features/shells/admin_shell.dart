@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/theme_provider.dart';
 import '../../features/admin_ops/presentation/audit_log_screen.dart';
+import '../../features/admin_ops/presentation/trainer_certifications_screen.dart';
 import '../../features/admissions/presentation/leads_screen.dart';
 import '../../features/analytics/presentation/reports_screen.dart';
 import '../../features/auth/presentation/auth_provider.dart';
@@ -111,6 +112,15 @@ class _AdminShellState extends ConsumerState<AdminShell> {
             tooltip: 'Audit Log',
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<void>(builder: (_) => const AuditLogScreen()),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.workspace_premium_outlined),
+            tooltip: 'Trainer Certifications',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const TrainerCertificationsScreen(),
+              ),
             ),
           ),
           IconButton(

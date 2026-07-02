@@ -18,6 +18,8 @@ class UserProfile {
     this.expirationDate,
     this.pauseStartDate,
     this.avatarUrl,
+    this.certifications,
+    this.certificationsPublished = false,
     required this.createdAt,
   });
 
@@ -39,6 +41,8 @@ class UserProfile {
   final DateTime? expirationDate;
   final DateTime? pauseStartDate;
   final String? avatarUrl;
+  final String? certifications;
+  final bool certificationsPublished;
   final DateTime createdAt;
 
   factory UserProfile.fromMap(Map<String, dynamic> m) => UserProfile(
@@ -64,6 +68,8 @@ class UserProfile {
         ? null
         : DateTime.parse(m['pause_start_date'] as String),
     avatarUrl: m['avatar_url'] as String?,
+    certifications: m['certifications'] as String?,
+    certificationsPublished: m['certifications_published'] as bool? ?? false,
     createdAt: DateTime.parse(m['created_at'] as String),
   );
 

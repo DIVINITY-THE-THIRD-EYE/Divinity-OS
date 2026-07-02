@@ -79,6 +79,35 @@ class _ProfileBody extends ConsumerWidget {
               ),
           ],
         ),
+        if (profile.role.toUpperCase() == 'TRAINER') ...[
+          const SizedBox(height: 16),
+          _InfoSection(
+            title: 'Certifications',
+            action: TextButton.icon(
+              icon: const Icon(Icons.edit_outlined, size: 16),
+              label: const Text('Edit'),
+              onPressed: () => _editCertifications(context, ref),
+            ),
+            children: [
+              _InfoRow(
+                label: 'Status',
+                value: profile.certificationsPublished
+                    ? 'Published on website'
+                    : (profile.certifications == null
+                          ? 'Not submitted yet'
+                          : 'Pending Admin approval'),
+                icon: profile.certificationsPublished
+                    ? Icons.public_outlined
+                    : Icons.hourglass_empty_outlined,
+              ),
+              _InfoRow(
+                label: 'Details',
+                value: profile.certifications ?? '—',
+                icon: Icons.workspace_premium_outlined,
+              ),
+            ],
+          ),
+        ],
         const SizedBox(height: 16),
         _InfoSection(
           title: 'Journey',
@@ -279,6 +308,40 @@ class _ProfileBody extends ConsumerWidget {
             name: nameCtrl.text.trim(),
             phone: phoneCtrl.text.trim(),
           );
+    }
+  }
+
+  Future<void> _editCertifications(BuildContext context, WidgetRef ref) async {
+    final ctrl = TextEditingController(text: profile.certifications ?? '');
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Certifications'),
+        content: TextField(
+          controller: ctrl,
+          maxLines: 5,
+          decoration: const InputDecoration(
+            labelText: 'Certifications, experience, specializations',
+            alignLabelWithHint: true,
+            hintText:
+                'e.g. 500hr RYT, 5 years teaching Hatha & Vinyasa, therapeutic yoga specialist',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Submit for approval'),
+          ),
+        ],
+      ),
+    );
+    ctrl.dispose();
+    if (saved == true) {
+      ref.read(myProfileProvider.notifier).updateCertifications(ctrl.text);
     }
   }
 
