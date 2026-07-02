@@ -53,7 +53,9 @@ class TrainerCertificationsScreen extends ConsumerWidget {
         error: (e, _) => Center(child: Text('Error: $e')),
         data: (pending) {
           if (pending.isEmpty) {
-            return const Center(child: Text('No submissions awaiting approval.'));
+            return const Center(
+              child: Text('No submissions awaiting approval.'),
+            );
           }
           return ListView.separated(
             padding: const EdgeInsets.all(16),

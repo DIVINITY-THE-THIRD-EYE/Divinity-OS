@@ -47,7 +47,8 @@ class PlansNotifier extends AsyncNotifier<List<Plan>> {
         .read(plansRepositoryProvider)
         .updatePlan(plan.id, isActive: !plan.isActive);
     state = AsyncData([
-      for (final p in state.value ?? []) if (p.id == updated.id) updated else p,
+      for (final p in state.value ?? [])
+        if (p.id == updated.id) updated else p,
     ]);
   }
 
@@ -74,7 +75,8 @@ class PlansNotifier extends AsyncNotifier<List<Plan>> {
           maxLeaveDaysPerMonth: maxLeaveDaysPerMonth,
         );
     state = AsyncData([
-      for (final p in state.value ?? []) if (p.id == updated.id) updated else p,
+      for (final p in state.value ?? [])
+        if (p.id == updated.id) updated else p,
     ]);
   }
 }

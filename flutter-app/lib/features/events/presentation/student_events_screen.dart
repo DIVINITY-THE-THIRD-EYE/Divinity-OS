@@ -345,7 +345,9 @@ class _EventPaymentSheetState extends ConsumerState<_EventPaymentSheet> {
             const SizedBox(height: 20),
             TextField(
               controller: _refCtrl,
-              inputFormatters: [FilteringTextInputFormatter.singleLineFormatter],
+              inputFormatters: [
+                FilteringTextInputFormatter.singleLineFormatter,
+              ],
               decoration: const InputDecoration(
                 labelText: 'UPI reference number',
                 prefixIcon: Icon(Icons.tag_outlined),

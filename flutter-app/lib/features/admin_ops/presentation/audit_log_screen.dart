@@ -33,7 +33,9 @@ class AuditLogScreen extends ConsumerWidget {
         error: (e, _) => Center(child: Text('Failed to load audit log: $e')),
         data: (entries) {
           if (entries.isEmpty) {
-            return const Center(child: Text('No sensitive actions logged yet.'));
+            return const Center(
+              child: Text('No sensitive actions logged yet.'),
+            );
           }
           return RefreshIndicator(
             onRefresh: () async => ref.invalidate(auditLogProvider),

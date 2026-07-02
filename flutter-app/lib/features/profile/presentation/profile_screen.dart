@@ -393,9 +393,8 @@ class _LanguageSelector extends ConsumerWidget {
             ButtonSegment(value: 'hi', label: Text(l10n.hindi)),
           ],
           selected: {locale.languageCode},
-          onSelectionChanged: (s) => ref
-              .read(localeProvider.notifier)
-              .setLocale(Locale(s.first)),
+          onSelectionChanged: (s) =>
+              ref.read(localeProvider.notifier).setLocale(Locale(s.first)),
         ),
       ],
     );
