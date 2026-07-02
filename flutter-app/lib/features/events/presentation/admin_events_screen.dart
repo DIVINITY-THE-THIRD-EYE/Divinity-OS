@@ -208,8 +208,10 @@ class _EventEditorSheetState extends ConsumerState<_EventEditorSheet> {
   late final TextEditingController _descCtrl;
   late final TextEditingController _locationCtrl;
   late final TextEditingController _capacityCtrl;
+  late final TextEditingController _priceCtrl;
   DateTime? _startsAt;
   EventStatus _status = EventStatus.published;
+  bool _isFree = true;
   bool _saving = false;
 
   bool get _isEdit => widget.existing != null;
@@ -222,8 +224,12 @@ class _EventEditorSheetState extends ConsumerState<_EventEditorSheet> {
     _descCtrl = TextEditingController(text: e?.description ?? '');
     _locationCtrl = TextEditingController(text: e?.location ?? '');
     _capacityCtrl = TextEditingController(text: e?.capacity?.toString() ?? '');
+    _priceCtrl = TextEditingController(
+      text: e?.price != null ? e!.price!.toStringAsFixed(0) : '',
+    );
     _startsAt = e?.startsAt;
     _status = e?.status ?? EventStatus.published;
+    _isFree = e?.isFree ?? true;
   }
 
   @override
@@ -232,6 +238,7 @@ class _EventEditorSheetState extends ConsumerState<_EventEditorSheet> {
     _descCtrl.dispose();
     _locationCtrl.dispose();
     _capacityCtrl.dispose();
+    _priceCtrl.dispose();
     super.dispose();
   }
 
@@ -280,6 +287,15 @@ class _EventEditorSheetState extends ConsumerState<_EventEditorSheet> {
       }
     }
 
+    double? price;
+    if (!_isFree) {
+      price = double.tryParse(_priceCtrl.text.trim());
+      if (price == null || price <= 0) {
+        _snack('Enter a valid price for a paid event.');
+        return;
+      }
+    }
+
     final draft = Event(
       id: widget.existing?.id ?? '',
       title: title,
@@ -288,6 +304,8 @@ class _EventEditorSheetState extends ConsumerState<_EventEditorSheet> {
       startsAt: _startsAt!,
       capacity: capacity,
       status: _status,
+      isFree: _isFree,
+      price: price,
       createdAt: widget.existing?.createdAt ?? DateTime.now(),
     );
 
@@ -376,6 +394,29 @@ class _EventEditorSheetState extends ConsumerState<_EventEditorSheet> {
                 prefixIcon: Icon(Icons.event_seat_outlined),
               ),
             ),
+            const SizedBox(height: 16),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: const Text('Free event'),
+              subtitle: Text(
+                _isFree
+                    ? 'No payment required to register.'
+                    : 'Students pay via UPI QR before their spot is confirmed.',
+              ),
+              value: _isFree,
+              onChanged: (v) => setState(() => _isFree = v),
+            ),
+            if (!_isFree) ...[
+              const SizedBox(height: 16),
+              TextField(
+                controller: _priceCtrl,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Price (₹) *',
+                  prefixIcon: Icon(Icons.currency_rupee),
+                ),
+              ),
+            ],
             const SizedBox(height: 16),
             TextField(
               controller: _descCtrl,

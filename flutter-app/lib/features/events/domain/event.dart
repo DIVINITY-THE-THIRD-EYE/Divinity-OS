@@ -38,6 +38,8 @@ class Event {
     this.createdBy,
     this.registrationCount = 0,
     this.isRegistered = false,
+    this.isFree = true,
+    this.price,
     required this.createdAt,
   });
 
@@ -51,6 +53,8 @@ class Event {
   final String? createdBy;
   final int registrationCount;
   final bool isRegistered;
+  final bool isFree;
+  final double? price;
   final DateTime createdAt;
 
   bool get isFull => capacity != null && registrationCount >= capacity!;
@@ -97,6 +101,8 @@ class Event {
       createdBy: m['created_by'] as String?,
       registrationCount: count,
       isRegistered: registered,
+      isFree: m['is_free'] as bool? ?? true,
+      price: (m['price'] as num?)?.toDouble(),
       createdAt: DateTime.parse(m['created_at'] as String),
     );
   }
@@ -110,5 +116,7 @@ class Event {
     'starts_at': startsAt.toUtc().toIso8601String(),
     if (capacity != null) 'capacity': capacity,
     'status': status.wire,
+    'is_free': isFree,
+    if (!isFree) 'price': price,
   };
 }
