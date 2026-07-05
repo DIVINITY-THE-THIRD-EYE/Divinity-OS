@@ -11,6 +11,10 @@ permissions:
   contents: write
   pull-requests: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   release-please:
     name: Create Release PR (flutter-app)
@@ -20,52 +24,40 @@ jobs:
       - uses: googleapis/release-please-action@v4
         id: release
         with:
-          release-type: dart
-          path: flutter-app
-          package-name: divinity_flutter
-          changelog-types: |
-            [
-              {"type": "feat", "section": "✨ Features", "hidden": false},
-              {"type": "fix",  "section": "🐛 Bug Fixes", "hidden": false},
-              {"type": "perf", "section": "⚡ Performance", "hidden": false},
-              {"type": "refactor", "section": "♻️ Refactoring", "hidden": false},
-              {"type": "test", "section": "🧪 Tests", "hidden": false},
-              {"type": "ci",   "section": "🔧 CI/CD", "hidden": false},
-              {"type": "docs", "section": "📚 Documentation", "hidden": false},
-              {"type": "chore","section": "🧹 Maintenance", "hidden": true}
-            ]
+          config-file: flutter-app/release-please-config.json
+          manifest-file: flutter-app/.release-please-manifest.json
 
       # After a release tag is created, build and upload the signed AAB
       - name: Checkout (on release)
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs['flutter-app--release_created'] }}
         uses: actions/checkout@v4
 
       - name: Set up Java 17 (on release)
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs['flutter-app--release_created'] }}
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: temurin
 
       - name: Set up Flutter (on release)
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs['flutter-app--release_created'] }}
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
 
       - name: Install dependencies (on release)
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs['flutter-app--release_created'] }}
         working-directory: flutter-app
         run: flutter pub get
 
       - name: Decode Android keystore (on release)
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs['flutter-app--release_created'] }}
         working-directory: flutter-app
         run: echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
 
       - name: Write key.properties (on release)
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs['flutter-app--release_created'] }}
         working-directory: flutter-app
         run: |
           cat > android/key.properties <<EOF
@@ -76,18 +68,18 @@ jobs:
           EOF
 
       - name: Build release App Bundle (on release)
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs['flutter-app--release_created'] }}
         working-directory: flutter-app
         run: |
           flutter build appbundle --release \
             --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
             --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }} \
-            --build-name=${{ steps.release.outputs.tag_name }} \
+            --build-name=${{ steps.release.outputs['flutter-app--tag_name'] }} \
             --build-number=${{ github.run_number }}
 
       - name: Upload AAB to GitHub Release
-        if: ${{ steps.release.outputs.release_created }}
+        if: ${{ steps.release.outputs['flutter-app--release_created'] }}
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.release.outputs.tag_name }}
+          tag_name: ${{ steps.release.outputs['flutter-app--tag_name'] }}
           files: flutter-app/build/app/outputs/bundle/release/app-release.aab

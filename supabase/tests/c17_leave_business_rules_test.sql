@@ -186,11 +186,20 @@ select is(
 );
 
 -- ── C17.13-14: request starting today (< 24h advance) is never auto-approved ─
+-- end_date is widened to current_date + 2 (not just current_date) so the
+-- range always contains at least one non-week-off day, regardless of which
+-- weekday "today" happens to be (week-offs are at most 2 consecutive days).
+-- Without this, process_leave_request()'s separate (and separately correct)
+-- "entire range is week-offs, nothing to approve -> auto-APPROVED" rule
+-- collides with this late-request assertion whenever the suite happens to
+-- run on a Saturday or Sunday. The advance-notice check itself only looks at
+-- start_date (still current_date here), which is always "late" by
+-- definition, so widening end_date doesn't weaken what this test verifies.
 insert into public.leave_requests (student_id, start_date, end_date, reason)
 values (
   '77777777-7777-7777-7777-777777777777',
   current_date,
-  current_date,
+  current_date + 2,
   'C17 request 4 (late)'
 );
 

@@ -1,5 +1,10 @@
 name: CodeQL Security Scan (Website)
 
+# Repo went public on 2026-07-05: GitHub-hosted Actions minutes are now
+# unlimited for public repos, and GitHub Advanced Security (Code scanning) is
+# free — the two constraints that pushed this off pull_request are gone, so
+# pull_request is back. See docs/CODEQL_VERIFICATION.md and
+# docs/GITHUB_CONFIGURATION_REPORT.md for the re-audit that confirmed this.
 on:
   push:
     branches: [main, feature/trust-certificates]
@@ -11,11 +16,22 @@ on:
       - 'website/**'
   schedule:
     - cron: '30 20 * * 6'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   analyze:
     name: CodeQL Analysis (JavaScript/TypeScript)
-    runs-on: ubuntu-latest
+    # Prepared for a future self-hosted runner without switching to one yet:
+    # set the repo/org variable CODEQL_RUNNER_LABEL (Settings -> Secrets and
+    # variables -> Actions -> Variables) to a self-hosted runner label to
+    # opt in later. Unset, this resolves to "ubuntu-latest" exactly as
+    # before — no behavior change until that variable is deliberately set.
+    # See docs/SELF_HOSTED_RUNNER_SETUP.md before setting it.
+    runs-on: ${{ vars.CODEQL_RUNNER_LABEL || 'ubuntu-latest' }}
     permissions:
       actions: read
       contents: read
@@ -25,11 +41,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # security-extended (not security-and-quality): keeps every security
+      # query security-and-quality would run, drops only the pure code-style/
+      # quality queries (not vulnerabilities). See docs/CODEQL_STRATEGY.md.
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: javascript-typescript
-          queries: security-and-quality
+          queries: security-extended
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -42,6 +61,10 @@ jobs:
         working-directory: website
         run: npm ci
 
+      # Advanced Security (Code scanning) is enabled now that the repo is
+      # public, so the default upload:always works — results go to the
+      # Security tab instead of only a downloadable artifact. See
+      # docs/CODEQL_VERIFICATION.md for the run that confirmed this.
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
