@@ -1,13 +1,17 @@
 name: CodeQL Security Scan (Website)
 
-# Deliberately NOT triggered on every pull_request — see docs/CODEQL_STRATEGY.md.
-# Runs on pushes to main/release branches, once weekly, or on demand via
-# workflow_dispatch — a maintainer can still run it against any PR branch
-# manually from the Actions tab (Run workflow -> pick the branch) when a
-# security-sensitive PR specifically warrants it.
+# Repo went public on 2026-07-05: GitHub-hosted Actions minutes are now
+# unlimited for public repos, and GitHub Advanced Security (Code scanning) is
+# free — the two constraints that pushed this off pull_request are gone, so
+# pull_request is back. See docs/CODEQL_VERIFICATION.md and
+# docs/GITHUB_CONFIGURATION_REPORT.md for the re-audit that confirmed this.
 on:
   push:
     branches: [main, feature/trust-certificates]
+    paths:
+      - 'website/**'
+  pull_request:
+    branches: [main]
     paths:
       - 'website/**'
   schedule:
@@ -57,27 +61,11 @@ jobs:
         working-directory: website
         run: npm ci
 
-      # This repo is private and does not have GitHub Advanced Security
-      # (Code scanning) enabled — that's a paid feature on private repos and
-      # is not being turned on without an explicit decision. Without it, the
-      # default `upload: always` fails every run at the upload step (SARIF
-      # upload is rejected with "Code scanning is not enabled for this
-      # repository"), even though the analysis itself completes cleanly.
-      # `upload: never` keeps the full CodeQL analysis running without
-      # attempting that upload. See docs/CODEQL_ADVANCED_SECURITY.md for
-      # what this trades off and how to switch back once Advanced Security
-      # is enabled.
+      # Advanced Security (Code scanning) is enabled now that the repo is
+      # public, so the default upload:always works — results go to the
+      # Security tab instead of only a downloadable artifact. See
+      # docs/CODEQL_VERIFICATION.md for the run that confirmed this.
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
           category: /language:javascript-typescript
-          upload: never
-          output: codeql-results
-
-      - name: Upload CodeQL results as a build artifact
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: codeql-results-website
-          path: codeql-results
-          retention-days: 30
