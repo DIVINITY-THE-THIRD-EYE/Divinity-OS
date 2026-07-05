@@ -56,7 +56,27 @@ jobs:
           SUPABASE_URL: https://placeholder.supabase.co
           SUPABASE_ANON_KEY: placeholder-anon-key
 
+      # This repo is private and does not have GitHub Advanced Security
+      # (Code scanning) enabled — that's a paid feature on private repos and
+      # is not being turned on without an explicit decision. Without it, the
+      # default `upload: always` fails every run at the upload step (SARIF
+      # upload is rejected with "Code scanning is not enabled for this
+      # repository"), even though the analysis itself completes cleanly.
+      # `upload: never` keeps the full CodeQL analysis running on every push/
+      # PR without attempting that upload. See docs/CODEQL_ADVANCED_SECURITY.md
+      # for what this trades off and how to switch back once Advanced
+      # Security is enabled.
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
           category: /language:java-kotlin
+          upload: never
+          output: codeql-results
+
+      - name: Upload CodeQL results as a build artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: codeql-results-flutter
+          path: codeql-results
+          retention-days: 30
