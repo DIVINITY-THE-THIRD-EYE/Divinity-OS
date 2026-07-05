@@ -1,5 +1,7 @@
 # 14 — Critical Fixes
 
+**Round 2 update:** both fixes below (`1cb10cf`, `706a2b2`) are merged to `main` via PR #20, confirmed working live (release-please's pipeline was exercised end-to-end by that very merge). No new CRITICAL-severity issue was found in round 2 either — see `PUBLIC_REPOSITORY_SECURITY_AUDIT.md` for the public-repo re-check.
+
 ## No CRITICAL-severity issue was found
 
 Per this audit's severity policy (CRITICAL = security holes, exposed secrets, auth bypass, data loss, payment errors, or core-flow crashes), nothing found this session met that bar:
