@@ -16,24 +16,19 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          # v0.5.4 only accepts `sizes`, keyed by the lower-bound line-count
+          # threshold (ascending), with the bare size name as the value — the
+          # action prepends "size/" itself (see pascalgn/size-label-action
+          # index.js: `size/${sizes[lines]}`). There is no `labels`,
+          # `fail_if_xl`, or `message_if_xl` input in this version; those were
+          # silently ignored before, causing every run to fail with a 422 when
+          # the action tried to apply a null label.
           sizes: >
             {
-              "XS": 10,
-              "S": 50,
-              "M": 150,
-              "L": 500,
-              "XL": 1000,
-              "XXL": 2000
+              "0": "XS",
+              "10": "S",
+              "50": "M",
+              "150": "L",
+              "500": "XL",
+              "1000": "XXL"
             }
-          labels: >
-            {
-              "XS": "size/XS",
-              "S": "size/S",
-              "M": "size/M",
-              "L": "size/L",
-              "XL": "size/XL",
-              "XXL": "size/XXL"
-            }
-          fail_if_xl: false
-          message_if_xl: |
-            ⚠️ This PR is very large (+1000 lines). Consider splitting it into smaller PRs for easier review.
