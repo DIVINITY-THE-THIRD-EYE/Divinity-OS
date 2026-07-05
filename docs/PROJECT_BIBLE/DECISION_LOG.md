@@ -1,6 +1,6 @@
 # Decision Log
 
-Consolidated architectural & product decisions. Web ADRs live in [`design/adr/`](../divinity-third-eye/divinity/design/adr/); this log mirrors them and adds app/cross-cutting decisions. Append new decisions here (and as an ADR for web).
+Consolidated architectural & product decisions. Web ADRs live in [`design/adr/`](../website/design/adr/); this log mirrors them and adds app/cross-cutting decisions. Append new decisions here (and as an ADR for web).
 
 ## Web ADRs (`design/adr/0001–0012`)
 

@@ -1,6 +1,6 @@
 # Phase 13 — Performance
 
-> Sources: [design/11-performance-budgets.md](../divinity-third-eye/divinity/design/11-performance-budgets.md), [design/phase0/performance-baseline.md](../divinity-third-eye/divinity/design/phase0/performance-baseline.md), [design/phase0/reports/](../divinity-third-eye/divinity/design/phase0/reports/) (Lighthouse desktop/mobile reports + `final-d.json`/`final-m.json`).
+> Sources: [design/11-performance-budgets.md](../website/design/11-performance-budgets.md), [design/phase0/performance-baseline.md](../website/design/phase0/performance-baseline.md), [design/phase0/reports/](../website/design/phase0/reports/) (Lighthouse desktop/mobile reports + `final-d.json`/`final-m.json`).
 
 ## Lighthouse
 
@@ -35,7 +35,7 @@ App Router automatic per-route; dynamic imports for heavy client components (mot
 
 ## Performance Budgets
 
-Defined in [design/11-performance-budgets.md](../divinity-third-eye/divinity/design/11-performance-budgets.md) and frozen quality gates ([design/phase0/quality-gates.md](../divinity-third-eye/divinity/design/phase0/quality-gates.md)). Targets cover Core Web Vitals (LCP/CLS/INP). **`[Needs Verification]`:** transcribe the exact budget numbers from that doc.
+Defined in [design/11-performance-budgets.md](../website/design/11-performance-budgets.md) and frozen quality gates ([design/phase0/quality-gates.md](../website/design/phase0/quality-gates.md)). Targets cover Core Web Vitals (LCP/CLS/INP). **`[Needs Verification]`:** transcribe the exact budget numbers from that doc.
 
 ## App performance
 

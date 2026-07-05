@@ -50,5 +50,7 @@ Supabase managed backups; redeploy from git. Detailed RPO/RTO: [27_Business_Cont
 
 ## Dev environment
 
-- `.claude/launch.json` runs `npm --prefix divinity-third-eye/divinity run dev` on port 3000.
+- `.claude/launch.json` runs `npm --prefix website run dev` on port 3000 (fixed 2026-07-02 —
+  previously pointed at the pre-monorepo path `divinity-third-eye/divinity`, which no longer
+  exists and would have failed to start).
 - `.nvmrc` pins Node for the website. Flutter SDK + Dart for the app.

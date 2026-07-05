@@ -1,6 +1,6 @@
 # Phase 25 — Assets & Content
 
-> Sources: website `public/`, `lib/content.ts`, `sanity/schemas/`, [README "Photography & brand assets"](../divinity-third-eye/divinity/README.md). See also [Appendix/Brand_and_Content_Library](Appendix/Brand_and_Content_Library.md).
+> Sources: website `public/`, `lib/content.ts`, `sanity/schemas/`, [README "Photography & brand assets"](../website/README.md). See also [Appendix/Brand_and_Content_Library](Appendix/Brand_and_Content_Library.md).
 
 ## Images
 
@@ -40,7 +40,7 @@ Tokens (void/bone/ember) + fonts + lotus mark. Full guide: [Appendix/Brand_and_C
 
 ## Copywriting
 
-Concept-led, breath-paced voice (see README "The design"). Source of truth: `lib/content.ts`. Content strategy: [design/19-content-strategy.md](../divinity-third-eye/divinity/design/19-content-strategy.md).
+Concept-led, breath-paced voice (see README "The design"). Source of truth: `lib/content.ts`. Content strategy: [design/19-content-strategy.md](../website/design/19-content-strategy.md).
 
 ## Content Workflow
 

@@ -1,6 +1,6 @@
 # Phase 5 — Student Mobile App
 
-> `divinity_flutter/` (Flutter, Riverpod, GoRouter, Supabase, Firebase). The student is the default role; the same binary serves trainers/admins via role shells. Sources: [`lib/features/`](../divinity_flutter/lib/features/).
+> `flutter-app/` (Flutter, Riverpod, GoRouter, Supabase, Firebase). The student is the default role; the same binary serves trainers/admins via role shells. Sources: [`lib/features/`](../flutter-app/lib/features/).
 
 ## Screens (student-facing)
 

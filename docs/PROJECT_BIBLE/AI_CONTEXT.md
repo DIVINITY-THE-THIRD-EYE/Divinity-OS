@@ -4,14 +4,17 @@
 
 ## 1. Project shape (orient yourself)
 
-- Two live products: **website** `divinity-third-eye/divinity/` (Next.js) and **app** `divinity_flutter/` (Flutter).
+- **Single monorepo** (`DIVINITY-THE-THIRD-EYE/Divinity-OS`, one GitHub repo, one Supabase project) with two live products: **website** `website/` (Next.js) and **app** `flutter-app/` (Flutter, package `divinity_app`). Both were previously separate repos; they were merged with full commit history preserved.
+- Shared backend lives at `supabase/` (root-level, one directory for both apps): migrations, pgTAP tests, Edge Functions.
 - Backend: **Supabase** (Postgres + RLS + Auth + Storage) and **Firebase** (FCM/Analytics/Crashlytics/App Check/Remote Config/AI Logic).
-- `Divinity/` is the monorepo/docs/agentic-OS layer and holds archived utilities, build scripts, and the Prisma reference website `Divinity/reference/divinity-website/`.
-- `EXTRA_FILES/` is quarantine containing old duplicate project folders, stray platforms, and old assets.
+- `divinity_flutter/` (NOT `flutter-app/`, which is the live app) is an **empty legacy
+  directory** — do not use it. `Divinity/` is archived reference material (Prisma reference
+  website, legacy build scripts) — gitignored, not part of the shipped product.
+- `EXTRA_FILES/` is quarantine containing old duplicate project folders, stray platforms, and old assets — also gitignored.
 
 ## 2. Non-Negotiable Rules
 
-1. **Never weaken Row-Level Security.** Every table has RLS. Privileged fields (`role`, approval flags, payment status) are locked by triggers (`lock_privileged_fields`, `lock_payment_fields`). Changes to RLS must keep the `supabase/tests/c1..c8` security tests passing.
+1. **Never weaken Row-Level Security.** Every table has RLS (all 20 application tables, verified). Privileged fields (`role`, approval flags, payment status) are locked by triggers (`lock_privileged_fields`, `lock_payment_fields`). Changes to RLS must keep the `supabase/tests/c1..c16` (117 assertions) security tests passing — run via `supabase test db`.
 2. **Roles are the spine.** Student / Trainer / Admin. Authorization is enforced in the DB (RLS + `is_admin`/`is_trainer` helpers + JWT `app_metadata` role sync), not just in the UI.
 3. **The website must run with zero config.** Don't introduce a hard dependency on Sanity or Brevo; use the existing `fetchOrFallback` / logged-fallback pattern.
 4. **Respect `prefers-reduced-motion`.** All motion must degrade. Don't add unconditional animations.
@@ -60,7 +63,26 @@ Key locked choices: **Supabase over Firebase for primary data** (ADR-0011; Fireb
 
 ## 7. Current Priorities
 
-Derived from `docs/` (status/task/BETA_LAUNCH_CHECKLIST) and recent commits: closed-beta readiness — finishing payment verification, FCM deep-linking, admin reporting/CSV export, and pre-launch checklist items. See [21_Future_Roadmap](21_Future_Roadmap.md). *(Confirm against `Divinity/docs/status.md` for the live list.)*
+**Updated 2026-07-02, verified against live state (code, GitHub, and the linked production
+Supabase project) — see [../VERIFIED_AUDIT_2026-07-02.md](../VERIFIED_AUDIT_2026-07-02.md)
+for full evidence.**
+
+- **Application code is feature-complete against the 16-module blueprint** (plus Feedback,
+  Support, Weekly Schedule beyond it). All gates green: `flutter analyze`/`test` (262/262),
+  website `lint`/`tsc`/`vitest` (61/61)/`build`, pgTAP (117/117 assertions).
+- **Production Supabase is connected and live**: project `divinity-tte`
+  (`ryvilbtrsnjncyfeskqm`), all 36 migrations applied with zero drift, RLS verified live,
+  `verify-certificate` Edge Function deployed and `ACTIVE`.
+- **GitHub Secrets: 8/8 configured** (Supabase + Android signing) on
+  `DIVINITY-THE-THIRD-EYE/Divinity-OS`.
+- **Remaining priorities are operational, not code**: (1) iOS signing needs a Mac + Apple
+  Developer account — cannot be done from this environment; (2) Android/iOS store
+  submissions need Play Console / App Store Connect apps created; (3) `CERT_VERIFY_ENDPOINT`
+  needs setting on the website's Vercel project; (4) Firebase App Check enforcement needs
+  confirming against a real signed release build; (5) a known CI tooling bug —
+  `release-please-action@v4` rejects the `package-name`/`changelog-types` inputs used in
+  `.github/workflows/release-flutter.yml` / `release-website.yml` and fails to locate
+  `pubspec.yaml` — needs migrating to the action's manifest-based config.
 
 ## 8. Things Never to Change (without explicit sign-off)
 

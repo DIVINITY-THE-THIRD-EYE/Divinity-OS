@@ -1,6 +1,6 @@
 # Phase 3 — System Architecture
 
-> Sources: [Divinity/docs/architecture.md](../Divinity/docs/architecture.md), [design/adr](../divinity-third-eye/divinity/design/adr/), live source.
+> Sources: [Divinity/docs/architecture.md](../Divinity/docs/architecture.md), [design/adr](../website/design/adr/), live source.
 
 ## High-Level Architecture
 
@@ -76,7 +76,7 @@ graph TD
 | Concern | Owner | Notes |
 |---|---|---|
 | Identity & access | Supabase Auth + RLS | OTP login, JWT role in `app_metadata` |
-| Business data | Supabase Postgres | 12 tables, RPCs, triggers |
+| Business data | Supabase Postgres | 20 tables, RPCs, triggers (verified live 2026-07-02) |
 | File storage | Supabase Storage | payment screenshots (RLS) |
 | Push / analytics / crash | Firebase | FCM, Analytics, Crashlytics |
 | Marketing content | Sanity (optional) → `lib/content.ts` fallback | |
@@ -127,7 +127,7 @@ sequenceDiagram
 
 ## Architecture Decision Records (ADRs)
 
-12 web ADRs in [design/adr/](../divinity-third-eye/divinity/design/adr/):
+12 web ADRs in [design/adr/](../website/design/adr/):
 
 | ADR | Decision |
 |---|---|

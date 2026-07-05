@@ -1,5 +1,11 @@
 # DIVINITY ACADEMY OPERATING SYSTEM — PRODUCTION AUDIT REPORT
 
+> **⚠️ SUPERSEDED (2026-07-02):** this was the first read-only audit pass and predates
+> Feedback/Support/Weekly Schedule modules, CI/CD, RLS/storage fixes, the production
+> Supabase connection, and GitHub Secrets configuration — all of which are now done and
+> live-verified. See [VERIFIED_AUDIT_2026-07-02.md](VERIFIED_AUDIT_2026-07-02.md) for
+> current, evidence-based status. Body below preserved as the original snapshot.
+
 **Date:** 2026-07-01, last updated 2026-07-02 (Session 22 — CI/CD verification & environment setup) | **Auditor:** Read-only code inspection | **Source of truth:** implementation only
 
 ---

@@ -2,7 +2,7 @@
 
 This document provides a rigorous comparative analysis between the two Next.js website implementations in this workspace:
 1. **Prisma/tRPC Prototype Site**: Located at [`Divinity/reference/divinity-website/`](file:///C:/Users/PC/OneDrive/Documents/Divinity%20TTE/Divinity/reference/divinity-website/).
-2. **Live Sanity Website**: Located at [`divinity-third-eye/divinity/`](file:///C:/Users/PC/OneDrive/Documents/Divinity%20TTE/divinity-third-eye/divinity/).
+2. **Live Sanity Website**: Located at [`website/`](file:///C:/Users/PC/OneDrive/Documents/Divinity%20TTE/website/).
 
 Based on detailed analysis of source code, git histories, and architectures, these two projects are **independent implementations** with **complementary architectures**. The live site serves as the public marketing front door, while the Prisma site acts as a high-fidelity interactive dashboard portal prototype.
 
@@ -10,7 +10,7 @@ Based on detailed analysis of source code, git histories, and architectures, the
 
 ## 1. Architectural Comparison
 
-| Dimension | Live Website (`divinity-third-eye`) | Prisma Website (`divinity-website`) |
+| Dimension | Live Website (`website/`) | Prisma Website (`Divinity/reference/divinity-website`, archived) |
 |---|---|---|
 | **Role & Purpose** | Public-facing marketing front door | High-fidelity interactive portal & dashboard |
 | **Rendering Model** | Static Site Generation (SSG) / Server Component defaults | Client-heavy Interactive SPA + Server Components |

@@ -1,10 +1,10 @@
 # FAQ
 
 **Q: What are the live projects vs. the duplicates?**
-The live products are `divinity_flutter/` (app) and `divinity-third-eye/divinity/` (website) at the workspace root. `Divinity/apps/*` holds older copies; old snapshots and strays were quarantined to `EXTRA_FILES/`. See [02_Repository_Discovery](02_Repository_Discovery.md) and [EXTRA_FILES/MIGRATION_REPORT.md](../EXTRA_FILES/MIGRATION_REPORT.md).
+The live products are `flutter-app/` (app) and `website/` (website) at the workspace root. `Divinity/apps/*` holds older copies; old snapshots and strays were quarantined to `EXTRA_FILES/`. See [02_Repository_Discovery](02_Repository_Discovery.md) and [EXTRA_FILES/MIGRATION_REPORT.md](../EXTRA_FILES/MIGRATION_REPORT.md).
 
 **Q: Where does business data live?**
-Supabase Postgres (12 tables, RLS). Firebase is only for push/analytics/crash. The website has no Supabase dependency. ([03_System_Architecture](03_System_Architecture.md))
+Supabase Postgres (20 tables, RLS). Firebase is only for push/analytics/crash. The website has no Supabase SDK dependency (it calls the `verify-certificate` Edge Function over plain HTTP). ([03_System_Architecture](03_System_Architecture.md))
 
 **Q: How does login work?**
 Passwordless OTP via Supabase Auth; role travels in the JWT `app_metadata` and is synced from `users.role` by a trigger. ([10_Auth_Authorization](10_Auth_Authorization.md))

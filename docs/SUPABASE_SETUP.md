@@ -99,10 +99,10 @@ supabase db push                                          # migrations
 supabase functions deploy verify-certificate --no-verify-jwt  # if the function changed
 ```
 
-Once `SUPABASE_ACCESS_TOKEN` is added to GitHub Secrets, `supabase-deploy.yml`
+`SUPABASE_ACCESS_TOKEN` is already set (see table above), so `supabase-deploy.yml`
 does this automatically on every push to `main` that touches
 `supabase/migrations/**` or `supabase/functions/**` — manual deploy is only
-needed until that secret exists, or if you want to push out-of-band.
+needed if you want to push out-of-band ahead of a merge.
 
 ## Remaining open items
 

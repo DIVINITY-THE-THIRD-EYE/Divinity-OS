@@ -1,5 +1,13 @@
 # Executive Summary — Divinity Ecosystem
 
+> **⚠️ SUPERSEDED (2026-07-02):** this snapshot predates the monorepo consolidation. The
+> "2 live repos" (`divinity_flutter`, `divinity-third-eye/divinity`) described below were
+> merged into **one** repository, `DIVINITY-THE-THIRD-EYE/Divinity-OS`, with canonical dirs
+> `flutter-app/`, `website/`, `supabase/`. For current, verified facts see
+> [ARCHITECTURE_COMPLIANCE](ARCHITECTURE_COMPLIANCE.md) and
+> [../VERIFIED_AUDIT_2026-07-02.md](../VERIFIED_AUDIT_2026-07-02.md). Body below is the
+> original 2026-06-30 snapshot, preserved as a historical record.
+>
 > Generated 2026-06-30 from a live-repository scan. Counts exclude build caches (`node_modules`, `.dart_tool`, `build`, `.next`, `.gradle`, `.git`).
 
 ## Repositories
@@ -51,11 +59,11 @@ Supabase (primary), Firebase (messaging/analytics/crash), Sanity (optional CMS),
 
 | Category | Documented Items | Source Code Match | Coverage % |
 |---|---|---|---|
-| **System Architecture** | High-level topology, RLS schema, service boundaries, rendering | `divinity-third-eye/`, `divinity_flutter/` | 100% |
+| **System Architecture** | High-level topology, RLS schema, service boundaries, rendering | `divinity-third-eye/`, `flutter-app/` | 100% |
 | **Database & Models** | 12 tables, relationships, constraints, RPCs, triggers, indices | `supabase/migrations/` | 100% |
 | **Authentication & Authz** | Login flow, JWT sync, RLS helpers, role access matrix | `lib/features/auth`, DB policies | 100% |
-| **Product Surface (App)** | 14 feature modules, 3 role shells, geofencing logic | `divinity_flutter/lib/features` | 100% |
-| **Product Surface (Web)** | 13 routes, 40 components, SEO/manifests, contact API | `divinity-third-eye/divinity/app` | 100% |
+| **Product Surface (App)** | 14 feature modules, 3 role shells, geofencing logic | `flutter-app/lib/features` | 100% |
+| **Product Surface (Web)** | 13 routes, 40 components, SEO/manifests, contact API | `website/app` | 100% |
 | **Operations & SOPs** | Standard workflows (admissions, attendance, leave, payments) | Appendix Operational Manual | 90% |
 | **Security & Compliance** | Security threat model, regression tests c1-c8 | `supabase/tests/`, security reviews | 85% |
 | **Roadmap & Continuity** | Project roadmap, future native migration | `roadmap.md` | 80% |

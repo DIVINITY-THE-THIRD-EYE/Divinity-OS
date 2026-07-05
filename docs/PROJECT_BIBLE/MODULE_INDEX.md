@@ -20,7 +20,15 @@ Each module = `data/` (repositories ↔ Supabase) + `domain/` (models) + `presen
 | `therapeutic_logs` | diet/therapeutic notes | `therapeutic_logs` |
 | `transformation` | "Third Eye" progress | `transformation_scores` |
 | `trainer` | trainer dashboard + check-in | scoped student data |
+| `events` | academy events + registration | `events`, `event_registrations`, `event_is_full` |
+| `workouts` | trainer-assigned workouts | `workouts`, `workout_exercises`, `workout_assignments`, `workout_completions` |
+| `certificates` | issuance + web-verifiable codes | `certificates`, `gen_certificate_code`, `verify-certificate` Edge Function |
+| `analytics` | admin reports/export | `get_reports_data` (paginated, admin-only) |
+| `feedback` | student session feedback | `student_feedback` |
+| `support` | student support tickets | `support_tickets` |
 | `shells` | role navigation containers | — |
+
+Weekly schedule (7-day calendar view) lives inside `attendance/presentation/weekly_schedule_screen.dart`, not a separate feature directory, and is routed at `/schedule` in `app_router.dart`.
 
 ## App shared/infra
 

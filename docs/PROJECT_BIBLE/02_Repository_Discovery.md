@@ -1,5 +1,12 @@
 # Phase 2 — Repository Discovery
 
+> **⚠️ SUPERSEDED (2026-07-02):** this inventory (directory tree, commit hashes, "LIVE
+> app"/"LIVE website" repo labels) describes the pre-monorepo state, when `divinity_flutter`
+> and `divinity-third-eye/divinity` were two separate GitHub repos. They were merged into
+> **one** repo, `DIVINITY-THE-THIRD-EYE/Divinity-OS`, with canonical dirs `flutter-app/`,
+> `website/`, `supabase/` (shared, repo root). Commit hashes below are historical. Body
+> preserved as the original scan snapshot.
+>
 > Produced by automated scan of the workspace (git repos, manifests, content hashes, reference tracing). See [EXTRA_FILES/MIGRATION_REPORT.md](../EXTRA_FILES/MIGRATION_REPORT.md) for the full cleanup audit.
 
 ## Repository Inventory (post-cleanup)
@@ -10,7 +17,7 @@ Workspace root `C:\Users\PC\OneDrive\Documents\Divinity TTE\`:
 Divinity TTE/
 ├── .claude/                  dev launcher (launch.json → website dev server, port 3000)
 ├── Divinity/                 monorepo: docs, agentic-OS, build scripts, parallel app copies
-├── divinity_flutter/         ★ LIVE Flutter app  (divinity-app.git @ 33c82a9)
+├── flutter-app/         ★ LIVE Flutter app  (divinity-app.git @ 33c82a9)
 ├── divinity-third-eye/       ★ LIVE website      (divinity-website.git, Sanity+Next.js)
 └── EXTRA_FILES/              quarantined duplicates/junk (never deleted)
 ```
@@ -29,7 +36,7 @@ Divinity TTE/
 
 ## Folder Structure (live products)
 
-### Website — `divinity-third-eye/divinity/`
+### Website — `website/`
 ```
 app/        13 routes (home, about, services[/slug], pricing, schedule, trainers,
             gallery, blog[/slug], events[/slug], contact, privacy, terms) +
@@ -42,7 +49,7 @@ design/      24 numbered design docs + adr/ (12 ADRs) + phase0/ quality gates
 public/      brand/, founder.webp, guru_*.webp, yc_*.webp, payment-qr.png
 ```
 
-### Flutter app — `divinity_flutter/`
+### Flutter app — `flutter-app/`
 ```
 lib/
   main.dart, firebase_options.dart
@@ -67,8 +74,8 @@ See [MODULE_INDEX.md](MODULE_INDEX.md) for the per-module table. High level:
 
 ## Dependency Graph (summary)
 
-- **Website** → Next.js 14 · React · Tailwind · Framer Motion · GSAP + ScrollTrigger · Lenis · Sanity client · Brevo (HTTP) · vitest. (Source: [website package.json](../divinity-third-eye/divinity/package.json))
-- **App** → flutter_riverpod + riverpod_generator · go_router · supabase_flutter · firebase_core/analytics/crashlytics/messaging · google_fonts · fl_chart · table_calendar · geolocator · share_plus · image_picker · flutter_dotenv · shared_preferences · flutter_animate. Dev: build_runner, mocktail, flutter_lints. (Source: [pubspec.yaml](../divinity_flutter/pubspec.yaml))
+- **Website** → Next.js 14 · React · Tailwind · Framer Motion · GSAP + ScrollTrigger · Lenis · Sanity client · Brevo (HTTP) · vitest. (Source: [website package.json](../website/package.json))
+- **App** → flutter_riverpod + riverpod_generator · go_router · supabase_flutter · firebase_core/analytics/crashlytics/messaging · google_fonts · fl_chart · table_calendar · geolocator · share_plus · image_picker · flutter_dotenv · shared_preferences · flutter_animate. Dev: build_runner, mocktail, flutter_lints. (Source: [pubspec.yaml](../flutter-app/pubspec.yaml))
 
 ## Tech Stack
 

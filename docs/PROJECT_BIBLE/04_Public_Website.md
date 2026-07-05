@@ -1,6 +1,6 @@
 # Phase 4 — Public Website
 
-> `divinity-third-eye/divinity/` — Next.js 14 App Router. Sources: [README](../divinity-third-eye/divinity/README.md), `app/`, `components/`, `lib/`, `design/`.
+> `website/` — Next.js 14 App Router. Sources: [README](../website/README.md), `app/`, `components/`, `lib/`, `design/`.
 
 ## Pages (routes)
 
@@ -27,7 +27,7 @@
 - **Primitives:** `layout/` (`PageHeader`, `Breadcrumbs`, `PreviewSection`), `ui/` (`CtaLink`, `EmptyState`, `SectionHeading`), `cards/` (`ServiceCard`, `TrainerCard`).
 - **Effects:** `Magnetic`, `Reveal`, `JsonLd` (structured data).
 
-See full dependency map: [design/14-component-dependency-map.md](../divinity-third-eye/divinity/design/14-component-dependency-map.md).
+See full dependency map: [design/14-component-dependency-map.md](../website/design/14-component-dependency-map.md).
 
 ## Layouts
 
@@ -37,11 +37,11 @@ See full dependency map: [design/14-component-dependency-map.md](../divinity-thi
 
 - Per-page metadata via `lib/seo.ts` `pageMeta()` (title, description, OG, Twitter, canonical).
 - **JSON-LD** (`JsonLd.tsx`): LocalBusiness (HealthAndBeautyBusiness/SportsActivityLocation), FAQPage, Course; per-page BreadcrumbList + Service/Article/Event.
-- Generated `sitemap.ts` (static + dynamic slugs), `robots.ts`, dynamic `opengraph-image.tsx`, `manifest.ts` (PWA). See [design/19-content-strategy](../divinity-third-eye/divinity/design/19-content-strategy.md).
+- Generated `sitemap.ts` (static + dynamic slugs), `robots.ts`, dynamic `opengraph-image.tsx`, `manifest.ts` (PWA). See [design/19-content-strategy](../website/design/19-content-strategy.md).
 
 ## Animations
 
-Framer Motion (transitions/micro), **GSAP + ScrollTrigger** (horizontal-scroll disciplines, scroll-tied reveals), **Lenis** (smooth scroll). Signature: breathing hero cadence (4-4-6), breath-paced manifesto reveal. All gated by `prefers-reduced-motion`. Spec: [design/10-motion-spec.md](../divinity-third-eye/divinity/design/10-motion-spec.md).
+Framer Motion (transitions/micro), **GSAP + ScrollTrigger** (horizontal-scroll disciplines, scroll-tied reveals), **Lenis** (smooth scroll). Signature: breathing hero cadence (4-4-6), breath-paced manifesto reveal. All gated by `prefers-reduced-motion`. Spec: [design/10-motion-spec.md](../website/design/10-motion-spec.md).
 
 ## CMS Integration
 
@@ -58,15 +58,15 @@ File-based App Router; navigation single-sourced in `lib/nav.ts` (primary/footer
 
 ## Accessibility
 
-Keyboard focus rings, `prefers-reduced-motion` (animations + smooth scroll disabled), focus trap (`lib/focus-trap.ts`), semantic structure, responsive. Target WCAG AA. Audit: [design/09-accessibility-audit.md](../divinity-third-eye/divinity/design/09-accessibility-audit.md). See [11_UIUX_Design_System](11_UIUX_Design_System.md).
+Keyboard focus rings, `prefers-reduced-motion` (animations + smooth scroll disabled), focus trap (`lib/focus-trap.ts`), semantic structure, responsive. Target WCAG AA. Audit: [design/09-accessibility-audit.md](../website/design/09-accessibility-audit.md). See [11_UIUX_Design_System](11_UIUX_Design_System.md).
 
 ## Performance
 
-Automatic on this stack: `next/font` (no CLS), static prerender, route prefetch, Vercel CDN/edge. Budgets: [design/11-performance-budgets.md](../divinity-third-eye/divinity/design/11-performance-budgets.md); baselines in `design/phase0/reports/` (Lighthouse desktop/mobile). See [13_Performance](13_Performance.md).
+Automatic on this stack: `next/font` (no CLS), static prerender, route prefetch, Vercel CDN/edge. Budgets: [design/11-performance-budgets.md](../website/design/11-performance-budgets.md); baselines in `design/phase0/reports/` (Lighthouse desktop/mobile). See [13_Performance](13_Performance.md).
 
 ## Analytics
 
-`[Needs Verification]`: web analytics provider not confirmed in-repo (event taxonomy exists at [design/16-analytics-taxonomy.md](../divinity-third-eye/divinity/design/16-analytics-taxonomy.md)). Likely Vercel Analytics or GA — confirm. See [23_Data_Analytics](23_Data_Analytics.md).
+`[Needs Verification]`: web analytics provider not confirmed in-repo (event taxonomy exists at [design/16-analytics-taxonomy.md](../website/design/16-analytics-taxonomy.md)). Likely Vercel Analytics or GA — confirm. See [23_Data_Analytics](23_Data_Analytics.md).
 
 ## Media Assets
 

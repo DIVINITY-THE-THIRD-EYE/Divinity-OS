@@ -1,6 +1,6 @@
 # Phase 20 — Project History
 
-> Sources: git history (`divinity-app`), [Divinity/docs/changelog.md](../Divinity/docs/changelog.md), [design/22-tech-debt-register.md](../divinity-third-eye/divinity/design/22-tech-debt-register.md), [website CHANGELOG](../divinity-third-eye/divinity/CHANGELOG.md).
+> Sources: git history (`divinity-app`), [Divinity/docs/changelog.md](../Divinity/docs/changelog.md), [design/22-tech-debt-register.md](../website/design/22-tech-debt-register.md), [website CHANGELOG](../website/CHANGELOG.md).
 
 ## Changelog (app — by commit "session")
 
@@ -16,7 +16,7 @@
 | `33c82a9` | — | fix: clear analyzer lints in shimmer_loading (**current HEAD**) |
 | `weather-maps` | 7 | Open-Meteo Weather/AQI integration with 15-min caching, offline fallbacks, accessible Google Maps iframe, and unit tests |
 
-Website changelog: [CHANGELOG.md](../divinity-third-eye/divinity/CHANGELOG.md) + `design/phase0` freezes.
+Website changelog: [CHANGELOG.md](../website/CHANGELOG.md) + `design/phase0` freezes.
 
 ## Decision Log
 
@@ -28,7 +28,7 @@ See [DECISION_LOG.md](DECISION_LOG.md) (consolidated) and `design/adr/0001–001
 
 ## Technical Debt
 
-From [design/22-tech-debt-register.md](../divinity-third-eye/divinity/design/22-tech-debt-register.md) (web) + observed:
+From [design/22-tech-debt-register.md](../website/design/22-tech-debt-register.md) (web) + observed:
 - In-memory rate limiter (not multi-instance safe).
 - No committed web E2E / automated a11y in CI.
 - Duplicate app trees in `Divinity/apps/*` and old snapshots (now quarantined).

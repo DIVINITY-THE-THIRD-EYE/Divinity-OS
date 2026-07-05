@@ -1,6 +1,6 @@
 # Phase 12 — Security
 
-> Sources: [SECURITY_REVIEW_C1_C2.md](../Divinity/docs/SECURITY_REVIEW_C1_C2.md), [supabase/tests/](../divinity_flutter/supabase/tests/) (c1–c8), [next.config.mjs](../divinity-third-eye/divinity/next.config.mjs), [design/21-security-checklist.md](../divinity-third-eye/divinity/design/21-security-checklist.md).
+> Sources: [SECURITY_REVIEW_C1_C2.md](../Divinity/docs/SECURITY_REVIEW_C1_C2.md), [supabase/tests/](../../supabase/tests/) (c1–c8), [next.config.mjs](../website/next.config.mjs), [design/21-security-checklist.md](../website/design/21-security-checklist.md).
 
 ## Threat Model (summary)
 

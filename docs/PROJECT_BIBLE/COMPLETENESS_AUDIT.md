@@ -1,5 +1,12 @@
 # Project Bible Completeness Audit
 
+> **⚠️ SUPERSEDED (2026-07-02):** written before the monorepo consolidation — references to
+> `divinity_flutter` / `divinity-third-eye/divinity` as separate repos are historical.
+> Canonical dirs are now `flutter-app/`, `website/`, `supabase/` in one repo
+> (`DIVINITY-THE-THIRD-EYE/Divinity-OS`). For current status see
+> [ARCHITECTURE_COMPLIANCE](ARCHITECTURE_COMPLIANCE.md) and
+> [../VERIFIED_AUDIT_2026-07-02.md](../VERIFIED_AUDIT_2026-07-02.md). Body preserved as-written.
+
 This document performs a comprehensive audit of the Divinity Ecosystem's source repositories against the Project Bible (Phases 00–30), documenting coverage metrics, identifying gaps, and providing instructions for developer onboarding (clone, install, build, run, test, deploy).
 
 ---
@@ -46,7 +53,7 @@ The table below breaks down the coverage status of all project components. Every
 | **Assets** | Brand logos, founder & guru `.webp` files | **Covered** | [04_Public_Website](04_Public_Website.md), [25_Assets_Content](25_Assets_Content.md) |
 | **Tests** | `lib/*.test.ts` (Vitest suites for website) | **Covered** | [16_Testing_QA](16_Testing_QA.md) |
 | | `supabase/tests/c1-c8` (pgTAP database tests)| **Covered** | [16_Testing_QA](16_Testing_QA.md) |
-| | App unit tests | **Covered** | 197 Dart unit and widget tests passing in `divinity_flutter/test/`. |
+| | App unit tests | **Covered** | 197 Dart unit and widget tests passing in `flutter-app/test/`. |
 | **Deployment** | Vercel production hosting settings | **Covered** | [15_DevOps_Infrastructure](15_DevOps_Infrastructure.md) |
 | | App Store / Play Store pipelines | **Needs Verification**| CI config is not checked into the repository. |
 | **Business Rules** | Geofenced distance checking, streaks | **Covered** | [05_Student_Mobile_App](05_Student_Mobile_App.md), [09_Database](09_Database.md) |
@@ -132,7 +139,7 @@ An engineer can fully clone, install, build, run, test, and deploy the Divinity 
         flutter build ios --no-codesign
         ```
 
-### C. Supabase Database (`divinity_flutter/supabase`)
+### C. Supabase Database (`supabase/` — shared, repo root)
 
 1.  **Install Supabase CLI**:
     ```bash

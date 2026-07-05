@@ -1,6 +1,6 @@
 # Phase 21 — Future Roadmap
 
-> Sources: [Divinity/docs/roadmap.md](../Divinity/docs/roadmap.md), [design/13-ai-roadmap.md](../divinity-third-eye/divinity/design/13-ai-roadmap.md), [design/12-implementation-planning.md](../divinity-third-eye/divinity/design/12-implementation-planning.md), ADRs. Confirm live priorities in `Divinity/docs/status.md`.
+> Sources: [Divinity/docs/roadmap.md](../Divinity/docs/roadmap.md), [design/13-ai-roadmap.md](../website/design/13-ai-roadmap.md), [design/12-implementation-planning.md](../website/design/12-implementation-planning.md), ADRs. Confirm live priorities in `Divinity/docs/status.md`.
 
 ## Next Milestones
 
@@ -30,7 +30,7 @@ ADR-0009: **PWA now, native later.** Path: harden Flutter app → store releases
 
 ## AI Roadmap
 
-[design/13-ai-roadmap.md](../divinity-third-eye/divinity/design/13-ai-roadmap.md): AI-assisted content, recommendations, possibly progress insights. The repo already embeds an **agentic-OS** layer (`Divinity/CLAUDE.md`, `ANTIGRAVITY/`) for AI-assisted development.
+[design/13-ai-roadmap.md](../website/design/13-ai-roadmap.md): AI-assisted content, recommendations, possibly progress insights. The repo already embeds an **agentic-OS** layer (`Divinity/CLAUDE.md`, `ANTIGRAVITY/`) for AI-assisted development.
 
 ## Expansion Plans
 

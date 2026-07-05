@@ -10,10 +10,10 @@ Navigation hub for all 31 phases, index files, and appendices. Each phase is one
 | 01 | [Business & Product](01_Business_Product.md) | Business/revenue model, personas, journey, pricing, plans, KPIs | website content + `[Needs Verification]` |
 | 02 | [Repository Discovery](02_Repository_Discovery.md) | Inventory, folder structure, module map, deps, tech stack, env vars | full-tree scan, package.json, pubspec.yaml |
 | 03 | [System Architecture](03_System_Architecture.md) | High-level arch, boundaries, rendering, data/event flow, sequences, ADRs | architecture.md, design/adr, source |
-| 04 | [Public Website](04_Public_Website.md) | Pages, components, layouts, SEO, animation, CMS, routing, forms, a11y | `divinity-third-eye/divinity/` |
-| 05 | [Student Mobile App](05_Student_Mobile_App.md) | Screens, navigation, features, offline, notifications, payments, progress | `divinity_flutter/lib/features` |
-| 06 | [Trainer App](06_Trainer_App.md) | Dashboard, attendance, student mgmt, schedule, assignments, permissions | `divinity_flutter/lib/features/trainer` |
-| 07 | [Admin Panel](07_Admin_Panel.md) | Dashboard, students, trainers, memberships, payments, classes, reports | `divinity_flutter` admin shells |
+| 04 | [Public Website](04_Public_Website.md) | Pages, components, layouts, SEO, animation, CMS, routing, forms, a11y | `website/` |
+| 05 | [Student Mobile App](05_Student_Mobile_App.md) | Screens, navigation, features, offline, notifications, payments, progress | `flutter-app/lib/features` |
+| 06 | [Trainer App](06_Trainer_App.md) | Dashboard, attendance, student mgmt, schedule, assignments, permissions | `flutter-app/lib/features/trainer` |
+| 07 | [Admin Panel](07_Admin_Panel.md) | Dashboard, students, trainers, memberships, payments, classes, reports | `flutter-app` admin shells |
 | 08 | [Backend](08_Backend.md) | API architecture, services, middleware, validation, jobs, webhooks | supabase/, app/api, Firebase |
 | 09 | [Database](09_Database.md) | ER diagram, tables, relationships, indexes, RLS, migrations, seed | `supabase/migrations` |
 | 10 | [Auth & Authorization](10_Auth_Authorization.md) | Login, OTP, sessions, roles, permissions, access matrix | auth feature, RLS, JWT sync |
