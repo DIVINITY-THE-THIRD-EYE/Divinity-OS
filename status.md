@@ -212,3 +212,35 @@ audit brief's instruction to leave future sessions with accurate project state.
 - Progress: 100% of this session's planned scope complete.
 
 ## Audit complete
+
+## Round 2 — Complete audit redo (2026-07-05, post-merge, triggered by /goal)
+
+Triggered by user's `/goal redo the complete audit and automerge when ready`. PR #20 (round 1) had
+already merged to main. Repo is now public.
+
+### Approach
+Checked `git diff` between pre-audit baseline (1fcd93a) and current main (5fab127): only CI config
+files and one pgTAP test changed — zero application code changed. This meant round 1's architecture/
+feature/database/UI-UX findings are still valid without re-deriving from scratch. Focused round 2 on:
+1. Re-running all verification gates fresh against current main (all green).
+2. Refreshing the reports that were genuinely stale: 05_Security_Audit.md, 11_DevOps_Report.md,
+   16_Executive_Summary.md, 17_Project_Health_Score.md, 01_Project_Overview.md, 14_Critical_Fixes.md
+   — all updated in place with round-2 notes rather than duplicated into parallel files.
+
+### Gates re-verified (branch: audit/full-review-round2, off updated main)
+- flutter analyze: clean
+- flutter test: 262/262
+- website lint: clean, tsc: clean, test: 66/66, build: success
+- supabase test db (pgTAP): 188/188 (c17 fix holds even though today is still the same Sunday date
+  in this environment — confirms the fix, not just luck)
+
+### No new CRITICAL or HIGH issues found
+Nothing in the codebase changed since round 1, and round 1 already found no CRITICAL issues. The
+public-repo re-audit (already committed to main via docs from the prior conversation turn) covered
+the only genuinely new surface (GitHub-native security tooling).
+
+### Health score updated
+8.1/10 -> 8.5/10 (DevOps 7->9, Security code-score unchanged at 8 but tooling gap closed). See
+17_Project_Health_Score.md for full reasoning.
+
+## Round 2 complete

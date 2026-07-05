@@ -1,5 +1,12 @@
 # 05 — Security Audit
 
+**Round 2 update (2026-07-05, post-merge):** the repository went public and gained live, verified security tooling since this report was first written. See `PUBLIC_REPOSITORY_SECURITY_AUDIT.md`, `GITHUB_CONFIGURATION_REPORT.md`, and `CODEQL_VERIFICATION.md` for the full detail. Summary of what changed:
+- **CodeQL now actually uploads results** (Java/Kotlin + JavaScript/TypeScript both verified via the Code Scanning API) — 0 findings in both, corroborating this report's manual review below.
+- **Dependabot alerts + automated security updates enabled** — formally tracks the exact `next@14.2.35`/`vite`/`vitest`/`glob` CVEs this report already found manually (21 alerts: 1 critical, 7 high, 11 moderate, 2 low), now with automated fix PRs.
+- **Secret scanning + push protection enabled** — found only the two already-known, already-characterized Firebase API keys (see "Secrets" below), both resolved as false positives with documented reasoning.
+- **Branch protection now enforces 8 required checks on `main`**, closing the "every check here is advisory" gap this report didn't previously have to consider.
+- The **storage-bucket public-flag gap below is unchanged** — it's a production Supabase setting, unaffected by the repo's GitHub visibility.
+
 ## Authentication & authorization
 
 - Flutter app uses Supabase Auth directly (email/password, Google, Apple, phone/OTP) — `flutter-app/lib/features/auth/data/auth_repository.dart`.
@@ -49,6 +56,8 @@ All **25 tables have RLS enabled**, and every table has at least one policy (non
 - The critical/high findings in the `vite`/`vitest`/`glob` chain are all **devDependencies** (test tooling), not shipped to production — lower real-world impact, but still worth clearing via a controlled upgrade.
 - **Recommendation:** do not run `npm audit fix --force` blindly (it proposes a Next.js major-version bump, `next@16.2.10`, and an ESLint config bump that are breaking changes). Scope a dedicated upgrade pass with a full regression test afterward.
 
-## Overall security score: 8/10
+## Overall security score: 8/10 (unchanged from the code-level review; see round-2 note below)
 
 **Justification:** the fundamentals are strong — 100% RLS coverage with a genuinely-defense-in-depth pattern (client filtering + server trigger + RLS policy, verified not just asserted), no committed secrets, PII-safe public endpoints, solid CSP/security headers, and input validation/escaping on every public-facing form. The score isn't a 9-10 because of two concrete, unresolved items: the storage-bucket public flag being entirely un-codified (a real, if currently-mitigated, single point of failure for sensitive payment data), and an unpatched, CVE-bearing production dependency (`next@14.2.35`). Neither is exploited today as far as this audit could verify, but both are the kind of gap that turns into an incident with one unrelated infrastructure change.
+
+**Round 2 note:** the code-level score above is unchanged because the underlying code didn't change — but the *process* around it materially improved: known CVEs are now tracked with automated remediation instead of only a point-in-time manual finding, static analysis runs and uploads on every PR instead of not at all, and no PR can merge without 8 required checks passing. Those are process/tooling wins layered on top of an already-8/10 codebase, not a change to the codebase's own score — the storage-bucket flag and the `next` upgrade remain the two items that would move this to 9+, and both are already tracked (the bucket flag as a manual recommendation above, the `next` upgrade as Dependabot alert-tracked and pending its own scoped upgrade pass).

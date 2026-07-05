@@ -1,8 +1,10 @@
 # 01 — Project Overview
 
-**Audit date:** 2026-07-05
-**Branch:** `audit/full-review-loving-einstein`
+**Audit date:** 2026-07-05 (round 1), re-verified and extended 2026-07-05 (round 2, post-merge)
+**Branch:** `audit/full-review-loving-einstein` (round 1, merged as PR #20) → `audit/full-review-round2` (round 2)
 **Scope:** Full engineering audit of the Divinity — The Third Eye monorepo (Flutter mobile app + Next.js marketing website + shared Supabase backend).
+
+**Round 2 status:** round 1's fixes are merged to `main`. The repository then went public, which prompted a second wave of work (CodeQL restored to every PR, Dependabot + secret scanning enabled, branch protection + auto-merge configured on `main`) — see `PUBLIC_REPOSITORY_SECURITY_AUDIT.md`, `GITHUB_CONFIGURATION_REPORT.md`, `BRANCH_PROTECTION_PLAN.md`, `CODEQL_VERIFICATION.md`, and the CI-optimization doc set. This round re-ran every verification gate fresh against current `main` (all green: 262/262 Flutter tests, 66/66 website tests, 188/188 pgTAP assertions) and confirmed via `git diff` that no application code changed between rounds — only CI/CD and repository configuration.
 
 ## What this project is
 

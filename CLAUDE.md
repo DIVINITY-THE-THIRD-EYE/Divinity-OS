@@ -9,6 +9,10 @@ Three first-party surfaces sharing one Supabase project:
 
 Ignore anything referencing `divinity_flutter/`, `Divinity/apps/`, or similar — those are legacy/reference material excluded from this monorepo (see root `.gitignore`).
 
+## Repository is public, with branch protection + auto-merge enforced
+
+As of 2026-07-05 this repo is **public**. `main` requires 8 status checks to pass before merge (Flutter Analyze/Tests, ESLint & TypeScript Check, Next.js Build, Vitest, pgTAP, both CodeQL scans) — see `docs/BRANCH_PROTECTION_PLAN.md`. Auto-merge is enabled, squash-only. CodeQL runs on every PR and uploads to the Security tab (verified — see `docs/CODEQL_VERIFICATION.md`). Dependabot alerts + automated security updates and secret scanning are on — see `docs/PUBLIC_REPOSITORY_SECURITY_AUDIT.md` and `docs/GITHUB_CONFIGURATION_REPORT.md`.
+
 ## Before trusting any status claim, re-run the gates
 
 This project moves fast (45 migrations as of 2026-07-05, up from 36 three days earlier). Docs and memory go stale quickly — always re-verify against live code/gates rather than trusting a prior audit's numbers.
