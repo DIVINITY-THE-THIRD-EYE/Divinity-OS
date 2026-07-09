@@ -3,6 +3,19 @@
 Format: `## [date] — <task file>` then bullet list of concrete changes.
 Newest on top. Every completed task file appends exactly one entry.
 
+## [2026-07-09] — 02_CONTENT_SYSTEM
+- Created `website/content/` (18 typed modules + index barrel) as the single
+  source of truth for business data; moved every fallback constant out of
+  `lib/content.ts` verbatim.
+- `lib/content.ts` rewritten as a compat/merge layer — re-exports every old
+  name, reassembles the legacy flat `site` object. Zero consumer edits needed.
+- Added `content/content.test.ts` (55 tests) + registered it in
+  `vitest.config.ts`.
+- Hardcode sweep found 3 pre-existing `₹99` hits in homepage components —
+  documented as exceptions (JSX edits out of this task's scope, deferred to
+  `04_HOMEPAGE.md`).
+- Validation green: lint, tsc, 121 vitest tests, next build (36 routes).
+
 ## [2026-07-09] — 01_REPO_PRECHECK
 - Committed parked pre-rebuild diff, created `rebuild/living-anatomy` branch.
 - Baseline validation green: lint, tsc, 66 vitest tests, next build (36 routes).

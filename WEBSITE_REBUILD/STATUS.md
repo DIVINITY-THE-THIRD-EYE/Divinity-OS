@@ -7,8 +7,8 @@
 
 | Field | Value |
 |---|---|
-| Phase | 1 — Foundation (01 complete) |
-| Next file | `02_CONTENT_SYSTEM.md` |
+| Phase | 1 — Foundation (01, 02 complete) |
+| Next file | `03_DESIGN_SYSTEM.md` |
 | Branch | `rebuild/living-anatomy` (created, checked out) |
 | Blockers | none |
 
@@ -24,6 +24,50 @@
 - No Supabase JS client in website yet (login task adds it).
 
 ## Log (append-only, newest first)
+
+### 2026-07-09 — 02_CONTENT_SYSTEM complete
+- Phase: 1
+- Status: COMPLETE
+- Changes: created `website/content/` (18 modules: site, contact, social, founder,
+  trainers, programs, pricing, offers, statistics, testimonials, gallery, events,
+  posts, faq, schedule, seo, legal, marketing, + index.ts barrel). Moved every
+  fallback data constant out of `lib/content.ts` verbatim into the matching module.
+  Split the old flat `site` object across `site.ts`/`contact.ts`/`social.ts`/
+  `founder.ts`; `lib/content.ts` rewritten as a compat/merge layer that
+  reassembles the legacy `site` shape and re-exports every old name — zero
+  consumer import changes needed (verified: no `app/`or `components/` file edited).
+  Added `content/content.test.ts` (55 tests: every module non-empty, site/contact
+  critical fields real not placeholder, every `[PLACEHOLDER:` has a matching
+  `TODO(PH-` in the same file). Added `content/**/*.test.ts` to
+  `vitest.config.ts` include glob — required for the new test file to actually
+  run; without it step 5 would silently be a no-op (documented per charter D011,
+  see DECISIONS.md IN-001).
+- New/forward-scaffolded modules not yet consumed by any component (wiring lands
+  in later phases; creating them now was still in scope — `website/content/**` is
+  unrestricted in FILES ALLOWED): `offers.ts` (introOffer/promoBar), `statistics.ts`
+  (StatsBand still computes its own counts), `seo.ts` (route overrides table),
+  `legal.ts` (privacy/terms/refund — real copy still lives in page JSX, migrates
+  in 08/11).
+- Hardcode sweep (`grep -rn "₹|+91|wa.me|@gmail|@divinity" app components --include=*.tsx -l`):
+  3 hits, all pre-existing `₹99 first week` copy in `app/page.tsx`,
+  `components/BreathHero.tsx`, `components/PromoBar.tsx`. NOT fixed here —
+  `FILES FORBIDDEN` for this task explicitly excludes "Components' JSX/logic,
+  app/ pages"; wiring these three to `content/offers.ts`'s `introOffer` is a
+  JSX edit that belongs to `04_HOMEPAGE.md` (which owns that page/component).
+  Allowed exception per this task's own VALIDATION clause.
+  `components/ui/CtaLink.tsx` hit is a code *comment* mentioning "wa.me" as an
+  example, not a real hardcode — no action needed.
+- Validation: `npm run lint` clean · `npx tsc --noEmit` clean · `npm test` →
+  11 files, 121 tests passed (was 66; +55 new content tests) · `npm run build`
+  → 36 routes, same route count/shape as baseline (one `.next` EINVAL cleanup
+  needed first — stale OneDrive-locked build dir from before this session,
+  unrelated to the code change; `rm -rf .next` then rebuild was clean).
+- Tests: 121/121 passed
+- Performance: unchanged (no runtime behavior changed, pure data relocation)
+- Accessibility: unchanged
+- Problems: none blocking. PLACEHOLDERS.md rows already pointed at the exact
+  `content/*.ts` files/fields this task created — no table edits needed.
+- Next: `03_DESIGN_SYSTEM.md`
 
 ### 2026-07-09 — 01_REPO_PRECHECK complete
 - Phase: 1

@@ -50,7 +50,7 @@ Every replaced approach gets an entry with all four fields. Format:
 
 ## Implementation notes (appended by executing models — one line each, dated)
 
-_(empty — add entries as `IN-001 | 2026-07-09 | <note>`)_
+IN-001 | 2026-07-09 | `02_CONTENT_SYSTEM.md` step 5 asks for `content/content.test.ts`, but `vitest.config.ts`'s `include` only globbed `lib/**/*.test.ts` — added `content/**/*.test.ts` to the include array (not in the task's FILES ALLOWED, but omitting it makes step 5 a silent no-op: the file exists, never runs, "validation green" would be a false signal). Charter D011: engineering fix, documented not asked.
 
 ## Asset registry (license verification — mandatory before any asset enters repo)
 
