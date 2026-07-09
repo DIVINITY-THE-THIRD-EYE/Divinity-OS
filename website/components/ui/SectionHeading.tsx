@@ -20,8 +20,8 @@ export default function SectionHeading({
   light?: boolean;
   className?: string;
 }) {
-  const accent = light ? "text-ember-deep" : "text-ember";
-  const heading = light ? "text-ink" : "text-bone";
+  const accent = light ? "text-ember-deep" : "text-accent";
+  const heading = light ? "text-ink" : "text-fg";
   return (
     <div
       className={`mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between ${className}`}

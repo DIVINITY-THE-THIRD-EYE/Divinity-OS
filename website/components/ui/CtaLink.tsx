@@ -7,9 +7,9 @@ const base =
   "inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-wide transition-colors";
 
 const variants: Record<Variant, string> = {
-  primary: "bg-ember px-7 py-3.5 text-void hover:bg-ember-pale",
-  outline: "border border-ember px-7 py-3.5 text-ember hover:bg-ember hover:text-void",
-  ghost: "text-mist hover:text-ember",
+  primary: "bg-accent px-7 py-3.5 text-surface hover:bg-ember-pale",
+  outline: "border border-accent px-7 py-3.5 text-accent hover:bg-accent hover:text-surface",
+  ghost: "text-fg-muted hover:text-accent",
 };
 
 /** Route-aware CTA. `external` switches to a plain anchor (wa.me, Instagram). */
