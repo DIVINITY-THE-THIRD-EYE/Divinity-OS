@@ -10,7 +10,7 @@ test.describe("Yoga cursor", () => {
       page.evaluate((sel) => {
         const svg = document.querySelector(`${sel} svg`);
         const visible = Array.from(svg!.querySelectorAll("g")).find(
-          (g) => (g as HTMLElement).style.opacity === "1"
+          (g) => g.style.opacity === "1"
         );
         return visible ? visible.querySelector("path")!.getAttribute("d") : null;
       }, CURSOR_SELECTOR);

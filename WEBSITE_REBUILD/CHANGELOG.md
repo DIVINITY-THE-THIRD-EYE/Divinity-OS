@@ -3,6 +3,29 @@
 Format: `## [date] — <task file>` then bullet list of concrete changes.
 Newest on top. Every completed task file appends exactly one entry.
 
+## [2026-07-09] — 07_SCENE_3D (Part 1 — SilhouetteTier; Part 2 deferred, PH-016)
+- Added `components/scene/useBreathClock.ts` (shared 4-4-6 clock, extracted
+  verbatim + unit-tested) and `components/scene/SilhouetteTier.tsx` (seated
+  meditation silhouette + existing glow/embers) — mounted in `Hero.tsx` as
+  the complete, shippable hero visual.
+- Genuinely researched mesh sourcing via web search: found a license-clear
+  CC-BY candidate, but downloading (Sketchfab auth-gated) and processing
+  (needs Blender/gltf-transform, not available here) are blocked by tooling,
+  not effort. Did not build the WebGL Scene/Figure/CameraRig/Lighting or add
+  three/r3f/drei — recorded as PH-016, ADR 0016 written documenting the
+  phased approach (07's own Step 1.5 explicitly allows this).
+- Fixed a real build-breaking bug (Path2D constructed at module scope, which
+  also runs during Next.js server prerendering where Path2D doesn't exist)
+  and a real legibility regression (opaque silhouette colliding with hero
+  text), both caught via actual build/Playwright verification.
+- Fixed a pre-existing bug unrelated to this task: Hero's hardcoded-dark
+  backdrop never adapted to day theme, but its text did — rendering
+  dark-on-dark in day mode. Scoped a fix to the Hero section only.
+- Validation green: lint, tsc, 131 vitest tests, 17 Playwright e2e tests,
+  next build (36 routes, `/` +1kB), visual verification both themes/widths.
+- **Phase 4 gate passed** (phased delivery per ADR 0016) — rebased onto
+  main (no-op, unchanged).
+
 ## [2026-07-09] — 06_YOGA_CURSOR
 - Replaced the dot+ring `Cursor.tsx` with `YogaCursor.tsx`: 12 Surya
   Namaskar poses that crossfade as the page scrolls (via

@@ -157,6 +157,54 @@ Every replaced approach gets an entry with all four fields. Format:
   marketing-only regardless (the portal, added in 12/13, has no decorative
   cursor need). Root `layout.tsx` was never touched.
 
+### E-008 | 2026-07-09 | 07: SilhouetteTier shipped, full Scene/Figure/CameraRig deferred
+- What changed: built `useBreathClock.ts` (shared clock, extracted verbatim +
+  unit-tested) and `SilhouetteTier.tsx` (seated meditation silhouette + glow +
+  embers, mounted in `Hero.tsx` as the complete hero visual) — Steps 1-2 of
+  07's build order. Did NOT build `Scene.tsx`/`Figure.tsx`/`CameraRig.tsx`/
+  `Lighting.tsx` (Steps 3-5) or install `three`/`@react-three/fiber`/`drei`.
+- Why: 07's own Step 1.5 explicitly sanctions exactly this outcome ("IF no
+  acceptable mesh found... do NOT stop the project: proceed with
+  SilhouetteTier as the shipped hero... continue to 08"). A real, license-clear
+  mesh candidate WAS found via WebSearch (see asset registry, PH-016), but two
+  concrete tooling gaps block finishing the pipeline in this environment, not
+  just effort/difficulty: (1) Sketchfab gates downloads behind an authenticated
+  account UI — no available tool can fetch the actual binary through it; (2)
+  decimation/glTF export/Draco compression needs Blender or the gltf-transform
+  CLI, neither available here, and there's no way to visually verify a
+  processed 3D mesh in this session's tools even if produced. Writing custom
+  WebGL shaders (fresnel-rim translucent material, UV-scrolled emissive flow-
+  lines) blind, with no mesh and no way to render/inspect a 3D scene, would be
+  guessing, not engineering — SilhouetteTier is deliberately the tier that
+  doesn't require any of that (D007: "everything else gets the 2D silhouette
+  tier" — it's designed to be a complete, shippable hero on its own).
+- What it replaced: nothing existing — this is new, additive scaffolding.
+  `components/scene/` now holds the two pieces that don't depend on the mesh;
+  `Scene.tsx` etc. are for whoever picks up PH-016 with the right tooling.
+- Trade-offs: no WebGL centerpiece yet. Fallback matrix (07's VALIDATION) is
+  trivially satisfied for now — SilhouetteTier is unconditionally what every
+  visitor sees, desktop and mobile alike, so there's no dual-tier logic to
+  test until Scene exists.
+- **Bugs found and fixed while building this** (not hypothetical, caught via
+  Playwright screenshot verification): (1) `Path2D` is browser-only — module-
+  top-level construction crashed the production build during Next.js's
+  server-side prerendering (`Path2D is not defined`); moved construction
+  inside the client-only effect. (2) The new opaque silhouette shape visually
+  collided with the H1's second line at narrower viewports (a real legibility
+  regression from making the visual more solid than the old abstract rings);
+  lowered its fill opacity substantially. (3) A **pre-existing** bug,
+  unrelated to anything built in 04-06: `Hero.tsx`'s backdrop has always been
+  a hardcoded dark gradient that never participates in the day/night toggle,
+  but its text used the theme-flipping `text-bone`/`text-mist` tokens — in
+  day mode (e.g. Playwright's default `prefers-color-scheme: light`), the H1
+  rendered in the *day* theme's dark bone color against the *permanently
+  dark* backdrop, nearly illegible. Fixed by pinning `--bone`/`--bone-rgb`/
+  `--mist`/`--mist-rgb` to their night values via inline style scoped to the
+  Hero section only (its background never changes with theme, so its text
+  shouldn't either) — this bug has existed since the day-theme colors were
+  first authored and was never caught because no prior session tested Hero
+  specifically under a light-preference/day-theme browser condition.
+
 ## Implementation notes (appended by executing models — one line each, dated)
 
 IN-004 | 2026-07-09 | `06_YOGA_CURSOR.md`'s step 1 unit test ("all 12 paths
@@ -187,4 +235,4 @@ IN-001 | 2026-07-09 | `02_CONTENT_SYSTEM.md` step 5 asks for `content/content.te
 
 | Asset | Source URL | License | Verified date | Used in |
 |---|---|---|---|---|
-| _(pending — figure mesh goes here first)_ | | | | |
+| _(candidate, not yet downloaded/used — see PH-016)_ "A Man Sitting" by Sketchfab user 1056878 | https://sketchfab.com/3d-models/a-man-sitting-41b3107ced274de8a1c523d75272535e | CC-BY 4.0 (creativecommons.org/licenses/by/4.0/ — attribution required if used) | 2026-07-09 (via WebSearch/WebFetch, not downloaded) | Not yet — pipeline execution blocked (PH-016) |

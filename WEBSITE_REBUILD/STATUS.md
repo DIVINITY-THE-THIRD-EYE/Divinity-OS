@@ -7,10 +7,10 @@
 
 | Field | Value |
 |---|---|
-| Phase | 4 — 3D scene (Phase 3 gate passed: 05+06 COMPLETE) |
-| Next file | `07_SCENE_3D.md` |
+| Phase | 5 — All pages (Phase 4 gate passed: 07 COMPLETE, phased per ADR 0016) |
+| Next file | `08_CORE_PAGES.md` |
 | Branch | `rebuild/living-anatomy` |
-| Blockers | none |
+| Blockers | PH-016 (figure mesh processing — needs Blender/gltf-transform/authenticated Sketchfab, none available here) |
 
 ## Known repo state (as of 2026-07-09, playbook creation)
 
@@ -24,6 +24,90 @@
 - No Supabase JS client in website yet (login task adds it).
 
 ## Log (append-only, newest first)
+
+### 2026-07-09 — PHASE 4 GATE (07) — PASSED (phased delivery), auto-continuing
+- Gate criterion (00_MASTER): "Desktop scene live with full fallback matrix;
+  Lighthouse budgets still green."
+  - Full WebGL Scene was NOT built this task — see ADR 0016 for why (two
+    concrete tooling gaps: authenticated Sketchfab download, Blender/
+    gltf-transform mesh processing — neither available in this environment).
+    07's own Step 1.5 explicitly sanctions shipping SilhouetteTier alone and
+    continuing to 08 rather than blocking the project on the mesh.
+  - Fallback matrix: trivially satisfied — SilhouetteTier is unconditionally
+    the hero visual for every visitor (desktop, mobile, reduced-motion, every
+    theme) since there is no Scene yet to differ from. Re-verify meaningfully
+    once PH-016 resolves and Scene/Figure/CameraRig exist.
+  - Build numbers: `/` first-load JS 165 kB, +1 kB over the pre-07 baseline
+    (164 kB) — well within the +5 kB budget for this refactor-plus-new-figure
+    step. No `three`/r3f/drei dependencies added.
+  - Lighthouse: not re-run this gate (no new render-blocking work, no new
+    deps — 15_PERFORMANCE.md is the dedicated measurement task; nothing in
+    07 as actually shipped should move the needle).
+- Rebase: `main` unchanged since Phase 3 gate — no-op.
+- Problems: PH-016 (mesh processing blocked by tooling) — non-blocking,
+  documented, safe default (SilhouetteTier) already shipped and working.
+- Next: `08_CORE_PAGES.md` (Phase 5).
+
+### 2026-07-09 — 07_SCENE_3D complete (Part 1 — SilhouetteTier)
+- Phase: 4
+- Status: COMPLETE (phased — see ADR 0016)
+- Changes:
+  - `components/scene/useBreathClock.ts`: 4-4-6 pranayama clock extracted
+    verbatim from the old `BreathHero.tsx`'s `breathAt()`, as one shared
+    module-level external store (`useBreathPhase()` reactive hook, throttled
+    to ~4x/sec for the text readout; `getBreath()` imperative accessor for
+    per-frame canvas reads — mirrors 05's `useScrollProgress` architecture).
+    Unit-tested (`useBreathClock.test.ts`) against known t=0/4/8/14 values.
+  - `components/scene/SilhouetteTier.tsx`: seated meditation silhouette (two
+    hand-authored Path2D sub-paths — head + torso/crossed-legs), breath-
+    scaled, plus the existing glow/rings/embers moved here verbatim from
+    `Hero.tsx`. Mounted unconditionally in `Hero.tsx` — this is the complete,
+    shippable hero visual (D007), not a loading placeholder.
+  - `Hero.tsx` slimmed: canvas/breath-clock logic removed (now delegates to
+    `SilhouetteTier` + `useBreathPhase()`), same JSX/copy/CTA otherwise.
+  - Mesh sourcing (Step 1, genuinely attempted via WebSearch/WebFetch): found
+    one license-clear CC-BY 4.0 candidate ("A Man Sitting", Sketchfab, 18k
+    tris/9k verts — recorded in DECISIONS.md asset registry). Did not
+    download/process it — see PH-016 and ADR 0016 for the concrete tooling
+    gaps (not effort/difficulty) blocking that.
+  - Did not build `Scene.tsx`/`Figure.tsx`/`CameraRig.tsx`/`Lighting.tsx` or
+    install `three`/`@react-three/fiber`/`@react-three/drei` — deferred to
+    whoever resolves PH-016.
+  - Wrote `design/adr/0016-webgl-scene.md` (Accepted, phased, supersedes
+    0014's context under D007's new delivery conditions).
+- **Two real bugs found and fixed via actual build/Playwright verification,
+  not assumed**: (1) `Path2D` constructed at module top level crashed the
+  production build (`Path2D is not defined`) — Next.js evaluates "use
+  client" modules server-side too during prerendering, and Path2D is
+  browser-only; moved construction inside the client-only effect. (2) The
+  new opaque silhouette visually collided with the H1's second line at
+  narrower viewports — lowered its fill opacity to a soft translucent
+  presence, verified via Playwright canvas/section screenshots at 800px and
+  1280px.
+- **One pre-existing bug found and fixed, unrelated to 04-07's own work**:
+  `Hero.tsx`'s hardcoded-dark backdrop never participated in the day/night
+  toggle, but its text used the theme-flipping `text-bone`/`text-mist`
+  tokens — in day mode the H1 rendered in the day theme's dark bone color
+  against the permanently-dark backdrop, nearly illegible. This bug has
+  existed since the day-theme colors were first authored; never caught
+  because no prior session tested Hero specifically under a light-preference
+  browser condition. Fixed by pinning `--bone`/`--bone-rgb`/`--mist`/
+  `--mist-rgb` to their night values via inline style scoped to the Hero
+  section (its background is theme-independent, so its text should be too).
+  Verified via computed-style inspection and screenshots in both themes.
+- Validation: lint clean · tsc clean · 131/131 vitest tests (+5 new
+  useBreathClock tests) · `next build` 36/36 routes, `/` 165 kB (+1 kB) ·
+  17/17 Playwright e2e tests · visual verification via Playwright canvas/
+  section screenshots (both widths, both themes) confirmed a legible,
+  recognizable seated-meditation silhouette with no text collision.
+- Tests: 131 vitest + 17 Playwright, all passed
+- Performance: +1 kB first-load JS (new figure-path data + one extra
+  component split); no new runtime cost (same single rAF loop as before,
+  now centralized in one shared clock instead of duplicated per-consumer)
+- Accessibility: unchanged (canvas stays `aria-hidden`, `pointer-events:none`)
+- Problems: PH-016 (mesh processing blocked by tooling, not effort) —
+  documented, non-blocking, safe default shipped
+- Next: Phase 4 gate (above), then `08_CORE_PAGES.md`
 
 ### 2026-07-09 — PHASE 3 GATE (05+06) — PASSED, auto-continuing
 - Gate criterion (00_MASTER): "Scroll story + cursor working; reduced-motion

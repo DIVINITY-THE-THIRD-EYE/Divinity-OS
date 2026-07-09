@@ -26,6 +26,7 @@ that is a placeholder carries a `// TODO(PH-xxx)` comment referencing this table
 | PH-013 | Business contact set (phone, WhatsApp, email, address, hours) | `content/contact.ts` | CONFIRM | Values exist on live site — owner confirm current |
 | PH-014 | Social media URLs | `content/social.ts` | CONFIRM | Verify each link live |
 | PH-015 | Gallery captions / photo usage rights | `content/gallery.ts` | CONFIRM | `public/studio/` photos — confirm publication rights |
+| PH-016 | Living Anatomy figure mesh (`public/models/figure.glb`) | `07_SCENE_3D.md` Step 1 | PENDING | A licensable CC-BY candidate was found ("A Man Sitting", Sketchfab, 18k tris, 9k verts — see DECISIONS.md asset registry) but downloading it (Sketchfab gates downloads behind an authenticated account UI) and processing it (decimate → glTF → gltf-transform + Draco) needs tooling (Blender / gltf-transform CLI / a logged-in Sketchfab session) not available in this environment. SilhouetteTier ships as the complete hero visual meanwhile (07's own Step 1.5 explicitly allows this — "do NOT stop the project"). Whoever has that tooling: verify the pose is actually cross-legged/seated (unconfirmed from the listing page) before committing to it, or pick a fresh candidate. |
 
 Status values: `PENDING` (no real data), `CONFIRM` (data exists, needs owner confirmation),
 `DONE` (owner provided/confirmed — move value into content file, keep row for history).
