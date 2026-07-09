@@ -3,6 +3,24 @@
 Format: `## [date] — <task file>` then bullet list of concrete changes.
 Newest on top. Every completed task file appends exactly one entry.
 
+## [2026-07-09] — 03_DESIGN_SYSTEM
+- Added semantic token layer to `globals.css` (`--surface`/`-2`/`-3`, `--fg`/
+  `--fg-muted`, `--accent`/`--accent-2`, `--line`, `--glow`) + Tailwind mapping
+  + type scale (`display-xl`/`-l`/`-m`, `lead`, `body`, `caption`, balanced text).
+- Reused the pre-existing `lib/theme/ThemeContext.tsx` (found already wired
+  into `layout.tsx`/`Nav.tsx`) instead of building a new provider; added the
+  no-flash init script and `components/ThemeToggle.tsx`.
+- Fixed a real hydration bug caught in browser preview (initial-state read of
+  `data-theme` inside `useState` caused server/client mismatch) — state now
+  starts `"dark"` on both, self-corrects post-mount.
+- Renamed `--ink`/`--ink-muted` → `--fg`/`--fg-muted` (collided with an
+  existing, differently-valued, live token) and darkened day `--accent` to
+  pass the 4.5:1 contrast floor — both documented in DECISIONS.md E-003 and
+  `design/adr/0015-day-night-theme.md`.
+- Validation green: lint, tsc, 121 vitest tests, next build (36 routes),
+  manual toggle verification in browser preview.
+- **Phase 1 gate passed** (01+02+03) — rebased onto main (no-op, main unchanged).
+
 ## [2026-07-09] — 02_CONTENT_SYSTEM
 - Created `website/content/` (18 typed modules + index barrel) as the single
   source of truth for business data; moved every fallback constant out of

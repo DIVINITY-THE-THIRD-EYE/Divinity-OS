@@ -24,14 +24,21 @@ No web access → use `website/design/01/05/06/07` (principles already extracted
 
 ## TOKEN SPEC (exact values — do not improvise)
 
+> **Amended during execution (E-003, see DECISIONS.md + design/adr/0015-day-night-theme.md):**
+> `--ink`/`--ink-muted` → `--fg`/`--fg-muted` (name collision: `--ink` already exists in
+> `globals.css` with a different value, live on 6 components). Day `--accent` darkened
+> `#a85e2a` → `#9c4a2a` (failed the 4.5:1 contrast floor at the spec value; `#9c4a2a` reuses
+> the existing `--clay` primitive, same hue family, passes at 5.35:1). Table below reflects
+> what actually shipped.
+
 | Token | Night (default) | Day |
 |---|---|---|
 | `--surface` | `#15161e` | `#f4efe4` |
 | `--surface-2` | `#1e2029` | `#e9e2d2` |
 | `--surface-3` | `#2a2d38` | `#ddd4bf` |
-| `--ink` | `#ece7db` | `#20242f` |
-| `--ink-muted` | `#8e93a6` | `#5c6070` |
-| `--accent` | `#d08a3e` | `#a85e2a` |
+| `--fg` | `#ece7db` | `#20242f` |
+| `--fg-muted` | `#8e93a6` | `#5c6070` |
+| `--accent` | `#d08a3e` | `#9c4a2a` |
 | `--accent-2` | `#2e5f4f` | `#5f7a5a` |
 | `--line` | `rgba(208,138,62,0.16)` | `rgba(32,36,47,0.14)` |
 | `--glow` | dark-blue/emerald radial set | gold/beige radial set |
@@ -45,11 +52,17 @@ Type scale (utilities or Tailwind theme entries):
 
 ## FILES ALLOWED
 - `website/app/globals.css`, `website/tailwind.config.ts`
-- `website/components/ThemeProvider.tsx`, `website/components/ThemeToggle.tsx` (new)
+- `website/components/ThemeToggle.tsx` (new)
 - `website/app/layout.tsx` (mount provider + toggle; inline no-flash script)
 - `website/components/Nav.tsx` (toggle placement only)
 - `website/design/adr/0015-day-night-theme.md` (new ADR superseding 0012)
 - STATUS/CHANGELOG.
+
+> **Amended (E-003):** no `components/ThemeProvider.tsx` — `lib/theme/ThemeContext.tsx`
+> already existed and was already live in `layout.tsx`/`Nav.tsx` before this task started
+> (the task file predates that discovery). Reused it instead of building a second, competing
+> provider; its initial-state `useState` needed a small fix for the no-flash requirement, so
+> `website/lib/theme/ThemeContext.tsx` is added to this list.
 
 ## FILES FORBIDDEN
 - Page files, other components (they get re-skinned in their own tasks), `content/`.

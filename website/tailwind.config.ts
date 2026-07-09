@@ -34,6 +34,16 @@ const config: Config = {
         mist: withOpacity("--mist-rgb"),
         ink: withOpacity("--ink-rgb"),
         "ink-mute": withOpacity("--ink-mute-rgb"),
+        // Semantic layer (03_DESIGN_SYSTEM) — plain var() since nothing consumes
+        // an opacity-modifier variant of these yet; add -rgb + withOpacity() if
+        // a future component needs e.g. bg-surface/50.
+        surface: "var(--surface)",
+        "surface-2": "var(--surface-2)",
+        "surface-3": "var(--surface-3)",
+        fg: "var(--fg)",
+        "fg-muted": "var(--fg-muted)",
+        accent: "var(--accent)",
+        "accent-2": "var(--accent-2)",
       } as unknown as Record<string, string>,
       fontFamily: {
         display: ["var(--font-display)", "Georgia", "serif"],
@@ -43,6 +53,14 @@ const config: Config = {
       letterSpacing: {
         label: "0.28em",
         wide: "0.18em",
+      },
+      fontSize: {
+        "display-xl": "clamp(72px, 16vw, 210px)",
+        "display-l": "clamp(40px, 8vw, 104px)",
+        "display-m": "clamp(36px, 6vw, 72px)",
+        lead: ["18px", "1.6"],
+        body: ["16px", "1.6"],
+        caption: ["14px", "1.4"],
       },
     },
   },

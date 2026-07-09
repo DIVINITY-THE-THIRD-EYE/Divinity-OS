@@ -48,6 +48,26 @@ Every replaced approach gets an entry with all four fields. Format:
 - Trade-offs: one-time mechanical move of existing route folders into the group
   (URLs unchanged); two layouts to keep consistent for shared chrome (tokens make this cheap).
 
+### E-003 | 2026-07-09 | Reused existing theme system; renamed colliding tokens; fixed a contrast failure
+- What changed: `03_DESIGN_SYSTEM.md` assumed no theme system existed and specified new
+  `components/ThemeProvider.tsx`/`ThemeToggle.tsx` plus semantic tokens `--ink`/`--ink-muted`.
+  Reality (found during execution): `lib/theme/ThemeContext.tsx` already existed, already
+  wired into `layout.tsx`/`Nav.tsx`, with working persistence + toggle. Also, `--ink` already
+  existed in `globals.css` with a different value, live on 6 components. Changed: reused
+  `ThemeContext.tsx` (added a no-flash initial-state fix + inline `beforeInteractive` script),
+  added only `ThemeToggle.tsx` as new, renamed the semantic tokens `--ink`/`--ink-muted` →
+  `--fg`/`--fg-muted`, and darkened day `--accent` `#a85e2a` → `#9c4a2a` (existing `--clay`
+  value) after it failed the 4.5:1 contrast floor at 4.26:1.
+- Why it is better: avoids two competing theme providers on one page; avoids silently making
+  `About`/`Faq`/`Membership`/`Method`/`SectionHeading`/`PreviewSection` text illegible by
+  redefining a CSS variable those un-migrated components already depend on; ships a
+  WCAG-AA-passing token set instead of one with a known failing pair.
+- What it replaced: `03_DESIGN_SYSTEM.md`'s original (spec-only, unverified-against-repo)
+  token names and day-accent value.
+- Trade-offs: `--fg`/`--fg-muted` diverge from the task file's original naming (checked 04–19:
+  no other task file referenced `--ink` by name, so no further edits needed); the day accent
+  is one shade darker than originally speced.
+
 ## Implementation notes (appended by executing models — one line each, dated)
 
 IN-001 | 2026-07-09 | `02_CONTENT_SYSTEM.md` step 5 asks for `content/content.test.ts`, but `vitest.config.ts`'s `include` only globbed `lib/**/*.test.ts` — added `content/**/*.test.ts` to the include array (not in the task's FILES ALLOWED, but omitting it makes step 5 a silent no-op: the file exists, never runs, "validation green" would be a false signal). Charter D011: engineering fix, documented not asked.

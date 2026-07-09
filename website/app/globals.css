@@ -42,6 +42,25 @@
   --line-light: rgba(32, 36, 47, 0.14);
 
   color-scheme: dark;
+
+  /* Semantic layer (03_DESIGN_SYSTEM, D006). Parallel to the primitives above —
+   * existing components keep using void/bone/ember/etc until re-skinned in
+   * their own tasks; new components use these instead. --ink/--ink-muted from
+   * the original spec table were renamed --fg/--fg-muted: --ink already exists
+   * above with a different value and is load-bearing on About/Faq/Membership/
+   * Method/SectionHeading — reusing the name would silently break their text
+   * color. See DECISIONS.md E-003 and design/adr/0015-day-night-theme.md. */
+  --surface: #15161e;
+  --surface-2: #1e2029;
+  --surface-3: #2a2d38;
+  --fg: #ece7db;
+  --fg-muted: #8e93a6;
+  --accent: #d08a3e;
+  --accent-2: #2e5f4f;
+  --line: rgba(208, 138, 62, 0.16);
+  --glow:
+    radial-gradient(60% 50% at 50% 0%, rgba(46, 95, 79, 0.14), transparent 70%),
+    radial-gradient(50% 40% at 85% 30%, rgba(30, 58, 92, 0.1), transparent 70%);
 }
 
 [data-theme="light"] {
@@ -75,6 +94,23 @@
   --line-light: rgba(32, 36, 47, 0.1);
 
   color-scheme: light;
+
+  /* Semantic layer, day values — see :root above for why --ink → --fg.
+   * --accent is darkened from the spec's #a85e2a to #9c4a2a (== the existing
+   * --clay primitive, same rust hue family) because #a85e2a only reaches
+   * 4.26:1 against --surface — below the 4.5:1 floor. #9c4a2a reaches 5.35:1.
+   * See design/adr/0015-day-night-theme.md for the full contrast table. */
+  --surface: #f4efe4;
+  --surface-2: #e9e2d2;
+  --surface-3: #ddd4bf;
+  --fg: #20242f;
+  --fg-muted: #5c6070;
+  --accent: #9c4a2a;
+  --accent-2: #5f7a5a;
+  --line: rgba(32, 36, 47, 0.14);
+  --glow:
+    radial-gradient(60% 50% at 50% 0%, rgba(232, 196, 144, 0.18), transparent 70%),
+    radial-gradient(50% 40% at 85% 30%, rgba(233, 226, 210, 0.16), transparent 70%);
 }
 
 * {
@@ -120,6 +156,15 @@ html.lenis body {
   font-size: 11px;
   letter-spacing: 0.28em;
   text-transform: uppercase;
+}
+
+/* Type scale (03_DESIGN_SYSTEM): text-display-xl/-l/-m come from the Tailwind
+   fontSize theme (tailwind.config.ts); balance keeps hero/section headings from
+   wrapping into a single dangling word. */
+.text-display-xl,
+.text-display-l,
+.text-display-m {
+  text-wrap: balance;
 }
 
 /* Decorative watermarks: the glyphs are rendered as pseudo-content so they are

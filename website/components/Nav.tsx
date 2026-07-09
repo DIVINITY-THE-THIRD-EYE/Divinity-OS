@@ -9,8 +9,8 @@ import { site } from "@/lib/content";
 import { navItems, primaryNav } from "@/lib/nav";
 import { trapTab } from "@/lib/focus-trap";
 import { useLocale } from "@/lib/i18n/LocaleContext";
-import { useTheme } from "@/lib/theme/ThemeContext";
 import Magnetic from "./Magnetic";
+import ThemeToggle from "./ThemeToggle";
 
 function openPalette() {
   window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }));
@@ -20,7 +20,6 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
   const activeSite = siteProp || site;
   const pathname = usePathname();
   const { locale, setLocale, t } = useLocale();
-  const { theme, toggleTheme } = useTheme();
   const [solid, setSolid] = useState(false);
   const [open, setOpen] = useState(false);
   const menuBtnRef = useRef<HTMLButtonElement>(null);
@@ -112,13 +111,7 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
           >
             {locale === "en" ? "हिं" : "EN"}
           </button>
-          <button
-            onClick={toggleTheme}
-            className="font-mono text-[11px] uppercase tracking-wide text-mist transition-colors hover:text-ember"
-            aria-label="Toggle theme"
-          >
-            {theme === "dark" ? "☀" : "☾"}
-          </button>
+          <ThemeToggle />
           <Magnetic>
             <Link
               href="/contact"
@@ -205,13 +198,7 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
               >
                 {locale === "en" ? "हिंदी में देखें" : "View in English"}
               </button>
-              <button
-                onClick={toggleTheme}
-                className="font-mono text-[11px] uppercase tracking-wide text-mist"
-                aria-label="Toggle theme"
-              >
-                {theme === "dark" ? "☀ Light" : "☾ Dark"}
-              </button>
+              <ThemeToggle />
             </m.div>
           </m.div>
         )}

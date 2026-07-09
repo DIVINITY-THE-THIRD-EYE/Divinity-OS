@@ -7,9 +7,9 @@
 
 | Field | Value |
 |---|---|
-| Phase | 1 — Foundation (01, 02 complete) |
-| Next file | `03_DESIGN_SYSTEM.md` |
-| Branch | `rebuild/living-anatomy` (created, checked out) |
+| Phase | 2 — Homepage DOM (Phase 1 gate passed: 01+02+03 COMPLETE) |
+| Next file | `04_HOMEPAGE.md` |
+| Branch | `rebuild/living-anatomy` (created, checked out, rebased onto main at gate) |
 | Blockers | none |
 
 ## Known repo state (as of 2026-07-09, playbook creation)
@@ -24,6 +24,76 @@
 - No Supabase JS client in website yet (login task adds it).
 
 ## Log (append-only, newest first)
+
+### 2026-07-09 — PHASE 1 GATE (01+02+03) — PASSED, auto-continuing
+- Gate criterion (00_MASTER): "Validation green + content system live + both themes
+  AA-verified."
+  - Validation green: lint clean · tsc clean · 121/121 vitest tests · `next build`
+    36/36 routes. Verified again at the gate (not just per-task).
+  - Content system live: `website/content/` (18 modules) is the single source of
+    truth; `lib/content.ts` is a pure re-export/merge compat layer; zero
+    `app/`/`components/` consumer imports changed (verified via `grep`).
+  - Both themes AA-verified: contrast audit in `design/adr/0015-day-night-theme.md`
+    — all 8 required pairs (fg/surface, fg-muted/surface, accent/surface,
+    fg/surface-2 × night+day) ≥4.5:1. Toggle manually verified in the browser
+    preview: switches both directions, persists across reload (`localStorage`
+    `divinity_theme`), no flash-of-wrong-theme (inline `beforeInteractive` script
+    sets `data-theme` before paint), zero hydration-error console output on a
+    clean server for both the matching-default and self-correcting-after-mount
+    branches, real `<button>` with `aria-pressed`/`aria-label`, 32×32px target,
+    keyboard-operable natively.
+  - **Correctness note**: initial attempt at the no-flash fix (reading
+    `data-theme` inside `ThemeContext`'s `useState` initializer) caused a genuine
+    hydration failure in the browser preview — React detected the toggle icon's
+    text differed between server and client render and discarded the server
+    HTML, a worse flash than the one being fixed. Caught by driving the actual
+    page in preview (not just lint/tsc/build, which are blind to this class of
+    bug) and corrected: state now starts `"dark"` identically on server and
+    first client render, self-corrects via a post-mount effect. See ADR 0015 and
+    `lib/theme/ThemeContext.tsx`.
+- Rebase: `main` had no new commits since branch creation (checked
+  `git log main..rebuild/living-anatomy` / no upstream changes) — rebase was a
+  no-op, nothing to reconcile.
+- Problems: none blocking.
+- Next: `04_HOMEPAGE.md` (Phase 2).
+
+### 2026-07-09 — 03_DESIGN_SYSTEM complete
+- Phase: 1
+- Status: COMPLETE
+- Changes: added a semantic token layer to `globals.css` (`--surface`/`-2`/`-3`,
+  `--fg`/`--fg-muted`, `--accent`/`--accent-2`, `--line`, `--glow`) parallel to
+  the existing void/bone/ember primitives — those stay untouched, driving
+  unmigrated components until their own re-skin tasks. Mapped the new tokens
+  into `tailwind.config.ts` (`surface`, `surface-2`, `surface-3`, `fg`,
+  `fg-muted`, `accent`, `accent-2` colors; `display-xl`/`-l`/`-m`/`lead`/`body`/
+  `caption` fontSize scale; `text-wrap: balance` on the three display classes).
+  Discovered — and reused rather than duplicated — an existing, already-wired
+  theme system (`lib/theme/ThemeContext.tsx`, live in `layout.tsx`/`Nav.tsx`
+  before this task started): added the no-flash `beforeInteractive` script to
+  `layout.tsx`, extracted `components/ThemeToggle.tsx` from Nav's two
+  duplicated inline toggle buttons, fixed a real hydration bug found during
+  manual preview verification (see gate entry above). Wrote
+  `design/adr/0015-day-night-theme.md` (Accepted, supersedes 0012, full
+  contrast table).
+- Deviations from the task file (documented, E-003 in DECISIONS.md,
+  `03_DESIGN_SYSTEM.md` amended in place): `--ink`/`--ink-muted` → `--fg`/
+  `--fg-muted` (name collision — `--ink` already existed with a different
+  value, live on 6 components: About/Faq/Membership/Method/SectionHeading/
+  PreviewSection; redefining it would have silently made their text illegible).
+  Day `--accent` darkened `#a85e2a` → `#9c4a2a` (reuses existing `--clay`
+  value, same hue family) after the spec value failed the 4.5:1 floor at
+  4.26:1. No `components/ThemeProvider.tsx` created (the task file predates
+  discovery of the existing provider).
+- Validation: lint clean · tsc clean · 121/121 vitest tests (unchanged from 02
+  — no test file touched this task) · `next build` 36/36 routes · manual
+  preview verification (see gate entry).
+- Tests: 121/121 passed
+- Performance: unchanged (additive CSS variables + one new component; no
+  component re-skinned yet)
+- Accessibility: contrast audit passed both themes (see ADR 0015); toggle
+  meets the button/aria-pressed/aria-label/24px-target/keyboard bar
+- Problems: none blocking
+- Next: Phase 1 gate (see above), then `04_HOMEPAGE.md`
 
 ### 2026-07-09 — 02_CONTENT_SYSTEM complete
 - Phase: 1

@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Cormorant, Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
 import { fetchSiteSettings } from "@/lib/content";
 import JsonLd from "@/components/JsonLd";
@@ -93,6 +94,13 @@ export default async function RootLayout({
       className={`${display.variable} ${body.variable} ${mono.variable}`}
     >
       <body>
+        {/* No-flash theme script: sets data-theme before first paint so CSS
+            never renders the wrong theme on a hard reload. Reads the same
+            localStorage key as ThemeContext; strategy="beforeInteractive"
+            makes Next.js inline this in <head>, ahead of hydration. */}
+        <Script id="theme-init" strategy="beforeInteractive">
+          {`(function(){try{var t=localStorage.getItem('divinity_theme');if(t!=='light'&&t!=='dark'){t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`}
+        </Script>
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[999] focus:bg-ember focus:px-4 focus:py-2 focus:font-mono focus:text-[12px] focus:uppercase focus:tracking-wide focus:text-void"
