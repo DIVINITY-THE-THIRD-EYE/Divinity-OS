@@ -34,12 +34,12 @@ const config: Config = {
         mist: withOpacity("--mist-rgb"),
         ink: withOpacity("--ink-rgb"),
         "ink-mute": withOpacity("--ink-mute-rgb"),
-        // Semantic layer (03_DESIGN_SYSTEM) — plain var() since nothing consumes
-        // an opacity-modifier variant of these yet; add -rgb + withOpacity() if
-        // a future component needs e.g. bg-surface/50.
-        surface: "var(--surface)",
-        "surface-2": "var(--surface-2)",
-        "surface-3": "var(--surface-3)",
+        // Semantic layer (03_DESIGN_SYSTEM). surface/-2/-3 need opacity-modifier
+        // support (bg-surface/85 etc., used by Nav's scroll-solid state) so they
+        // get the same -rgb + withOpacity() treatment as the primitives above.
+        surface: withOpacity("--surface-rgb"),
+        "surface-2": withOpacity("--surface-2-rgb"),
+        "surface-3": withOpacity("--surface-3-rgb"),
         fg: "var(--fg)",
         "fg-muted": "var(--fg-muted)",
         accent: "var(--accent)",

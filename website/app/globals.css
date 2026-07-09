@@ -53,6 +53,9 @@
   --surface: #15161e;
   --surface-2: #1e2029;
   --surface-3: #2a2d38;
+  --surface-rgb: 21 22 30;
+  --surface-2-rgb: 30 32 41;
+  --surface-3-rgb: 42 45 56;
   --fg: #ece7db;
   --fg-muted: #8e93a6;
   --accent: #d08a3e;
@@ -103,6 +106,9 @@
   --surface: #f4efe4;
   --surface-2: #e9e2d2;
   --surface-3: #ddd4bf;
+  --surface-rgb: 244 239 228;
+  --surface-2-rgb: 233 226 210;
+  --surface-3-rgb: 221 212 191;
   --fg: #20242f;
   --fg-muted: #5c6070;
   --accent: #9c4a2a;
