@@ -3,6 +3,28 @@
 Format: `## [date] — <task file>` then bullet list of concrete changes.
 Newest on top. Every completed task file appends exactly one entry.
 
+## [2026-07-10] — 15_PERFORMANCE
+- Real Lighthouse measurements (worked around a local Chrome-launch
+  restriction via a Playwright-launched CDP target) on `/`, `/pricing`,
+  `/programs`, `/contact`, `/login`, desktop + mobile.
+- Found and fixed a real LCP-gating bug: `Reveal`'s `whileInView` held the
+  hero H1 (via `PageHeader.tsx`, used on nearly every route) at opacity:0
+  until JS hydration + IntersectionObserver fired. Added a scoped
+  `immediate` prop (E-014) — mobile perf scores improved `/programs` 80→90,
+  `/contact` 82→90, `/home` 89→93. All 5 routes now clear the ≥90 mobile /
+  ≥95 desktop D009 floors.
+- Trimmed dead font weights (grep-verified unused): `Hanken_Grotesk`
+  400/500, `JetBrains_Mono` 500 (IN-011) — 3 fewer font files, zero visual
+  change.
+- Image audit: zero raw `<img>` tags (next/image everywhere); ~34
+  unreferenced files found in `public/studio/`/`public/guru/` — listed in
+  STATUS, not deleted (19's job).
+- Added a `lighthouse` job to `.github/workflows/website.yml` (desktop +
+  mobile configs, `@lhci/cli` via npx) asserting D009's budgets — hasn't
+  run in real CI yet from this session (no local runner available).
+- Validation green: lint, tsc, 145 vitest tests, 84 Playwright e2e tests,
+  next build (45 routes + middleware, font payload reduced).
+
 ## [2026-07-10] — 14_SEO
 - `components/JsonLd.tsx` (site-wide, root layout) reduced to just the
   LocalBusiness-family block (now with real `geo` coordinates) — `FAQPage`/

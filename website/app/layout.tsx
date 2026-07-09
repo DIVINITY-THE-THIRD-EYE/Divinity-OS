@@ -19,14 +19,20 @@ const display = Cormorant({
 
 const body = Hanken_Grotesk({
   subsets: ["latin"],
-  weight: ["300", "400", "500"],
+  // globals.css sets `body { font-weight: 300 }` site-wide and no component
+  // ever overrides it (grep-verified: zero font-medium/semibold/bold usage
+  // paired with font-body) — 400/500 were dead weight (15_PERFORMANCE.md).
+  weight: ["300"],
   variable: "--font-body",
   display: "swap",
 });
 
 const mono = JetBrains_Mono({
   subsets: ["latin"],
-  weight: ["400", "500"],
+  // Only 400 renders in practice: nothing requests mono text at 500
+  // (grep-verified), and the body's inherited 300 request falls back to
+  // the nearest loaded weight (400) per the CSS font-matching algorithm.
+  weight: ["400"],
   variable: "--font-mono",
   display: "swap",
 });

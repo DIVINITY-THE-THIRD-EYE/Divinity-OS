@@ -337,7 +337,52 @@ Every replaced approach gets an entry with all four fields. Format:
   14_SEO.md's FILES ALLOWED, though it is the homepage's only metadata
   source (no page-level `pageMeta()` call exists for `/`).
 
+### E-014 | 2026-07-10 | Reveal.tsx gained an `immediate` prop for above-the-fold content
+- What changed: `PageHeader.tsx` (the H1 on nearly every non-homepage route)
+  wrapped its heading in `Reveal`, which starts at `opacity:0` and only
+  transitions to visible once an `IntersectionObserver` fires post-hydration
+  (`whileInView`). Measured via real Lighthouse runs (see 15_PERFORMANCE.md):
+  this gated the page's LCP paint behind full JS delivery + hydration,
+  costing ~1.3-1.8s of LCP under mobile network throttling on `/programs`
+  and `/contact` (perf score 80/82, below the 90 floor). Added an
+  `immediate?: boolean` prop to `Reveal` — when true, `initial={false}`
+  instead of `initial={{opacity:0,y}}`, so the wrapped content renders
+  already in its final, visible state (no flash, no entrance transition).
+  Wired only into `PageHeader.tsx`'s hero content.
+- Why it is better: D009 states budgets are non-negotiable and "effects
+  that can't fit use their fallback" — this is exactly that fallback,
+  scoped to the single most-repeated above-the-fold element site-wide.
+  Verified via re-measurement: `/programs` mobile perf 80→90, `/contact`
+  mobile perf 82→90, `/home` mobile perf 89→93 — all now clear the ≥90
+  floor. `Reveal`'s API and every OTHER call site (below-the-fold sections
+  throughout the site) are completely unaffected — this doesn't remove the
+  motion-grammar system, it exempts one already-in-viewport instance from
+  a fade that JS-throttled network conditions can't hide for free.
+- What it replaced: nothing removed — `Reveal` still defaults to its
+  original fade-in behavior everywhere else.
+- Trade-offs: `PageHeader`'s hero content no longer performs the fade-up
+  entrance on load (it did so functionally instantly anyway for anyone with
+  a fast connection — the fix mainly matters under throttling). Verified
+  full test suite (145 vitest + 84 Playwright) unaffected.
+
 ## Implementation notes (appended by executing models — one line each, dated)
+
+IN-011 | 2026-07-10 | `15_PERFORMANCE.md`'s font pass (Step 3) found
+`Hanken_Grotesk` (body) loading weights 300/400/500 and `JetBrains_Mono`
+(mono) loading 400/500 in `app/layout.tsx`, but grep-verified (searched
+every `.tsx` under `app/`/`components/` for `font-medium`/`font-semibold`/
+`font-bold`/`font-normal` paired with `font-body`/`font-mono`, and for any
+`fontWeight` inline style) that: (a) `globals.css`'s `body { font-weight:
+300 }` is never overridden for body text anywhere, so only 300 ever
+renders; (b) mono text likewise never requests a specific weight, and with
+only 400 available it renders at 400 (CSS font-matching's nearest-available
+fallback) — 500 was pure dead weight in both families. Trimmed
+`Hanken_Grotesk` to `["300"]` and `JetBrains_Mono` to `["400"]` — 3 fewer
+font files downloaded, zero visual change (verified: full test suite green,
+`next build` output unchanged in route structure). `app/layout.tsx` isn't
+literally the FILES ALLOWED wording ("Anything needed for optimization
+EXCEPT...") but IS covered by 15's own broad allowance, so no deviation
+note needed beyond this record for traceability.
 
 IN-010 | 2026-07-10 | `14_SEO.md` lists `content/seo.ts` in FILES ALLOWED
 but it was never actually consumed anywhere (dead code since

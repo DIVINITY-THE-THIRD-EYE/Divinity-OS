@@ -39,7 +39,7 @@ export default function PageHeader({
             <Breadcrumbs trail={trail} />
           </div>
         )}
-        <Reveal>
+        <Reveal immediate>
           {eyebrow && <p className="eyebrow mb-6 text-accent">{eyebrow}</p>}
           <h1 className="font-display text-[clamp(40px,7vw,96px)] font-light leading-[0.95] tracking-tight text-fg">
             {title}
