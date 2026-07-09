@@ -7,10 +7,10 @@
 
 | Field | Value |
 |---|---|
-| Phase | 6 — Portal (12 COMPLETE) |
-| Next file | `13_FLUTTER_WEB.md` |
+| Phase | 7 — Hardening (Phase 6 COMPLETE, gate passed — phased) |
+| Next file | `14_SEO.md` |
 | Branch | `rebuild/living-anatomy` |
-| Blockers | PH-016 (figure mesh processing — needs Blender/gltf-transform/authenticated Sketchfab, none available here); manual OTP QA for 12_STUDENT_LOGIN pending owner-provided `NEXT_PUBLIC_SUPABASE_URL`/`_ANON_KEY` in `website/.env.local` (unset in this environment — automated tests green, auth fails closed, see E-011) |
+| Blockers | PH-016 (figure mesh processing — needs Blender/gltf-transform/authenticated Sketchfab, none available here); manual OTP QA for 12_STUDENT_LOGIN pending owner-provided `NEXT_PUBLIC_SUPABASE_URL`/`_ANON_KEY` in `website/.env.local` (unset in this environment); Flutter Web build/deploy (13) pending an environment with the Flutter SDK on PATH — see log entries below |
 
 ## Known repo state (as of 2026-07-09, playbook creation)
 
@@ -24,6 +24,91 @@
 - No Supabase JS client in website yet (login task adds it).
 
 ## Log (append-only, newest first)
+
+### 2026-07-10 — PHASE 6 GATE (12+13) — PASSED (phased), auto-continuing
+- Gate criterion (00_MASTER): "Student login + Flutter Web dashboard working
+  end-to-end."
+  - Student login: fully working end-to-end — middleware guard, phone OTP
+    flow, role gate, portal shell, logout, all automated-test-verified
+    (138 vitest + Playwright). Real manual OTP QA still needs the owner's
+    Supabase env values (not available in this environment) — not faked.
+  - Flutter Web dashboard: NOT working end-to-end — no Flutter SDK in this
+    environment to build/deploy it (13's own INPUTS section pre-approves
+    this exact fallback). What shipped instead: the Nav "Student Login"
+    link (dark-launch end, Step 3) and the portal's honest "coming soon"
+    card (from 12). Build command + a proposed CI job spec documented below
+    for whoever has the SDK; actual workflow-file creation is `18_
+    DEPLOYMENT.md`'s job (it already owns `.github/workflows/**`).
+  - Same phased-delivery pattern as the Phase 4 gate (07/SilhouetteTier,
+    E-008) — tooling-blocked, not a design shortfall, documented honestly,
+    charter (D011) says continue rather than stall on an environment gap
+    outside the executor's control.
+- Proposed Flutter Web build (for `18_DEPLOYMENT.md` to actually wire up),
+  following this repo's existing `release-flutter.yml` CI conventions:
+  ```yaml
+  # .github/workflows/ (name TBD by 18_DEPLOYMENT.md) — build on push to
+  # rebuild/living-anatomy or main, paths: flutter-app/web/**, flutter-app/lib/**
+  - uses: subosito/flutter-action@v2
+    with: { channel: stable, cache: true }
+  - working-directory: flutter-app
+    run: flutter pub get
+  - working-directory: flutter-app
+    run: >
+      flutter build web --release
+      --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+      --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+  # then deploy flutter-app/build/web/ to the hosting target chosen in
+  # PLACEHOLDERS.md BD-002 (path-based /app until DNS is granted for
+  # app.<domain>)
+  ```
+- Rebase: `main` unchanged since Phase 5 gate — no-op (checked via
+  `git merge-base --is-ancestor main rebuild/living-anatomy`; remote fetch
+  itself failed in this sandbox — host key/network restriction, unrelated
+  to the branch's actual local relationship to main).
+- Problems: see Blockers in Current table above (PH-016, Supabase env,
+  Flutter SDK) — none block continued engineering progress.
+- Next: `14_SEO.md` (Phase 7).
+
+### 2026-07-10 — 13_FLUTTER_WEB complete (Stage A partial, Stage B deferred)
+- Phase: 6
+- Status: COMPLETE (phased — see Phase 6 gate above for the honest split of
+  what did/didn't ship)
+- Changes:
+  - `components/Nav.tsx`: added a "Student Login" link (`/login`) to both
+    the desktop utility-link row and the mobile menu's bottom row, styled
+    to match the file's existing (pre-03, not-yet-re-skinned) token
+    conventions — left the rest of `Nav.tsx` untouched (a full re-skin to
+    semantic tokens is out of this task's scope; flagged separately, see
+    Problems).
+  - New Playwright test: clicking "Student Login" from `/` lands on
+    `/login`.
+  - Confirmed via `which flutter` / `flutter --version`: no Flutter SDK on
+    PATH in this environment. Confirmed `flutter-app/web/` exists (real
+    scaffold: `index.html`, `icons/`, `manifest.json`) — never built here.
+  - Did not touch `flutter-app/lib/**` (Stage B is deferred, so its "ONLY
+    task allowed to touch flutter-app" clause doesn't apply yet) or
+    `content/site.ts` (`appOrigin` — Stage B config, not needed yet).
+  - Documented the proposed build command + CI job spec for
+    `18_DEPLOYMENT.md` to actually wire up (see Phase 6 gate entry above).
+- Deviations (documented, E-012 in DECISIONS.md, `13_FLUTTER_WEB.md`
+  amended in place): shipped only the buildable half of Stage A; Stage B
+  not attempted (correctly gated behind a real Stage A URL that doesn't
+  exist yet).
+- Validation: lint clean · tsc clean · 138/138 vitest tests · `next build`
+  45/45 routes + middleware · 59/59 Playwright e2e tests (1 new: Nav
+  Student Login link) · `flutter test`/`flutter analyze` NOT run (no
+  Flutter SDK; `flutter-app/**` wasn't touched, so no regression risk)
+- Tests: 138 vitest + 59 Playwright, all passed
+- Performance: one new `<Link>` per Nav render, negligible
+- Accessibility: link uses standard `<Link>` text (no icon-only affordance
+  needing an aria-label)
+- Problems: **found, not fixed (out of this task's scope):** `Nav.tsx` is
+  the last major chrome component still on the old primitive tokens
+  (`text-mist`/`text-ember`/`bg-void`/etc.) — every other page/component
+  touched in Phases 5-6 is on the semantic token set from 03. Not this
+  task's job to re-skin (FILES ALLOWED here is "Nav.tsx (login link)"
+  only); flagged as a background task rather than scope-creeping into it.
+- Next: Phase 6 gate (above), then `14_SEO.md`
 
 ### 2026-07-10 — 12_STUDENT_LOGIN complete
 - Phase: 6

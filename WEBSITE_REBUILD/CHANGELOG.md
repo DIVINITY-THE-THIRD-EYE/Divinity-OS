@@ -3,6 +3,25 @@
 Format: `## [date] — <task file>` then bullet list of concrete changes.
 Newest on top. Every completed task file appends exactly one entry.
 
+## [2026-07-10] — 13_FLUTTER_WEB (Stage A partial — Nav link shipped; build/Stage B blocked by tooling)
+- Added the "Student Login" link to `Nav.tsx` (desktop + mobile menus) —
+  dark-launch ends here per this task's Step 3. Verified via a new
+  Playwright test (click-through from `/` to `/login`).
+- No Flutter SDK available in this environment — couldn't run `flutter
+  build web`. This task's own INPUTS section pre-approves this exact
+  fallback: documented the build command + a proposed CI job spec (STATUS.md)
+  and handed the actual workflow-file creation off to `18_DEPLOYMENT.md`
+  (which already owns `.github/workflows/**`), rather than fabricating a
+  build or an iframe pointed at a URL that doesn't exist.
+- Hosting-path decision (subdomain vs `/app`) needed no new call — already
+  recorded as `PLACEHOLDERS.md` BD-002 (path-based default) before this task.
+- Stage B (embedded iframe + token handoff) correctly deferred — it's gated
+  behind Stage A shipping a real, reachable URL, which didn't happen here.
+- Validation green: lint, tsc, 138 vitest tests, 59 Playwright e2e tests,
+  next build (45 routes + middleware).
+- **Phase 6 gate passed** (12 COMPLETE, 13 shipped to the extent tooling
+  allows) — rebased onto main.
+
 ## [2026-07-10] — 12_STUDENT_LOGIN
 - Installed `@supabase/ssr@0.12.0` + `@supabase/supabase-js@2.110.2`; added
   `lib/supabase/{client,server}.ts` (anon key only, cookie-based SSR

@@ -24,4 +24,10 @@ test.describe("12 student login / portal", () => {
     await page.getByRole("button", { name: /send code/i }).click();
     await expect(page.getByText(/international format/i)).toBeVisible();
   });
+
+  test("13: Nav exposes a Student Login link that opens /login", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("link", { name: /student login/i }).first().click();
+    await expect(page).toHaveURL(/\/login/);
+  });
 });

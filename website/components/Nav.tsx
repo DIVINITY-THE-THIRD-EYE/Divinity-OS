@@ -111,6 +111,12 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
           >
             {locale === "en" ? "हिं" : "EN"}
           </button>
+          <Link
+            href="/login"
+            className="font-mono text-[11px] uppercase tracking-wide text-mist transition-colors hover:text-ember"
+          >
+            Student Login
+          </Link>
           <ThemeToggle />
           <Magnetic>
             <Link
@@ -198,6 +204,9 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
               >
                 {locale === "en" ? "हिंदी में देखें" : "View in English"}
               </button>
+              <Link href="/login" className="font-mono text-[11px] uppercase tracking-wide text-mist">
+                Student Login
+              </Link>
               <ThemeToggle />
             </m.div>
           </m.div>

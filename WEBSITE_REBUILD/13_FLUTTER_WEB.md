@@ -82,3 +82,41 @@ Phase 6 gate. Gate report (state exactly which stage shipped) + rebase → auto-
 
 ## NEXT
 `14_SEO.md`
+
+## AMENDMENT (executed 2026-07-10)
+Flutter SDK is NOT available in this environment (`flutter` not on PATH) —
+exactly the condition this file's own INPUTS section pre-approves a fallback
+for. `flutter-app/web/` does exist (real scaffold: `index.html`, `icons/`,
+`manifest.json`) — it has just never been built here.
+
+What shipped (Stage A, partial — the part that doesn't need a Flutter
+build):
+- `components/Nav.tsx`: added a "Student Login" link (`/login`) to both the
+  desktop and mobile menus — dark-launch ends here, exactly as Step 3 asks,
+  verified via a new Playwright test (`e2e/portal.spec.ts`: "Nav exposes a
+  Student Login link that opens /login").
+- Hosting-path decision (Step 2): no new decision needed — `PLACEHOLDERS.md`
+  BD-002 already recorded the safe default (path-based `/app` hosting until
+  the owner grants DNS for an `app.<domain>` subdomain), made *before* this
+  task, during the playbook-evolution pass. It still holds; nothing to add.
+- `/portal`'s dashboard card (built in 12) already reads as an honest
+  "coming soon" placeholder — no fake link to a nonexistent deployment was
+  added.
+
+What did NOT ship (documented, not silently skipped):
+- The actual `flutter build web --release --dart-define-from-file=
+  dart_defines.json` — cannot run without the Flutter SDK. Proposed build
+  command + CI job spec (following this repo's existing
+  `.github/workflows/release-flutter.yml` conventions —
+  `subosito/flutter-action@v2`, `flutter pub get`, then `flutter build web`)
+  is written up in STATUS.md for whoever has the SDK, and handed off
+  explicitly to `18_DEPLOYMENT.md` (Step 2 there: "Flutter Web artifact:
+  build + deploy... Document the exact commands in this file"), since
+  `.github/workflows/**` isn't in *this* file's FILES ALLOWED.
+  STATUS-noted as "flutter web build pending environment."
+- Stage B (embedded iframe + token handoff): correctly gated behind Stage A
+  actually shipping a live, reachable Flutter Web URL — this file's own
+  APPROACH section says "do not skip stage A." With no build/deploy, there
+  is nothing to embed yet; building the iframe/handshake against a URL that
+  doesn't exist would be unverifiable, fabricated-looking work. Deferred,
+  not attempted.

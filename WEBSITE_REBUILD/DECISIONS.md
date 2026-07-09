@@ -276,6 +276,32 @@ Every replaced approach gets an entry with all four fields. Format:
   and env-guard are no-ops on the happy path (verified: no vitest/lint/tsc
   regressions, all 138 vitest + 58 Playwright tests green).
 
+### E-012 | 2026-07-10 | 13: Stage A shipped partially (Nav link only) — Flutter build blocked by tooling, Stage B deferred
+- What changed: `13_FLUTTER_WEB.md` asks for a Flutter Web build+deploy
+  (Stage A) before an embedded-iframe session handoff (Stage B). No Flutter
+  SDK is available in this environment (`flutter` not on PATH) — this file's
+  own INPUTS section pre-approves exactly this fallback ("Stage A becomes
+  'document build command + CI job spec'... portal shows 'app coming soon'
+  card, continue"). Shipped only the part that doesn't need a build: the
+  "Student Login" Nav link (Step 3, real and working — verified via
+  Playwright). Did not build/deploy Flutter Web, did not attempt Stage B.
+- Why: same reasoning as E-008 (07's SilhouetteTier/mesh split) — a missing
+  build toolchain is a tooling gap, not an effort/difficulty problem;
+  faking a Flutter Web deploy or an iframe pointed at a URL that doesn't
+  exist would be unverifiable, fabricated-looking work. The hosting-path
+  decision this file's Step 2 asks for was already made and recorded
+  (`PLACEHOLDERS.md` BD-002, from the playbook-evolution pass, predating
+  this task) — nothing new to decide.
+- What it replaced: nothing existing — Stage A/B are both new, additive
+  work. The proposed build command + CI job spec (following this repo's
+  `release-flutter.yml` conventions) is documented in STATUS.md and handed
+  off to `18_DEPLOYMENT.md` (its own Step 2 + FILES ALLOWED already own
+  `.github/workflows/**` and "document the exact commands in this file").
+- Trade-offs: no live Flutter Web experience yet; the portal's "coming
+  soon" card (built in 12) is the honest interim state. Whoever has the
+  Flutter SDK: run the documented build command, pick actual hosting
+  (subdomain vs `/app`), and pick up Stage B from there.
+
 ## Implementation notes (appended by executing models — one line each, dated)
 
 IN-009 | 2026-07-10 | `12_STUDENT_LOGIN.md`'s FILES ALLOWED lists
