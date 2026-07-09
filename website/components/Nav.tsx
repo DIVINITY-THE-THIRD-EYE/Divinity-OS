@@ -106,7 +106,7 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
           </button>
           <button
             onClick={() => setLocale(locale === "en" ? "hi" : "en")}
-            className="font-mono text-[11px] uppercase tracking-wide text-fg-muted transition-colors hover:text-accent"
+            className="flex min-h-6 min-w-6 items-center justify-center font-mono text-[11px] uppercase tracking-wide text-fg-muted transition-colors hover:text-accent"
             aria-label={t("Language")}
           >
             {locale === "en" ? "हिं" : "EN"}

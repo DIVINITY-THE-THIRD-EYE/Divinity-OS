@@ -365,7 +365,69 @@ Every replaced approach gets an entry with all four fields. Format:
   a fast connection — the fix mainly matters under throttling). Verified
   full test suite (145 vitest + 84 Playwright) unaffected.
 
+### E-015 | 2026-07-10 | Real day-theme contrast bugs found via axe-core, fixed the same way E-003 already established
+- What changed: an automated axe-core sweep (48 route×theme combinations)
+  found the OLD primitive tokens `--ember` and `--mist` never got the
+  day-theme contrast correction that the NEW semantic `--accent` token
+  already received in E-003 — `--ember` (#d08a3e) measured ~2.7:1 against
+  the day `--void` background (need 4.5:1); `--mist` (#6b6f7e) measured
+  4.36:1 against the day `--surface` background (need 4.5:1). Darkened
+  `--ember`'s day value to `#9c4a2a` (same value `--accent`/`--clay` already
+  use — same brand hue family, already proven to pass) and `--mist`'s day
+  value to `#666a78` (computed to clear 4.5:1 with margin: 4.70:1).
+  Also fixed 5 inline links (`privacy`/`terms`/`refund`/`verify` pages,
+  `LoginForm.tsx`'s "Change number") that used `hover:underline` — only
+  distinguishable by color at rest, failing WCAG 1.4.1 (axe:
+  `link-in-text-block`, 1.07:1 contrast against surrounding text, "no
+  styling to distinguish it from surrounding text") — changed to a
+  permanent `underline` (removed on hover instead). And `Nav.tsx`'s
+  Language toggle button, which axe's WCAG 2.2 `target-size` check found
+  at 11.2×16.5px (need 24×24) — gave it `min-h-6 min-w-6` matching
+  `ThemeToggle`'s existing correct pattern.
+- Why it is better: these are the exact class of bug E-003 already fixed
+  once for `--accent` — the fix wasn't propagated to the two OLD primitive
+  tokens that still drive un-migrated components (Footer, Voices, About,
+  Trainers, Manifesto, etc.), so the same day-theme contrast gap persisted
+  wherever those primitives are still used. All four fixes are real,
+  axe-confirmed, minimal, and don't touch any component's layout/design —
+  only color values and two Tailwind utility classes.
+- What it replaced: `--ember`'s day value being an unmodified copy of its
+  night value (never actually "overridden"); `--mist`'s day value being
+  4.36:1 (a hair under floor); hover-only underlines on 5 inline links;
+  an undersized Nav control.
+- Trade-offs: none — verified via the full 133-test suite (145 vitest + a
+  49-test axe sweep across every route × both themes, 84 other e2e tests)
+  staying green, and the color shifts are barely perceptible (same rust/
+  gray hue family, ~1 shade darker).
+- Two INTENTIONAL exceptions, NOT fixed (documented per 16_ACCESSIBILITY.md's
+  own instruction and its FILES FORBIDDEN clause against visual redesign):
+  1. `[data-watermark]` decorative background glyphs (`aria-hidden`,
+     `::before` generated content, ~0.025-0.04 alpha) — pure decoration,
+     WCAG 1.4.3's own exception for incidental/decorative text.
+  2. `.m-line` (`Manifesto.tsx`) — real manifesto copy, GSAP-animated from
+     opacity 0.12→1 as its section scrolls into view (05_MOTION_SCROLLSTORY's
+     established scroll-reveal grammar). A static axe scan catches the
+     pre-scroll starting frame; the content reaches full contrast once
+     scrolled into view, and `Manifesto.tsx` already checks
+     `prefers-reduced-motion` itself and skips the GSAP setup entirely for
+     those users (verified by a dedicated Playwright test). Redesigning
+     this motion pattern would be exactly the "visual redesign under a11y
+     cover" this task explicitly forbids.
+
 ## Implementation notes (appended by executing models — one line each, dated)
+
+IN-012 | 2026-07-10 | `16_ACCESSIBILITY.md` names `@axe-core/cli` OR a
+Playwright+axe-core integration as the tooling option — used
+`@axe-core/playwright` (installed as a new devDependency, clearly justified:
+this is the task's own explicitly-sanctioned tool, not a discretionary
+addition, per D010). New `e2e/a11y.spec.ts` covers the full CHECK MATRIX:
+48 axe scans (24 routes × dark/light), skip-link keyboard test, theme-toggle
+keyboard+name test, WCAG 2.2 target-size scan, reduced-motion scan, 200%-zoom
+proxy at 3 routes, login/contact form label+autocomplete+error-recovery
+checks. A real methodology bug in my own first draft (scanning mid-animation-
+transition, producing false-positive "low contrast" reads on a frame that
+settles within ~1s) was found and fixed by waiting for transitions before
+each scan — documented inline in the spec so it isn't rediscovered.
 
 IN-011 | 2026-07-10 | `15_PERFORMANCE.md`'s font pass (Step 3) found
 `Hanken_Grotesk` (body) loading weights 300/400/500 and `JetBrains_Mono`

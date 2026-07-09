@@ -40,7 +40,7 @@ export default async function TermsPage() {
                 {s.contactLink && (
                   <>
                     {" "}
-                    <a href="/contact" className="text-accent underline-offset-4 hover:underline">
+                    <a href="/contact" className="text-accent underline underline-offset-4 hover:no-underline">
                       contact page
                     </a>
                     .

@@ -7,8 +7,8 @@
 
 | Field | Value |
 |---|---|
-| Phase | 7 — Hardening (14+15 COMPLETE) |
-| Next file | `16_ACCESSIBILITY.md` |
+| Phase | 7 — Hardening (14+15+16 COMPLETE) |
+| Next file | `17_TESTING.md` |
 | Branch | `rebuild/living-anatomy` |
 | Blockers | PH-016 (figure mesh processing — needs Blender/gltf-transform/authenticated Sketchfab, none available here); manual OTP QA for 12_STUDENT_LOGIN pending owner-provided `NEXT_PUBLIC_SUPABASE_URL`/`_ANON_KEY` in `website/.env.local` (unset in this environment); Flutter Web build/deploy (13) pending an environment with the Flutter SDK on PATH — see log entries below |
 
@@ -24,6 +24,86 @@
 - No Supabase JS client in website yet (login task adds it).
 
 ## Log (append-only, newest first)
+
+### 2026-07-10 — 16_ACCESSIBILITY complete
+- Phase: 7
+- Status: COMPLETE
+- Changes:
+  - Installed `@axe-core/playwright` (this file's own sanctioned tooling
+    option, new devDependency, D010-justified: explicitly the tool this
+    task asks for). New `e2e/a11y.spec.ts`.
+  - Fixed a real methodology bug in my own first draft before trusting any
+    result from it: scanning immediately after `page.goto()` sometimes
+    samples a mid-transition animation frame (Reveal/Voices fade content in
+    over ~0.6-0.9s) — axe correctly reports the FRAME's low contrast, but
+    that isn't the page's real, settled state. Added a `settle()` wait
+    before every scan. Verified the theory with real math: a flagged
+    `#707484` foreground on `#15161e` decomposes almost exactly to
+    `--mist`'s declared `#8e93a6` blended at ~75% opacity over the
+    background — i.e., a real mid-fade sample, not a persistent bug.
+  - **Real bugs found and fixed (E-015):**
+    - `--ember` (day theme): #d08a3e measured ~2.7:1 against day `--void`
+      (#fdfbf6) — same class of gap E-003 already fixed for `--accent`,
+      never propagated to this older primitive (still used by
+      `Footer.tsx`, `Voices.tsx`, and others). Darkened to `#9c4a2a`
+      (same value `--accent`/`--clay` already use, already proven to pass).
+    - `--mist` (day theme): #6b6f7e measured 4.36:1 against day `--surface`
+      (#f4efe4) — a hair under the 4.5:1 floor (real body text on
+      `/trainers`'s founder bio, confirmed via axe, not a false positive).
+      Darkened to `#666a78` (computed to 4.70:1 with margin).
+    - 5 inline links (`privacy`/`terms`/`refund`/`verify` pages,
+      `LoginForm.tsx`'s "Change number") used `hover:underline` only — at
+      rest, distinguished from surrounding text by color alone (axe:
+      `link-in-text-block`, 1.07:1 contrast, "no styling to distinguish it
+      from surrounding text"). Changed to a permanent `underline`
+      (`hover:no-underline` instead).
+    - `Nav.tsx`'s Language toggle button: axe's WCAG 2.2 `target-size`
+      check found it at 11.2×16.5px (need 24×24, `ThemeToggle` right next
+      to it already does this correctly). Added `min-h-6 min-w-6`.
+  - **Two intentional exceptions, documented not fixed** (this task's own
+    "document, don't fix" instruction + its FILES FORBIDDEN clause against
+    visual redesign under a11y cover):
+    1. `[data-watermark]` decorative background glyphs (`aria-hidden`,
+       CSS `::before` generated content, ~0.025-0.04 alpha) — pure
+       decoration under WCAG 1.4.3's own exception.
+    2. `Manifesto.tsx`'s `.m-line` — real manifesto copy
+       ("Before the body moves, the breath moves." etc.), GSAP-animated
+       from opacity 0.12→1 as its section scrolls into view (the
+       established 05_MOTION_SCROLLSTORY scroll-reveal grammar). Axe's
+       static scan catches the pre-scroll starting frame; the content
+       reaches full contrast once scrolled into view in real use, and the
+       component already checks `prefers-reduced-motion` itself and skips
+       the GSAP setup entirely for those users — verified via the
+       dedicated reduced-motion test, not assumed.
+- **CHECK MATRIX (route × 7 checks) — summary** (full detail: every route
+  passed 2 independent axe scans, dark + light, in `e2e/a11y.spec.ts`):
+
+  | Check | Result |
+  |---|---|
+  | 1. Keyboard (skip link, theme toggle, focus order) | PASS — verified via dedicated tests |
+  | 2. Screen-reader semantics (landmarks, 1×h1, labelled forms, `aria-live` errors) | PASS — axe scan + dedicated form tests |
+  | 3. Contrast, both themes, all 24 routes | PASS after E-015's 2 token fixes; 2 documented exceptions (above) |
+  | 4. Reduced motion (no timeline/pinning/cursor morph, readable) | PASS — dedicated test + Manifesto's own `prefers-reduced-motion` check verified |
+  | 5. Target size ≥24×24px | PASS after E-015's Nav fix |
+  | 6. Zoom/no horizontal scroll at narrow width | PASS — `/`, `/pricing`, `/contact` checked at 640px |
+  | 7. Forms (autocomplete, labelled, error recovery) | PASS — login (`tel` autocomplete, `role="alert"`) + contact (labelled, `type="email"`) |
+
+  Routes covered by the axe sweep (24, × 2 themes = 48 scans, all PASS):
+  `/`, `/about`, `/founder`, `/programs`, `/programs/hatha-and-vinyasa-yoga`,
+  `/trainers`, `/pricing`, `/membership`, `/schedule`, `/gallery`, `/faq`,
+  `/blog`, `/events`, `/testimonials`, `/contact`, `/verify`, `/privacy`,
+  `/terms`, `/refund`, `/login`.
+- Validation: lint clean · tsc clean · 145/145 vitest tests (unchanged —
+  no new unit tests this task) · `next build` 45/45 routes + middleware ·
+  133/133 Playwright e2e tests (49 new in `e2e/a11y.spec.ts`, all
+  pre-existing specs re-run clean after the token/link/Nav fixes)
+- Tests: 145 vitest + 133 Playwright, all passed
+- Performance: no bundle-size impact (CSS variable value changes + 2
+  Tailwind utility class changes + one Nav button's min-size)
+- Accessibility: this task's entire subject — see CHECK MATRIX above
+- Problems: none blocking
+- Next: `17_TESTING.md` (same phase, no gate between 14/15/16/17 — Phase 7
+  gate is after all four are COMPLETE)
 
 ### 2026-07-10 — 15_PERFORMANCE complete
 - Phase: 7

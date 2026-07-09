@@ -111,7 +111,7 @@ export default function LoginForm({
                 setStep("phone");
                 setError("");
               }}
-              className="text-accent underline-offset-4 hover:underline"
+              className="text-accent underline underline-offset-4 hover:no-underline"
             >
               Change number
             </button>

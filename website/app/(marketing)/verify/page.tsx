@@ -28,7 +28,7 @@ export default async function VerifyPage() {
         <p className="mx-auto mt-10 max-w-md text-center font-body text-[13px] leading-relaxed text-fg-muted">
           The code is printed on the certificate (format <span className="font-mono text-fg">DIV-XXXX-XXXX</span>).
           If you can&apos;t verify it online, please{" "}
-          <a href="/contact" className="text-accent underline-offset-4 hover:underline">
+          <a href="/contact" className="text-accent underline underline-offset-4 hover:no-underline">
             contact the academy
           </a>{" "}
           with the code.

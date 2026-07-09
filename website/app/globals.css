@@ -72,11 +72,19 @@
   --smoke: #eae2cc;
   --bone: #1b1d24;
   --bone-2: #3c3f49;
-  --ember: #d08a3e;
+  /* --ember darkened from #d08a3e to the --clay value for the same reason
+   * --accent was (E-003 / design/adr/0015): #d08a3e only reaches ~2.7:1
+   * against the day --void background (#fdfbf6), well under the 4.5:1 AA
+   * floor — confirmed by an axe-core scan (16_ACCESSIBILITY.md). #9c4a2a
+   * reaches the same passing ratio --accent already uses. */
+  --ember: #9c4a2a;
   --ember-deep: #a85e2a;
   --ember-pale: #e8c490;
   --clay: #9c4a2a;
-  --mist: #6b6f7e;
+  /* --mist darkened from #6b6f7e (4.36:1, axe-confirmed just under the
+   * 4.5:1 floor against --surface's day value #f4efe4) to #666a78 (4.70:1)
+   * — same class of fix as --ember above (16_ACCESSIBILITY.md). */
+  --mist: #666a78;
   --ink: #ede7d8;
   --ink-mute: #a8a292;
 
@@ -85,11 +93,11 @@
   --smoke-rgb: 234 226 204;
   --bone-rgb: 27 29 36;
   --bone-2-rgb: 60 63 73;
-  --ember-rgb: 208 138 62;
+  --ember-rgb: 156 74 42;
   --ember-deep-rgb: 168 94 42;
   --ember-pale-rgb: 232 196 144;
   --clay-rgb: 156 74 42;
-  --mist-rgb: 107 111 126;
+  --mist-rgb: 102 106 120;
   --ink-rgb: 237 231 216;
   --ink-mute-rgb: 168 162 146;
 

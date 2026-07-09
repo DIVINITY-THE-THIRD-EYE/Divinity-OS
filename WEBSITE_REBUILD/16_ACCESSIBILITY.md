@@ -47,3 +47,21 @@ Matrix green. Auto-continue.
 
 ## NEXT
 `17_TESTING.md`
+
+## AMENDMENT (executed 2026-07-10)
+- Installed `@axe-core/playwright` (this file's own sanctioned tooling
+  option) and wrote `e2e/a11y.spec.ts` covering every CHECK MATRIX item —
+  48 route×theme axe scans, skip-link, theme-toggle, target-size (WCAG
+  2.2), reduced-motion, 200%-zoom-proxy, and form label/autocomplete/error
+  checks. Full PASS table in STATUS.md.
+- Found and fixed 4 real bugs (E-015): `--ember`/`--mist` day-theme
+  contrast gaps (the same class of issue E-003 already fixed for
+  `--accent`, just never propagated to these two older primitives),
+  5 inline links only distinguished by color at rest (hover-only
+  underline), and one undersized Nav control (11×16px, needs 24×24).
+- Two exceptions documented, not "fixed" (this file's own instruction +
+  its FILES FORBIDDEN clause against visual redesign under a11y cover):
+  decorative `[data-watermark]` glyphs, and `Manifesto.tsx`'s `.m-line`
+  scroll-triggered reveal (real content, but reaches full contrast once
+  scrolled into view; reduced-motion users get it at full opacity
+  immediately — verified, not assumed).

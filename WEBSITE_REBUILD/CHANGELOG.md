@@ -3,6 +3,24 @@
 Format: `## [date] — <task file>` then bullet list of concrete changes.
 Newest on top. Every completed task file appends exactly one entry.
 
+## [2026-07-10] — 16_ACCESSIBILITY
+- New `e2e/a11y.spec.ts` (`@axe-core/playwright`, new devDependency): 48
+  axe scans (24 routes × dark/light theme) + skip-link, theme-toggle,
+  WCAG 2.2 target-size, reduced-motion, 200%-zoom-proxy, and form
+  label/autocomplete/error-recovery checks.
+- Found and fixed 4 real bugs (E-015): `--ember`/`--mist` day-theme
+  contrast gaps (same class of issue E-003 already fixed for `--accent`,
+  never propagated to these older primitives — `--ember` ~2.7:1→passes,
+  `--mist` 4.36:1→4.70:1), 5 inline links only distinguished by color at
+  rest (hover-only underline → permanent underline), and an undersized Nav
+  language-toggle control (11×16px → min 24×24).
+- Two exceptions documented, not "fixed" per this task's own instruction:
+  decorative `[data-watermark]` glyphs, and `Manifesto.tsx`'s scroll-
+  triggered `.m-line` reveal (real content, reaches full contrast once
+  scrolled into view; reduced-motion users get it instantly — verified).
+- Validation green: lint, tsc, 145 vitest tests, 133 Playwright e2e tests
+  (49 new in `e2e/a11y.spec.ts`), next build (45 routes + middleware).
+
 ## [2026-07-10] — 15_PERFORMANCE
 - Real Lighthouse measurements (worked around a local Chrome-launch
   restriction via a Playwright-launched CDP target) on `/`, `/pricing`,

@@ -38,7 +38,7 @@ export default async function RefundPage() {
           ))}
           <p className="mt-10 font-body text-[15px] leading-[1.85] text-fg-muted">
             Have a question about a cancellation or refund right now? Please{" "}
-            <a href="/contact" className="text-accent underline-offset-4 hover:underline">
+            <a href="/contact" className="text-accent underline underline-offset-4 hover:no-underline">
               contact us
             </a>{" "}
             directly and we&apos;ll help.
