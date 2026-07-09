@@ -63,7 +63,7 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
         initial={{ y: -40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-        className={`fixed inset-x-0 top-0 z-[300] flex items-center justify-between px-6 transition-all duration-500 md:px-10 ${
+        className={`fixed inset-x-0 top-[var(--promo-h,0px)] z-[300] flex items-center justify-between px-6 transition-all duration-500 md:px-10 ${
           solid
             ? "border-b border-[var(--line-dark)] bg-void/85 py-3 backdrop-blur-md"
             : "py-6"

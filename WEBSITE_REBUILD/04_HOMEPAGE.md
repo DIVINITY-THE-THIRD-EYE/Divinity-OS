@@ -52,6 +52,14 @@ No backend. If schedule content is placeholder → plain WhatsApp CTA without pi
 ## FILES FORBIDDEN
 - `lib/` logic, `api/`, auth, supabase, 3D, cursor internals.
 
+> **Amended (IN-002, E-004 in DECISIONS.md):** `lib/nav.ts` (one new footer link
+> row, required by step 5) and `lib/i18n/translations.ts` (one Hindi entry for
+> that new label, required to keep the existing translation-completeness test
+> green) — both small, mechanical, directly required by this task's own steps.
+> `components/Nav.tsx` and `components/PromoBar.tsx` also needed a small fix
+> beyond "toggle placement only" — see E-004 (a real click-interception bug
+> caught by the existing Playwright suite, not a cosmetic change).
+
 ## STEPS
 1. Route-group restructure FIRST, homepage untouched: create `(marketing)/layout.tsx`,
    move providers out of root layout, move route folders in. Build green + Playwright

@@ -3,6 +3,25 @@
 Format: `## [date] — <task file>` then bullet list of concrete changes.
 Newest on top. Every completed task file appends exactly one entry.
 
+## [2026-07-09] — 04_HOMEPAGE
+- Route-group restructure: `app/(marketing)/layout.tsx` owns all marketing
+  chrome; root layout slimmed to fonts/theme/JsonLd. All routes moved via
+  `git mv`; URLs unchanged, verified with Playwright.
+- Rebuilt the homepage as 9 sections (Hero, AboutStrip, Programs, Benefits,
+  Trainer, Voices, GalleryPreview, FinalCta, Footer) per D001's three acts.
+  Newsletter moved into Footer; FAQ footer link added.
+- Wired the ₹99-offer hardcodes (Hero, FinalCta, PromoBar) to
+  `content/offers.introOffer`, closing out the exceptions flagged in 02.
+- Deleted orphaned `Marquee.tsx`/`TrustBadges.tsx` (verified zero imports
+  first); kept `Method.tsx`/`StatsBand.tsx` (still live on `/about`).
+- Found and fixed a real bug via Playwright: PromoBar was silently blocking
+  every click on the Nav underneath it (both independently `fixed` at the
+  same screen region). Not hypothetical — an existing test had unknowingly
+  routed around it.
+- Validation green: lint, tsc, 121 vitest tests, 10 Playwright e2e tests,
+  next build (36 routes), zero horizontal overflow at 375/1440px, both
+  themes checked, zero orphaned components (`knip`).
+
 ## [2026-07-09] — 03_DESIGN_SYSTEM
 - Added semantic token layer to `globals.css` (`--surface`/`-2`/`-3`, `--fg`/
   `--fg-muted`, `--accent`/`--accent-2`, `--line`, `--glow`) + Tailwind mapping

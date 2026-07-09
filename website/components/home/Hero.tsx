@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { m } from "framer-motion";
+import { introOffer } from "@/content/offers";
 
 // Pranayama cadence (seconds): sama-style with a longer exhale.
 const INHALE = 4;
@@ -26,7 +27,7 @@ function breathAt(tSec: number): Phase {
   return { label: "Exhale", remaining: CYCLE - t, breath: 1 - easeInOut(e) };
 }
 
-export default function BreathHero() {
+export default function Hero() {
   const canvas = useRef<HTMLCanvasElement>(null);
   const [phase, setPhase] = useState<Phase>({ label: "Inhale", remaining: 4, breath: 0 });
 
@@ -249,7 +250,7 @@ export default function BreathHero() {
             href="/contact"
             className="bg-ember px-8 py-3.5 font-mono text-[11px] uppercase tracking-wide text-void transition-colors hover:bg-ember-pale"
           >
-            Book a class — ₹99 first week
+            Book a class — {introOffer.price} {introOffer.duration}
           </Link>
           <a
             href="#about"

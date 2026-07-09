@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import type { Discipline } from "@/lib/content";
+import type { Discipline } from "@/content/programs";
 
-export default function Disciplines({ items }: { items: Discipline[] }) {
+export default function Programs({ items }: { items: Discipline[] }) {
   const section = useRef<HTMLDivElement>(null);
   const track = useRef<HTMLDivElement>(null);
 

@@ -7,9 +7,9 @@
 
 | Field | Value |
 |---|---|
-| Phase | 2 — Homepage DOM (Phase 1 gate passed: 01+02+03 COMPLETE) |
-| Next file | `04_HOMEPAGE.md` |
-| Branch | `rebuild/living-anatomy` (created, checked out, rebased onto main at gate) |
+| Phase | 3 — Motion & cursor (04 COMPLETE) |
+| Next file | `05_MOTION_SCROLLSTORY.md` |
+| Branch | `rebuild/living-anatomy` |
 | Blockers | none |
 
 ## Known repo state (as of 2026-07-09, playbook creation)
@@ -24,6 +24,99 @@
 - No Supabase JS client in website yet (login task adds it).
 
 ## Log (append-only, newest first)
+
+### 2026-07-09 — PHASE 2 GATE (04) — PASSED, auto-continuing
+- Gate criterion (00_MASTER): "Homepage rebuilt in place as fast DOM site (no
+  3D); route groups live; old routes still render."
+  - Route groups live: `app/(marketing)/layout.tsx` owns Lenis/scroll, cursor,
+    Nav, Footer, CTAs, CommandPalette, PromoBar; root `layout.tsx` slimmed to
+    fonts + ThemeProvider + JsonLd + skip-link + no-flash script. All 13
+    existing route folders moved via `git mv` (history preserved); URLs
+    unchanged (verified: same 36 routes in `next build` output, same paths).
+  - Old routes still render: 10/10 Playwright specs green, including
+    `core marketing routes return 200` for about/services/schedule/trainers/
+    verify, and a `/blog/[slug]` bad-slug check confirming Nav/Footer/PromoBar
+    chrome survives an in-segment `notFound()`.
+  - Homepage rebuilt as fast DOM site, no 3D: 9 sections per D001's three acts
+    (Hero → AboutStrip → Programs → Benefits → Trainer → Voices →
+    GalleryPreview → FinalCta → Footer), all server/DOM-rendered, no WebGL
+    (that's 07). First-load JS for `/` dropped 168 kB → 154 kB (fewer,
+    tighter sections than the pre-rebuild page).
+  - No horizontal overflow at 375px or 1440px (`body.scrollWidth <=
+    innerWidth` checked both); both themes render without console errors.
+  - `npx knip`: zero orphaned component files. (Unused exports flagged —
+    `mantra`, `assurances`, Sanity schema files — are pre-existing/out of this
+    task's `content/`-editing scope, not new orphans from this task.)
+- **Bug found and fixed via Playwright, not just build/lint** (E-004): PromoBar
+  and Nav were independently `fixed` at the same screen region; PromoBar's
+  higher z-index silently ate every click meant for Nav underneath it,
+  site-wide, whenever the promo bar was showing. This was a real, pre-existing,
+  user-facing bug — not hypothetical — caught because the rebuilt homepage's
+  Playwright spec exercises the Nav "Pricing" link directly, where the old spec
+  had (accidentally-in-hindsight) routed around it via a mid-page CTA that no
+  longer exists post-rebuild. Fixed: PromoBar publishes its rendered height as
+  `--promo-h`; Nav positions at `top-[var(--promo-h,0px)]` instead of `top-0`.
+- Rebase: `main` unchanged since Phase 1 gate — no-op.
+- Problems: none blocking.
+- Next: `05_MOTION_SCROLLSTORY.md` (Phase 3).
+
+### 2026-07-09 — 04_HOMEPAGE complete
+- Phase: 2
+- Status: COMPLETE
+- Changes:
+  - Step 1 (own commit `0726fd6`): route-group restructure — see gate entry.
+  - Step 2+ (this commit): 9-section homepage. Moved `BreathHero.tsx` →
+    `components/home/Hero.tsx` and `Disciplines.tsx` → `components/home/
+    Programs.tsx` (both homepage-only, `git mv` to preserve history). New:
+    `AboutStrip.tsx` (short manifesto + founder pull-quote, links to full
+    `/about`), `Benefits.tsx` (verified-only stats from `content/statistics`,
+    qualitative fallback copy since the one seeded entry is
+    `verified: false`), `Trainer.tsx`, `GalleryPreview.tsx`, `FinalCta.tsx`,
+    `BatchPickerCta.tsx` (batch `<select>` → prefilled `wa.me` link, no
+    backend, falls back to a plain WhatsApp CTA if `content/schedule` is ever
+    empty).
+  - Footer consolidation (step 5): `Newsletter` now renders inside `Footer`
+    (was its own homepage section); added an "FAQ" footer link
+    (`/contact#faq` — no dedicated `/faq` route exists yet, out of scope for
+    this task per D008's page list, lands in 08_CORE_PAGES or similar). Blog
+    ("Journal") and Events links were already present in `footerGroups` from
+    a prior session.
+  - Wired the 3 hardcode-sweep exceptions flagged (and deferred to this task)
+    in `02_CONTENT_SYSTEM.md`'s STATUS entry: `Hero.tsx`, `FinalCta.tsx`, and
+    `PromoBar.tsx`'s "₹99 first week" copy now read from
+    `content/offers.introOffer`.
+  - Deletion sweep (own commit): `Marquee.tsx`, `TrustBadges.tsx` — both
+    verified zero remaining imports (`grep -rln`) before removal. `Method.tsx`
+    and `StatsBand.tsx` were NOT deleted despite being cut from the new
+    homepage — both are still live on `/about` (`app/(marketing)/about/
+    page.tsx`), confirmed via the same import grep before assuming anything
+    was orphaned.
+  - Updated `e2e/home.spec.ts` (new section-presence + wa.me-link assertions,
+    replacing the removed TrustBadges/membership-preview assertions) and
+    `e2e/navigation.spec.ts` (pricing-navigation test now clicks the Nav link
+    directly instead of a now-removed mid-page CTA — see the PromoBar bug
+    this surfaced, gate entry above).
+  - Installed Playwright's Chromium browser (`npx playwright install
+    chromium`) — missing from this machine, an environment gap unrelated to
+    any code change; `npx playwright test` failed outright without it.
+- Deviations from the task file (documented, IN-002 + E-004 in DECISIONS.md,
+  `04_HOMEPAGE.md` FILES FORBIDDEN section amended in place): `lib/nav.ts`
+  (new FAQ footer link), `lib/i18n/translations.ts` (matching Hindi entry),
+  `components/Nav.tsx`/`components/PromoBar.tsx` beyond "toggle placement
+  only" (real click-interception bugfix, not cosmetic).
+- Validation: lint clean · tsc clean · 121/121 vitest tests · `next build`
+  36/36 routes (first-load JS for `/`: 168 kB → 154 kB) · 10/10 Playwright
+  e2e tests · zero horizontal overflow at 375px/1440px · both themes checked
+  in browser preview, no console errors · `npx knip` zero orphaned
+  components.
+- Tests: 121 vitest + 10 Playwright, all passed
+- Performance: homepage first-load JS reduced (fewer/tighter sections); full
+  Lighthouse budget verification is 15_PERFORMANCE.md's job, not this task's
+- Accessibility: every new section is a `<section>` with `aria-labelledby`
+  (Hero keeps its `h1`, per spec); BatchPickerCta's `<select>` has a
+  (visually-hidden) `<label>`
+- Problems: none blocking
+- Next: Phase 2 gate (above), then `05_MOTION_SCROLLSTORY.md`
 
 ### 2026-07-09 — PHASE 1 GATE (01+02+03) — PASSED, auto-continuing
 - Gate criterion (00_MASTER): "Validation green + content system live + both themes

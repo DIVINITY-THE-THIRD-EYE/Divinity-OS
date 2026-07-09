@@ -47,7 +47,7 @@ export default function Newsletter() {
   }
 
   return (
-    <section className="border-t border-[var(--line-dark)] bg-deep px-6 py-20 md:px-10">
+    <section className="bg-deep px-6 py-20 md:px-10">
       <Reveal>
         <div className="mx-auto max-w-2xl text-center">
           <p className="eyebrow mb-4 text-ember">Free guided practice</p>

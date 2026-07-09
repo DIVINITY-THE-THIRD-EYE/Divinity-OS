@@ -3,9 +3,7 @@ import { test, expect } from "@playwright/test";
 test.describe("Navigation & key pages", () => {
   test("navigates from home to pricing", async ({ page }) => {
     await page.goto("/");
-    // Use the visible mid-page membership CTA (the nav "Pricing" link can live in
-    // a collapsed mobile menu depending on viewport).
-    const cta = page.getByRole("link", { name: /see all plans/i }).first();
+    const cta = page.getByRole("link", { name: /pricing/i }).first();
     await cta.scrollIntoViewIfNeeded();
     await cta.click();
     await expect(page).toHaveURL(/\/pricing/);

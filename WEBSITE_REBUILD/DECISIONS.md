@@ -68,7 +68,37 @@ Every replaced approach gets an entry with all four fields. Format:
   no other task file referenced `--ink` by name, so no further edits needed); the day accent
   is one shade darker than originally speced.
 
+### E-004 | 2026-07-09 | Fixed PromoBar/Nav click-interception bug found via Playwright
+- What changed: `PromoBar` was `position: relative` (normal flow) while `Nav` was
+  independently `fixed inset-x-0 top-0` — both painted in the same top-of-viewport
+  screen region, and PromoBar's higher z-index (350 vs Nav's 300) meant it silently
+  captured every click meant for Nav underneath it, site-wide, whenever the promo
+  bar was showing. `PromoBar` now measures its own height and publishes it as a
+  `--promo-h` CSS variable on `<html>`; `Nav` positions itself at
+  `top-[var(--promo-h,0px)]` instead of `top-0`, so the two stack instead of
+  overlapping, and Nav's links become clickable again.
+- Why it is better: this wasn't a hypothetical — it was caught by the existing
+  Playwright suite (`navigates from home to pricing` timed out clicking the Nav
+  "Pricing" link; `elementFromPoint` at that link's coordinates resolved to the
+  promo bar's own div, not the link). The original test had silently routed
+  around it by clicking a mid-page CTA instead of the Nav link, which is why it
+  went unnoticed until 04's homepage rebuild removed that mid-page CTA.
+- What it replaced: independent fixed positioning with a z-index-only ordering
+  (which only controls paint order, not which element "wins" the space it shares
+  with another fixed element — both still occupy and capture events for that
+  shared region regardless of z-index, whichever paints on top).
+- Trade-offs: one `ResizeObserver` + effect in `PromoBar.tsx`; negligible cost.
+
 ## Implementation notes (appended by executing models — one line each, dated)
+
+IN-002 | 2026-07-09 | `04_HOMEPAGE.md` step 5 ("FAQ/Journal/Events become footer
+links") required adding a `{ href: "/contact#faq", label: "FAQ" }` row to
+`lib/nav.ts`'s `footerGroups` (Blog/Events were already present from a prior
+session) — `lib/nav.ts` isn't in FILES ALLOWED but the step can't be completed
+without touching it. That in turn required a Hindi translation entry in
+`lib/i18n/translations.ts` (also not in FILES ALLOWED) to keep
+`translations.test.ts`'s completeness check green. Both are small, mechanical,
+directly required by the task's own steps — same class as IN-001.
 
 IN-001 | 2026-07-09 | `02_CONTENT_SYSTEM.md` step 5 asks for `content/content.test.ts`, but `vitest.config.ts`'s `include` only globbed `lib/**/*.test.ts` — added `content/**/*.test.ts` to the include array (not in the task's FILES ALLOWED, but omitting it makes step 5 a silent no-op: the file exists, never runs, "validation green" would be a false signal). Charter D011: engineering fix, documented not asked.
 

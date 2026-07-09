@@ -40,6 +40,7 @@ export const footerGroups: { title: string; items: NavItem[] }[] = [
       { href: "/gallery", label: "Gallery" },
       { href: "/blog", label: "Blog" },
       { href: "/events", label: "Events" },
+      { href: "/contact#faq", label: "FAQ" },
     ],
   },
 ];

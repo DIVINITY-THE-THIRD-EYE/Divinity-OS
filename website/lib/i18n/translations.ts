@@ -22,6 +22,7 @@ const hi: Record<string, string> = {
   Gallery: "गैलरी",
   Blog: "ब्लॉग",
   Events: "आयोजन",
+  FAQ: "सामान्य प्रश्न",
   Contact: "संपर्क करें",
   "Privacy Policy": "गोपनीयता नीति",
   "Terms & Conditions": "नियम और शर्तें",
