@@ -3,6 +3,29 @@
 Format: `## [date] — <task file>` then bullet list of concrete changes.
 Newest on top. Every completed task file appends exactly one entry.
 
+## [2026-07-10] — 12_STUDENT_LOGIN
+- Installed `@supabase/ssr@0.12.0` + `@supabase/supabase-js@2.110.2`; added
+  `lib/supabase/{client,server}.ts` (anon key only, cookie-based SSR
+  session), `middleware.ts` (session refresh + `/portal/**` guard), and
+  `lib/supabase/role-gate.ts` (`isStudent()`, trusts the JWT `app_metadata
+  .role` claim — no client-side DB read).
+- New route group `app/(portal)/`: `/login` (phone → OTP → code, E.164
+  validated via a new `isE164Phone` in `lib/validation.ts`), `/portal`
+  (dashboard shell + Flutter Web slot for 13), `/logout` (route handler).
+  Non-student roles are signed out and bounced to `/login` with a message.
+- CSP `connect-src` now includes the Supabase project host, read from
+  `NEXT_PUBLIC_SUPABASE_URL` (never hardcoded, never a wildcard).
+- Found this environment has no real Supabase env configured yet — made
+  auth checks fail closed (missing env / thrown errors → treated as "no
+  session" → redirect to `/login`) instead of crashing the site (E-011).
+  Manual OTP QA marked pending owner env, not faked.
+- New tests: `lib/validation.test.ts` (+4 phone-format cases),
+  `lib/supabase/role-gate.test.ts` (4 tests), `e2e/portal.spec.ts` (4 tests:
+  unauthenticated redirect, login form renders, non-student message,
+  malformed-phone rejection).
+- Validation green: lint, tsc, 138 vitest tests, 58 Playwright e2e tests,
+  next build (45 routes + middleware). Zero `supabase/**` changes.
+
 ## [2026-07-10] — 11_CONTACT_LEGAL
 - Re-skinned `/contact` (+ `Contact.tsx`), `/verify` (+ `VerifyForm.tsx`) to
   semantic tokens; form/verify submit logic, honeypot, and rate limiting

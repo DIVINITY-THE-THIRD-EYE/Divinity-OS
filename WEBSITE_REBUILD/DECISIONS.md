@@ -252,7 +252,38 @@ Every replaced approach gets an entry with all four fields. Format:
   `content/legal.ts` is static data without access to the site object) —
   acceptable since the page's own PageHeader intro already names the site.
 
+### E-011 | 2026-07-10 | Auth checks fail closed on missing env / thrown errors instead of crashing
+- What changed: `12_STUDENT_LOGIN.md`'s reference snippets (and the
+  `@supabase/ssr` docs they're based on) assume `NEXT_PUBLIC_SUPABASE_URL`/
+  `_ANON_KEY` are always present. This repo's `website/.env.local` doesn't
+  have them yet (confirmed: visiting `/portal` before this fix threw
+  "Your project's URL and Key are required to create a Supabase client!").
+  `middleware.ts` now returns early (no auth check, plain passthrough) when
+  either env var is missing, and both `middleware.ts` and `/portal`'s own
+  server check wrap `supabase.auth.getUser()` in try/catch, treating any
+  thrown error identically to "no session" (→ redirect to `/login`).
+- Why it is better: `middleware.ts`'s matcher runs on nearly every route on
+  the site — letting a missing-env or a transient Supabase-auth-service
+  outage throw there would 500 the entire site, not just `/portal`. Failing
+  closed (no verified session = redirect to login) is also the *correct*
+  security default regardless of cause, and it's what makes this task's own
+  required Playwright check ("`/portal` unauthenticated → redirected to
+  `/login`, no real OTP in CI") actually pass honestly in an environment
+  without real Supabase credentials configured yet, instead of skipping it.
+- What it replaced: the reference snippets' implicit assumption that env is
+  always present and `getUser()` always resolves.
+- Trade-offs: none functionally once real env is provided — the try/catch
+  and env-guard are no-ops on the happy path (verified: no vitest/lint/tsc
+  regressions, all 138 vitest + 58 Playwright tests green).
+
 ## Implementation notes (appended by executing models — one line each, dated)
+
+IN-009 | 2026-07-10 | `12_STUDENT_LOGIN.md`'s FILES ALLOWED lists
+`website/.env.example` (doesn't exist) — documented the two new Supabase env
+vars in the real `website/.env.local.example` instead. Also touched
+`lib/validation.ts` (new `isE164Phone`, task-sanctioned by this file's own
+Step 3) and `e2e/portal.spec.ts` (new, not listed) — same recurring class as
+IN-001..008.
 
 IN-008 | 2026-07-10 | `11_CONTACT_LEGAL.md`'s re-skin requirement for
 `/contact` and `/verify` required editing `components/Contact.tsx` and

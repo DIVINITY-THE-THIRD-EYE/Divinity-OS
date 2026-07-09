@@ -91,3 +91,24 @@ Automated validation green. Auto-continue to 13 (same phase).
 
 ## NEXT
 `13_FLUTTER_WEB.md`
+
+## AMENDMENT (executed 2026-07-10)
+- `website/.env.example` doesn't exist in this repo — the real convention is
+  `website/.env.local.example` (already existed, pre-dating this task).
+  Documented `NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY` there
+  instead of creating a differently-named duplicate.
+- `lib/validation.ts` had no phone validator — added `isE164Phone` there with
+  tests, exactly as this file's own Step 3 allows ("reuse `lib/validation.ts`
+  if it has a phone validator; else add one there with a test").
+- Also touched `e2e/portal.spec.ts` (new, not in FILES ALLOWED) — same
+  recurring class as IN-001..008.
+- Found: this environment's `website/.env.local` has no
+  `NEXT_PUBLIC_SUPABASE_URL`/`_ANON_KEY` set (real values are the owner's to
+  provide). Made both `middleware.ts` and `/portal` fail closed (treat
+  missing-env / a thrown auth check identically to "no session" → redirect
+  to `/login`) instead of crashing — see E-011. This made the required
+  Playwright coverage ("`/portal` unauthenticated → redirected to `/login`")
+  actually true and testable without real credentials, rather than skipping
+  it. Manual OTP QA (real phone round-trip, non-student rejection, session-
+  survives-reload, logout) is marked **pending owner env** per this file's
+  own VALIDATION clause — not faked, not skipped, continuing to 13.

@@ -7,10 +7,10 @@
 
 | Field | Value |
 |---|---|
-| Phase | 6 — Portal (Phase 5 COMPLETE, gate passed) |
-| Next file | `12_STUDENT_LOGIN.md` |
+| Phase | 6 — Portal (12 COMPLETE) |
+| Next file | `13_FLUTTER_WEB.md` |
 | Branch | `rebuild/living-anatomy` |
-| Blockers | PH-016 (figure mesh processing — needs Blender/gltf-transform/authenticated Sketchfab, none available here) |
+| Blockers | PH-016 (figure mesh processing — needs Blender/gltf-transform/authenticated Sketchfab, none available here); manual OTP QA for 12_STUDENT_LOGIN pending owner-provided `NEXT_PUBLIC_SUPABASE_URL`/`_ANON_KEY` in `website/.env.local` (unset in this environment — automated tests green, auth fails closed, see E-011) |
 
 ## Known repo state (as of 2026-07-09, playbook creation)
 
@@ -24,6 +24,83 @@
 - No Supabase JS client in website yet (login task adds it).
 
 ## Log (append-only, newest first)
+
+### 2026-07-10 — 12_STUDENT_LOGIN complete
+- Phase: 6
+- Status: COMPLETE
+- Changes:
+  - Installed `@supabase/ssr@0.12.0` + `@supabase/supabase-js@2.110.2`.
+  - `lib/supabase/client.ts` (browser, `createBrowserClient`), `lib/
+    supabase/server.ts` (Server Components/Route Handlers, cookie-based via
+    `@supabase/ssr`'s `createServerClient`, `setAll` wrapped in try/catch
+    since Server Components can't set cookies — middleware refreshes
+    instead), `lib/supabase/role-gate.ts` (`isStudent(user)`: trusts the JWT
+    `app_metadata.role` claim, no client-side DB read, per SECURITY NOTES).
+  - `middleware.ts`: refreshes the session cookie on every non-static
+    request; guards `/portal/**` — unauthenticated → `/login?next=...`;
+    authenticated but not `student` → `supabase.auth.signOut()` + `/login
+    ?error=not-student`.
+  - New route group `app/(portal)/` (minimal layout, no Lenis/cursor/Nav/
+    Footer — E-002): `/login` (`LoginForm.tsx` client component: phone →
+    `signInWithOtp` → code → `verifyOtp`; error states shown via the
+    existing `formErrorMessage()` pattern), `/portal` (dashboard shell,
+    greeting from session, Flutter Web slot placeholder for 13, sign-out
+    link), `/logout` (route handler: `signOut()` + redirect home).
+  - `lib/validation.ts`: added `isE164Phone()` (this task's own Step 3
+    explicitly allows adding it here) + 2 new test cases.
+  - CSP `connect-src` extended with the Supabase project host, read from
+    `NEXT_PUBLIC_SUPABASE_URL` at build time (never hardcoded, never a
+    wildcard — SECURITY NOTES). `.env.local.example` documents the two new
+    public vars.
+  - **Real finding, fixed defensively (E-011):** this environment's
+    `website/.env.local` has neither `NEXT_PUBLIC_SUPABASE_URL` nor
+    `_ANON_KEY` set — confirmed empirically: visiting `/portal` before the
+    fix threw "Your project's URL and Key are required to create a
+    Supabase client!" (a raw error, not a redirect). Since `middleware.ts`'s
+    matcher covers nearly every route on the site, letting that (or any
+    future Supabase-auth outage) throw there would 500 the whole site, not
+    just `/portal`. Fixed: `middleware.ts` skips auth entirely when env is
+    missing (plain passthrough); both `middleware.ts` and `/portal`'s own
+    server check wrap `getUser()` in try/catch, treating any thrown error
+    identically to "no session" → redirect to `/login`. This is a fail-
+    closed security default regardless of cause, and it's what makes the
+    required Playwright check below pass honestly without real credentials.
+  - New tests: `lib/validation.test.ts` (+4 `isE164Phone` cases,
+    10 total), `lib/supabase/role-gate.test.ts` (4 tests: student passes;
+    trainer/admin/missing-role/no-session rejected — mocked user objects,
+    no real Supabase calls). `e2e/portal.spec.ts` (4 tests): `/portal`
+    unauthenticated → redirected to `/login` (empirically verified, see
+    above); `/login` renders the phone form; `/login?error=not-student`
+    shows the non-student message; malformed phone (missing `+`) is
+    rejected client-side before any network call.
+- Deviations from the task file (documented, E-011 + IN-009 in
+  DECISIONS.md, `12_STUDENT_LOGIN.md` amended in place): `.env.local.example`
+  instead of the task's assumed `.env.example` (that's the repo's actual
+  convention); `lib/validation.ts` touched (task-sanctioned); `e2e/
+  portal.spec.ts` added (recurring FILES ALLOWED gap, same class as
+  IN-001..008); fail-closed auth hardening beyond the literal reference
+  snippets.
+- Validation: lint clean · tsc clean · 138/138 vitest tests · `next build`
+  45/45 routes + middleware (83.6 kB) · 58/58 Playwright e2e tests
+- Tests: 138 vitest + 58 Playwright, all passed
+- Performance: `middleware.ts` adds ~83.6 kB to the Edge middleware bundle
+  (unavoidable — `@supabase/ssr` + `@supabase/supabase-js`); no change to
+  any page's First Load JS. Zero `supabase/**` (database) changes — schema
+  untouched, matching this task's "expected: ZERO schema changes."
+- Accessibility: login form fields have real `<label htmlFor>` pairs;
+  verification-code input uses `autoComplete="one-time-code"` (browser/OS
+  SMS autofill); error messages use `role="alert"`.
+- Security: service-role key never referenced anywhere in the website
+  codebase (grep-verified); anon key only; CSP host is explicit, not a
+  wildcard; role trusted from the JWT claim, never re-derived via a
+  client-side database read.
+- Problems: manual auth QA (real OTP round-trip, non-student rejection,
+  session-survives-reload, logout) requires the owner's real Supabase env
+  values in `website/.env.local` — **pending owner env**, not faked, per
+  this task's own VALIDATION clause. Automated coverage (above) is green.
+- Next: `13_FLUTTER_WEB.md` (same phase — auto-continue, no gate between 12
+  and 13 per `00_MASTER_EXECUTION.md`'s phase table; Phase 6 gate is after
+  both 12 and 13 are COMPLETE)
 
 ### 2026-07-10 — PHASE 5 GATE (08+09+10+11) — PASSED, auto-continuing
 - Gate criterion (00_MASTER): "Every route rebuilt on the design system."

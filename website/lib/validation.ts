@@ -8,6 +8,14 @@ export function isEmail(value: string): boolean {
   return EMAIL_RE.test(value);
 }
 
+// E.164: '+' then 8-15 digits total, first digit 1-9 (no leading 0).
+const E164_RE = /^\+[1-9]\d{7,14}$/;
+
+/** Loose E.164 phone shape check (what Supabase phone auth expects). */
+export function isE164Phone(value: string): boolean {
+  return E164_RE.test(value);
+}
+
 /** Coerce untrusted JSON values to a string without throwing on objects/null. */
 export function asString(value: unknown): string {
   return typeof value === "string" ? value : "";

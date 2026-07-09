@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { isEmail, asString, isPlainObject, declaredBodyTooLarge } from "./validation";
+import { isEmail, isE164Phone, asString, isPlainObject, declaredBodyTooLarge } from "./validation";
 
 describe("isEmail", () => {
   it("accepts well-formed addresses", () => {
@@ -11,6 +11,28 @@ describe("isEmail", () => {
   it("rejects malformed addresses", () => {
     for (const v of ["", "no-at", "a@b", "a@@b.co", "a b@c.co", "a@b .co", "@b.co"]) {
       expect(isEmail(v)).toBe(false);
+    }
+  });
+});
+
+describe("isE164Phone", () => {
+  it("accepts well-formed E.164 numbers", () => {
+    for (const v of ["+919214652400", "+14155552671", "+447911123456"]) {
+      expect(isE164Phone(v)).toBe(true);
+    }
+  });
+
+  it("rejects malformed numbers", () => {
+    for (const v of [
+      "",
+      "9214652400", // missing +
+      "+0214652400", // leading 0 after +
+      "+91 9214652400", // space
+      "+91-921-465-2400", // dashes
+      "+1234567", // too short (7 digits)
+      "abc",
+    ]) {
+      expect(isE164Phone(v)).toBe(false);
     }
   });
 });
