@@ -15,7 +15,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPaths: { path: string; priority: number; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"] }[] = [
     { path: "/", priority: 1, changeFrequency: "monthly" },
     { path: "/about", priority: 0.8, changeFrequency: "monthly" },
-    { path: "/services", priority: 0.9, changeFrequency: "monthly" },
+    { path: "/programs", priority: 0.9, changeFrequency: "monthly" },
+    { path: "/founder", priority: 0.6, changeFrequency: "monthly" },
     { path: "/pricing", priority: 0.9, changeFrequency: "monthly" },
     { path: "/schedule", priority: 0.8, changeFrequency: "weekly" },
     { path: "/trainers", priority: 0.7, changeFrequency: "monthly" },
@@ -37,7 +38,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   for (const d of disciplines) {
     entries.push({
-      url: `${base}/services/${disciplineSlug(d)}`,
+      url: `${base}/programs/${d.slug ?? disciplineSlug(d)}`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.6,

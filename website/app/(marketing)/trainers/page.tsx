@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/seo";
 import { trainers, fetchSiteSettings } from "@/lib/content";
+import { introOffer } from "@/content/offers";
 import PageHeader from "@/components/layout/PageHeader";
 import TrainerCard from "@/components/cards/TrainerCard";
 import EmptyState from "@/components/ui/EmptyState";
@@ -27,7 +28,7 @@ export default async function TrainersPage() {
         trail={[{ label: "Trainers", href: "/trainers" }]}
       />
 
-      <section className="bg-void px-6 py-20 md:px-10 md:py-28">
+      <section className="bg-surface px-6 py-20 md:px-10 md:py-28">
         <div className="mx-auto max-w-6xl">
           {trainers.length > 0 ? (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -44,7 +45,7 @@ export default async function TrainersPage() {
           )}
 
           {trainers.length > 0 && (
-            <p className="mt-12 max-w-2xl font-body text-[14px] leading-relaxed text-mist">
+            <p className="mt-12 max-w-2xl font-body text-[14px] leading-relaxed text-fg-muted">
               Our teaching circle grows as the academy does. More teacher profiles
               will be introduced here — with their lineage, focus and the batches
               they lead.
@@ -53,10 +54,14 @@ export default async function TrainersPage() {
         </div>
       </section>
 
-      <section className="border-t border-[var(--line-dark)] bg-void px-6 py-24 text-center md:px-10 md:py-32">
-        <h2 className="font-display text-[clamp(30px,4.5vw,56px)] font-light tracking-tight text-bone">
-          Practise with <em className="text-ember">us.</em>
+      <section className="border-t border-[var(--line)] bg-surface px-6 py-24 text-center md:px-10 md:py-32">
+        <h2 className="font-display text-[clamp(30px,4.5vw,56px)] font-light tracking-tight text-fg">
+          Practise with <em className="text-accent">us.</em>
         </h2>
+        <p className="mx-auto mt-4 max-w-md font-body text-[14px] leading-relaxed text-fg-muted">
+          {introOffer.price} for your {introOffer.duration} — meet the team
+          before you commit to a plan.
+        </p>
         <div className="mt-9 flex justify-center">
           <CtaLink href="/contact">Book a first class</CtaLink>
         </div>

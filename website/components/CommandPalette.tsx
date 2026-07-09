@@ -17,11 +17,12 @@ type Item = {
 
 function hintFor(href: string): string {
   const map: Record<string, string> = {
-    "/about": "Our story & founder",
-    "/services": "What we practice",
+    "/about": "Our story",
+    "/programs": "What we practice",
     "/schedule": "Weekly rhythm",
     "/pricing": "Plans & membership",
     "/trainers": "Meet the team",
+    "/founder": "Guided by",
     "/gallery": "Inside the studio",
     "/blog": "Journal & guides",
     "/events": "Workshops & retreats",

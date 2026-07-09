@@ -7,8 +7,8 @@
 
 | Field | Value |
 |---|---|
-| Phase | 5 — All pages (Phase 4 gate passed: 07 COMPLETE, phased per ADR 0016) |
-| Next file | `08_CORE_PAGES.md` |
+| Phase | 5 — All pages (08 COMPLETE) |
+| Next file | `09_COMMERCE_PAGES.md` |
 | Branch | `rebuild/living-anatomy` |
 | Blockers | PH-016 (figure mesh processing — needs Blender/gltf-transform/authenticated Sketchfab, none available here) |
 
@@ -24,6 +24,74 @@
 - No Supabase JS client in website yet (login task adds it).
 
 ## Log (append-only, newest first)
+
+### 2026-07-09 — 08_CORE_PAGES complete
+- Phase: 5
+- Status: COMPLETE
+- Changes:
+  - Step 1: re-skinned `PageHeader`/`Breadcrumbs`/`SectionHeading` (dark
+    variant only — the `light`/bone-section variant is semantically
+    different, untouched)/`CtaLink` to the semantic tokens from 03. Night
+    parity verified (17/17 Playwright unchanged); day mode now picks up the
+    curated day palette. Committed separately (`3fee523`) before route work.
+  - `/about`: reordered CTA to link `/founder` (new) instead of `/trainers`;
+    re-skinned its own inline final-CTA section; added the offer conversion
+    line. `About`/`Manifesto`/`Method`/`StatsBand` internals untouched (not
+    in FILES ALLOWED — D008's "merge Manifesto+Method flow" was already
+    satisfied by the existing page-level ordering).
+  - `/founder` (new): founder story page from `content/founder.ts` — bio,
+    credentials (PH-002 placeholder, correctly labeled), photo. Verified
+    visually in day theme via screenshot (legible, correctly styled, no
+    layout issues).
+  - `/trainers`: re-skinned to semantic tokens; added offer conversion line.
+  - `/services` → `/programs`: route folder renamed (`git mv`, history
+    preserved); permanent 301 redirect added in `next.config.mjs` (both
+    `/services` and `/services/:slug`); `ServiceCard.tsx` link target fixed
+    (the actual routing bug step 3 exists to catch) and re-skinned.
+  - `content/programs.ts`: `Discipline` type gained optional `slug`/
+    `longDescription`/`sessions`/`whoFor` fields; populated for Therapeutic
+    Yoga and Meditation with real, non-fabricated copy (session cadence
+    left as a labeled placeholder, PH-008 — a specific number I don't
+    actually know, not invented).
+  - `components/pages/ProgramDetail.tsx` (new): deep-page template driven
+    entirely by a `content/programs.ts` entry — any discipline with
+    `longDescription`/`whoFor` filled in can get a page like this with zero
+    new component code, per the task's own intent.
+  - `/programs/therapeutic-yoga` and `/programs/meditation` (new, both via
+    `ProgramDetail`). Routing note: "Therapeutic Yoga"'s auto-slug
+    (`therapeutic-yoga`) exactly matches the new static route, so
+    `/programs/[slug]/page.tsx`'s `generateStaticParams()` now excludes it
+    — otherwise the build would try to emit two pages for the same output
+    path. "Pranayama & Meditation"'s auto-slug
+    (`pranayama-and-meditation`) differs from the new `/programs/meditation`
+    route, so no collision there; both URLs coexist (the generic one via
+    `[slug]`, the deep one new).
+  - Updated `app/sitemap.ts` (services→programs, added /founder) and
+    `components/CommandPalette.tsx`'s hint map (stale entries — the 301
+    covers correctness but not sitemap/palette hygiene) and `lib/nav.ts`
+    (Programs rename + new Founder entry in `navItems`/`footerGroups`) and
+    `lib/i18n/translations.ts` (Hindi entries for Founder/Programs).
+  - Extended `e2e/navigation.spec.ts`: redirect checks for `/services` and
+    `/services/:slug`, h1-present/no-console-error smoke tests for all 6
+    routes in the D008 table.
+- Deviations (documented, IN-005 in DECISIONS.md): touched
+  `components/cards/ServiceCard.tsx`, `app/sitemap.ts`,
+  `components/CommandPalette.tsx`, `lib/nav.ts`,
+  `lib/i18n/translations.ts` — none in FILES ALLOWED, all directly required
+  by the task's own step 3 (internal-link sweep).
+- Validation: lint clean · tsc clean · 131/131 vitest tests · `next build`
+  38/38 routes (up from 36 — +founder, +2 program deep pages, -1 for the
+  services→programs rename net) · 25/25 Playwright e2e tests · zero
+  horizontal overflow at 375px/1440px on all 6 routes, both themes ·
+  zero business-data literals in new/changed files (grep sweep) · visual
+  verification of `/founder` in day theme via screenshot.
+- Tests: 131 vitest + 25 Playwright, all passed
+- Performance: no new client JS deps; each new page is a plain server
+  component
+- Accessibility: every page keeps a real `h1` (verified by the new smoke
+  tests); breadcrumb `BreadcrumbList` JSON-LD unchanged
+- Problems: none blocking
+- Next: `09_COMMERCE_PAGES.md` (same phase, auto-continue)
 
 ### 2026-07-09 — PHASE 4 GATE (07) — PASSED (phased delivery), auto-continuing
 - Gate criterion (00_MASTER): "Desktop scene live with full fallback matrix;

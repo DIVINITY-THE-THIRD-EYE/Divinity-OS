@@ -15,6 +15,8 @@ export const locales: Locale[] = ["en", "hi"];
 
 const hi: Record<string, string> = {
   About: "परिचय",
+  Founder: "संस्थापक",
+  Programs: "कार्यक्रम",
   Services: "सेवाएं",
   Schedule: "समय सारणी",
   Pricing: "मूल्य",

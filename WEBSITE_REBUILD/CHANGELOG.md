@@ -3,6 +3,24 @@
 Format: `## [date] — <task file>` then bullet list of concrete changes.
 Newest on top. Every completed task file appends exactly one entry.
 
+## [2026-07-09] — 08_CORE_PAGES
+- Re-skinned PageHeader/Breadcrumbs/SectionHeading/CtaLink to semantic
+  tokens (night parity verified, day mode now uses the curated palette).
+- New `/founder` page (`content/founder.ts`); rebuilt `/about` and
+  `/trainers` on the new tokens.
+- Renamed `/services` → `/programs` (301 redirect, route folder moved,
+  `ServiceCard.tsx`'s stale link fixed — a real routing bug the task's own
+  link-sweep step exists to catch).
+- Added `slug`/`longDescription`/`sessions`/`whoFor` fields to
+  `content/programs.ts`; built `components/pages/ProgramDetail.tsx`
+  (content-driven template) and two new deep pages,
+  `/programs/therapeutic-yoga` and `/programs/meditation`.
+- Updated sitemap, command palette, nav, and Hindi translations for the
+  renamed/new routes.
+- Validation green: lint, tsc, 131 vitest tests, 25 Playwright e2e tests,
+  next build (38 routes), zero overflow at 375/1440px on all 6 routes both
+  themes, zero business-data literals (grep sweep).
+
 ## [2026-07-09] — 07_SCENE_3D (Part 1 — SilhouetteTier; Part 2 deferred, PH-016)
 - Added `components/scene/useBreathClock.ts` (shared 4-4-6 clock, extracted
   verbatim + unit-tested) and `components/scene/SilhouetteTier.tsx` (seated

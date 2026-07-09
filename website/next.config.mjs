@@ -53,6 +53,14 @@ const nextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  async redirects() {
+    // /services renamed to /programs (08_CORE_PAGES.md) — permanent so search
+    // engines and any bookmarked/external links transfer cleanly.
+    return [
+      { source: "/services", destination: "/programs", permanent: true },
+      { source: "/services/:slug", destination: "/programs/:slug", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;

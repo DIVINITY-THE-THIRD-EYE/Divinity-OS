@@ -5,10 +5,11 @@ export type NavItem = { href: string; label: string; primary?: boolean };
 
 export const navItems: NavItem[] = [
   { href: "/about", label: "About", primary: true },
-  { href: "/services", label: "Services", primary: true },
+  { href: "/programs", label: "Programs", primary: true },
   { href: "/schedule", label: "Schedule", primary: true },
   { href: "/pricing", label: "Pricing", primary: true },
   { href: "/trainers", label: "Trainers", primary: true },
+  { href: "/founder", label: "Founder" },
   { href: "/gallery", label: "Gallery" },
   { href: "/blog", label: "Blog" },
   { href: "/events", label: "Events" },
@@ -27,7 +28,7 @@ export const footerGroups: { title: string; items: NavItem[] }[] = [
   {
     title: "Practice",
     items: [
-      { href: "/services", label: "Services" },
+      { href: "/programs", label: "Programs" },
       { href: "/schedule", label: "Schedule" },
       { href: "/pricing", label: "Pricing" },
       { href: "/trainers", label: "Trainers" },
@@ -37,6 +38,7 @@ export const footerGroups: { title: string; items: NavItem[] }[] = [
     title: "Academy",
     items: [
       { href: "/about", label: "About" },
+      { href: "/founder", label: "Founder" },
       { href: "/gallery", label: "Gallery" },
       { href: "/blog", label: "Blog" },
       { href: "/events", label: "Events" },

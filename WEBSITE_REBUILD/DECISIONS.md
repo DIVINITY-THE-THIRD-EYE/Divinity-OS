@@ -207,6 +207,16 @@ Every replaced approach gets an entry with all four fields. Format:
 
 ## Implementation notes (appended by executing models — one line each, dated)
 
+IN-005 | 2026-07-09 | `08_CORE_PAGES.md` step 3 ("update internal links: grep
+-rn '"/services"' website") required touching files outside FILES ALLOWED:
+`components/cards/ServiceCard.tsx` (hardcoded `/services/` link — the actual
+routing bug this step exists to catch), `app/sitemap.ts` and
+`components/CommandPalette.tsx` (stale `/services` entries — redirects cover
+correctness but not sitemap/palette hygiene), `lib/nav.ts` (Services→Programs
+rename + new Founder entry) and `lib/i18n/translations.ts` (matching Hindi
+entries for the renamed/new labels). Same recurring class as IN-001-004 —
+small, mechanical, directly required by the task's own steps.
+
 IN-004 | 2026-07-09 | `06_YOGA_CURSOR.md`'s step 1 unit test ("all 12 paths
 parse to the same command/point count") doesn't apply to the crossfade
 fallback (E-007) — replaced with `components/cursor-poses.test.ts` checking

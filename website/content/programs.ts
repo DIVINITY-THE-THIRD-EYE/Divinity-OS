@@ -5,6 +5,13 @@ export type Discipline = {
   intention: "For the body" | "For the breath" | "For healing";
   description: string;
   tags: string[];
+  // Optional — populated for disciplines with a dedicated deep page
+  // (08_CORE_PAGES.md); other disciplines can gain a deep page later by
+  // filling these in, no component changes needed.
+  slug?: string;
+  longDescription?: string;
+  sessions?: string[];
+  whoFor?: string;
 };
 
 export const disciplines: Discipline[] = [
@@ -28,6 +35,16 @@ export const disciplines: Discipline[] = [
     description:
       "The science of breath. Learn to lengthen, hold and direct the breath — the bridge between effort and stillness.",
     tags: ["Breathwork", "Stillness"],
+    slug: "meditation",
+    longDescription:
+      "Pranayama is the deliberate practice of breath — lengthening the inhale, steadying the hold, and releasing the exhale with control. Meditation follows naturally from a settled breath: as the nervous system quiets, awareness turns inward. Together they are the bridge this academy is named for — the space between the brows, reached not by force but by patient, repeated practice.",
+    // TODO(PH-008): exact session cadence/duration is the same live-data
+    // question flagged for content/schedule.ts — not fabricated here.
+    sessions: [
+      "[PLACEHOLDER: exact session length and weekly cadence — see PLACEHOLDERS.md PH-008]",
+    ],
+    whoFor:
+      "Anyone carrying tension or a restless mind — complete beginners to breathwork are welcome; sessions are paced to where you are, not where you think you should be.",
   },
   {
     title: "Wellness Programs",
@@ -42,6 +59,16 @@ export const disciplines: Discipline[] = [
     description:
       "Gentle, restorative practice for injury recovery and chronic conditions — shaped around your history and your limits.",
     tags: ["Recovery", "By appointment"],
+    slug: "therapeutic-yoga",
+    longDescription:
+      "Therapeutic yoga meets you where an injury, a chronic condition, or simple everyday wear has left the body guarded. Rather than pushing toward a pose, sessions build outward from what your body can safely do today — using props, support and slow, deliberate sequencing to restore range of motion and confidence without aggravating what's already tender. Share your history when you enquire so the first session can be shaped around it, not guessed at.",
+    // TODO(PH-008): exact session cadence/duration is the same live-data
+    // question flagged for content/schedule.ts — not fabricated here.
+    sessions: [
+      "[PLACEHOLDER: exact session length and by-appointment cadence — see PLACEHOLDERS.md PH-008]",
+    ],
+    whoFor:
+      "Anyone recovering from injury or managing a chronic condition — this is by-appointment work, paced individually rather than run as a fixed group batch.",
   },
   {
     title: "Diet & Lifestyle",
@@ -52,7 +79,7 @@ export const disciplines: Discipline[] = [
   },
 ];
 
-/** URL-safe slug from any title (used for /services/[slug] etc.). */
+/** URL-safe slug from any title (used for /programs/[slug] etc.). */
 export function slugify(input: string): string {
   return input
     .toLowerCase()
