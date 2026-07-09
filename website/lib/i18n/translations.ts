@@ -20,6 +20,7 @@ const hi: Record<string, string> = {
   Services: "सेवाएं",
   Schedule: "समय सारणी",
   Pricing: "मूल्य",
+  Membership: "सदस्यता",
   Trainers: "प्रशिक्षक",
   Gallery: "गैलरी",
   Blog: "ब्लॉग",

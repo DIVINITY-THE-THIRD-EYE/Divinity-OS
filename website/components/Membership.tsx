@@ -31,7 +31,7 @@ export default function Membership({
         <div className="grid gap-8 md:grid-cols-[1.05fr_0.95fr] md:items-stretch">
           {/* Featured */}
           <Reveal>
-            <div className="relative flex h-full flex-col justify-between overflow-hidden bg-void p-10 text-bone md:p-12">
+            <div className="relative flex h-full flex-col justify-between overflow-hidden bg-surface p-10 text-fg md:p-12">
               <span
                 aria-hidden
                 className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full"
@@ -41,25 +41,25 @@ export default function Membership({
                 }}
               />
               <div className="relative">
-                <span className="bg-ember px-3 py-1 font-mono text-[9px] uppercase tracking-wide text-void">
+                <span className="bg-accent px-3 py-1 font-mono text-[9px] uppercase tracking-wide text-surface">
                   Most chosen
                 </span>
                 <div className="mt-8 font-display text-4xl italic">{featured.name}</div>
                 <div className="mt-1 font-display text-[68px] font-light leading-none">
                   {featured.price}
-                  <span className="ml-2 font-mono text-sm not-italic text-mist">
+                  <span className="ml-2 font-mono text-sm not-italic text-fg-muted">
                     / {featured.cadence.replace("per ", "")}
                   </span>
                 </div>
-                <p className="mt-4 font-body text-sm text-mist">{featured.blurb}</p>
+                <p className="mt-4 font-body text-sm text-fg-muted">{featured.blurb}</p>
 
                 <ul className="mt-8 space-y-0">
                   {featured.features?.map((f) => (
                     <li
                       key={f}
-                      className="flex items-center gap-3 border-b border-[var(--line-dark)] py-2.5 font-body text-sm text-mist"
+                      className="flex items-center gap-3 border-b border-[var(--line)] py-2.5 font-body text-sm text-fg-muted"
                     >
-                      <span className="h-1 w-1 shrink-0 rounded-full bg-ember" />
+                      <span className="h-1 w-1 shrink-0 rounded-full bg-accent" />
                       {f}
                     </li>
                   ))}
@@ -68,7 +68,7 @@ export default function Membership({
 
               <Link
                 href="/contact"
-                className="relative mt-10 block bg-ember py-4 text-center font-mono text-[11px] uppercase tracking-wide text-void transition-colors hover:bg-ember-pale"
+                className="relative mt-10 block bg-accent py-4 text-center font-mono text-[11px] uppercase tracking-wide text-surface transition-colors hover:bg-ember-pale"
               >
                 Become a Devotee
               </Link>

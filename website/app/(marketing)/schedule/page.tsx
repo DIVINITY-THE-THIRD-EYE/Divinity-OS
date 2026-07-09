@@ -23,9 +23,9 @@ export default function SchedulePage() {
         trail={[{ label: "Schedule", href: "/schedule" }]}
       />
       <Schedule data={schedule} showHeading={false} />
-      <section className="border-t border-[var(--line-dark)] bg-void px-6 py-24 text-center md:px-10 md:py-32">
-        <h2 className="mx-auto max-w-2xl font-display text-[clamp(30px,4.5vw,56px)] font-light leading-tight tracking-tight text-bone">
-          Reserve your <em className="text-ember">place.</em>
+      <section className="border-t border-[var(--line)] bg-surface px-6 py-24 text-center md:px-10 md:py-32">
+        <h2 className="mx-auto max-w-2xl font-display text-[clamp(30px,4.5vw,56px)] font-light leading-tight tracking-tight text-fg">
+          Reserve your <em className="text-accent">place.</em>
         </h2>
         <div className="mt-9 flex flex-wrap justify-center gap-4">
           <CtaLink href="/contact">Book a class</CtaLink>

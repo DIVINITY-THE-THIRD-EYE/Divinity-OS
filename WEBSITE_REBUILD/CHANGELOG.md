@@ -3,6 +3,19 @@
 Format: `## [date] — <task file>` then bullet list of concrete changes.
 Newest on top. Every completed task file appends exactly one entry.
 
+## [2026-07-09] — 09_COMMERCE_PAGES
+- Re-skinned Membership/PlanCalculator to semantic tokens.
+- `/pricing`: added the ₹99 offer block (PH-005 placeholder visible, as
+  specified) and a link to the new `/membership` page.
+- `/membership` (new): what's included, how joining works (UPI flow, copy
+  only), FAQ subset.
+- `/schedule`: per-row "Join →" wa.me link with that exact slot's day/time/
+  batch prefilled — the practical form of "BatchPickerCta on every row".
+- Cross-link audit: pricing/membership/schedule/contact all reachable
+  ≤1 click; `/membership` added to the footer (was otherwise orphaned).
+- Validation green: lint, tsc, 131 vitest tests, 34 Playwright e2e tests,
+  next build (39 routes), zero overflow at 375px.
+
 ## [2026-07-09] — 08_CORE_PAGES
 - Re-skinned PageHeader/Breadcrumbs/SectionHeading/CtaLink to semantic
   tokens (night parity verified, day mode now uses the curated palette).

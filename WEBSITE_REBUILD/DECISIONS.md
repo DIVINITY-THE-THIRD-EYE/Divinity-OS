@@ -207,6 +207,15 @@ Every replaced approach gets an entry with all four fields. Format:
 
 ## Implementation notes (appended by executing models — one line each, dated)
 
+IN-006 | 2026-07-09 | `09_COMMERCE_PAGES.md`'s route table requires the
+`/schedule` rebuild to add a `BatchPickerCta`-style per-row join CTA, which
+needs editing `components/Schedule.tsx` (not in FILES ALLOWED — only
+`Membership.tsx`/`PlanCalculator.tsx` are listed). Also touched
+`lib/nav.ts`/`lib/i18n/translations.ts`/`app/sitemap.ts`/
+`components/CommandPalette.tsx` to make the new `/membership` page
+1-click reachable site-wide (footer) rather than an orphaned page — same
+recurring class as IN-001-005.
+
 IN-005 | 2026-07-09 | `08_CORE_PAGES.md` step 3 ("update internal links: grep
 -rn '"/services"' website") required touching files outside FILES ALLOWED:
 `components/cards/ServiceCard.tsx` (hardcoded `/services/` link — the actual

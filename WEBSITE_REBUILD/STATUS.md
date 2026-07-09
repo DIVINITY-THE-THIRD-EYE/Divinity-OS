@@ -7,8 +7,8 @@
 
 | Field | Value |
 |---|---|
-| Phase | 5 — All pages (08 COMPLETE) |
-| Next file | `09_COMMERCE_PAGES.md` |
+| Phase | 5 — All pages (09 COMPLETE) |
+| Next file | `10_COMMUNITY_PAGES.md` |
 | Branch | `rebuild/living-anatomy` |
 | Blockers | PH-016 (figure mesh processing — needs Blender/gltf-transform/authenticated Sketchfab, none available here) |
 
@@ -24,6 +24,54 @@
 - No Supabase JS client in website yet (login task adds it).
 
 ## Log (append-only, newest first)
+
+### 2026-07-09 — 09_COMMERCE_PAGES complete
+- Phase: 5
+- Status: COMPLETE
+- Changes:
+  - Re-skinned `Membership.tsx` (featured-plan dark card only — the outer
+    bone-section stays untouched, different semantic pattern) and
+    `PlanCalculator.tsx` to semantic tokens.
+  - `/pricing`: added the ₹99 offer block reading `content/offers.ts`'s
+    `introOffer.terms` — currently renders the PH-005 placeholder text
+    visibly, exactly as the task specifies ("PH-005 label until
+    confirmed"). Added a "How does joining work?" link to the new
+    `/membership` page.
+  - `/membership` (new): what's included (from the featured plan's
+    `features[]`), how joining works (3 steps, UPI QR + note from
+    `content/pricing.ts`'s `payment`), an FAQ subset (`Faq limit={3}`),
+    cross-links to `/pricing` and `/contact`.
+  - `/schedule`: `Schedule.tsx` gained a per-row "Join →" link building a
+    prefilled `wa.me` URL with that row's exact day/time/batch/class name
+    and the current intro offer — the practical form of "`BatchPickerCta`
+    on every batch row" (a full dropdown-picker per row wouldn't make sense
+    when each row already names one exact slot; reused its established
+    prefilled-WhatsApp-link pattern instead of its multi-batch-select UI).
+    Both `Schedule.tsx` and the `/schedule` page's inline CTA section
+    re-skinned to semantic tokens.
+  - Cross-link audit (step 4): pricing↔membership, membership↔pricing,
+    schedule↔pricing, schedule↔contact, pricing↔contact — all present and
+    tested. `/membership` added to `footerGroups` (site-wide, every page)
+    since it had no other path to it otherwise.
+  - New `e2e/commerce.spec.ts`: pricing shows ≥1 plan, membership renders +
+    links to pricing, schedule's per-row Join link contains a day-of-week
+    in its decoded `wa.me` URL, the cross-link audit assertions, mobile
+    (375px) overflow checks for all three routes.
+- Deviations (documented, IN-006 in DECISIONS.md): `components/Schedule.tsx`
+  (not in FILES ALLOWED — only Membership/PlanCalculator were listed, but
+  the per-row CTA requirement can't be built without it),
+  `lib/nav.ts`/`lib/i18n/translations.ts`/`app/sitemap.ts`/
+  `components/CommandPalette.tsx` (making `/membership` reachable).
+- Validation: lint clean (one JSX-apostrophe fix) · tsc clean · 131/131
+  vitest tests (unchanged — no test-relevant lib/content logic touched) ·
+  `next build` 39/39 routes (+1, `/membership`) · 34/34 Playwright e2e
+  tests · zero horizontal overflow at 375px on all three routes.
+- Tests: 131 vitest + 34 Playwright, all passed
+- Performance: `/membership` is a plain server component, 210 B page size
+- Accessibility: unchanged; Schedule's new per-row link has clear visible
+  text ("Join →"), not an icon-only control
+- Problems: none blocking
+- Next: `10_COMMUNITY_PAGES.md` (same phase, auto-continue)
 
 ### 2026-07-09 — 08_CORE_PAGES complete
 - Phase: 5

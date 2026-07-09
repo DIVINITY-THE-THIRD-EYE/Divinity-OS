@@ -31,6 +31,7 @@ export const footerGroups: { title: string; items: NavItem[] }[] = [
       { href: "/programs", label: "Programs" },
       { href: "/schedule", label: "Schedule" },
       { href: "/pricing", label: "Pricing" },
+      { href: "/membership", label: "Membership" },
       { href: "/trainers", label: "Trainers" },
     ],
   },

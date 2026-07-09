@@ -21,6 +21,7 @@ function hintFor(href: string): string {
     "/programs": "What we practice",
     "/schedule": "Weekly rhythm",
     "/pricing": "Plans & membership",
+    "/membership": "How joining works",
     "/trainers": "Meet the team",
     "/founder": "Guided by",
     "/gallery": "Inside the studio",
