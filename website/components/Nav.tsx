@@ -65,7 +65,7 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
         transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
         className={`fixed inset-x-0 top-[var(--promo-h,0px)] z-[300] flex items-center justify-between px-6 transition-all duration-500 md:px-10 ${
           solid
-            ? "border-b border-[var(--line-dark)] bg-void/85 py-3 backdrop-blur-md"
+            ? "border-b border-[var(--line)] bg-surface/85 py-3 backdrop-blur-md"
             : "py-6"
         }`}
       >
@@ -78,9 +78,9 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
             priority
             className="h-7 w-7 transition-transform duration-500 group-hover:scale-110"
           />
-          <span className="font-mono text-[11px] uppercase tracking-label text-ember">
+          <span className="font-mono text-[11px] uppercase tracking-label text-accent">
             {activeSite.name}
-            <span className="text-mist"> — the third eye</span>
+            <span className="text-fg-muted"> — the third eye</span>
           </span>
         </Link>
 
@@ -90,8 +90,8 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
               key={l.href}
               href={l.href}
               aria-current={isActive(l.href) ? "page" : undefined}
-              className={`font-mono text-[11px] uppercase tracking-wide transition-colors hover:text-ember ${
-                isActive(l.href) ? "text-ember" : "text-mist"
+              className={`font-mono text-[11px] uppercase tracking-wide transition-colors hover:text-accent ${
+                isActive(l.href) ? "text-accent" : "text-fg-muted"
               }`}
             >
               {t(l.label)}
@@ -99,21 +99,21 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
           ))}
           <button
             onClick={openPalette}
-            className="flex items-center gap-1.5 text-mist transition-colors hover:text-ember"
+            className="flex items-center gap-1.5 text-fg-muted transition-colors hover:text-accent"
             aria-label="Open command menu"
           >
             <span className="kbd">⌘K</span>
           </button>
           <button
             onClick={() => setLocale(locale === "en" ? "hi" : "en")}
-            className="font-mono text-[11px] uppercase tracking-wide text-mist transition-colors hover:text-ember"
+            className="font-mono text-[11px] uppercase tracking-wide text-fg-muted transition-colors hover:text-accent"
             aria-label={t("Language")}
           >
             {locale === "en" ? "हिं" : "EN"}
           </button>
           <Link
             href="/login"
-            className="font-mono text-[11px] uppercase tracking-wide text-mist transition-colors hover:text-ember"
+            className="font-mono text-[11px] uppercase tracking-wide text-fg-muted transition-colors hover:text-accent"
           >
             Student Login
           </Link>
@@ -121,7 +121,7 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
           <Magnetic>
             <Link
               href="/contact"
-              className="border border-ember px-5 py-2 font-mono text-[11px] uppercase tracking-wide text-ember transition-colors hover:bg-ember hover:text-void"
+              className="border border-accent px-5 py-2 font-mono text-[11px] uppercase tracking-wide text-accent transition-colors hover:bg-accent hover:text-surface"
             >
               {t("Begin")}
             </Link>
@@ -131,7 +131,7 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
         <button
           ref={menuBtnRef}
           onClick={() => setOpen(true)}
-          className="font-mono text-[11px] uppercase tracking-wide text-bone lg:hidden"
+          className="font-mono text-[11px] uppercase tracking-wide text-fg lg:hidden"
           aria-label="Open menu"
           aria-expanded={open}
           aria-controls="mobile-menu"
@@ -151,12 +151,12 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[400] flex flex-col items-center justify-center gap-6 overflow-y-auto bg-void/95 px-6 py-24 backdrop-blur-lg lg:hidden"
+            className="fixed inset-0 z-[400] flex flex-col items-center justify-center gap-6 overflow-y-auto bg-surface/95 px-6 py-24 backdrop-blur-lg lg:hidden"
           >
             <button
               ref={closeBtnRef}
               onClick={() => setOpen(false)}
-              className="absolute right-6 top-6 font-mono text-[11px] uppercase tracking-wide text-mist"
+              className="absolute right-6 top-6 font-mono text-[11px] uppercase tracking-wide text-fg-muted"
               aria-label="Close menu"
             >
               {t("Close")}
@@ -172,7 +172,7 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
                   href={l.href}
                   aria-current={isActive(l.href) ? "page" : undefined}
                   className={`font-display text-3xl font-light ${
-                    isActive(l.href) ? "text-ember" : "text-bone"
+                    isActive(l.href) ? "text-accent" : "text-fg"
                   }`}
                 >
                   {t(l.label)}
@@ -187,7 +187,7 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
             >
               <Link
                 href="/contact"
-                className="border border-ember px-7 py-3 font-mono text-[11px] uppercase tracking-wide text-ember"
+                className="border border-accent px-7 py-3 font-mono text-[11px] uppercase tracking-wide text-accent"
               >
                 {t("Begin")}
               </Link>
@@ -200,11 +200,11 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
             >
               <button
                 onClick={() => setLocale(locale === "en" ? "hi" : "en")}
-                className="font-mono text-[11px] uppercase tracking-wide text-mist"
+                className="font-mono text-[11px] uppercase tracking-wide text-fg-muted"
               >
                 {locale === "en" ? "हिंदी में देखें" : "View in English"}
               </button>
-              <Link href="/login" className="font-mono text-[11px] uppercase tracking-wide text-mist">
+              <Link href="/login" className="font-mono text-[11px] uppercase tracking-wide text-fg-muted">
                 Student Login
               </Link>
               <ThemeToggle />
