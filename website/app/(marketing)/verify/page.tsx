@@ -23,12 +23,12 @@ export default async function VerifyPage() {
         intro="Each certificate Divinity issues carries a unique code. Enter it below to confirm it's genuine."
         trail={[{ label: "Verify", href: "/verify" }]}
       />
-      <section className="bg-void px-6 py-16 md:px-10 md:py-24">
+      <section className="bg-surface px-6 py-16 md:px-10 md:py-24">
         <VerifyForm />
-        <p className="mx-auto mt-10 max-w-md text-center font-body text-[13px] leading-relaxed text-mist">
-          The code is printed on the certificate (format <span className="font-mono text-bone">DIV-XXXX-XXXX</span>).
+        <p className="mx-auto mt-10 max-w-md text-center font-body text-[13px] leading-relaxed text-fg-muted">
+          The code is printed on the certificate (format <span className="font-mono text-fg">DIV-XXXX-XXXX</span>).
           If you can&apos;t verify it online, please{" "}
-          <a href="/contact" className="text-ember underline-offset-4 hover:underline">
+          <a href="/contact" className="text-accent underline-offset-4 hover:underline">
             contact the academy
           </a>{" "}
           with the code.

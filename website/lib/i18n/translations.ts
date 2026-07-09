@@ -30,6 +30,7 @@ const hi: Record<string, string> = {
   Contact: "संपर्क करें",
   "Privacy Policy": "गोपनीयता नीति",
   "Terms & Conditions": "नियम और शर्तें",
+  "Refund Policy": "धनवापसी नीति",
   Practice: "अभ्यास",
   Academy: "अकादमी",
   Begin: "शुरू करें",

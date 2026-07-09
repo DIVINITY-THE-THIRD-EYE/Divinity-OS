@@ -26,14 +26,14 @@ export default async function ContactPage() {
         intro="Tell us where you are and what you're looking for. We'll reply with the best batch for you and the simplest way to begin."
         trail={[{ label: "Contact", href: "/contact" }]}
       >
-        <div className="flex flex-wrap gap-x-8 gap-y-3 font-mono text-[11px] uppercase tracking-wide text-mist">
-          <a href={waHref("Namaste — I'd like to enquire about Divinity.", site.whatsapp)} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-ember">
+        <div className="flex flex-wrap gap-x-8 gap-y-3 font-mono text-[11px] uppercase tracking-wide text-fg-muted">
+          <a href={waHref("Namaste — I'd like to enquire about Divinity.", site.whatsapp)} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-accent">
             WhatsApp
           </a>
-          <a href={site.instagram} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-ember">
+          <a href={site.instagram} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-accent">
             Instagram
           </a>
-          <span className="text-mist/70">{site.city}</span>
+          <span className="text-fg-muted/70">{site.city}</span>
         </div>
       </PageHeader>
       <Contact site={site} />

@@ -23,6 +23,7 @@ export const primaryNav = navItems.filter((i) => i.primary);
 export const legalItems: NavItem[] = [
   { href: "/privacy", label: "Privacy Policy" },
   { href: "/terms", label: "Terms & Conditions" },
+  { href: "/refund", label: "Refund Policy" },
 ];
 
 /** Footer link groups. */

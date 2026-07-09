@@ -20,7 +20,7 @@ that is a placeholder carries a `// TODO(PH-xxx)` comment referencing this table
 | PH-007 | Pricing plan final amounts | `content/pricing.ts` | PENDING | Fallback plans exist in `lib/content.ts` — confirm current prices |
 | PH-008 | Class schedule (batches, times) | `content/schedule.ts` | PENDING | App `batches` table is authoritative — decide static copy vs live fetch |
 | PH-009 | Refund policy text | `content/legal.ts` → `refund` | PENDING | Page required (D008); no legal text exists yet |
-| PH-010 | Privacy policy / Terms review | `content/legal.ts` | PENDING | Pages exist — owner must confirm text is current |
+| PH-010 | Privacy policy / Terms review | `content/legal.ts` | CONFIRM | Real text migrated into `content/legal.ts` (E-010) — owner must confirm vs. DPDP Act 2023 / counsel before launch |
 | PH-011 | Events (upcoming, real) | `content/events.ts` | PENDING | Live site ships an empty state today |
 | PH-012 | Blog posts (initial articles) | `content/posts.ts` | PENDING | Blog stays `noindex` until real content |
 | PH-013 | Business contact set (phone, WhatsApp, email, address, hours) | `content/contact.ts` | CONFIRM | Values exist on live site — owner confirm current |

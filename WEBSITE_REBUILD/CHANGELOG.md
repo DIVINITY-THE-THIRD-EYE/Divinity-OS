@@ -3,6 +3,24 @@
 Format: `## [date] — <task file>` then bullet list of concrete changes.
 Newest on top. Every completed task file appends exactly one entry.
 
+## [2026-07-10] — 11_CONTACT_LEGAL
+- Re-skinned `/contact` (+ `Contact.tsx`), `/verify` (+ `VerifyForm.tsx`) to
+  semantic tokens; form/verify submit logic, honeypot, and rate limiting
+  untouched — `npm test -- api-routes` stays green (15/15).
+- Found `/privacy` and `/terms` already had real, substantive body text
+  sitting in page JSX (not the placeholder PH-010 assumed) — migrated it
+  verbatim into `content/legal.ts` as structured sections instead of
+  discarding it for a placeholder stub (E-010); pages now render from it,
+  re-skinned to tokens.
+- New `/refund`: PH-009 placeholder + "contact us" fallback, noindex; added
+  to the footer legal group + Hindi i18n.
+- Found (not fixed — outside FILES ALLOWED): production CSP blocks the
+  Contact page's weather widget and Google Maps iframe; flagged as a
+  background task rather than silently patched.
+- Validation green: lint, tsc, 132 vitest tests (incl. 15/15 api-routes
+  regression), 54 Playwright e2e tests, next build (43 routes).
+- **Phase 5 gate passed** (08+09+10+11 all COMPLETE) — rebased onto main.
+
 ## [2026-07-09] — 10_COMMUNITY_PAGES
 - `/events`/`/blog` (+ `[slug]` children) re-skinned, marked noindex —
   current content is 100% staging placeholders (BD-003).

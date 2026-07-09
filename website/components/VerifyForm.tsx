@@ -12,11 +12,11 @@ type Result = {
 };
 
 const TONE: Record<string, string> = {
-  valid: "border-ember text-bone",
-  unavailable: "border-[var(--line-dark)] text-mist",
-  invalid_format: "border-[var(--line-dark)] text-mist",
-  not_found: "border-[var(--line-dark)] text-mist",
-  error: "border-[var(--line-dark)] text-mist",
+  valid: "border-accent text-fg",
+  unavailable: "border-[var(--line)] text-fg-muted",
+  invalid_format: "border-[var(--line)] text-fg-muted",
+  not_found: "border-[var(--line)] text-fg-muted",
+  error: "border-[var(--line)] text-fg-muted",
 };
 
 export default function VerifyForm() {
@@ -57,12 +57,12 @@ export default function VerifyForm() {
           placeholder="DIV-XXXX-XXXX"
           autoComplete="off"
           spellCheck={false}
-          className="flex-1 rounded-none border border-[var(--line-dark)] bg-deep px-4 py-3 font-mono text-sm uppercase tracking-wide text-bone placeholder:text-mist/60 focus:border-ember focus:outline-none"
+          className="flex-1 rounded-none border border-[var(--line)] bg-deep px-4 py-3 font-mono text-sm uppercase tracking-wide text-fg placeholder:text-fg-muted/60 focus:border-accent focus:outline-none"
         />
         <button
           type="submit"
           disabled={loading}
-          className="border border-ember bg-ember px-6 py-3 font-mono text-xs uppercase tracking-wide text-void transition hover:bg-transparent hover:text-ember disabled:opacity-50"
+          className="border border-accent bg-accent px-6 py-3 font-mono text-xs uppercase tracking-wide text-surface transition hover:bg-transparent hover:text-accent disabled:opacity-50"
         >
           {loading ? "Checking…" : "Verify"}
         </button>
@@ -76,24 +76,24 @@ export default function VerifyForm() {
         >
           {result.status === "valid" ? (
             <>
-              <p className="font-display text-lg text-ember">Authentic certificate ✓</p>
-              <dl className="mt-3 space-y-1 font-body text-sm text-mist">
+              <p className="font-display text-lg text-accent">Authentic certificate ✓</p>
+              <dl className="mt-3 space-y-1 font-body text-sm text-fg-muted">
                 {result.holder && (
                   <div>
-                    <dt className="inline font-mono text-[11px] uppercase tracking-wide text-mist/70">Holder: </dt>
-                    <dd className="inline text-bone">{result.holder}</dd>
+                    <dt className="inline font-mono text-[11px] uppercase tracking-wide text-fg-muted/70">Holder: </dt>
+                    <dd className="inline text-fg">{result.holder}</dd>
                   </div>
                 )}
                 {result.programme && (
                   <div>
-                    <dt className="inline font-mono text-[11px] uppercase tracking-wide text-mist/70">Programme: </dt>
-                    <dd className="inline text-bone">{result.programme}</dd>
+                    <dt className="inline font-mono text-[11px] uppercase tracking-wide text-fg-muted/70">Programme: </dt>
+                    <dd className="inline text-fg">{result.programme}</dd>
                   </div>
                 )}
                 {result.issuedOn && (
                   <div>
-                    <dt className="inline font-mono text-[11px] uppercase tracking-wide text-mist/70">Issued: </dt>
-                    <dd className="inline text-bone">{result.issuedOn}</dd>
+                    <dt className="inline font-mono text-[11px] uppercase tracking-wide text-fg-muted/70">Issued: </dt>
+                    <dd className="inline text-fg">{result.issuedOn}</dd>
                   </div>
                 )}
               </dl>

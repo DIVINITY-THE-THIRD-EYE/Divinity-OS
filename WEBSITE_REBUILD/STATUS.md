@@ -7,8 +7,8 @@
 
 | Field | Value |
 |---|---|
-| Phase | 5 — All pages (10 COMPLETE) |
-| Next file | `11_CONTACT_LEGAL.md` |
+| Phase | 6 — Portal (Phase 5 COMPLETE, gate passed) |
+| Next file | `12_STUDENT_LOGIN.md` |
 | Branch | `rebuild/living-anatomy` |
 | Blockers | PH-016 (figure mesh processing — needs Blender/gltf-transform/authenticated Sketchfab, none available here) |
 
@@ -24,6 +24,83 @@
 - No Supabase JS client in website yet (login task adds it).
 
 ## Log (append-only, newest first)
+
+### 2026-07-10 — PHASE 5 GATE (08+09+10+11) — PASSED, auto-continuing
+- Gate criterion (00_MASTER): "Every route rebuilt on the design system."
+  - All 43 build-time routes now render on semantic tokens (`--surface`/
+    `--fg`/`--fg-muted`/`--accent`/`--line`, etc.) — verified by re-checking
+    each of 08/09/10/11's page + component list, plus a final grep for the
+    old primitive tokens (`text-bone`/`text-mist`/`text-ember`/`bg-ember`/
+    `bg-void`/`text-void`/`border-\[var\(--line-dark\)\]`) across every file
+    touched in Phase 5: zero hits outside the intentionally-untouched
+    dual-surface light-band components (Membership's outer wrapper, About,
+    Faq — see 03/09 notes, orthogonal to this gate).
+  - Validation green: lint clean · tsc clean · 132/132 vitest tests (incl.
+    15/15 `api-routes` regression, proving 11's untouched-API rule held) ·
+    `next build` 43/43 routes · 54/54 Playwright e2e tests.
+- Rebase: `main` unchanged since Phase 4 gate — no-op (checked via
+  `git merge-base --is-ancestor main rebuild/living-anatomy`).
+- Problems: none blocking. Found-not-fixed: production CSP blocks the
+  Contact page's weather widget + Google Maps iframe (outside Phase 5's
+  FILES ALLOWED anywhere) — flagged as a background task, not silently
+  patched; does not affect page rendering or the gate criterion.
+- Next: `12_STUDENT_LOGIN.md` (Phase 6).
+
+### 2026-07-10 — 11_CONTACT_LEGAL complete
+- Phase: 5
+- Status: COMPLETE
+- Changes:
+  - `/contact`: re-skinned to semantic tokens, including `components/
+    Contact.tsx` itself (map/directions block, status message, full form) —
+    `onSubmit`/fetch/honeypot logic byte-for-byte unchanged. Added
+    `contact.hours` (PH-013 placeholder, rendered visibly per the
+    established convention) to the location info block.
+  - `/verify`: re-skinned, including `components/VerifyForm.tsx` (TONE map,
+    input/button, result `<dl>`) — fetch-to-`/api/verify-certificate` logic
+    unchanged.
+  - `/privacy`, `/terms`: found real, substantive body text already sitting
+    in the pre-existing page JSX (not a placeholder, contrary to what
+    `content/legal.ts`'s PH-010 stub implied) — migrated it verbatim into
+    `content/legal.ts` as structured `LegalSection[]` arrays instead of
+    discarding it for a placeholder (E-010 in DECISIONS.md). Pages now render
+    from `content/legal.ts`, re-skinned to tokens. PH-010 status updated to
+    CONFIRM (real text, needs owner sign-off vs. DPDP Act 2023 / counsel).
+  - `/refund` (new): `content/legal.ts` → `refund` (PH-009, no real policy
+    text exists), rendered with a visible placeholder heading + a
+    "contact us" fallback link; `noindex: true`. Added to `lib/nav.ts`'s
+    `legalItems` (footer reachability) and `lib/i18n/translations.ts`
+    (Hindi label) to keep the translations-completeness test green.
+  - New `e2e/legal-contact.spec.ts`: contact form happy path (mocked
+    `/api/contact` route, fills all fields, asserts the "Thank you" done
+    state), contact page WhatsApp/Instagram link presence, privacy/terms
+    render real h1+h2 sections and are indexable (no noindex meta), refund
+    page shows the placeholder text + contact-us link and is noindex.
+  - Ran the existing `api-routes.test.ts` (15 tests, contact + subscribe +
+    rate-limiting) unmodified — all pass, proving no regression from
+    touching `Contact.tsx`/`VerifyForm.tsx`'s markup.
+  - Found, documented, NOT fixed (outside FILES ALLOWED — `next.config.mjs`
+    CSP headers): production CSP's `connect-src` doesn't whitelist
+    `api.open-meteo.com`/`air-quality-api.open-meteo.com` (WeatherWidget's
+    fetches) and no `frame-src` is set, so it falls back to `default-src
+    'self'` and blocks the Google Maps iframe — both silently broken in a
+    production build today. Flagged as a background task
+    (`task_4769bbe8`) rather than silently patched.
+- Deviations from the task file (documented, E-010 + IN-008 in
+  DECISIONS.md, `11_CONTACT_LEGAL.md` amended in place): editing
+  `Contact.tsx`/`VerifyForm.tsx` (components, not just pages), migrating
+  real legal text instead of stubbing PH-010, touching `lib/nav.ts`/
+  `lib/i18n/translations.ts` for the new `/refund` route.
+- Validation: lint clean · tsc clean · 132/132 vitest tests · `next build`
+  43/43 routes · 54/54 Playwright e2e tests (6 new in
+  `e2e/legal-contact.spec.ts`, all others unaffected)
+- Tests: 132 vitest + 54 Playwright, all passed
+- Performance: no new dependencies; token-only className changes plus one
+  new static route (`/refund`, 1.18 kB)
+- Accessibility: form labels/honeypot/aria-live unchanged; legal pages keep
+  their existing real `<h2>`-per-section heading structure (unchanged by the
+  content-source migration)
+- Problems: none blocking
+- Next: Phase 5 gate (above), then `12_STUDENT_LOGIN.md`
 
 ### 2026-07-09 — 10_COMMUNITY_PAGES complete
 - Phase: 5

@@ -226,7 +226,43 @@ Every replaced approach gets an entry with all four fields. Format:
   elsewhere (homepage) where showing a labeled staging carousel already made
   sense as a design-preview, not a factual claim page.
 
+### E-010 | 2026-07-10 | Migrated real privacy/terms text into content/legal.ts instead of stubbing placeholders
+- What changed: `11_CONTACT_LEGAL.md` assumed `/privacy` and `/terms` needed
+  PH-010 placeholder text pending owner migration (`content/legal.ts` shipped
+  from 02 with only a `"Status: [PLACEHOLDER...]"` row for each). Reality
+  (found during execution): both pages already had complete, real body text
+  written directly in their page JSX (data collection, retention, bookings,
+  health & safety, etc. — substantive, already-authored policy language, not
+  filler). Moved that real text verbatim into `content/legal.ts` as proper
+  `LegalSection[]` arrays and made the pages render from it, instead of
+  replacing working copy with a placeholder stub.
+- Why it is better: PROJECT_RULES' placeholder protocol exists to prevent
+  *fabricating* business data that doesn't exist — it was never meant to
+  discard real data that already exists in favor of a placeholder, which
+  would be a strict regression (shipping "[PLACEHOLDER: ...]" text on a live
+  legal page instead of the real policy already sitting in the repo).
+  PH-010 is still correctly listed in PLACEHOLDERS.md as CONFIRM-status (the
+  owner should still review the migrated text against DPDP Act 2023 /
+  counsel before launch — the existing page-level NOTE FOR THE BUSINESS
+  comments say exactly this and were kept) — the content is real, just unconfirmed.
+- What it replaced: `content/legal.ts`'s placeholder-only `privacy`/`terms`
+  arrays from 02_CONTENT_SYSTEM (never actually rendered anywhere until now).
+- Trade-offs: the migrated text drops the live `{site.full}`/`{site.city}`
+  interpolation the JSX had (now says "the academy" generically, since
+  `content/legal.ts` is static data without access to the site object) —
+  acceptable since the page's own PageHeader intro already names the site.
+
 ## Implementation notes (appended by executing models — one line each, dated)
+
+IN-008 | 2026-07-10 | `11_CONTACT_LEGAL.md`'s re-skin requirement for
+`/contact` and `/verify` required editing `components/Contact.tsx` and
+`components/VerifyForm.tsx` (not in FILES ALLOWED — only the page files were
+listed) since the semantic-token classNames live in the components the pages
+compose, not the thin page wrappers themselves. Also touched `lib/nav.ts`
+(new `/refund` footer entry) and `lib/i18n/translations.ts` (Hindi label for
+"Refund Policy") to satisfy the existing translations-completeness test and
+keep the new route reachable from the footer. Same recurring class as
+IN-001..007.
 
 IN-007 | 2026-07-09 | `10_COMMUNITY_PAGES.md`'s empty/noindex rules for
 `/events`/`/blog`/`/testimonials` required adding `noindex` support to

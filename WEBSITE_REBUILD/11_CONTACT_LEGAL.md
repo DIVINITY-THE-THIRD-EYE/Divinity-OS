@@ -41,3 +41,18 @@ Phase 5 gate (08+09+10+11 all COMPLETE). Gate report + rebase → auto-continue 
 
 ## NEXT
 `12_STUDENT_LOGIN.md`
+
+## AMENDMENT (executed 2026-07-09/10)
+- `components/Contact.tsx` and `components/VerifyForm.tsx` re-skinned too (not
+  just the pages) — the tokens live in the components, not the thin pages that
+  compose them. Same recurring FILES ALLOWED gap as IN-001..007. See IN-008.
+- `/privacy` and `/terms` already had real, non-placeholder body text sitting
+  in their pre-existing page JSX (contradicting this file's PH-010 assumption
+  that migration/placeholder was needed). Migrated that real text verbatim
+  into `content/legal.ts` instead of stubbing it with a placeholder — see E-010.
+- Also touched `lib/nav.ts` (added `/refund` to `legalItems`) and
+  `lib/i18n/translations.ts` (Hindi entry for "Refund Policy") for footer
+  reachability + i18n-completeness test — same recurring class as IN-001..007.
+- Found (not fixed, out of FILES ALLOWED — `next.config.mjs`): production CSP
+  blocks the Contact page's WeatherWidget fetches and Google Maps iframe.
+  Flagged as a background task, not silently patched.
