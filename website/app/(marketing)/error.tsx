@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import ErrorContent from "@/components/layout/ErrorContent";
 
-export default function Error({
+export default function MarketingError({
   error,
   reset,
 }: {
@@ -11,8 +11,7 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Surface for server logs / future error monitoring (Sentry).
-    console.error("[app] runtime error:", error);
+    console.error("[marketing] runtime error:", error);
   }, [error]);
 
   return <ErrorContent reset={reset} />;

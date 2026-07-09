@@ -3,19 +3,7 @@ import Script from "next/script";
 import { Cormorant, Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
 import { fetchSiteSettings } from "@/lib/content";
 import JsonLd from "@/components/JsonLd";
-import MotionProvider from "@/components/MotionProvider";
-import { LocaleProvider } from "@/lib/i18n/LocaleContext";
 import { ThemeProvider } from "@/lib/theme/ThemeContext";
-import Ambient from "@/components/Ambient";
-import ScrollProgress from "@/components/ScrollProgress";
-import SmoothScroll from "@/components/SmoothScroll";
-import Cursor from "@/components/Cursor";
-import CommandPalette from "@/components/CommandPalette";
-import PromoBar from "@/components/PromoBar";
-import Nav from "@/components/Nav";
-import Footer from "@/components/Footer";
-import WhatsAppFab from "@/components/WhatsAppFab";
-import StickyCta from "@/components/StickyCta";
 import "./globals.css";
 
 const display = Cormorant({
@@ -108,25 +96,7 @@ export default async function RootLayout({
           Skip to content
         </a>
         <JsonLd site={site} />
-        <ThemeProvider>
-          <LocaleProvider>
-            <MotionProvider>
-              <Ambient />
-              <ScrollProgress />
-              <SmoothScroll />
-              <Cursor />
-              <CommandPalette site={site} />
-              <PromoBar />
-              <Nav site={site} />
-              <main id="main-content" tabIndex={-1} className="outline-none">
-                {children}
-              </main>
-              <Footer site={site} />
-              <WhatsAppFab site={site} />
-              <StickyCta site={site} />
-            </MotionProvider>
-          </LocaleProvider>
-        </ThemeProvider>
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );
