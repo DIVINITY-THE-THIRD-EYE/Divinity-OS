@@ -47,3 +47,28 @@ Matrix table complete, all rules PASS. Auto-continue.
 
 ## NEXT
 `15_PERFORMANCE.md`
+
+## AMENDMENT (executed 2026-07-10)
+- `components/JsonLd.tsx` (root-layout, site-wide) was emitting `FAQPage`
+  and a generic `Course` block on every route, not just where that content
+  is actually visible — reduced to `LocalBusiness`-family only (now with
+  real `geo` from `locationConfig`); see E-013.
+- Added `Person` schema to `/founder` (new), `Course` schema (converted
+  from `Service`) to all three program-detail pages, both via new pure,
+  unit-tested builder functions in `lib/seo.ts`
+  (`buildLocalBusinessJsonLd`/`buildFaqJsonLd`/`buildCourseJsonLd`/
+  `buildPersonJsonLd`) — satisfies Step 3's "validate each JSON-LD block
+  with a parser test" without rendering React.
+- Confirmed (grep, not assumed) the full noindex checklist already held from
+  prior tasks: `/blog`, `/events` (+ `[slug]`), `/testimonials`, `/refund`,
+  `/login`, `/portal` all carry `noindex`.
+- OG image (`app/opengraph-image.tsx`) checked against the current semantic
+  token hex values (`--surface`/`--accent`/`--fg`/`--fg-muted`, night
+  theme) — already an exact match (03_DESIGN_SYSTEM kept night-theme hex
+  values unchanged when introducing the semantic layer), so no re-render
+  was needed.
+- Wired the previously-dead `content/seo.ts` into the homepage's keywords
+  (IN-010).
+- Matrix sweep scripted as `e2e/seo.spec.ts` (25 tests: title/canonical/
+  single-h1/indexable per route, noindex per route, JSON-LD presence/
+  correctness) instead of hand-checked — see STATUS.md for the full table.

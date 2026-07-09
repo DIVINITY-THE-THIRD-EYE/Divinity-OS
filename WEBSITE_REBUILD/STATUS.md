@@ -7,8 +7,8 @@
 
 | Field | Value |
 |---|---|
-| Phase | 7 — Hardening (Phase 6 COMPLETE, gate passed — phased) |
-| Next file | `14_SEO.md` |
+| Phase | 7 — Hardening (14 COMPLETE) |
+| Next file | `15_PERFORMANCE.md` |
 | Branch | `rebuild/living-anatomy` |
 | Blockers | PH-016 (figure mesh processing — needs Blender/gltf-transform/authenticated Sketchfab, none available here); manual OTP QA for 12_STUDENT_LOGIN pending owner-provided `NEXT_PUBLIC_SUPABASE_URL`/`_ANON_KEY` in `website/.env.local` (unset in this environment); Flutter Web build/deploy (13) pending an environment with the Flutter SDK on PATH — see log entries below |
 
@@ -24,6 +24,83 @@
 - No Supabase JS client in website yet (login task adds it).
 
 ## Log (append-only, newest first)
+
+### 2026-07-10 — 14_SEO complete
+- Phase: 7
+- Status: COMPLETE
+- Changes:
+  - `lib/seo.ts`: added 4 pure JSON-LD builders (`buildLocalBusinessJsonLd`,
+    `buildFaqJsonLd`, `buildCourseJsonLd`, `buildPersonJsonLd`) — plain
+    objects, unit-testable without rendering React (Step 3's "validate
+    each JSON-LD block with a parser test").
+  - `components/JsonLd.tsx` (root layout, every route): now emits only the
+    `LocalBusiness`-family block, enriched with real `geo` coordinates
+    (`locationConfig.latitude/longitude` — live data, not a placeholder).
+    Removed the sitewide `FAQPage`/generic `Course` blocks it used to emit
+    on every route (a real structured-data mismatch — see E-013).
+  - `/faq`: its own `FAQPage` JSON-LD (already existed, task 10) now built
+    via the shared `buildFaqJsonLd()` instead of a second inline copy.
+  - `/founder`: new `Person` JSON-LD (`buildPersonJsonLd`) — name, jobTitle,
+    url, worksFor; credentials filtered so the `[PLACEHOLDER: ... PH-002]`
+    entry never reaches the index.
+  - `programs/[slug]/page.tsx`, `programs/therapeutic-yoga/page.tsx`,
+    `programs/meditation/page.tsx`: converted their existing inline
+    `Service` JSON-LD to `Course` via the shared `buildCourseJsonLd()`.
+  - Confirmed (grep, not assumed) the full noindex checklist already held:
+    `/blog`, `/events`+`[slug]`, `/testimonials`, `/refund`, `/login`,
+    `/portal` all carry `noindex`.
+  - Checked `app/opengraph-image.tsx`'s hardcoded hex colors against the
+    current semantic tokens' night-theme values (`--surface`/`--accent`/
+    `--fg`/`--fg-muted`) — exact match already (03 kept night values
+    unchanged when adding the semantic layer) — no re-render needed.
+  - Wired the previously-dead `content/seo.ts` (`routeOverrides`, unused
+    since 02) into the homepage's keyword list in root `app/layout.tsx`
+    (IN-010, D005 "never hardcode").
+  - New `e2e/seo.spec.ts` (25 tests) + `lib/seo.test.ts` (+7 tests) — see
+    the matrix table below.
+- Deviations (documented, E-013 + IN-010 in DECISIONS.md, `14_SEO.md`
+  amended in place): reduced sitewide JsonLd scope beyond the literal ask;
+  touched `app/layout.tsx` (not literally "per-page metadata export").
+- **SEO check matrix** (scripted via `e2e/seo.spec.ts`, not hand-checked):
+
+  | Route | Title/canonical | h1 count | Index status | Schema |
+  |---|---|---|---|---|
+  | `/` | unique, from root layout | 1 | indexable | LocalBusiness |
+  | `/about` | unique | 1 | indexable | LocalBusiness |
+  | `/founder` | unique | 1 | indexable | LocalBusiness + **Person** (new) |
+  | `/programs` | unique | 1 | indexable | LocalBusiness |
+  | `/programs/[slug]` (×5) | unique | 1 | indexable | LocalBusiness + **Course** |
+  | `/programs/therapeutic-yoga` | unique | 1 | indexable | LocalBusiness + **Course** |
+  | `/programs/meditation` | unique | 1 | indexable | LocalBusiness + **Course** |
+  | `/pricing` | unique | 1 | indexable | LocalBusiness |
+  | `/membership` | unique | 1 | indexable | LocalBusiness |
+  | `/schedule` | unique | 1 | indexable | LocalBusiness |
+  | `/trainers` | unique | 1 | indexable | LocalBusiness |
+  | `/gallery` | unique | 1 | indexable | LocalBusiness |
+  | `/faq` | unique | 1 | indexable | LocalBusiness + FAQPage |
+  | `/contact` | unique | 1 | indexable | LocalBusiness |
+  | `/verify` | unique | 1 | indexable | LocalBusiness |
+  | `/privacy` | unique | 1 | indexable | LocalBusiness |
+  | `/terms` | unique | 1 | indexable | LocalBusiness |
+  | `/blog` (+ `[slug]`) | unique | 1 | **noindex** (BD-003) | LocalBusiness |
+  | `/events` (+ `[slug]`) | unique | 1 | **noindex** (BD-003) | LocalBusiness |
+  | `/testimonials` | unique | 1 | **noindex** (BD-003) | LocalBusiness |
+  | `/refund` | unique | 1 | **noindex** (PH-009) | LocalBusiness |
+  | `/login` | unique | 1 | **noindex** (always) | none (auth page) |
+  | `/portal` | unique | 1 | **noindex** (always) | none (auth page) |
+
+  All rules PASS.
+- Validation: lint clean · tsc clean · 145/145 vitest tests · `next build`
+  45/45 routes + middleware (unchanged count — no new pages) · 84/84
+  Playwright e2e tests (25 new in `e2e/seo.spec.ts`)
+- Tests: 145 vitest + 84 Playwright, all passed
+- Performance: no new dependencies; JSON-LD payload per page is now
+  smaller (one block instead of three on most routes)
+- Accessibility: unchanged
+- Problems: none blocking
+- Next: `15_PERFORMANCE.md` (same phase, no gate between 14 and each of
+  15/16/17 per `00_MASTER_EXECUTION.md`'s phase table — Phase 7 gate is
+  after 14+15+16+17 all COMPLETE)
 
 ### 2026-07-10 — PHASE 6 GATE (12+13) — PASSED (phased), auto-continuing
 - Gate criterion (00_MASTER): "Student login + Flutter Web dashboard working

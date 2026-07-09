@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { pageMeta } from "@/lib/seo";
+import { pageMeta, absUrl, buildPersonJsonLd } from "@/lib/seo";
 import { fetchSiteSettings } from "@/lib/content";
 import { founder } from "@/content/founder";
 import PageHeader from "@/components/layout/PageHeader";
@@ -17,9 +17,17 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function FounderPage() {
   const site = await fetchSiteSettings();
+  const jsonLd = buildPersonJsonLd({
+    name: founder.name,
+    jobTitle: founder.title,
+    url: absUrl("/founder"),
+    worksForName: site.full,
+    credentials: founder.credentials,
+  });
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <PageHeader
         eyebrow="The founder"
         title="Guided by"

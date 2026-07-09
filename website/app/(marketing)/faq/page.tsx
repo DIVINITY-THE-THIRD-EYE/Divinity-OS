@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { pageMeta } from "@/lib/seo";
+import { pageMeta, buildFaqJsonLd } from "@/lib/seo";
 import { faqs } from "@/lib/content";
 import PageHeader from "@/components/layout/PageHeader";
 import Faq from "@/components/Faq";
@@ -12,15 +12,7 @@ export const metadata: Metadata = pageMeta({
 });
 
 export default function FaqPage() {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqs.map((f) => ({
-      "@type": "Question",
-      name: f.q,
-      acceptedAnswer: { "@type": "Answer", text: f.a },
-    })),
-  };
+  const jsonLd = buildFaqJsonLd(faqs);
 
   return (
     <>

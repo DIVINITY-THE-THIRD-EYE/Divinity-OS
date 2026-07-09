@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { pageMeta, absUrl } from "@/lib/seo";
+import { pageMeta, absUrl, buildCourseJsonLd } from "@/lib/seo";
 import { disciplines, fetchSiteSettings } from "@/lib/content";
 import ProgramDetail from "@/components/pages/ProgramDetail";
 
@@ -21,16 +21,13 @@ export default async function MeditationPage() {
 
   const site = await fetchSiteSettings();
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Service",
+  const jsonLd = buildCourseJsonLd({
     name: d.title,
     description: d.longDescription ?? d.description,
-    serviceType: d.title,
-    areaServed: "Lucknow",
-    provider: { "@type": "Organization", name: site.full, url: absUrl("/") },
     url: absUrl("/programs/meditation"),
-  };
+    providerName: site.full,
+    providerUrl: absUrl("/"),
+  });
 
   return (
     <>

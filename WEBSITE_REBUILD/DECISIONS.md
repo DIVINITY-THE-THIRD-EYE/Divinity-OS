@@ -302,7 +302,51 @@ Every replaced approach gets an entry with all four fields. Format:
   Flutter SDK: run the documented build command, pick actual hosting
   (subdomain vs `/app`), and pick up Stage B from there.
 
+### E-013 | 2026-07-10 | JsonLd.tsx no longer emits FAQPage/Course site-wide
+- What changed: `components/JsonLd.tsx` (mounted once, in the ROOT layout —
+  every route) previously emitted `HealthAndBeautyBusiness`/
+  `SportsActivityLocation`, `FAQPage`, and a generic `Course` block on
+  literally every page, regardless of whether that page's visible content
+  matched. Reduced it to only the site-wide-legitimate part (the
+  LocalBusiness-family block, now built via a shared `buildLocalBusinessJsonLd()`
+  in `lib/seo.ts`, enriched with real `geo` coordinates from
+  `locationConfig`). `FAQPage` now renders only on `/faq` (already had its
+  own copy from task 10 — deduplicated to use the same builder); `Course`
+  now renders per-program-page with that program's actual name/description
+  (`programs/[slug]`, `/programs/therapeutic-yoga`, `/programs/meditation`),
+  replacing the `Service` type those three already used inline.
+- Why it is better: Google's structured-data guidelines require FAQPage
+  markup to match content actually visible on that page — emitting it
+  site-wide (e.g. on `/pricing`, which has no FAQ content of its own) is
+  exactly the mismatch that gets rich-result eligibility pulled. A single
+  generic sitewide `Course` block also isn't "per program page" (14_SEO.md's
+  explicit ask) and duplicated real per-page `Service` blocks that already
+  existed. `Person` schema (new, `/founder` only) filters out the
+  `[PLACEHOLDER: ...]`-labeled credential entry via `buildPersonJsonLd()`, so
+  a placeholder can never reach the index (PROJECT_RULES #3).
+- What it replaced: `JsonLd.tsx`'s inline sitewide FAQPage/Course objects;
+  the three program pages' inline `Service` objects.
+- Trade-offs: `Course`'s `provider` uses `url` (not `sameAs`, which the old
+  generic block used) — both are valid schema.org Organization properties;
+  `url` matches what the pre-existing per-program `Service` blocks already
+  used, kept for consistency rather than reintroducing a second convention.
+- Also wired the previously-dead `content/seo.ts` (`routeOverrides`, unused
+  since 02_CONTENT_SYSTEM) into the homepage's keyword list in root
+  `app/layout.tsx` — D005 ("never hardcode") — a one-line change, logged as
+  IN-010 since `app/layout.tsx` isn't literally "per-page metadata" in
+  14_SEO.md's FILES ALLOWED, though it is the homepage's only metadata
+  source (no page-level `pageMeta()` call exists for `/`).
+
 ## Implementation notes (appended by executing models — one line each, dated)
+
+IN-010 | 2026-07-10 | `14_SEO.md` lists `content/seo.ts` in FILES ALLOWED
+but it was never actually consumed anywhere (dead code since
+02_CONTENT_SYSTEM). Wired its `routeOverrides` into root `app/layout.tsx`'s
+`generateMetadata()` (the homepage's only metadata source — no
+`app/(marketing)/page.tsx` `pageMeta()` call exists) to replace a hardcoded
+keywords array, per D005. `app/layout.tsx` isn't literally listed in FILES
+ALLOWED (only "per-page `metadata` exports" is) — same recurring class as
+IN-001..009, a one-line necessity to make the task's own file useful.
 
 IN-009 | 2026-07-10 | `12_STUDENT_LOGIN.md`'s FILES ALLOWED lists
 `website/.env.example` (doesn't exist) — documented the two new Supabase env

@@ -3,6 +3,28 @@
 Format: `## [date] — <task file>` then bullet list of concrete changes.
 Newest on top. Every completed task file appends exactly one entry.
 
+## [2026-07-10] — 14_SEO
+- `components/JsonLd.tsx` (site-wide, root layout) reduced to just the
+  LocalBusiness-family block (now with real `geo` coordinates) — `FAQPage`/
+  `Course` no longer emitted on every route regardless of relevance
+  (Google's structured-data guidelines require the markup to match visible
+  page content).
+- New pure, unit-tested JSON-LD builders in `lib/seo.ts`
+  (`buildLocalBusinessJsonLd`/`buildFaqJsonLd`/`buildCourseJsonLd`/
+  `buildPersonJsonLd`) — the last filters out `[PLACEHOLDER: ...]`-labeled
+  credentials so they can never reach the index.
+- New `Person` schema on `/founder`; `Course` schema (converted from
+  `Service`) on all three program-detail pages.
+- Confirmed (grep) the noindex checklist already holds for `/blog`,
+  `/events`(+slug), `/testimonials`, `/refund`, `/login`, `/portal`.
+- Wired previously-dead `content/seo.ts` into the homepage's keywords (D005).
+- New `e2e/seo.spec.ts` (25 tests): scripted matrix sweep — title/canonical/
+  single-h1/indexable per route, noindex per route, JSON-LD correctness —
+  instead of hand-checking.
+- Validation green: lint, tsc, 145 vitest tests (+7 new), 84 Playwright e2e
+  tests (+25 new), next build (45 routes + middleware, unchanged route
+  count — no new pages this task).
+
 ## [2026-07-10] — 13_FLUTTER_WEB (Stage A partial — Nav link shipped; build/Stage B blocked by tooling)
 - Added the "Student Login" link to `Nav.tsx` (desktop + mobile menus) —
   dark-launch ends here per this task's Step 3. Verified via a new

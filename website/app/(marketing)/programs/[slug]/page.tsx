@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { pageMeta, absUrl } from "@/lib/seo";
+import { pageMeta, absUrl, buildCourseJsonLd } from "@/lib/seo";
 import {
   disciplines,
   disciplineSlug,
@@ -39,16 +39,13 @@ export default async function ServiceDetail({ params }: { params: { slug: string
   const site = await fetchSiteSettings();
   const related = disciplines.filter((x) => x.title !== d.title).slice(0, 3);
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Service",
+  const jsonLd = buildCourseJsonLd({
     name: d.title,
     description: d.description,
-    serviceType: d.title,
-    areaServed: "Lucknow",
-    provider: { "@type": "Organization", name: site.full, url: absUrl("/") },
     url: absUrl(`/programs/${params.slug}`),
-  };
+    providerName: site.full,
+    providerUrl: absUrl("/"),
+  });
 
   return (
     <>

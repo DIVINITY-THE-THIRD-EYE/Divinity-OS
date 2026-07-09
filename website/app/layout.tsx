@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { Cormorant, Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
 import { fetchSiteSettings } from "@/lib/content";
+import { routeOverrides } from "@/content/seo";
 import JsonLd from "@/components/JsonLd";
 import { ThemeProvider } from "@/lib/theme/ThemeContext";
 import "./globals.css";
@@ -36,14 +37,10 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(site.url),
     title: `${site.full} | Yoga, Fitness & Wellness, Lucknow`,
     description: `A yoga, fitness and wellness academy in Lucknow guided by ${site.founder}. Breath, movement and stillness — body and mind in balance.`,
-    keywords: [
-      "yoga Lucknow",
-      "fitness Lucknow",
-      "wellness academy",
-      "therapeutic yoga",
-      "pranayama",
-      site.founder,
-    ],
+    // Single source of truth for homepage keywords lives in content/seo.ts
+    // (D005 — never hardcode); site.founder is appended since it's a live
+    // fact, not an editorial keyword choice.
+    keywords: [...(routeOverrides.find((r) => r.path === "/")?.keywords ?? []), site.founder],
     alternates: { canonical: "/" },
     openGraph: {
       title: site.full,
