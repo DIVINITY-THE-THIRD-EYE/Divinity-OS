@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { m } from "framer-motion";
 import { introOffer } from "@/content/offers";
+import Magnetic from "@/components/Magnetic";
+import ScrollScore from "./ScrollScore";
 
 // Pranayama cadence (seconds): sama-style with a longer exhale.
 const INHALE = 4;
@@ -175,6 +177,8 @@ export default function Hero() {
   }, []);
 
   return (
+    <>
+    <ScrollScore />
     <section id="top" className="relative h-[100svh] min-h-[640px] w-full overflow-hidden">
       {/* warm-studio backdrop — pure CSS so the LCP isn't gated on a
           full-viewport image decode (the photo sat at 0.28 opacity under
@@ -246,12 +250,14 @@ export default function Hero() {
           transition={{ duration: 0.5, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
           className="mt-10 flex flex-wrap items-center gap-4"
         >
-          <Link
-            href="/contact"
-            className="bg-ember px-8 py-3.5 font-mono text-[11px] uppercase tracking-wide text-void transition-colors hover:bg-ember-pale"
-          >
-            Book a class — {introOffer.price} {introOffer.duration}
-          </Link>
+          <Magnetic>
+            <Link
+              href="/contact"
+              className="bg-ember px-8 py-3.5 font-mono text-[11px] uppercase tracking-wide text-void transition-colors hover:bg-ember-pale"
+            >
+              Book a class — {introOffer.price} {introOffer.duration}
+            </Link>
+          </Magnetic>
           <a
             href="#about"
             className="font-mono text-[11px] uppercase tracking-wide text-mist transition-colors hover:text-bone"
@@ -278,5 +284,6 @@ export default function Hero() {
         Scroll <span className="inline-block h-8 w-px bg-gradient-to-b from-ember to-transparent" />
       </div>
     </section>
+    </>
   );
 }

@@ -7,8 +7,8 @@
 
 | Field | Value |
 |---|---|
-| Phase | 3 — Motion & cursor (04 COMPLETE) |
-| Next file | `05_MOTION_SCROLLSTORY.md` |
+| Phase | 3 — Motion & cursor (05 COMPLETE) |
+| Next file | `06_YOGA_CURSOR.md` |
 | Branch | `rebuild/living-anatomy` |
 | Blockers | none |
 
@@ -24,6 +24,67 @@
 - No Supabase JS client in website yet (login task adds it).
 
 ## Log (append-only, newest first)
+
+### 2026-07-09 — 05_MOTION_SCROLLSTORY complete
+- Phase: 3
+- Status: COMPLETE
+- Changes:
+  - `components/home/ScrollScore.tsx` (new): headless, mounted inside
+    `Hero.tsx`. One GSAP `ScrollTrigger` (trigger `document.body`, `scrub:
+    0.3`, no pin) tracks whole-page scroll progress; publishes it through
+    `useScrollProgress()` (a `useSyncExternalStore`-backed external store, not
+    React Context — see E-005) and toggles `data-act="1|2|3"` on `<html>` at
+    the 0.45/0.72 act boundaries. Reduced-motion or `?no-motion=1` in the URL
+    → the effect returns immediately, nothing mounts, no timeline, no
+    `data-act` ever gets set (verified both branches with Playwright).
+  - `globals.css`: `.ambient::after` (new, additive — the base `.ambient`
+    gradient is untouched) consumes `--glow` (defined in 03, orphaned until
+    now) and fades in via `[data-act="2"]`/`[data-act="3"]` selectors with an
+    800ms CSS transition — the "act-break light shift" requirement, done in
+    CSS so no gradient-string interpolation math was needed in JS.
+  - `components/Magnetic.tsx` (existing — reused, not duplicated, see E-006):
+    added a coarse-pointer gate (`hover:hover) and (pointer:fine)`) alongside
+    its existing reduced-motion check, and clamped its spring offset to the
+    spec's 8px max. Wired onto Hero's and FinalCta's primary CTA links.
+  - Programs.tsx's own independent pin+scrub `ScrollTrigger` (built pre-04,
+    untouched) confirmed still working correctly alongside the new master
+    ScrollTrigger — multiple STs coexist fine since neither pins the other's
+    trigger element.
+- Deviations (documented, E-005/E-006 in DECISIONS.md, `05_MOTION_
+  SCROLLSTORY.md` amended in place): no `components/ui/MagneticCta.tsx`
+  (reused `Magnetic.tsx`); `useScrollProgress()` is an external store, not
+  Context (page.tsx isn't in this task's FILES ALLOWED, so there's nowhere to
+  put a Provider); section enter/exit tweens were NOT re-implemented as a
+  second GSAP system — every section already has a correct, reduced-motion-
+  safe enter animation via the existing `Reveal` component, which `design/
+  10-motion-spec.md` itself says to reuse; a second position-driven tween
+  system on the same elements would double-animate them. `e2e/home.spec.ts`
+  extended (IN-003) with reduced-motion, `?no-motion=1`, and a real-scroll
+  `data-act` check.
+- **A real, if narrow, race found via Playwright, not build/lint** (E-004
+  addendum): the PromoBar/Nav fix from 04 measured the wrong DOM node —
+  the outer element framer-motion animates `height:0→auto` on, not the
+  stable inner content div — so `--promo-h` was briefly too-small during
+  PromoBar's own ~350ms mount animation, reopening a narrow version of 04's
+  overlap bug during that window. Only reachable under parallel-worker CPU
+  contention (100% reliable in isolation/single-worker, occasionally flaky
+  under 8 parallel workers) — fixed by measuring the inner div in a
+  `useLayoutEffect` instead.
+- Validation: lint clean · tsc clean · 121/121 vitest tests · `next build`
+  36/36 routes · 13/13 Playwright e2e tests, confirmed stable across 3
+  repeated full-suite runs and 5 repeated single-worker runs of the
+  previously-flaky test · reduced-motion emulation confirmed via Playwright
+  (`page.emulateMedia`) — all section headings visible, zero pinning, zero
+  `data-act` · scroll-progress mechanism confirmed live via real wheel input
+  (`data-act` becomes non-null after scrolling with motion enabled).
+- Tests: 121 vitest + 13 Playwright, all passed
+- Performance: one extra idle-deferred GSAP `ScrollTrigger` (same lazy-import
+  pattern as `SmoothScroll.tsx`/`Programs.tsx`); homepage `/` first-load JS
+  164 kB (was 154 kB pre-05 — Magnetic's framer-motion springs + ScrollScore)
+- Accessibility: unchanged from 04; reduced-motion path independently verified
+- Problems: none blocking
+- Next: `06_YOGA_CURSOR.md` (same phase — auto-continue, no gate between 05
+  and 06 per `00_MASTER_EXECUTION.md`'s phase table)
 
 ### 2026-07-09 — PHASE 2 GATE (04) — PASSED, auto-continuing
 - Gate criterion (00_MASTER): "Homepage rebuilt in place as fast DOM site (no

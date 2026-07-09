@@ -1,4 +1,5 @@
 import CtaLink from "@/components/ui/CtaLink";
+import Magnetic from "@/components/Magnetic";
 import BatchPickerCta from "./BatchPickerCta";
 import { introOffer } from "@/content/offers";
 
@@ -27,7 +28,9 @@ export default function FinalCta() {
           no commitment. Tell us where you are, and we&apos;ll guide the first step.
         </p>
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-          <CtaLink href="/contact">Book a class — {introOffer.price} {introOffer.duration}</CtaLink>
+          <Magnetic>
+            <CtaLink href="/contact">Book a class — {introOffer.price} {introOffer.duration}</CtaLink>
+          </Magnetic>
           <CtaLink href="/schedule" variant="ghost">
             See the schedule →
           </CtaLink>

@@ -24,10 +24,35 @@ experience (the three acts), plus the motion grammar all pages share.
   ScrollTrigger (adapt existing Disciplines pattern).
 - `components/ui/MagneticCta.tsx` — spring-follow hover for primary CTAs (pointer-fine only).
 
+> **Amended during execution:** "copy panels enter (y+opacity)" was NOT
+> re-implemented as a second GSAP-driven system. Every section already gets a
+> correct, working, reduced-motion-respecting enter animation from the
+> existing `Reveal` component (framer-motion `whileInView`, `once:true`,
+> `-80px` margin — exactly what `design/10-motion-spec.md` §"Scroll reveals"
+> prescribes: "reuse for all new sections"). Layering ScrollScore's own
+> position-based opacity/y tweens on the *same* elements would double-animate
+> them — two independent systems fighting over the same `transform`/`opacity`
+> values, a real jank/conflict risk for zero visual gain. `ScrollScore`'s
+> actual job here: (1) publish the shared progress signal 06/07 need — the
+> part that didn't already exist anywhere — and (2) the `--glow` act-break
+> shift (new, also didn't exist). See DECISIONS.md E-005 for why (1) is an
+> external store, not Context.
+
 ## FILES ALLOWED
 - `website/components/home/**`, `website/components/ui/MagneticCta.tsx`
 - `website/app/globals.css` (keyframes/utility additions only)
 - STATUS/CHANGELOG.
+
+> **Amended (E-005, E-006 in DECISIONS.md):** no `components/ui/MagneticCta.tsx`
+> — `components/Magnetic.tsx` already existed (already used in `Nav.tsx`,
+> already spring-based, already reduced-motion-safe) and `design/10-motion-
+> spec.md` independently confirms it's the intended component. Added the
+> missing coarse-pointer gate + 8px clamp to it instead. `useScrollProgress()`
+> is an external store (`useSyncExternalStore`), not React Context — Context
+> needs a Provider ancestor wrapping the other 8 sections, which live in
+> `app/(marketing)/page.tsx` (04's file, not in this task's FILES ALLOWED).
+> `e2e/home.spec.ts` also needed extending for the reduced-motion/`?no-motion=1`
+> validation bullet below (IN-003) — same recurring gap as 02/04.
 
 ## FILES FORBIDDEN
 - Legacy home, other routes, 3D, cursor file, `lib/`.

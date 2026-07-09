@@ -212,6 +212,25 @@ html.lenis body {
     radial-gradient(45% 45% at 10% 80%, rgba(208, 138, 62, 0.06), transparent 70%);
   animation: breatheBg 12s ease-in-out infinite;
 }
+
+/* Act-break light shift (05_MOTION_SCROLLSTORY): a second layer using the
+ * theme's --glow token (defined in 03, unused until now), faded in/out by
+ * ScrollScore via a `data-act` attribute on <html> as scroll passes each act
+ * boundary. Additive — the base .ambient gradient above is untouched. */
+.ambient::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--glow);
+  opacity: 0;
+  transition: opacity 800ms ease;
+}
+[data-act="2"] .ambient::after {
+  opacity: 0.5;
+}
+[data-act="3"] .ambient::after {
+  opacity: 0.85;
+}
 @keyframes breatheBg {
   0%, 100% { opacity: 0.55; transform: scale(1); }
   45% { opacity: 1; transform: scale(1.06); }

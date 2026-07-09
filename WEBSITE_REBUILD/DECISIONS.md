@@ -88,8 +88,57 @@ Every replaced approach gets an entry with all four fields. Format:
   with another fixed element — both still occupy and capture events for that
   shared region regardless of z-index, whichever paints on top).
 - Trade-offs: one `ResizeObserver` + effect in `PromoBar.tsx`; negligible cost.
+- **Addendum (05, same day):** the first version measured the outer `m.div` —
+  the element framer-motion animates `height: 0 → auto` on — so `--promo-h` was
+  briefly wrong (too small) during PromoBar's own ~350ms mount animation,
+  reopening a narrow version of the same overlap during that window. Caught by
+  intermittent Playwright flakiness on the pricing-nav-click test (passed 100%
+  in isolation/single-worker, occasionally failed under parallel load — the
+  timing window is only reachable under contention). Fixed by measuring the
+  *inner* content div instead (not animated, stable height from first render)
+  in a `useLayoutEffect` (runs before paint) rather than `useEffect`.
+
+### E-005 | 2026-07-09 | ScrollScore's useScrollProgress() is an external store, not React Context
+- What changed: `05_MOTION_SCROLLSTORY.md` specified `useScrollProgress()` backed by
+  React Context. Built it on `useSyncExternalStore` (a module-level subscriber set)
+  instead, with `ScrollScore` mounted headlessly inside `Hero.tsx`.
+- Why it is better: React Context requires a `<Provider>` ancestor wrapping every
+  consumer. The 8 other homepage sections are siblings under `app/(marketing)/
+  page.tsx` (04's file, not in 05's FILES ALLOWED), so a Context Provider couldn't
+  wrap them without editing `page.tsx`. An external store has no such requirement —
+  `useScrollProgress()` works from anywhere, which is also strictly more useful for
+  06 (cursor) and 07 (3D camera), neither of which are guaranteed to live inside
+  whatever tree a Context Provider would occupy either.
+- What it replaced: a Context-based design that was never actually implementable
+  within this task's own file boundaries.
+- Trade-offs: none functionally — same public API (`useScrollProgress()`), same
+  single-writer/many-reader shape.
+
+### E-006 | 2026-07-09 | Reused Magnetic.tsx instead of building a new MagneticCta.tsx
+- What changed: `05_MOTION_SCROLLSTORY.md` asked for a new `components/ui/
+  MagneticCta.tsx` (spring stiffness 150/damping 15, max offset 8px, disabled on
+  coarse pointer + reduced motion). `components/Magnetic.tsx` already existed,
+  already used in `Nav.tsx`'s "Begin" CTA, already spring-based (stiffness
+  200/damping 15 — close enough, not worth a second spring constant), and already
+  disabled itself under reduced motion. It was missing only the coarse-pointer
+  gate and the 8px clamp, both added directly to it.
+- Why it is better: a second, near-identical hover-follow component would be
+  pure duplication — same pattern as E-003 (03_DESIGN_SYSTEM's ThemeProvider).
+  `design/10-motion-spec.md` §"Buttons / magnetic CTAs" independently confirms
+  "Magnetic (existing Magnetic)" is the intended component, not a new one — the
+  task file's instruction to create `MagneticCta.tsx` predates that spec doc or
+  didn't cross-reference it.
+- What it replaced: the task file's `components/ui/MagneticCta.tsx` (not created).
+- Trade-offs: none. `Magnetic.tsx` isn't under `components/ui/`, so this is a
+  location deviation from FILES ALLOWED, not a functional one.
 
 ## Implementation notes (appended by executing models — one line each, dated)
+
+IN-003 | 2026-07-09 | `05_MOTION_SCROLLSTORY.md`'s VALIDATION section requires a
+Playwright reduced-motion check ("extend e2e/new-home.spec.ts" — the actual file
+is `e2e/home.spec.ts`, no `new-home.spec.ts` exists; extended the real file
+instead of creating a differently-named duplicate). `e2e/` isn't in FILES
+ALLOWED, same class of gap as IN-002.
 
 IN-002 | 2026-07-09 | `04_HOMEPAGE.md` step 5 ("FAQ/Journal/Events become footer
 links") required adding a `{ href: "/contact#faq", label: "FAQ" }` row to

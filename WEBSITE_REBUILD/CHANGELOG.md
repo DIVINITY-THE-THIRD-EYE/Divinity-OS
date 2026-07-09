@@ -3,6 +3,26 @@
 Format: `## [date] — <task file>` then bullet list of concrete changes.
 Newest on top. Every completed task file appends exactly one entry.
 
+## [2026-07-09] — 05_MOTION_SCROLLSTORY
+- Added `ScrollScore` (headless, mounted in `Hero.tsx`): one GSAP
+  `ScrollTrigger` publishing whole-page scroll progress via
+  `useScrollProgress()` (external store) and a `data-act` attribute driving
+  an act-break ambient light shift (new `.ambient::after` layer, finally
+  consuming 03's `--glow` token). Reduced motion / `?no-motion=1` → nothing
+  mounts.
+- Reused `Magnetic.tsx` (not a new `MagneticCta.tsx`) for the hero/final-CTA
+  hover-follow, adding the coarse-pointer gate + 8px clamp it was missing.
+  Skipped re-implementing section enter animations as a second GSAP system —
+  the existing `Reveal` component already covers that correctly.
+- Found and fixed a narrower recurrence of 04's PromoBar/Nav overlap bug:
+  `--promo-h` was measured from the wrong (animating) DOM node, briefly wrong
+  during PromoBar's own mount animation. Caught by intermittent Playwright
+  flakiness under parallel load; fixed with a `useLayoutEffect` measuring the
+  stable inner content div instead.
+- Validation green: lint, tsc, 121 vitest tests, 13 Playwright e2e tests
+  (stable across repeated runs), next build (36 routes), reduced-motion
+  emulation confirmed.
+
 ## [2026-07-09] — 04_HOMEPAGE
 - Route-group restructure: `app/(marketing)/layout.tsx` owns all marketing
   chrome; root layout slimmed to fonts/theme/JsonLd. All routes moved via

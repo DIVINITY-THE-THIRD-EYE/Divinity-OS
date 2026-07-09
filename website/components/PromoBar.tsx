@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import { waHref } from "@/lib/links";
 import { introOffer } from "@/content/offers";
@@ -20,14 +20,19 @@ const whatsappHref = waHref(
  */
 export default function PromoBar() {
   const [dismissed, setDismissed] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+  // Measure the inner content div, not the outer m.div — the outer one is
+  // what framer-motion animates height:0→auto on, so reading ITS offsetHeight
+  // mid-animation (e.g. right after mount) returns a moving, too-small value.
+  // The inner content div has no animation on it, so its height is the real,
+  // stable target size from the very first render.
+  const contentRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (dismissed) {
       document.documentElement.style.setProperty("--promo-h", "0px");
       return;
     }
-    const el = ref.current;
+    const el = contentRef.current;
     if (!el) return;
     const update = () => document.documentElement.style.setProperty("--promo-h", `${el.offsetHeight}px`);
     update();
@@ -44,14 +49,13 @@ export default function PromoBar() {
     <AnimatePresence>
       {!dismissed && (
         <m.div
-          ref={ref}
           initial={{ height: 0, opacity: 0 }}
           animate={{ height: "auto", opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
           transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
           className="fixed inset-x-0 top-0 z-[360] overflow-hidden bg-ember"
         >
-          <div className="flex items-center justify-between gap-3 px-4 py-2.5 md:justify-center md:gap-6">
+          <div ref={contentRef} className="flex items-center justify-between gap-3 px-4 py-2.5 md:justify-center md:gap-6">
             <p className="font-mono text-[11px] uppercase tracking-wide text-void">
               <span className="line-through opacity-90">₹500</span>
               <span className="mx-1.5 font-bold">{introOffer.price} {introOffer.duration}</span>
