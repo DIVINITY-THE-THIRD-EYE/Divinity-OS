@@ -97,6 +97,12 @@ export default function ScrollScore() {
       if (w.cancelIdleCallback) w.cancelIdleCallback(ric);
       else clearTimeout(ric);
       cleanup();
+      // Reset on unmount (navigating off the homepage) — progress is a plain
+      // module-level value, not tied to the client-side route, so without
+      // this it would keep reporting whatever the last homepage scroll
+      // position was. 06_YOGA_CURSOR.md's cursor holds pose 1 on non-home
+      // routes specifically because this resets to 0.
+      setProgress(0);
     };
   }, []);
 

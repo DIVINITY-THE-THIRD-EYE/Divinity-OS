@@ -132,7 +132,39 @@ Every replaced approach gets an entry with all four fields. Format:
 - Trade-offs: none. `Magnetic.tsx` isn't under `components/ui/`, so this is a
   location deviation from FILES ALLOWED, not a functional one.
 
+### E-007 | 2026-07-09 | YogaCursor: crossfade fallback instead of point-lerp morphing
+- What changed: `06_YOGA_CURSOR.md` asked for 12 hand-authored SVG paths sharing an
+  IDENTICAL command/point sequence, so consecutive poses could be numerically
+  lerped frame-by-frame with no morphing library. Took the task file's own
+  documented fallback instead: 12 independent, simpler poses (head circle +
+  one M/L/Z-only body path each) that crossfade (opacity swap, 120ms) at
+  segment boundaries rather than morph.
+- Why it is better: the task file itself flags this exact risk — "critical for
+  a weak model — follow exactly" — because hand-authoring 12 complex paths with
+  matching topology, entirely by reasoning about coordinates with no visual
+  editor, is extremely failure-prone; a wrong attempt would either silently
+  produce garbled in-between shapes or require many blind iterations to fix.
+  Crossfade needs no such constraint, so each pose could be authored
+  independently and verified by rendering it (done via Playwright + browser
+  preview — confirmed 12 distinct, recognizable stick-figure silhouettes).
+- What it replaced: point-by-point path interpolation.
+- Trade-offs: pose transitions are a 120ms crossfade instead of a continuous
+  morph — a minor motion-quality difference, explicitly pre-approved by the
+  task file's own fallback clause.
+- Also swapped the cursor mount in `app/(marketing)/layout.tsx`, not root
+  `app/layout.tsx` — Cursor.tsx has lived in the marketing layout since 04's
+  route-group restructure (predates this task file), and cursor should stay
+  marketing-only regardless (the portal, added in 12/13, has no decorative
+  cursor need). Root `layout.tsx` was never touched.
+
 ## Implementation notes (appended by executing models — one line each, dated)
+
+IN-004 | 2026-07-09 | `06_YOGA_CURSOR.md`'s step 1 unit test ("all 12 paths
+parse to the same command/point count") doesn't apply to the crossfade
+fallback (E-007) — replaced with `components/cursor-poses.test.ts` checking
+what crossfade actually needs (12 poses, valid M/L/Z-only paths, in-bounds
+heads). `vitest.config.ts`'s `include` needed a `components/**/*.test.ts`
+glob added (not in FILES ALLOWED) — same recurring gap as IN-001.
 
 IN-003 | 2026-07-09 | `05_MOTION_SCROLLSTORY.md`'s VALIDATION section requires a
 Playwright reduced-motion check ("extend e2e/new-home.spec.ts" — the actual file

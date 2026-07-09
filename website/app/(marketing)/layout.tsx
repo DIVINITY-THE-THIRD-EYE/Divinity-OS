@@ -4,7 +4,7 @@ import MotionProvider from "@/components/MotionProvider";
 import Ambient from "@/components/Ambient";
 import ScrollProgress from "@/components/ScrollProgress";
 import SmoothScroll from "@/components/SmoothScroll";
-import Cursor from "@/components/Cursor";
+import YogaCursor from "@/components/YogaCursor";
 import CommandPalette from "@/components/CommandPalette";
 import PromoBar from "@/components/PromoBar";
 import Nav from "@/components/Nav";
@@ -30,7 +30,7 @@ export default async function MarketingLayout({
         <Ambient />
         <ScrollProgress />
         <SmoothScroll />
-        <Cursor />
+        <YogaCursor />
         <CommandPalette site={site} />
         <PromoBar />
         <Nav site={site} />

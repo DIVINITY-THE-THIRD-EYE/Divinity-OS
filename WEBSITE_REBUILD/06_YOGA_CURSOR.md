@@ -40,6 +40,15 @@ Surya Namaskar poses as the user scrolls. Zero dependencies, ~3 kB.
 - Old `Cursor.tsx`: keep file (legacy home unaffected paths) — delete at launch (19).
 - STATUS/CHANGELOG.
 
+> **Amended (E-007 in DECISIONS.md):** swap happened in
+> `app/(marketing)/layout.tsx`, not `app/layout.tsx` — Cursor.tsx has lived in
+> the marketing layout since 04's route-group restructure, which predates
+> this task file. Root layout was never touched. Also: no path-parity unit
+> test (crossfade fallback taken — see below); added
+> `components/cursor-poses.test.ts` instead, and
+> `components/cursor-poses.test.ts`/`components/YogaCursor.tsx` needed
+> `vitest.config.ts` and `e2e/yoga-cursor.spec.ts` touched too (IN-004).
+
 ## FILES FORBIDDEN
 Everything else.
 

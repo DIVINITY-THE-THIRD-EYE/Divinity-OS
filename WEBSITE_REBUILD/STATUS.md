@@ -7,8 +7,8 @@
 
 | Field | Value |
 |---|---|
-| Phase | 3 — Motion & cursor (05 COMPLETE) |
-| Next file | `06_YOGA_CURSOR.md` |
+| Phase | 4 — 3D scene (Phase 3 gate passed: 05+06 COMPLETE) |
+| Next file | `07_SCENE_3D.md` |
 | Branch | `rebuild/living-anatomy` |
 | Blockers | none |
 
@@ -24,6 +24,69 @@
 - No Supabase JS client in website yet (login task adds it).
 
 ## Log (append-only, newest first)
+
+### 2026-07-09 — PHASE 3 GATE (05+06) — PASSED, auto-continuing
+- Gate criterion (00_MASTER): "Scroll story + cursor working; reduced-motion
+  paths verified; mobile experience complete."
+  - Scroll story working: `useScrollProgress()` live, confirmed via real
+    scroll input (`data-act` changes; Programs' independent pin/scrub
+    ScrollTrigger coexists fine).
+  - Cursor working: YogaCursor renders, pose changes with scroll, hover-grows,
+    correctly absent on touch/reduced-motion.
+  - Reduced-motion verified: `page.emulateMedia({reducedMotion:'reduce'})` —
+    ScrollScore mounts nothing (no `data-act`), YogaCursor doesn't render, all
+    homepage section headings stay visible.
+  - Mobile experience complete: 390×844 touch-emulated viewport — no
+    horizontal overflow, hero renders, Programs section (desktop-only
+    horizontal pin) falls back to a plain readable vertical stack, no cursor
+    JS mounted (touch has no hover to drive it).
+- Rebase: `main` unchanged since Phase 2 gate — no-op.
+- Problems: none blocking.
+- Next: `07_SCENE_3D.md` (Phase 4).
+
+### 2026-07-09 — 06_YOGA_CURSOR complete
+- Phase: 3
+- Status: COMPLETE
+- Changes: `components/cursor-poses.ts` (12 Surya Namaskar poses — head
+  circle + one M/L/Z-only body path each) and `components/YogaCursor.tsx`
+  (replaces the dot+ring `Cursor.tsx`): reuses its exact lerp-follow (ease
+  0.16) and hover-grow mechanics, adds pose selection from
+  `useScrollProgress()` (05) — `floor(progress*11)`, held at pose 1
+  (Pranamasana) on any non-home route or before ScrollScore has ever mounted,
+  since `ScrollScore`'s unmount now explicitly resets progress to 0 (a fix
+  made here, in `ScrollScore.tsx`, so the cursor's "hold pose 1 off-home"
+  requirement is actually true rather than showing a stale scroll position
+  from before the user navigated away). Renders only under `(hover:hover) and
+  (pointer:fine)` and not reduced-motion; mounted in `app/(marketing)/
+  layout.tsx` (see below).
+- Deviation (documented, E-007 in DECISIONS.md, `06_YOGA_CURSOR.md` amended
+  in place): poses crossfade (120ms opacity swap) instead of numerically
+  morphing — the task file's own documented fallback, taken because
+  hand-authoring 12 paths with an identical point count with no visual editor
+  is exactly the failure-prone scenario the task file itself warns about.
+  Verified visually via browser preview (12 distinct, recognizable stick-
+  figure silhouettes, confirmed by inspecting rendered path/attribute values
+  directly) and via Playwright (pose actually changes on real scroll input).
+  Cursor mount swapped in `app/(marketing)/layout.tsx`, not root
+  `app/layout.tsx` — Cursor.tsx has lived there since 04, predating this task
+  file. `components/cursor-poses.test.ts` replaces the path-parity unit test
+  (not applicable to crossfade) — needed `vitest.config.ts`'s `include` glob
+  extended again (IN-004, same recurring gap as 02/04/05).
+- Validation: lint clean · tsc clean · 126/126 vitest tests (+5 new
+  cursor-poses tests) · `next build` 36/36 routes · 17/17 Playwright e2e
+  tests (new `e2e/yoga-cursor.spec.ts`: pose-changes-on-scroll, hover-grow,
+  reduced-motion-absent, touch-absent) · mobile viewport check (gate entry
+  above).
+- Tests: 126 vitest + 17 Playwright, all passed
+- Performance: replaces one cursor component with another of similar size;
+  12 poses pre-rendered as inline SVG `<g>` elements (crossfade via CSS
+  opacity, not per-frame JS work) — no measurable cost added to the existing
+  single rAF position loop
+- Accessibility: `aria-hidden`, `pointer-events:none` kept; native cursor
+  never hidden without the replacement active (same `has-custom-cursor`
+  class mechanism as before)
+- Problems: none blocking
+- Next: Phase 3 gate (above), then `07_SCENE_3D.md`
 
 ### 2026-07-09 — 05_MOTION_SCROLLSTORY complete
 - Phase: 3

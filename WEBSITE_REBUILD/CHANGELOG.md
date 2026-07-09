@@ -3,6 +3,21 @@
 Format: `## [date] — <task file>` then bullet list of concrete changes.
 Newest on top. Every completed task file appends exactly one entry.
 
+## [2026-07-09] — 06_YOGA_CURSOR
+- Replaced the dot+ring `Cursor.tsx` with `YogaCursor.tsx`: 12 Surya
+  Namaskar poses that crossfade as the page scrolls (via
+  `useScrollProgress()` from 05), held at pose 1 off the homepage. Same
+  lerp-follow position and hover-grow mechanics as before.
+- Took the task file's documented fallback (crossfade, not point-lerp morph)
+  since hand-authoring 12 topology-matched paths with no visual editor is
+  the exact failure-prone scenario it warns against.
+- Fixed `ScrollScore` to reset progress to 0 on unmount, so "hold pose 1
+  off-home" is actually true instead of showing a stale value.
+- Validation green: lint, tsc, 126 vitest tests, 17 Playwright e2e tests
+  (new pose/hover/reduced-motion/touch checks), next build (36 routes),
+  mobile viewport check.
+- **Phase 3 gate passed** (05+06) — rebased onto main (no-op, unchanged).
+
 ## [2026-07-09] — 05_MOTION_SCROLLSTORY
 - Added `ScrollScore` (headless, mounted in `Hero.tsx`): one GSAP
   `ScrollTrigger` publishing whole-page scroll progress via
