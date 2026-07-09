@@ -18,6 +18,8 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
     path: `/events/${params.slug}`,
     type: "article",
     image: e.cover,
+    // BD-003: staging placeholder event — see /events's own noindex note.
+    noindex: true,
   });
 }
 

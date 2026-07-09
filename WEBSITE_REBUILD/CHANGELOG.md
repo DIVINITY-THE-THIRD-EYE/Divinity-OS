@@ -3,6 +3,19 @@
 Format: `## [date] — <task file>` then bullet list of concrete changes.
 Newest on top. Every completed task file appends exactly one entry.
 
+## [2026-07-09] — 10_COMMUNITY_PAGES
+- `/events`/`/blog` (+ `[slug]` children) re-skinned, marked noindex —
+  current content is 100% staging placeholders (BD-003).
+- `/gallery` re-skinned; kept its existing IntersectionObserver-based
+  reveal (already satisfies the task's parallax requirement).
+- New `/testimonials`: always shows the invite-to-share state (not the
+  staged carousel — 3 staging entries isn't "real quotes"), noindex.
+- New `/faq`: full FAQ list + FAQPage JSON-LD, indexable.
+- Added noindex support to pageMeta(); removed noindex routes from the
+  sitemap (contradictory crawl signal otherwise).
+- Validation green: lint, tsc, 131 vitest tests, 48 Playwright e2e tests,
+  next build (41 routes), zero empty-alt images.
+
 ## [2026-07-09] — 09_COMMERCE_PAGES
 - Re-skinned Membership/PlanCalculator to semantic tokens.
 - `/pricing`: added the ₹99 offer block (PH-005 placeholder visible, as

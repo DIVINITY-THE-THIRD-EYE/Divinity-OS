@@ -7,8 +7,8 @@
 
 | Field | Value |
 |---|---|
-| Phase | 5 — All pages (09 COMPLETE) |
-| Next file | `10_COMMUNITY_PAGES.md` |
+| Phase | 5 — All pages (10 COMPLETE) |
+| Next file | `11_CONTACT_LEGAL.md` |
 | Branch | `rebuild/living-anatomy` |
 | Blockers | PH-016 (figure mesh processing — needs Blender/gltf-transform/authenticated Sketchfab, none available here) |
 
@@ -24,6 +24,56 @@
 - No Supabase JS client in website yet (login task adds it).
 
 ## Log (append-only, newest first)
+
+### 2026-07-09 — 10_COMMUNITY_PAGES complete
+- Phase: 5
+- Status: COMPLETE
+- Changes:
+  - `/events`, `/blog` (+ their `[slug]` children): re-skinned to semantic
+    tokens; added `noindex: true` — current content is 100% staging
+    placeholders (BD-003), so search engines shouldn't index it as real.
+  - `/gallery`: re-skinned; kept `Gallery.tsx`'s existing framer-motion
+    `whileInView` reveal as-is — it already IS "IntersectionObserver-
+    triggered, transform-only, no ScrollScore coupling" (the task's own
+    parallax requirement), so re-implementing it would have been pure
+    duplication. Real photography, no noindex needed.
+  - `/testimonials` (new): always shows the invite-to-share empty state
+    (WhatsApp link) rather than conditionally rendering the `Voices`
+    carousel — see E-009 in DECISIONS.md for why a literal
+    `testimonials.length > 0` check would have been wrong (3 staging
+    entries isn't "some real quotes"). Noindex.
+  - `/faq` (new): full `content/faq.ts` list via the existing `Faq`
+    component, plus `FAQPage` JSON-LD structured data. Real content,
+    indexable.
+  - Added `noindex` support to `pageMeta()` (`lib/seo.ts`) — renders a
+    `robots: noindex` meta tag when set; removed the now-noindex routes
+    (`/blog`, `/events`, their `[slug]` children) from `app/sitemap.ts`
+    (a sitemap entry for a noindex page is a contradictory crawl signal).
+  - `/testimonials` and `/faq` added to `lib/nav.ts` (nav + footer),
+    `lib/i18n/translations.ts` (Hindi), `components/CommandPalette.tsx`
+    for site-wide 1-click reachability.
+  - Alt-text audit (`grep -rn 'alt=""' app components/pages`): zero hits —
+    every image already has real, descriptive alt text.
+  - New `e2e/community.spec.ts`: h1/no-console-error smoke per route,
+    375px overflow checks, noindex-meta assertions for blog/events/
+    testimonials, indexable assertions for faq/gallery, testimonials-shows-
+    invite-not-staged-quotes, FAQPage JSON-LD presence.
+- Deviations (documented, E-009 + IN-007 in DECISIONS.md): `lib/seo.ts`
+  (noindex support), `app/sitemap.ts` (route removal), `lib/nav.ts`/
+  `lib/i18n/translations.ts`/`components/CommandPalette.tsx` (new-page
+  reachability), `blog/[slug]` + `events/[slug]` (`noindex` for
+  consistency) — none in FILES ALLOWED, all directly required by the
+  task's own empty/noindex rules.
+- Validation: lint clean · tsc clean · 131/131 vitest tests · `next build`
+  41/41 routes (+2: `/faq`, `/testimonials`) · 48/48 Playwright e2e tests ·
+  zero empty-alt images · noindex verified via rendered meta tags, not
+  assumed.
+- Tests: 131 vitest + 48 Playwright, all passed
+- Performance: `/faq` 195 B, `/testimonials` 1.2 kB — both plain server
+  components
+- Accessibility: FAQPage JSON-LD added; alt-text audit clean
+- Problems: none blocking
+- Next: `11_CONTACT_LEGAL.md` (same phase, auto-continue)
 
 ### 2026-07-09 — 09_COMMERCE_PAGES complete
 - Phase: 5

@@ -27,6 +27,8 @@ function hintFor(href: string): string {
     "/gallery": "Inside the studio",
     "/blog": "Journal & guides",
     "/events": "Workshops & retreats",
+    "/testimonials": "Member stories",
+    "/faq": "Common questions",
     "/contact": "Send an enquiry",
   };
   return map[href] ?? "Open page";

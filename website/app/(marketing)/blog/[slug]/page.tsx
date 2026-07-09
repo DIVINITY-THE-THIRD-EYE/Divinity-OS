@@ -18,6 +18,8 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
     path: `/blog/${params.slug}`,
     type: "article",
     image: p.cover,
+    // BD-003: staging placeholder article — see /blog's own noindex note.
+    noindex: true,
   });
 }
 

@@ -205,7 +205,40 @@ Every replaced approach gets an entry with all four fields. Format:
   first authored and was never caught because no prior session tested Hero
   specifically under a light-preference/day-theme browser condition.
 
+### E-009 | 2026-07-09 | /testimonials shows an invite-to-share state, not the staged carousel
+- What changed: `10_COMMUNITY_PAGES.md` says `/testimonials`'s empty rule is
+  "zero real quotes → explanation + invite-to-share form, noindex." Literally,
+  `content/testimonials.ts` has 3 entries (non-empty), all verbatim-labeled
+  `[STAGING CONTENT]`. Built the page to always show the invite-to-share empty
+  state instead of conditionally rendering the `Voices` carousel on
+  `testimonials.length > 0`.
+- Why: "zero real quotes" is the actual state — 3 staging placeholders isn't
+  "some real quotes," it's zero, worded around an array that happens to be
+  non-empty for display-parity reasons elsewhere on the site. On a page whose
+  *entire purpose* is testimonials, rendering `[STAGING CONTENT]` text as if
+  it were the answer to "what do members say" would read as fabricated
+  content, not obviously-staged filler — the opposite of the honest empty-
+  handling this task requires.
+- What it replaced: nothing existing (new page) — noted because a more
+  literal reading of the task file (checking `.length > 0`) would have
+  shipped the wrong behavior.
+- Trade-offs: none. `Voices` itself is unchanged and still used correctly
+  elsewhere (homepage) where showing a labeled staging carousel already made
+  sense as a design-preview, not a factual claim page.
+
 ## Implementation notes (appended by executing models — one line each, dated)
+
+IN-007 | 2026-07-09 | `10_COMMUNITY_PAGES.md`'s empty/noindex rules for
+`/events`/`/blog`/`/testimonials` required adding `noindex` support to
+`pageMeta()` (`lib/seo.ts`, not in FILES ALLOWED) and removing the now-
+noindex routes + their `[slug]` children from `app/sitemap.ts` (a noindex
+sitemap entry is a contradictory crawl signal — also not in FILES ALLOWED).
+Also touched `lib/nav.ts`/`lib/i18n/translations.ts`/
+`components/CommandPalette.tsx` for `/testimonials` and `/faq` reachability,
+and added `noindex: true` to `blog/[slug]` and `events/[slug]`'s own
+`pageMeta()` calls for consistency with their parent listing pages (same
+staging-content reason, not explicitly listed in FILES ALLOWED either).
+Same recurring class as IN-001-006.
 
 IN-006 | 2026-07-09 | `09_COMMERCE_PAGES.md`'s route table requires the
 `/schedule` rebuild to add a `BatchPickerCta`-style per-row join CTA, which

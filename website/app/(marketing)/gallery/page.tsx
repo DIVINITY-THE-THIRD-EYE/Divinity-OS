@@ -22,9 +22,9 @@ export default function GalleryPage() {
         trail={[{ label: "Gallery", href: "/gallery" }]}
       />
       <Gallery showHeading={false} />
-      <section className="border-t border-[var(--line-dark)] bg-void px-6 py-24 text-center md:px-10 md:py-32">
-        <h2 className="font-display text-[clamp(30px,4.5vw,56px)] font-light tracking-tight text-bone">
-          Come and <em className="text-ember">breathe</em> here.
+      <section className="border-t border-[var(--line)] bg-surface px-6 py-24 text-center md:px-10 md:py-32">
+        <h2 className="font-display text-[clamp(30px,4.5vw,56px)] font-light tracking-tight text-fg">
+          Come and <em className="text-accent">breathe</em> here.
         </h2>
         <div className="mt-9 flex justify-center">
           <CtaLink href="/contact">Plan your first visit</CtaLink>

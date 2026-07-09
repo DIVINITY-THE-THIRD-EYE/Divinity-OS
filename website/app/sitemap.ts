@@ -2,8 +2,6 @@ import type { MetadataRoute } from "next";
 import {
   disciplines,
   disciplineSlug,
-  posts,
-  events,
   fetchSiteSettings,
 } from "@/lib/content";
 
@@ -22,8 +20,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/schedule", priority: 0.8, changeFrequency: "weekly" },
     { path: "/trainers", priority: 0.7, changeFrequency: "monthly" },
     { path: "/gallery", priority: 0.6, changeFrequency: "monthly" },
-    { path: "/blog", priority: 0.7, changeFrequency: "weekly" },
-    { path: "/events", priority: 0.7, changeFrequency: "weekly" },
+    { path: "/faq", priority: 0.6, changeFrequency: "monthly" },
+    // /blog, /events, /events/[slug], /blog/[slug] and /testimonials are
+    // deliberately excluded — all noindex (BD-003, staging placeholder
+    // content, see PLACEHOLDERS.md PH-006/011/012). A sitemap entry for a
+    // noindex page is a contradictory crawl signal.
     { path: "/contact", priority: 0.8, changeFrequency: "yearly" },
     { path: "/verify", priority: 0.4, changeFrequency: "yearly" },
     { path: "/privacy", priority: 0.3, changeFrequency: "yearly" },
@@ -46,23 +47,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
   }
 
-  for (const p of posts) {
-    entries.push({
-      url: `${base}/blog/${p.slug}`,
-      lastModified: new Date(p.date),
-      changeFrequency: "yearly",
-      priority: 0.5,
-    });
-  }
-
-  for (const e of events) {
-    entries.push({
-      url: `${base}/events/${e.slug}`,
-      lastModified: new Date(e.date),
-      changeFrequency: "yearly",
-      priority: 0.5,
-    });
-  }
+  // Blog/event detail pages are noindex too (same BD-003 staging-content
+  // reason as the listing pages above) — not added here.
 
   return entries;
 }

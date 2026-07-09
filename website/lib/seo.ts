@@ -12,18 +12,23 @@ export function pageMeta(
     path: string;
     type?: "website" | "article";
     image?: string;
+    // BD-003 (PLACEHOLDERS.md): blog/events/testimonials ship noindex until
+    // real content replaces the staging placeholders — the owner flips this
+    // per-page when that happens, no code change needed elsewhere.
+    noindex?: boolean;
   },
   siteProp?: typeof site
 ): Metadata {
   const activeSite = siteProp || site;
   const base = activeSite.url.replace(/\/$/, "");
-  const { title, description, path, type = "website", image } = opts;
+  const { title, description, path, type = "website", image, noindex } = opts;
   const fullTitle = title === activeSite.full ? title : `${title} · ${activeSite.full}`;
   const url = path === "/" ? base + "/" : `${base}${path}`;
   return {
     title: fullTitle,
     description,
     alternates: { canonical: path },
+    ...(noindex ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       title: fullTitle,
       description,
