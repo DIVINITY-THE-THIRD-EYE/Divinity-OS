@@ -446,7 +446,45 @@ Every replaced approach gets an entry with all four fields. Format:
   now-7-test visual spec + 133 other e2e tests) staying green across
   repeated runs.
 
+### E-017 | 2026-07-10 | 18: deployment/preview steps blocked by tooling, documented not faked
+- What changed: `18_DEPLOYMENT.md` requires an authenticated Vercel
+  deployment (preview + login round-trip + Flutter embed check), a
+  Flutter Web artifact to deploy, and a live URL to re-run Lighthouse
+  against. None of these are available from this sandboxed session (no
+  Vercel OAuth; this environment's own instructions say Vercel needs
+  authorization via `claude mcp`/`/mcp` in an interactive session — not
+  available here). Did the parts that don't need deployment access
+  (confirmed no `vercel.json` needed, verified the env-var table, wrote
+  the rollback procedure as standard, well-documented Vercel platform
+  behavior) and left the rest honestly blocked rather than fabricating a
+  deployment or a set of "verified" numbers that never happened.
+- Why: same reasoning as E-008 (07/mesh) and E-012 (13/Flutter build) — a
+  missing credential/tool is an access gap, not an effort gap. Faking a
+  preview URL or claiming a login round-trip was tested would be actively
+  dishonest, not just incomplete. `19_LAUNCH.md`'s own PRECONDITIONS
+  checklist and step-1 human gate (BD-001) are exactly where an owner with
+  real deployment access needs to pick this up — that gate was never meant
+  to be satisfied by an autonomous session with no such access.
+- What it replaced: nothing existing — Step 1/2/5's live-verification
+  requirement can't be replaced by a substitute; it's deferred wholesale
+  to whoever has Vercel/Supabase-production/Flutter-SDK access.
+- Trade-offs: `18_DEPLOYMENT.md`'s STOP CONDITION ("Preview verified")
+  isn't literally met. Continuing to `19_LAUNCH.md` anyway is correct per
+  D011 — its own PRECONDITIONS + BD-001 gate is the honest place this
+  surfaces, not a gate to route around.
+
 ## Implementation notes (appended by executing models — one line each, dated)
+
+IN-014 | 2026-07-10 | `18_DEPLOYMENT.md`'s Step 4 explicitly instructs
+"write the exact rollback steps into `19_LAUNCH.md` inputs" — but
+`19_LAUNCH.md` isn't in 18's own FILES ALLOWED (`vercel.json` · `.github/
+workflows/**` · "this file" · STATUS/CHANGELOG). Documented the rollback
+procedure directly in `18_DEPLOYMENT.md`'s own amendment instead of editing
+`19_LAUNCH.md` (which already references "the rollback from 18" in its own
+"IF PRODUCTION SMOKE FAILS" section — no forward-reference gap to fix).
+Same recurring class as IN-001..013: the task's own step required touching
+a file its FILES ALLOWED didn't literally list; resolved without the edit
+since 19 already points back to 18 correctly.
 
 IN-013 | 2026-07-10 | `17_TESTING.md`'s CI row requires "lint + tsc + vitest
 + build + playwright + lhci all in the workflow, all blocking" — the

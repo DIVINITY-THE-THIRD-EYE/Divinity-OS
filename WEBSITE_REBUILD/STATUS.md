@@ -7,10 +7,10 @@
 
 | Field | Value |
 |---|---|
-| Phase | 8 — Ship (Phase 7 COMPLETE, gate passed) |
-| Next file | `18_DEPLOYMENT.md` |
+| Phase | 8 — Ship (18 done to the extent tooling allows) |
+| Next file | `19_LAUNCH.md` — **STOP at its Step 1: owner launch approval (BD-001), the framework's one deliberate human gate** |
 | Branch | `rebuild/living-anatomy` |
-| Blockers | PH-016 (figure mesh processing — needs Blender/gltf-transform/authenticated Sketchfab, none available here); manual OTP QA for 12_STUDENT_LOGIN pending owner-provided `NEXT_PUBLIC_SUPABASE_URL`/`_ANON_KEY` in `website/.env.local` (unset in this environment); Flutter Web build/deploy (13) pending an environment with the Flutter SDK on PATH — see log entries below |
+| Blockers | PH-016 (figure mesh — needs Blender/gltf-transform/authenticated Sketchfab, none available here); manual OTP QA for 12 pending owner-provided Supabase env; Flutter Web build/deploy (13) pending Flutter SDK; preview deployment + login round-trip + Lighthouse-against-preview (18) pending Vercel authorization (`claude mcp`/`/mcp` in an interactive session) — none are code defects |
 
 ## Known repo state (as of 2026-07-09, playbook creation)
 
@@ -24,6 +24,51 @@
 - No Supabase JS client in website yet (login task adds it).
 
 ## Log (append-only, newest first)
+
+### 2026-07-10 — 18_DEPLOYMENT (blocked by tooling — documented honestly)
+- Phase: 8
+- Status: PARTIAL — done to the extent this environment allows; the
+  live-deployment-dependent steps are genuinely blocked, not skipped or
+  faked (E-017).
+- Changes:
+  - Confirmed no `vercel.json` exists or is needed (zero-config Next.js 14
+    App Router app; redirects/headers live in `next.config.mjs`,
+    `middleware.ts` handles the one routing concern). Deliberately did not
+    create one just to have one.
+  - Verified the `ENVIRONMENT VARIABLES` table against `.env.local.example`
+    and `docs/SUPABASE_SETUP.md` — accurate, no changes needed.
+  - Documented the standard Vercel rollback procedure (promote the previous
+    production deployment) directly in `18_DEPLOYMENT.md`'s own amendment
+    (IN-014) — real, standard platform behavior, not app-specific, so
+    correct without a live rehearsal; honestly flagged as not rehearsed
+    live (no deployment access).
+  - **Blocked, not attempted:**
+    - Step 1 (preview deployment + route/login/Flutter-embed verification):
+      no Vercel authentication in this session (this environment's own
+      instructions: Vercel needs authorization via `claude mcp`/`/mcp` in
+      an interactive session — not available here).
+    - Step 2 (Flutter Web artifact build+deploy): nothing to deploy —
+      13_FLUTTER_WEB.md already found no Flutter SDK in this environment.
+    - Step 5 (Lighthouse against the real preview URL): no preview URL
+      exists. 15_PERFORMANCE.md's local numbers (Playwright-launched
+      Chromium over CDP) are the best this session could produce; a real
+      preview re-measurement is still owed once a preview exists.
+- Deviations (documented, E-017 + IN-014 in DECISIONS.md, `18_DEPLOYMENT.md`
+  amended in place): continuing to `19_LAUNCH.md` despite this file's own
+  STOP CONDITION ("Preview verified") not being literally satisfiable from
+  here — per D011, this is the same class of tooling-blocked continuation
+  as E-008/E-012, not a shortcut.
+- Validation: N/A (no application code touched this task)
+- Problems: three real, external blockers (Vercel auth, Flutter SDK,
+  Supabase production env) — all environment/access gaps, not code defects.
+  All are already visible in the Blockers row above and in `19_LAUNCH.md`'s
+  own PRECONDITIONS checklist, which is exactly where an owner with real
+  deployment access needs to pick this up.
+- Next: `19_LAUNCH.md` — **this session stops at its Step 1 (owner launch
+  approval, BD-001) — the one deliberate human checkpoint in the entire
+  playbook (00_MASTER_EXECUTION.md rule 3). Everything through Phase 8 that
+  doesn't require live deployment access or business/launch authorization
+  is now COMPLETE.**
 
 ### 2026-07-10 — PHASE 7 GATE (14+15+16+17) — PASSED, auto-continuing
 - Gate criterion (00_MASTER): "SEO/perf/a11y/testing gates all green."

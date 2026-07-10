@@ -3,6 +3,23 @@
 Format: `## [date] — <task file>` then bullet list of concrete changes.
 Newest on top. Every completed task file appends exactly one entry.
 
+## [2026-07-10] — 18_DEPLOYMENT (blocked by tooling — documented, not faked)
+- Confirmed no `vercel.json` needed (zero-config Next.js 14 app; redirects/
+  headers already in `next.config.mjs`, `middleware.ts` handles the one
+  routing concern). Verified the `ENVIRONMENT VARIABLES` table against
+  `.env.local.example`/`docs/SUPABASE_SETUP.md` — accurate, no changes.
+  Documented the standard Vercel rollback procedure (promote-previous-
+  deployment).
+- **Blocked, not attempted:** preview deployment + login round-trip +
+  Flutter embed check (no Vercel auth in this session — needs `claude mcp`/
+  `/mcp` in an interactive session per this environment's own
+  instructions); Flutter Web artifact build+deploy (nothing to deploy —
+  13 already found no Flutter SDK here); Lighthouse against a real preview
+  URL (no preview exists). None faked (E-017).
+- Continuing to `19_LAUNCH.md` per D011 — its own PRECONDITIONS + step-1
+  human approval gate (BD-001) is the correct, honest place these surface
+  for the owner.
+
 ## [2026-07-10] — 17_TESTING
 - New `e2e/visual.spec.ts`: 7 committed baseline screenshots (home × 2
   themes × 2 viewports, pricing/programs/contact desktop),
