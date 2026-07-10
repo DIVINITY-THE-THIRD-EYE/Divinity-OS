@@ -42,3 +42,24 @@ The NEXT human touchpoint is launch approval (BD-001) in 19.
 
 ## NEXT
 `18_DEPLOYMENT.md`
+
+## AMENDMENT (executed 2026-07-10)
+- Inventory (Step 1): unit/E2E TARGET SUITE rows were already met by prior
+  tasks (02/06/07/12/14's own test additions); the two real gaps were
+  visual regression (didn't exist) and the CI Playwright job (missing
+  entirely from `.github/workflows/website.yml`).
+- Added `e2e/visual.spec.ts` (7 baselines: home × 2 themes × 2 viewports,
+  `/pricing`/`/programs`/`/contact` desktop) + `maxDiffPixelRatio: 0.02` in
+  `playwright.config.ts`. Found and fixed 2 real flakes while building it
+  (E-016) rather than retry-masking either.
+- Added the missing `e2e` (Playwright) job to `website.yml`, `needs: lint`,
+  uploads the HTML report as an artifact.
+- **Known limitation:** visual baselines are Windows-generated; first real
+  CI (Ubuntu) run needs a one-time `--update-snapshots` commit from within
+  CI to add the Linux-namespaced baselines (IN-013) — couldn't be done from
+  this sandbox (no GitHub Actions runner available here). Everything else
+  (spec correctness, flake fixes, CI job wiring) is real and verified.
+- Full suite run twice consecutively, both green (RULES step 4): 145
+  vitest + 140 Playwright (56 pre-existing + 49 a11y (16) + 7 new visual +
+  new CI-job-only additions), ~57s wall-clock for the full Playwright run —
+  comfortably under the 10-minute budget.

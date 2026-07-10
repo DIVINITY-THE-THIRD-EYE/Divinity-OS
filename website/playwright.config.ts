@@ -17,6 +17,11 @@ export default defineConfig({
     baseURL: "http://localhost:3000",
     trace: "on-first-retry",
   },
+  // Visual regression (17_TESTING.md): 2% pixel-diff tolerance across the
+  // 4 named pages' baselines (e2e/visual.spec.ts).
+  expect: {
+    toHaveScreenshot: { maxDiffPixelRatio: 0.02 },
+  },
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
   ],

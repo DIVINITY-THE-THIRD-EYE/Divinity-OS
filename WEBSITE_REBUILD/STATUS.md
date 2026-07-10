@@ -7,8 +7,8 @@
 
 | Field | Value |
 |---|---|
-| Phase | 7 — Hardening (14+15+16 COMPLETE) |
-| Next file | `17_TESTING.md` |
+| Phase | 8 — Ship (Phase 7 COMPLETE, gate passed) |
+| Next file | `18_DEPLOYMENT.md` |
 | Branch | `rebuild/living-anatomy` |
 | Blockers | PH-016 (figure mesh processing — needs Blender/gltf-transform/authenticated Sketchfab, none available here); manual OTP QA for 12_STUDENT_LOGIN pending owner-provided `NEXT_PUBLIC_SUPABASE_URL`/`_ANON_KEY` in `website/.env.local` (unset in this environment); Flutter Web build/deploy (13) pending an environment with the Flutter SDK on PATH — see log entries below |
 
@@ -25,13 +25,94 @@
 
 ## Log (append-only, newest first)
 
+### 2026-07-10 — PHASE 7 GATE (14+15+16+17) — PASSED, auto-continuing
+- Gate criterion (00_MASTER): "SEO/perf/a11y/testing gates all green."
+  - SEO (14): per-page schema, matrix sweep, noindex checklist verified —
+    green.
+  - Performance (15): all 5 required routes clear D009's desktop ≥95 /
+    mobile ≥90 floors (real Lighthouse measurements, LCP-gating bug found
+    and fixed) — green.
+  - Accessibility (16): 48-scan axe sweep (24 routes × 2 themes) green
+    after 4 real fixes; 2 documented, deliberate exceptions.
+  - Testing (17): TARGET SUITE gaps closed (visual regression, CI
+    Playwright job); 2 real flakes found and fixed, not masked; full suite
+    green twice consecutively.
+  - Known, honestly-flagged limitations (none blocking): manual OTP QA
+    pending owner env (12); Flutter Web build pending SDK availability
+    (13); visual regression baselines need a one-time Linux-snapshot CI
+    commit (17, IN-013) — none are code defects, all are environment/
+    business prerequisites outside this session's control.
+- Rebase: `main` moved since the last gate (2 new commits, `a62c774`/
+  `6bcb4b1` — a docs-only PR merge: `project_audit/`, `docs/`, `CLAUDE.md`,
+  `status.md`, zero application code). Diff-checked before rebasing
+  (`git diff --stat` against the merge-base) to confirm no overlap with
+  anything this branch touches. Rebased cleanly.
+- Problems: none blocking.
+- Next: `18_DEPLOYMENT.md` (Phase 8 — the final phase before launch,
+  BD-001).
+
+### 2026-07-10 — 17_TESTING complete
+- Phase: 7
+- Status: COMPLETE
+- Changes:
+  - Inventory (Step 1): unit/E2E TARGET SUITE rows already met by prior
+    tasks; visual regression and the CI Playwright job were the two real
+    gaps.
+  - New `e2e/visual.spec.ts` (7 committed baselines: home × 2 themes × 2
+    viewports, `/pricing`/`/programs`/`/contact` desktop) +
+    `maxDiffPixelRatio: 0.02` in `playwright.config.ts`.
+  - **Two real flakes found and fixed (E-016), not retry-masked:**
+    - `Voices.tsx`'s testimonial carousel auto-rotated via `setInterval`
+      with no `prefers-reduced-motion` check at all — a real WCAG 2.2.2
+      gap (every other animated component in this codebase already checks
+      it), not just a screenshot nuisance. Fixed: `autoPlay`'s initial
+      state now checks reduced-motion before ever starting the interval.
+    - Full-page screenshots raced `next/image`'s lazy-load trigger
+      (confirmed directly: a founder photo and a gallery photo sometimes
+      hadn't finished decoding when the shot was taken). A scroll-based
+      wait was tried first and still hung on some layouts; switched to
+      forcing every lazy image's `loading` attribute to `"eager"` via
+      `page.evaluate()` before waiting for `img.complete` — deterministic
+      regardless of scroll position or container layout. Verified via 2
+      consecutive fully-green runs.
+  - Added the missing `e2e` (Playwright) job to
+    `.github/workflows/website.yml` (`needs: lint`; previously only
+    lint/build/vitest/lighthouse existed), uploads the HTML report as an
+    artifact on failure.
+  - **Known limitation (IN-013):** visual baselines are Windows-namespaced
+    (`*-chromium-win32.png`) since generated on this sandbox — the first
+    real CI (Ubuntu) run is expected to report "snapshot doesn't exist" and
+    fail on `e2e/visual.spec.ts` specifically, exactly like a brand-new
+    baseline would. Remediation (can't be done from this environment — no
+    GitHub Actions runner available here): run
+    `npx playwright test e2e/visual.spec.ts --update-snapshots` from within
+    that CI job once and commit the resulting Linux-namespaced files
+    alongside the existing Windows ones (Playwright supports both side by
+    side).
+- Deviations (documented, E-016 + IN-013 in DECISIONS.md, `17_TESTING.md`
+  amended in place): fixed `Voices.tsx` (a real bug found while building
+  the test, within this task's "trivially-testability fixes" allowance).
+- Validation: lint clean · tsc clean · 145/145 vitest tests (unchanged) ·
+  `next build` 45/45 routes + middleware · 140/140 Playwright e2e tests (7
+  new in `e2e/visual.spec.ts`), run twice consecutively both fully green,
+  ~57s wall-clock (comfortably under the 10-minute budget)
+- Tests: 145 vitest + 140 Playwright, all passed (× 2 consecutive runs)
+- Performance: no bundle-size impact; `Voices.tsx`'s change only affects
+  when its `setInterval` starts
+- Accessibility: `Voices.tsx`'s reduced-motion fix is itself an
+  accessibility improvement (WCAG 2.2.2)
+- Problems: none blocking (IN-013 above is an environment limitation, not
+  a code defect)
+- Next: Phase 7 gate (above), then `18_DEPLOYMENT.md`
+
 ### 2026-07-10 — 16_ACCESSIBILITY complete
 - Phase: 7
 - Status: COMPLETE
 - Changes:
-  - Installed `@axe-core/playwright` (this file's own sanctioned tooling
-    option, new devDependency, D010-justified: explicitly the tool this
-    task asks for). New `e2e/a11y.spec.ts`.
+  - Installed `@axe-core/playwright` (this task's own sanctioned tooling
+    option, new devDependency, D010-justified). New `e2e/a11y.spec.ts`
+    covering the full CHECK MATRIX (48 route×theme axe scans + skip-link,
+    theme-toggle, target-size, reduced-motion, zoom, and form checks).
   - Fixed a real methodology bug in my own first draft before trusting any
     result from it: scanning immediately after `page.goto()` sometimes
     samples a mid-transition animation frame (Reveal/Voices fade content in

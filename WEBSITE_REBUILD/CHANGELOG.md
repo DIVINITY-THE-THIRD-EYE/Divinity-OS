@@ -3,6 +3,24 @@
 Format: `## [date] — <task file>` then bullet list of concrete changes.
 Newest on top. Every completed task file appends exactly one entry.
 
+## [2026-07-10] — 17_TESTING
+- New `e2e/visual.spec.ts`: 7 committed baseline screenshots (home × 2
+  themes × 2 viewports, pricing/programs/contact desktop),
+  `maxDiffPixelRatio: 0.02` configured in `playwright.config.ts`.
+- Found and fixed 2 real flakes while building it (E-016), not retry-masked:
+  `Voices.tsx`'s testimonial carousel never checked `prefers-reduced-motion`
+  (a real WCAG 2.2.2 gap, not just a screenshot nuisance) — fixed; and a
+  full-page-screenshot race against `next/image`'s lazy loading — fixed by
+  forcing eager load before waiting for every image to complete.
+- Added the missing Playwright `e2e` job to `.github/workflows/website.yml`
+  (previously only lint/build/vitest/lighthouse existed).
+- **Phase 7 gate passed** (14+15+16+17 all COMPLETE) — rebased onto main.
+  Known limitation, documented not hidden: visual baselines need a one-time
+  Linux-snapshot commit from within real CI (couldn't be generated from
+  this Windows sandbox) — see STATUS.md/DECISIONS.md IN-013.
+- Validation green: lint, tsc, 145 vitest tests, 140 Playwright e2e tests
+  (2 consecutive full green runs), next build (45 routes + middleware).
+
 ## [2026-07-10] — 16_ACCESSIBILITY
 - New `e2e/a11y.spec.ts` (`@axe-core/playwright`, new devDependency): 48
   axe scans (24 routes × dark/light theme) + skip-link, theme-toggle,

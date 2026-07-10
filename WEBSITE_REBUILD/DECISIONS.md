@@ -414,7 +414,57 @@ Every replaced approach gets an entry with all four fields. Format:
      this motion pattern would be exactly the "visual redesign under a11y
      cover" this task explicitly forbids.
 
+### E-016 | 2026-07-10 | Two real flakes found and fixed while building visual regression, not retry-masked
+- What changed: while writing `e2e/visual.spec.ts`, two genuine, reproducible
+  flakes surfaced (this file's own RULES: "a flaky test is a bug: fix the
+  flake... never retry-mask it"):
+  1. `Voices.tsx`'s testimonial carousel auto-rotates via `setInterval`
+     every 6.5s with no `prefers-reduced-motion` check at all (every other
+     animated component in this codebase — `Reveal`/`MotionConfig`,
+     `Manifesto.tsx`, `SilhouetteTier`, `useBreathClock` — already checks
+     it). This is itself a real WCAG 2.2.2 gap (auto-updating content
+     should respect reduced-motion / be pausable), not just a screenshot
+     nuisance. Fixed: `autoPlay`'s initial state now checks
+     `prefers-reduced-motion` before ever starting the interval.
+  2. Full-page screenshots raced `next/image`'s `loading="lazy"` fetch
+     trigger — confirmed directly (a founder photo and a gallery photo
+     both sometimes hadn't finished decoding when the shot was taken).
+     A scroll-to-bottom-then-wait approach was tried first and still
+     hung (some images never intersect via a single scroll jump depending
+     on layout) — switched to forcing every lazy image's `loading`
+     attribute to `"eager"` via `page.evaluate()` before waiting for
+     `img.complete`, which is deterministic regardless of scroll
+     position or container layout.
+- Why it is better: both are real bugs a naive `retries: 1` or a longer
+  blind `waitForTimeout` would have papered over — the carousel fix is a
+  genuine accessibility improvement, and the eager-load fix produces a
+  screenshot that's actually always fully rendered rather than "usually"
+  so, verified via 2 consecutive full green runs (this file's own step 4).
+- What it replaced: `Voices.tsx`'s unconditional auto-play; an initial
+  scroll-based image-load wait that itself proved unreliable.
+- Trade-offs: none — verified via the full 140-test suite (145 vitest + a
+  now-7-test visual spec + 133 other e2e tests) staying green across
+  repeated runs.
+
 ## Implementation notes (appended by executing models — one line each, dated)
+
+IN-013 | 2026-07-10 | `17_TESTING.md`'s CI row requires "lint + tsc + vitest
++ build + playwright + lhci all in the workflow, all blocking" — the
+`e2e`/Playwright job was missing from `.github/workflows/website.yml`
+entirely (only lint/build/vitest/lighthouse existed, from earlier tasks).
+Added it. **Known limitation, documented not hidden:** visual regression
+baselines (`e2e/visual.spec.ts-snapshots/`) were generated on this sandbox
+(Windows) — Playwright namespaces snapshots by OS
+(`*-chromium-win32.png`), so the FIRST real CI run (Ubuntu) is expected to
+report "snapshot doesn't exist" for all 7 and fail, exactly like a brand
+new baseline would. Standard remediation (can't be done from this
+environment — no GitHub Actions runner available here): once CI is
+confirmed to otherwise pass, run
+`npx playwright test e2e/visual.spec.ts --update-snapshots` from within
+that same CI job (or an equivalent Ubuntu container) and commit the
+resulting `*-chromium-linux.png` files alongside the existing Windows ones
+— Playwright supports per-platform snapshot sets side by side, so both can
+coexist for contributors on either OS.
 
 IN-012 | 2026-07-10 | `16_ACCESSIBILITY.md` names `@axe-core/cli` OR a
 Playwright+axe-core integration as the tooling option — used

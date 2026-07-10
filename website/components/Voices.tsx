@@ -6,7 +6,14 @@ import type { Testimonial } from "@/lib/content";
 
 export default function Voices({ items }: { items: Testimonial[] }) {
   const [i, setI] = useState(0);
-  const [autoPlay, setAutoPlay] = useState(true);
+  // Auto-rotation never starts for prefers-reduced-motion (WCAG 2.2.2 /
+  // 16_ACCESSIBILITY.md's reduced-motion check — an auto-advancing carousel
+  // is exactly the "moving content" that check exists to catch). Reading
+  // matchMedia in the initializer is safe: it only runs on the client,
+  // where `"use client"` components hydrate before this ever executes.
+  const [autoPlay, setAutoPlay] = useState(
+    () => typeof window === "undefined" || !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
 
   useEffect(() => {
     if (items.length < 2 || !autoPlay) return; // nothing to rotate through or paused
