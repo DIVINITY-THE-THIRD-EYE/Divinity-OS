@@ -1,5 +1,9 @@
 // CMS-ready. Staging placeholders by design — the /blog routes render an
-// empty state in production until real articles replace these.
+// empty state in production until real articles replace these. stripStaging()
+// (lib/staging.ts) enforces that: staging entries survive only when
+// NEXT_PUBLIC_SHOW_STAGING=1, so production visitors never see "[STAGING]".
+
+import { stripStaging } from "@/lib/staging";
 
 export type Post = {
   slug: string;
@@ -14,7 +18,7 @@ export type Post = {
 
 // TODO(PH-012): replace with real articles before launch; blog stays noindex
 // until then (see PLACEHOLDERS.md BD-003).
-export const posts: Post[] = [
+const stagingPosts: Post[] = [
   {
     slug: "science-of-prana-why-breath-comes-first",
     title: "[STAGING] Science of Prana & Breathwork",
@@ -40,5 +44,7 @@ export const posts: Post[] = [
     author: "Sachin Rajvanshi",
   },
 ];
+
+export const posts: Post[] = stripStaging(stagingPosts, ["title", "excerpt"]);
 
 export const getPostBySlug = (slug: string) => posts.find((p) => p.slug === slug);

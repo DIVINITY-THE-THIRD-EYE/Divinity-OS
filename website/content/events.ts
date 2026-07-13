@@ -1,5 +1,9 @@
 // CMS-ready. Staging placeholders by design — the /events routes render an
-// empty state in production until real events replace these.
+// empty state in production until real events replace these. stripStaging()
+// (lib/staging.ts) enforces that: staging entries survive only when
+// NEXT_PUBLIC_SHOW_STAGING=1, so production visitors never see "[STAGING]".
+
+import { stripStaging } from "@/lib/staging";
 
 export type EventItem = {
   slug: string;
@@ -13,7 +17,7 @@ export type EventItem = {
 };
 
 // TODO(PH-011): replace with real, upcoming events before launch.
-export const events: EventItem[] = [
+const stagingEvents: EventItem[] = [
   {
     slug: "weekend-pranayama-intensive",
     title: "[STAGING] Weekend Pranayama Workshop",
@@ -42,6 +46,8 @@ export const events: EventItem[] = [
     location: "Lucknow Studio (Staging)",
   },
 ];
+
+export const events: EventItem[] = stripStaging(stagingEvents, ["title", "summary"]);
 
 export const getEventBySlug = (slug: string) => events.find((e) => e.slug === slug);
 

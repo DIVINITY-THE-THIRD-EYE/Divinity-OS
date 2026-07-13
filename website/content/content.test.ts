@@ -14,7 +14,13 @@ describe("every content module exports non-empty data", () => {
     return v != null;
   };
 
+  // Staging-gated exports (see lib/staging.ts) resolve empty in the default
+  // env by design — they leak "[STAGING]" text otherwise. Their populated/empty
+  // behavior is covered in lib/content.test.ts; skip them here.
+  const stagingGated = new Set(["testimonials", "events", "posts"]);
+
   for (const [name, value] of Object.entries(content)) {
+    if (stagingGated.has(name)) continue;
     it(`content.${name} is non-empty`, () => {
       expect(nonEmpty(value)).toBe(true);
     });

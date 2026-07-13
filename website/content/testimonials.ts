@@ -2,6 +2,8 @@
 // are collected — the UI shows a polished "coming soon" state rather than
 // fabricated quotes.
 
+import { stripStaging } from "@/lib/staging";
+
 export type Testimonial = {
   quote: string;
   name: string;
@@ -9,7 +11,11 @@ export type Testimonial = {
 };
 
 // TODO(PH-006): replace with real, permissioned quotes before launch.
-export const testimonials: Testimonial[] = [
+// Staging placeholders render only when NEXT_PUBLIC_SHOW_STAGING=1 (staging
+// env). In production the fallback is empty, so home's Voices carousel is
+// omitted (page gates on length) and the empty states take over — visitors
+// never see "[STAGING CONTENT]". See stripStaging() in lib/staging.ts.
+const stagingTestimonials: Testimonial[] = [
   {
     quote: "[STAGING CONTENT] This is a high-quality demonstration testimonial. It represents how student stories will be displayed. Real member reflections will be loaded via Sanity CMS.",
     name: "Staging Member A",
@@ -26,3 +32,5 @@ export const testimonials: Testimonial[] = [
     meta: "Staging Testimonial",
   },
 ];
+
+export const testimonials: Testimonial[] = stripStaging(stagingTestimonials, ["quote"]);
