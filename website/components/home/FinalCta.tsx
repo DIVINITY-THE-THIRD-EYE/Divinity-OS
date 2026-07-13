@@ -15,7 +15,7 @@ export default function FinalCta() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(60% 60% at 50% 40%, rgba(208,138,62,0.14), transparent 65%)",
+            "radial-gradient(60% 60% at 50% 40%, rgba(124,58,237,0.14), transparent 65%)",
         }}
       />
       <div className="relative mx-auto max-w-2xl">

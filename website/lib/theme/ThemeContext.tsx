@@ -12,7 +12,7 @@ type ThemeContextValue = {
 };
 
 const ThemeContext = createContext<ThemeContextValue>({
-  theme: "dark",
+  theme: "light",
   toggleTheme: () => {},
 });
 
@@ -31,11 +31,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // it, so there's nothing to mismatch. This effect then reads that same
   // attribute AFTER mount to correct the React-level `theme` state (icon,
   // aria-pressed) — a normal post-mount state update, not a render-time read.
-  const [theme, setTheme] = useState<ThemeMode>("dark");
+  const [theme, setTheme] = useState<ThemeMode>("light");
 
   useEffect(() => {
     const attr = document.documentElement.getAttribute("data-theme");
-    if (attr === "light") setTheme("light");
+    if (attr === "dark") setTheme("dark");
   }, []);
 
   useEffect(() => {

@@ -7,7 +7,7 @@ export default function ServiceCard({ d }: { d: Discipline }) {
     <Link
       href={`/programs/${d.slug ?? disciplineSlug(d)}`}
       data-hover
-      className="group flex h-full flex-col justify-between border border-[var(--line)] p-7 transition-colors hover:border-ember/40 md:p-9"
+      className="group flex h-full flex-col justify-between rounded-[32px] bg-[var(--void)] p-7 shadow-clay-card transition-all duration-500 hover:-translate-y-2 hover:shadow-clay-card-hover md:p-9"
     >
       <div>
         <p className="eyebrow mb-6 text-accent">{d.intention}</p>
@@ -21,7 +21,7 @@ export default function ServiceCard({ d }: { d: Discipline }) {
           {d.tags.map((t) => (
             <span
               key={t}
-              className="border border-[var(--line)] px-3 py-1.5 font-mono text-[9px] uppercase tracking-wide text-accent"
+              className="rounded-full bg-[var(--void)] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-accent shadow-clay-inset-sm"
             >
               {t}
             </span>

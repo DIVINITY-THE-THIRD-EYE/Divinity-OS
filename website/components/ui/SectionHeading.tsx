@@ -20,7 +20,7 @@ export default function SectionHeading({
   light?: boolean;
   className?: string;
 }) {
-  const accent = light ? "text-ember-deep" : "text-accent";
+  const accent = light ? "text-accent" : "text-accent";
   const heading = light ? "text-ink" : "text-fg";
   return (
     <div
@@ -29,13 +29,13 @@ export default function SectionHeading({
       <div>
         {eyebrow && <p className={`eyebrow mb-4 ${accent}`}>{eyebrow}</p>}
         <h2
-          className={`font-display text-[clamp(32px,5vw,64px)] font-light leading-[1.0] tracking-tight ${heading}`}
+          className={`font-display text-[clamp(30px,5vw,60px)] font-extrabold leading-[1.05] tracking-tight ${heading}`}
         >
           {title}
           {titleAccent && (
             <>
               {" "}
-              <em className={accent}>{titleAccent}</em>
+              <span className={`not-italic ${accent}`}>{titleAccent}</span>
             </>
           )}
         </h2>

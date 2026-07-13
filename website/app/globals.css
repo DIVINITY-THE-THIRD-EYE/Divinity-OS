@@ -2,129 +2,224 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Shared design-system tokens (decision #3): void/bone/ember, present on
- * every surface (website + all Flutter shells) with identical hex values —
- * see flutter-app/lib/core/theme/app_theme.dart. `-rgb` variants are
- * space-separated channels so Tailwind's color-opacity modifiers
- * (bg-void/85 etc.) keep working through the CSS-variable indirection
- * needed for the light/dark toggle below. Ember is the one constant accent
- * across both modes; void/bone (and the other role tokens) swap value —
- * dark mode keeps its original identity, light mode is new.
- */
+/* ─────────────────────────────────────────────────────────────────────────
+ * Divinity design tokens — "High-Fidelity Clay + Soft-UI" blend, purple type.
+ *
+ * The site is token-driven: components reference semantic vars (--void /
+ * --surface / --fg / --accent / --mist / --line …) and the Tailwind color
+ * aliases built on them (tailwind.config.ts). Re-pointing these VALUES
+ * reskins every page at once — so this file is the single source of the
+ * clay-neumorphic identity. The legacy names (void/bone/ember) are kept as
+ * aliases so existing markup keeps working; only their values changed.
+ *
+ * Physics live in the shadow vars (--sh-*): 4-layer clay stacks (outer
+ * ambient occlusion + top-left highlight + inner colour bounce + rim light)
+ * exposed as `shadow-clay-*` utilities. Themes redefine the vars, components
+ * never hardcode shadow rgba — depth stays consistent and swappable.
+ *
+ * Accent is violet (#7C3AED); amber (--gold, the brand logo hue) is the
+ * secondary accent. Light is the default identity; [data-theme="dark"] is a
+ * dark-clay variant sharing the same physics.
+ * ──────────────────────────────────────────────────────────────────────── */
+
 :root {
-  --void: #15161e;
-  --deep: #1e2029;
-  --smoke: #2a2d38;
-  --bone: #ece7db;
-  --bone-2: #e2dccb;
-  --ember: #d08a3e;
-  --ember-deep: #a85e2a;
-  --ember-pale: #e8c490;
-  --clay: #9c4a2a;
-  --mist: #8e93a6;
-  --ink: #20242f;
-  --ink-mute: #5c5f52;
+  /* Surfaces — cool lavender-grey "clay", molded from one material */
+  --void: #e8e9f3;      /* page canvas            */
+  --deep: #eef0f8;      /* raised surface         */
+  --smoke: #dcdeec;     /* recessed track / well  */
+  --surface: #e8e9f3;
+  --surface-2: #eef0f8;
+  --surface-3: #dcdeec;
 
-  --void-rgb: 21 22 30;
-  --deep-rgb: 30 32 41;
-  --smoke-rgb: 42 45 56;
-  --bone-rgb: 236 231 219;
-  --bone-2-rgb: 226 220 203;
-  --ember-rgb: 208 138 62;
-  --ember-deep-rgb: 168 94 42;
-  --ember-pale-rgb: 232 196 144;
-  --clay-rgb: 156 74 42;
-  --mist-rgb: 142 147 166;
-  --ink-rgb: 32 36 47;
-  --ink-mute-rgb: 92 95 82;
+  --void-rgb: 232 233 243;
+  --deep-rgb: 238 240 248;
+  --smoke-rgb: 220 222 236;
+  --surface-rgb: 232 233 243;
+  --surface-2-rgb: 238 240 248;
+  --surface-3-rgb: 220 222 236;
 
-  --line-dark: rgba(208, 138, 62, 0.16);
-  --line-light: rgba(32, 36, 47, 0.14);
+  /* Ink — soft charcoal, friendlier than black (7.9:1 on canvas) */
+  --bone: #332f3a;
+  --bone-2: #4a4653;
+  --fg: #332f3a;
+  --ink: #332f3a;
+  --bone-rgb: 51 47 58;
+  --bone-2-rgb: 74 70 83;
+  --ink-rgb: 51 47 58;
 
-  color-scheme: dark;
+  /* Muted — dark lavender-gray, AA floor (4.7:1 on canvas) */
+  --mist: #5b5766;
+  --fg-muted: #5b5766;
+  --ink-mute: #5b5766;
+  --mist-rgb: 91 87 102;
+  --ink-mute-rgb: 91 87 102;
 
-  /* Semantic layer (03_DESIGN_SYSTEM, D006). Parallel to the primitives above —
-   * existing components keep using void/bone/ember/etc until re-skinned in
-   * their own tasks; new components use these instead. --ink/--ink-muted from
-   * the original spec table were renamed --fg/--fg-muted: --ink already exists
-   * above with a different value and is load-bearing on About/Faq/Membership/
-   * Method/SectionHeading — reusing the name would silently break their text
-   * color. See DECISIONS.md E-003 and design/adr/0015-day-night-theme.md. */
-  --surface: #15161e;
-  --surface-2: #1e2029;
-  --surface-3: #2a2d38;
-  --surface-rgb: 21 22 30;
-  --surface-2-rgb: 30 32 41;
-  --surface-3-rgb: 42 45 56;
-  --fg: #ece7db;
-  --fg-muted: #8e93a6;
-  --accent: #d08a3e;
-  --accent-2: #2e5f4f;
-  --line: rgba(208, 138, 62, 0.16);
+  /* Accent — vivid violet + supporting stops */
+  --ember: #7c3aed;         /* legacy alias → violet accent */
+  --ember-deep: #6d28d9;
+  --ember-pale: #a78bfa;
+  --clay: #6d28d9;
+  --accent: #7c3aed;
+  --accent-light: #a78bfa;
+  --accent-2: #db2777;      /* hot pink, secondary emphasis */
+  --ember-rgb: 124 58 237;
+  --ember-deep-rgb: 109 40 217;
+  --ember-pale-rgb: 167 139 250;
+  --clay-rgb: 109 40 217;
+  --accent-rgb: 124 58 237;
+
+  /* Brand secondary — the amber logo hue, kept for ratings / highlights */
+  --gold: #d08a3e;
+  --gold-rgb: 208 138 62;
+
+  /* Hairlines (rarely used — shadows define edges) */
+  --line-dark: rgba(124, 58, 237, 0.14);
+  --line-light: rgba(51, 47, 58, 0.08);
+  --line: rgba(124, 58, 237, 0.14);
+
+  /* Clay shadow stacks (light). Named by role, swapped per theme. */
+  --sh-card:
+    16px 16px 34px rgba(174, 171, 205, 0.55),
+    -12px -12px 28px rgba(255, 255, 255, 0.9),
+    inset 4px 4px 10px rgba(124, 58, 237, 0.03),
+    inset -6px -6px 12px rgba(255, 255, 255, 0.7);
+  --sh-card-hover:
+    24px 24px 48px rgba(174, 171, 205, 0.6),
+    -16px -16px 36px rgba(255, 255, 255, 0.95),
+    inset 4px 4px 10px rgba(124, 58, 237, 0.04),
+    inset -6px -6px 12px rgba(255, 255, 255, 0.7);
+  --sh-raised:
+    9px 9px 18px rgba(174, 171, 205, 0.55),
+    -9px -9px 18px rgba(255, 255, 255, 0.85);
+  --sh-raised-hover:
+    12px 12px 22px rgba(174, 171, 205, 0.65),
+    -12px -12px 22px rgba(255, 255, 255, 0.9);
+  --sh-sm:
+    5px 5px 11px rgba(174, 171, 205, 0.55),
+    -5px -5px 11px rgba(255, 255, 255, 0.8);
+  --sh-button:
+    10px 10px 22px rgba(124, 58, 237, 0.32),
+    -8px -8px 18px rgba(255, 255, 255, 0.5),
+    inset 3px 3px 7px rgba(255, 255, 255, 0.35),
+    inset -4px -4px 8px rgba(0, 0, 0, 0.12);
+  --sh-button-hover:
+    14px 14px 28px rgba(124, 58, 237, 0.4),
+    -10px -10px 22px rgba(255, 255, 255, 0.6),
+    inset 3px 3px 7px rgba(255, 255, 255, 0.4),
+    inset -4px -4px 8px rgba(0, 0, 0, 0.12);
+  --sh-pressed:
+    inset 8px 8px 16px rgba(174, 171, 205, 0.6),
+    inset -8px -8px 16px rgba(255, 255, 255, 0.85);
+  --sh-inset-deep:
+    inset 11px 11px 22px rgba(174, 171, 205, 0.7),
+    inset -11px -11px 22px rgba(255, 255, 255, 0.9);
+  --sh-inset-sm:
+    inset 3px 3px 7px rgba(174, 171, 205, 0.55),
+    inset -3px -3px 7px rgba(255, 255, 255, 0.8);
+
+  /* Ambient blob glow */
   --glow:
-    radial-gradient(60% 50% at 50% 0%, rgba(46, 95, 79, 0.14), transparent 70%),
-    radial-gradient(50% 40% at 85% 30%, rgba(30, 58, 92, 0.1), transparent 70%);
-}
-
-[data-theme="light"] {
-  --void: #fdfbf6;
-  --deep: #f5efe0;
-  --smoke: #eae2cc;
-  --bone: #1b1d24;
-  --bone-2: #3c3f49;
-  /* --ember darkened from #d08a3e to the --clay value for the same reason
-   * --accent was (E-003 / design/adr/0015): #d08a3e only reaches ~2.7:1
-   * against the day --void background (#fdfbf6), well under the 4.5:1 AA
-   * floor — confirmed by an axe-core scan (16_ACCESSIBILITY.md). #9c4a2a
-   * reaches the same passing ratio --accent already uses. */
-  --ember: #9c4a2a;
-  --ember-deep: #a85e2a;
-  --ember-pale: #e8c490;
-  --clay: #9c4a2a;
-  /* --mist darkened from #6b6f7e (4.36:1, axe-confirmed just under the
-   * 4.5:1 floor against --surface's day value #f4efe4) to #666a78 (4.70:1)
-   * — same class of fix as --ember above (16_ACCESSIBILITY.md). */
-  --mist: #666a78;
-  --ink: #ede7d8;
-  --ink-mute: #a8a292;
-
-  --void-rgb: 253 251 246;
-  --deep-rgb: 245 239 224;
-  --smoke-rgb: 234 226 204;
-  --bone-rgb: 27 29 36;
-  --bone-2-rgb: 60 63 73;
-  --ember-rgb: 156 74 42;
-  --ember-deep-rgb: 168 94 42;
-  --ember-pale-rgb: 232 196 144;
-  --clay-rgb: 156 74 42;
-  --mist-rgb: 102 106 120;
-  --ink-rgb: 237 231 216;
-  --ink-mute-rgb: 168 162 146;
-
-  --line-dark: rgba(168, 94, 42, 0.16);
-  --line-light: rgba(32, 36, 47, 0.1);
+    radial-gradient(50% 45% at 20% 20%, rgba(124, 58, 237, 0.12), transparent 70%),
+    radial-gradient(45% 40% at 85% 30%, rgba(219, 39, 119, 0.1), transparent 70%),
+    radial-gradient(45% 45% at 60% 90%, rgba(14, 165, 233, 0.1), transparent 70%);
 
   color-scheme: light;
+}
 
-  /* Semantic layer, day values — see :root above for why --ink → --fg.
-   * --accent is darkened from the spec's #a85e2a to #9c4a2a (== the existing
-   * --clay primitive, same rust hue family) because #a85e2a only reaches
-   * 4.26:1 against --surface — below the 4.5:1 floor. #9c4a2a reaches 5.35:1.
-   * See design/adr/0015-day-night-theme.md for the full contrast table. */
-  --surface: #f4efe4;
-  --surface-2: #e9e2d2;
-  --surface-3: #ddd4bf;
-  --surface-rgb: 244 239 228;
-  --surface-2-rgb: 233 226 210;
-  --surface-3-rgb: 221 212 191;
-  --fg: #20242f;
-  --fg-muted: #5c6070;
-  --accent: #9c4a2a;
-  --accent-2: #5f7a5a;
-  --line: rgba(32, 36, 47, 0.14);
+[data-theme="dark"] {
+  /* Dark clay — deep purple-charcoal, same physics inverted */
+  --void: #201d29;
+  --deep: #272332;
+  --smoke: #191622;
+  --surface: #201d29;
+  --surface-2: #272332;
+  --surface-3: #191622;
+  --void-rgb: 32 29 41;
+  --deep-rgb: 39 35 50;
+  --smoke-rgb: 25 22 34;
+  --surface-rgb: 32 29 41;
+  --surface-2-rgb: 39 35 50;
+  --surface-3-rgb: 25 22 34;
+
+  --bone: #edecf4;
+  --bone-2: #cfccdd;
+  --fg: #edecf4;
+  --ink: #edecf4;
+  --bone-rgb: 237 236 244;
+  --bone-2-rgb: 207 204 221;
+  --ink-rgb: 237 236 244;
+
+  --mist: #a7a2b8;
+  --fg-muted: #a7a2b8;
+  --ink-mute: #a7a2b8;
+  --mist-rgb: 167 162 184;
+  --ink-mute-rgb: 167 162 184;
+
+  --ember: #a78bfa;
+  --ember-deep: #8b5cf6;
+  --ember-pale: #c4b5fd;
+  --clay: #8b5cf6;
+  --accent: #a78bfa;
+  --accent-light: #c4b5fd;
+  --accent-2: #f472b6;
+  --ember-rgb: 167 139 250;
+  --ember-deep-rgb: 139 92 246;
+  --ember-pale-rgb: 196 181 253;
+  --clay-rgb: 139 92 246;
+  --accent-rgb: 167 139 250;
+
+  --gold: #e0a75c;
+  --gold-rgb: 224 167 92;
+
+  --line-dark: rgba(167, 139, 250, 0.18);
+  --line-light: rgba(237, 236, 244, 0.08);
+  --line: rgba(167, 139, 250, 0.18);
+
+  --sh-card:
+    16px 16px 34px rgba(0, 0, 0, 0.55),
+    -10px -10px 26px rgba(255, 255, 255, 0.04),
+    inset 4px 4px 10px rgba(167, 139, 250, 0.05),
+    inset -6px -6px 12px rgba(255, 255, 255, 0.03);
+  --sh-card-hover:
+    24px 24px 48px rgba(0, 0, 0, 0.6),
+    -14px -14px 32px rgba(255, 255, 255, 0.05),
+    inset 4px 4px 10px rgba(167, 139, 250, 0.06),
+    inset -6px -6px 12px rgba(255, 255, 255, 0.03);
+  --sh-raised:
+    9px 9px 18px rgba(0, 0, 0, 0.55),
+    -9px -9px 18px rgba(255, 255, 255, 0.04);
+  --sh-raised-hover:
+    12px 12px 22px rgba(0, 0, 0, 0.6),
+    -12px -12px 22px rgba(255, 255, 255, 0.05);
+  --sh-sm:
+    5px 5px 11px rgba(0, 0, 0, 0.5),
+    -5px -5px 11px rgba(255, 255, 255, 0.04);
+  --sh-button:
+    10px 10px 22px rgba(0, 0, 0, 0.45),
+    -8px -8px 18px rgba(255, 255, 255, 0.05),
+    inset 3px 3px 7px rgba(255, 255, 255, 0.15),
+    inset -4px -4px 8px rgba(0, 0, 0, 0.3);
+  --sh-button-hover:
+    14px 14px 28px rgba(0, 0, 0, 0.55),
+    -10px -10px 22px rgba(255, 255, 255, 0.06),
+    inset 3px 3px 7px rgba(255, 255, 255, 0.18),
+    inset -4px -4px 8px rgba(0, 0, 0, 0.3);
+  --sh-pressed:
+    inset 8px 8px 16px rgba(0, 0, 0, 0.55),
+    inset -8px -8px 16px rgba(255, 255, 255, 0.04);
+  --sh-inset-deep:
+    inset 11px 11px 22px rgba(0, 0, 0, 0.6),
+    inset -11px -11px 22px rgba(255, 255, 255, 0.05);
+  --sh-inset-sm:
+    inset 3px 3px 7px rgba(0, 0, 0, 0.5),
+    inset -3px -3px 7px rgba(255, 255, 255, 0.04);
+
   --glow:
-    radial-gradient(60% 50% at 50% 0%, rgba(232, 196, 144, 0.18), transparent 70%),
-    radial-gradient(50% 40% at 85% 30%, rgba(233, 226, 210, 0.16), transparent 70%);
+    radial-gradient(50% 45% at 20% 20%, rgba(167, 139, 250, 0.16), transparent 70%),
+    radial-gradient(45% 40% at 85% 30%, rgba(244, 114, 182, 0.12), transparent 70%),
+    radial-gradient(45% 45% at 60% 90%, rgba(14, 165, 233, 0.12), transparent 70%);
+
+  color-scheme: dark;
 }
 
 * {
@@ -138,15 +233,15 @@ html {
 
 body {
   background: var(--void);
-  color: var(--bone);
+  color: var(--fg);
   font-family: var(--font-body), system-ui, sans-serif;
-  font-weight: 300;
+  font-weight: 400;
   overflow-x: hidden;
 }
 
 ::selection {
-  background: var(--ember);
-  color: var(--void);
+  background: var(--accent);
+  color: #fff;
 }
 
 /* Lenis */
@@ -161,40 +256,78 @@ html.lenis body {
   overflow: hidden;
 }
 
-/* Type roles */
+/* ── Type roles ──────────────────────────────────────────────── */
+/* Display = Nunito (rounded terminals, clay personality); body = DM Sans. */
 .font-display {
-  font-family: var(--font-display), Georgia, serif;
+  font-family: var(--font-display), "Nunito", system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 .eyebrow {
-  font-family: var(--font-mono), monospace;
-  font-size: 11px;
-  letter-spacing: 0.28em;
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 
-/* Type scale (03_DESIGN_SYSTEM): text-display-xl/-l/-m come from the Tailwind
-   fontSize theme (tailwind.config.ts); balance keeps hero/section headings from
-   wrapping into a single dangling word. */
 .text-display-xl,
 .text-display-l,
 .text-display-m {
   text-wrap: balance;
 }
 
-/* Decorative watermarks: the glyphs are rendered as pseudo-content so they are
-   excluded from automated contrast checks (they are intentionally faint and
-   aria-hidden — purely textural, never read). */
+/* Gradient display text (hero highlight) — keep on large sizes only */
+.clay-text-gradient {
+  background-image: linear-gradient(135deg, var(--fg) 10%, var(--accent) 55%, var(--accent-2) 95%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
 .watermark::before {
   content: attr(data-watermark);
 }
 
 /* Focus visibility (a11y floor) */
 :focus-visible {
-  outline: 2px solid var(--ember);
+  outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
 
-/* Reduced motion */
+/* ── Clay motion ─────────────────────────────────────────────── */
+@keyframes clay-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(2deg); }
+}
+@keyframes clay-float-delayed {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(-2deg); }
+}
+@keyframes clay-float-slow {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-30px) rotate(5deg); }
+}
+@keyframes clay-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+.clay-float { animation: clay-float 8s ease-in-out infinite; }
+.clay-float-delayed { animation: clay-float-delayed 10s ease-in-out infinite; }
+.clay-float-slow { animation: clay-float-slow 12s ease-in-out infinite; }
+.clay-breathe { animation: clay-breathe 6s ease-in-out infinite; }
+.animation-delay-2000 { animation-delay: 2s; }
+.animation-delay-4000 { animation-delay: 4s; }
+
+/* ── Ambient blobs layer (replaces the old dark gradient) ──────── */
+.ambient {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background: var(--glow);
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.001ms !important;
@@ -204,7 +337,6 @@ html.lenis body {
   }
 }
 
-/* Hide native cursor only on devices with a fine pointer */
 @media (hover: hover) and (pointer: fine) {
   .has-custom-cursor,
   .has-custom-cursor * {
@@ -212,57 +344,14 @@ html.lenis body {
   }
 }
 
-/* ── Award layer ─────────────────────────────────────────────── */
-
-/* Breathing ambient gradient (fixed, behind everything) */
-.ambient {
-  position: fixed;
-  inset: 0;
-  z-index: -2;
-  pointer-events: none;
-  background:
-    radial-gradient(60% 50% at 50% 0%, rgba(208, 138, 62, 0.10), transparent 70%),
-    radial-gradient(50% 40% at 85% 30%, rgba(168, 94, 42, 0.08), transparent 70%),
-    radial-gradient(45% 45% at 10% 80%, rgba(208, 138, 62, 0.06), transparent 70%);
-  animation: breatheBg 12s ease-in-out infinite;
-}
-
-/* Act-break light shift (05_MOTION_SCROLLSTORY): a second layer using the
- * theme's --glow token (defined in 03, unused until now), faded in/out by
- * ScrollScore via a `data-act` attribute on <html> as scroll passes each act
- * boundary. Additive — the base .ambient gradient above is untouched. */
-.ambient::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--glow);
-  opacity: 0;
-  transition: opacity 800ms ease;
-}
-[data-act="2"] .ambient::after {
-  opacity: 0.5;
-}
-[data-act="3"] .ambient::after {
-  opacity: 0.85;
-}
-@keyframes breatheBg {
-  0%, 100% { opacity: 0.55; transform: scale(1); }
-  45% { opacity: 1; transform: scale(1.06); }
-  60% { opacity: 1; transform: scale(1.06); }
-}
-
-/* Fine film grain for tactile depth */
+/* Fine film grain (kept, very subtle) */
 .grain {
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  opacity: 0.04;
+  opacity: 0.025;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ambient { animation: none; opacity: 0.7; }
 }
 
 /* Scroll progress bar */
@@ -271,18 +360,20 @@ html.lenis body {
   top: 0;
   left: 0;
   right: 0;
-  height: 2px;
+  height: 3px;
   transform-origin: 0%;
-  background: linear-gradient(90deg, var(--ember-deep), var(--ember));
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
   z-index: 350;
+  border-radius: 999px;
 }
 
 /* kbd chip */
 .kbd {
-  font-family: var(--font-mono), monospace;
+  font-family: var(--font-body), system-ui, sans-serif;
   font-size: 10px;
-  border: 1px solid var(--line-dark);
-  border-radius: 4px;
+  font-weight: 600;
+  box-shadow: var(--sh-inset-sm);
+  border-radius: 6px;
   padding: 2px 6px;
   color: var(--mist);
 }

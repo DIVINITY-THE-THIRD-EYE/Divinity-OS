@@ -5,7 +5,7 @@ import { method } from "@/lib/content";
 
 export default function Method() {
   return (
-    <section className="bg-bone px-6 py-28 text-ink md:px-10 md:py-40">
+    <section className="bg-deep px-6 py-28 text-ink md:px-10 md:py-40">
       <div className="mx-auto max-w-6xl">
         <Reveal className="mb-20 max-w-3xl">
           <p className="eyebrow mb-6 text-ember-deep">The path</p>

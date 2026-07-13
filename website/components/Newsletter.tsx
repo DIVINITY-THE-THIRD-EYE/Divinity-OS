@@ -87,12 +87,12 @@ export default function Newsletter() {
                 inputMode="email"
                 aria-required="true"
                 placeholder="your@email.com"
-                className="w-full border-b border-[var(--line-dark)] bg-transparent py-3 px-0 font-body text-bone placeholder:text-mist/50 focus:border-ember focus:outline-none sm:w-72"
+                className="w-full rounded-2xl bg-[var(--void)] px-5 py-3.5 font-body text-fg shadow-clay-pressed placeholder:text-fg-muted/60 focus:outline-none focus:ring-4 focus:ring-accent/20 sm:w-72"
               />
               <button
                 type="submit"
                 disabled={status === "sending"}
-                className="border border-ember px-6 py-3 font-mono text-[11px] uppercase tracking-wide text-ember transition-colors hover:bg-ember hover:text-void disabled:opacity-60"
+                className="rounded-2xl bg-gradient-to-br from-accent-light to-accent px-7 py-3.5 text-[12px] font-bold uppercase tracking-wide text-white shadow-clay-button transition-all duration-200 hover:-translate-y-0.5 hover:shadow-clay-button-hover active:scale-95 disabled:opacity-60"
               >
                 {status === "sending" ? "Sending…" : "Get free session"}
               </button>

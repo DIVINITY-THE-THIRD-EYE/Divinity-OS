@@ -30,7 +30,7 @@ export default function PageHeader({
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(80% 60% at 50% 0%, rgba(208,138,62,0.10), transparent 60%)",
+            "radial-gradient(80% 60% at 50% 0%, rgba(124,58,237,0.12), transparent 60%)",
         }}
       />
       <div className="relative mx-auto max-w-6xl">

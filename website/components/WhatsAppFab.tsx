@@ -30,7 +30,11 @@ export default function WhatsAppFab({ site: siteProp }: { site?: typeof site }) 
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.6, y: 20 }}
           transition={{ type: "spring", stiffness: 260, damping: 20 }}
-          className="group fixed bottom-6 right-6 z-[320] flex items-center gap-0 overflow-hidden rounded-full border border-ember/40 bg-void/90 py-3 pl-3 pr-3 backdrop-blur-md transition-all hover:pr-5 md:bottom-8 md:right-8"
+          // hidden below md: on mobile the StickyCta bar already carries a
+          // WhatsApp action at bottom-0 (z-280) and the fab (bottom-6, z-320)
+          // sat on top of it — two WhatsApp CTAs colliding. Desktop has no
+          // sticky bar, so the fab is the only float there.
+          className="group fixed bottom-6 right-6 z-[320] hidden items-center gap-0 overflow-hidden rounded-full border border-ember/40 bg-void/90 py-3 pl-3 pr-3 backdrop-blur-md transition-all hover:pr-5 md:bottom-8 md:right-8 md:flex"
           aria-label="Chat on WhatsApp"
         >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" className="shrink-0">

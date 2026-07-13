@@ -1,39 +1,28 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
-import { Cormorant, Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
+import { Nunito, DM_Sans } from "next/font/google";
 import { fetchSiteSettings } from "@/lib/content";
 import { routeOverrides } from "@/content/seo";
 import JsonLd from "@/components/JsonLd";
 import { ThemeProvider } from "@/lib/theme/ThemeContext";
 import "./globals.css";
 
-const display = Cormorant({
+// Display = Nunito (rounded terminals carry the clay personality on headings,
+// stat numbers, emphasis). 700/800/900 cover bold → black display weights.
+const display = Nunito({
   subsets: ["latin"],
-  // Only 300 (font-light) and the default 400 are used in the UI — dropping the
-  // unused 500/600 weights removes 4 font files from the initial load.
-  weight: ["300", "400"],
-  style: ["normal", "italic"],
+  weight: ["700", "800", "900"],
   variable: "--font-display",
   display: "swap",
 });
 
-const body = Hanken_Grotesk({
+// Body = DM Sans (geometric, highly legible) for all UI text. The clay/neu
+// system has no monospace role, so --font-mono aliases to this in Tailwind;
+// eyebrows are DM Sans 700 uppercase (see .eyebrow in globals.css).
+const body = DM_Sans({
   subsets: ["latin"],
-  // globals.css sets `body { font-weight: 300 }` site-wide and no component
-  // ever overrides it (grep-verified: zero font-medium/semibold/bold usage
-  // paired with font-body) — 400/500 were dead weight (15_PERFORMANCE.md).
-  weight: ["300"],
+  weight: ["400", "500", "700"],
   variable: "--font-body",
-  display: "swap",
-});
-
-const mono = JetBrains_Mono({
-  subsets: ["latin"],
-  // Only 400 renders in practice: nothing requests mono text at 500
-  // (grep-verified), and the body's inherited 300 request falls back to
-  // the nearest loaded weight (400) per the CSS font-matching algorithm.
-  weight: ["400"],
-  variable: "--font-mono",
   display: "swap",
 });
 
@@ -68,7 +57,7 @@ export const viewport: Viewport = {
   themeColor: "#15161e",
   width: "device-width",
   initialScale: 1,
-  colorScheme: "dark",
+  colorScheme: "light",
 };
 
 export default async function RootLayout({
@@ -82,7 +71,7 @@ export default async function RootLayout({
     <html
       lang="en-IN"
       suppressHydrationWarning
-      className={`${display.variable} ${body.variable} ${mono.variable}`}
+      className={`${display.variable} ${body.variable}`}
     >
       <body>
         {/* No-flash theme script: sets data-theme before first paint so CSS
@@ -90,7 +79,7 @@ export default async function RootLayout({
             localStorage key as ThemeContext; strategy="beforeInteractive"
             makes Next.js inline this in <head>, ahead of hydration. */}
         <Script id="theme-init" strategy="beforeInteractive">
-          {`(function(){try{var t=localStorage.getItem('divinity_theme');if(t!=='light'&&t!=='dark'){t=window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`}
+          {`(function(){try{var t=localStorage.getItem('divinity_theme');if(t!=='light'&&t!=='dark'){t='light';}document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`}
         </Script>
         <a
           href="#main-content"

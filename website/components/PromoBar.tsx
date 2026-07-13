@@ -53,7 +53,7 @@ export default function PromoBar() {
           animate={{ height: "auto", opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
           transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-          className="fixed inset-x-0 top-0 z-[360] overflow-hidden bg-ember"
+          className="fixed inset-x-0 top-0 z-[360] overflow-hidden bg-gradient-to-r from-accent to-accent-2"
         >
           <div ref={contentRef} className="flex items-center justify-between gap-3 px-4 py-2.5 md:justify-center md:gap-6">
             <p className="font-mono text-[11px] uppercase tracking-wide text-void">

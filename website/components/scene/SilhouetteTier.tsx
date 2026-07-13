@@ -3,26 +3,13 @@
 import { useEffect, useRef } from "react";
 import { getBreath } from "./useBreathClock";
 
-// Seated meditation silhouette, hand-authored as two closed sub-paths (head +
-// torso/crossed-legs), normalized to a 200×220 box. Drawn via Path2D onto the
-// hero canvas — this IS the shipped hero visual (D007: "LCP frame = DOM H1 +
-// SilhouetteTier"), not a placeholder; it's also what every non-3D-capable
-// visitor (mobile, coarse pointer, reduced motion, no WebGL2, low memory,
-// save-data) sees permanently, and what desktop users see for the brief
-// window before the 3D chunk (07's Scene, not yet built — see DECISIONS.md/
-// PLACEHOLDERS.md) loads in.
-// Path2D is a browser-only API — even in a "use client" component, this
-// module is still evaluated on the server during prerendering (Next.js needs
-// it to render the initial HTML), so constructing Path2D at module scope
-// crashed the build with "Path2D is not defined". Kept as plain strings here;
-// instantiated lazily inside the client-only effect below.
-const HEAD_D =
-  "M100,8 C88,8 78,18 78,32 C78,46 88,55 100,55 C112,55 122,46 122,32 C122,18 112,8 100,8 Z";
-const BODY_D =
-  "M65,60 C55,75 45,100 40,130 C38,145 35,150 22,160 C15,168 15,180 25,192 " +
-  "C45,205 75,205 100,195 C125,205 155,205 175,192 C185,180 185,168 178,160 " +
-  "C165,150 162,145 160,130 C155,100 145,75 135,60 C125,52 112,50 100,52 C88,50 75,52 65,60 Z";
-const FIGURE_BOX = { w: 200, h: 220, chestX: 100, chestY: 70 };
+// The hero mark. Formerly a hand-authored seated-meditation silhouette (the
+// "living anatomy" figure); replaced with the brand logo mark (no wordmark)
+// per owner request. This IS the shipped hero visual (D007: "LCP frame = DOM
+// H1 + SilhouetteTier") — what every visitor sees, breathing gently on the
+// shared breath clock. The surrounding glow/rings/orb/embers are ambient, not
+// the figure, and are kept as-is.
+const LOGO_SRC = "/brand/logo-mark.png";
 
 export default function SilhouetteTier() {
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -33,8 +20,17 @@ export default function SilhouetteTier() {
     const ctx = c.getContext("2d");
     if (!ctx) return;
 
-    const HEAD_PATH = new Path2D(HEAD_D);
-    const BODY_PATH = new Path2D(BODY_D);
+    // Logo mark, drawn onto the canvas once loaded. Browser-only (like the
+    // old Path2D), so it's constructed inside this client effect. reduce-motion
+    // draws a single static frame, so redraw on load; otherwise kick the loop.
+    const logo = new Image();
+    let logoReady = false;
+    logo.onload = () => {
+      logoReady = true;
+      if (reduce) draw();
+      else kick();
+    };
+    logo.src = LOGO_SRC;
 
     let dpr = Math.min(window.devicePixelRatio || 1, 2);
     let W = 0, H = 0;
@@ -91,26 +87,18 @@ export default function SilhouetteTier() {
         ctx.stroke();
       }
 
-      // Seated silhouette — a soft translucent presence, not a hard opaque
-      // shape (copy must stay legible wherever it happens to overlap; on
-      // narrower viewports the hero text column and this centered figure
-      // occupy the same screen region). Scaled gently around the chest point
-      // on the breath (a coarse stand-in for the full 3D Figure's per-vertex
-      // chest displacement; this tier is deliberately ~3kB, not a shader).
-      const scale = (base * 0.9) / FIGURE_BOX.w;
-      const breathScale = 1 + p.breath * 0.03;
-      ctx.save();
-      ctx.translate(cx, cy + base * 0.7);
-      ctx.scale(scale * breathScale, scale * breathScale);
-      ctx.translate(-FIGURE_BOX.chestX, -FIGURE_BOX.chestY);
-      ctx.fillStyle = `rgba(21,22,30,${0.22 + p.breath * 0.08})`;
-      ctx.fill(HEAD_PATH);
-      ctx.fill(BODY_PATH);
-      ctx.strokeStyle = `rgba(232,196,144,${0.3 + p.breath * 0.25})`;
-      ctx.lineWidth = 1.4 / (scale * breathScale);
-      ctx.stroke(HEAD_PATH);
-      ctx.stroke(BODY_PATH);
-      ctx.restore();
+      // Brand mark — centered, breathing gently on the same clock the old
+      // silhouette used (scale pulse around its own center). Drawn square
+      // (logo-mark is 600×600); slightly translucent so the hero copy stays
+      // legible where the text column and this centered mark overlap on
+      // narrower viewports.
+      if (logoReady) {
+        const size = base * 1.7 * (1 + p.breath * 0.03);
+        ctx.save();
+        ctx.globalAlpha = 0.9 + p.breath * 0.1;
+        ctx.drawImage(logo, cx - size / 2, cy - size / 2, size, size);
+        ctx.restore();
+      }
 
       // core orb (the "third eye" glow at the chest/throat)
       const orb = ctx.createRadialGradient(cx, cy, 0, cx, cy, r * 0.5);

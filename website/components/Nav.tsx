@@ -65,7 +65,7 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
         transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
         className={`fixed inset-x-0 top-[var(--promo-h,0px)] z-[300] flex items-center justify-between px-6 transition-all duration-500 md:px-10 ${
           solid
-            ? "border-b border-[var(--line)] bg-surface/85 py-3 backdrop-blur-md"
+            ? "mx-3 mt-2 rounded-[28px] bg-surface/80 py-3 shadow-clay-sm backdrop-blur-xl md:mx-6"
             : "py-6"
         }`}
       >
@@ -121,7 +121,7 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
           <Magnetic>
             <Link
               href="/contact"
-              className="border border-accent px-5 py-2 font-mono text-[11px] uppercase tracking-wide text-accent transition-colors hover:bg-accent hover:text-surface"
+              className="rounded-full bg-gradient-to-br from-accent-light to-accent px-6 py-2.5 text-[11px] font-bold uppercase tracking-wide text-white shadow-clay-button transition-all duration-200 hover:-translate-y-0.5 hover:shadow-clay-button-hover active:scale-95"
             >
               {t("Begin")}
             </Link>
@@ -187,7 +187,7 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
             >
               <Link
                 href="/contact"
-                className="border border-accent px-7 py-3 font-mono text-[11px] uppercase tracking-wide text-accent"
+                className="rounded-full bg-gradient-to-br from-accent-light to-accent px-8 py-3.5 text-[12px] font-bold uppercase tracking-wide text-white shadow-clay-button"
               >
                 {t("Begin")}
               </Link>

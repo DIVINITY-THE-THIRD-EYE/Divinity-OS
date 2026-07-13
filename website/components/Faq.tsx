@@ -16,7 +16,7 @@ export default function Faq({
   const items = limit ? faqs.slice(0, limit) : faqs;
 
   return (
-    <section id="faq" className="bg-bone px-6 py-28 text-ink md:px-10 md:py-40">
+    <section id="faq" className="bg-deep px-6 py-28 text-ink md:px-10 md:py-40">
       <div className="mx-auto max-w-4xl">
         {showHeading && (
           <Reveal className="mb-14">

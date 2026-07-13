@@ -17,7 +17,7 @@ export default function Membership({
   const rest = plans.filter((p) => p !== featured);
 
   return (
-    <section id="membership" className="bg-bone px-6 py-28 text-ink md:px-10 md:py-40">
+    <section id="membership" className="bg-deep px-6 py-28 text-ink md:px-10 md:py-40">
       <div className="mx-auto max-w-6xl">
         {showHeading && (
           <Reveal className="mb-16">
@@ -105,7 +105,7 @@ export default function Membership({
 
         {/* UPI payment */}
         <Reveal className="mt-14">
-          <div className="mx-auto flex max-w-2xl flex-col items-center gap-7 border border-[var(--line-light)] bg-bone-2/40 p-7 sm:flex-row sm:gap-9 sm:p-9">
+          <div className="mx-auto flex max-w-2xl flex-col items-center gap-7 border border-[var(--line-light)] bg-deep-2/40 p-7 sm:flex-row sm:gap-9 sm:p-9">
             <div className="shrink-0 bg-white p-3 shadow-sm ring-1 ring-[var(--line-light)]">
               <Image
                 src={payment.qr}
