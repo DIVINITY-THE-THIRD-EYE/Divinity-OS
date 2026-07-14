@@ -6,11 +6,14 @@ on:
     paths:
       - 'flutter-app/**'
       - '.github/workflows/flutter.yml'
+  # No paths filter on PRs: "Flutter Analyze" and "Flutter Tests" are REQUIRED
+  # status checks in branch protection. A path filter here means they never
+  # report on website/supabase-only PRs, which then stay permanently "blocked".
+  # Instead the jobs always run and short-circuit their heavy steps when no
+  # Flutter files changed (see the change-detection guard below), so the
+  # required contexts still post green.
   pull_request:
     branches: [main]
-    paths:
-      - 'flutter-app/**'
-      - '.github/workflows/flutter.yml'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -30,20 +33,37 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Detect Flutter changes
+        uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            flutter:
+              - 'flutter-app/**'
+              - '.github/workflows/flutter.yml'
+
       - name: Set up Flutter
+        if: steps.changes.outputs.flutter == 'true'
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
 
       - name: Install dependencies
+        if: steps.changes.outputs.flutter == 'true'
         run: flutter pub get
 
       - name: Verify formatting
+        if: steps.changes.outputs.flutter == 'true'
         run: dart format --output=none --set-exit-if-changed lib/ test/
 
       - name: Run flutter analyze
+        if: steps.changes.outputs.flutter == 'true'
         run: flutter analyze --fatal-infos
+
+      - name: No Flutter changes — skipping
+        if: steps.changes.outputs.flutter != 'true'
+        run: echo "No flutter-app changes in this PR; analyze skipped (required check passes)."
 
   # ─── Flutter Unit & Widget Tests ─────────────────────────────────────────────
   test:
@@ -55,25 +75,41 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Detect Flutter changes
+        uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            flutter:
+              - 'flutter-app/**'
+              - '.github/workflows/flutter.yml'
+
       - name: Set up Flutter
+        if: steps.changes.outputs.flutter == 'true'
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
 
       - name: Install dependencies
+        if: steps.changes.outputs.flutter == 'true'
         run: flutter pub get
 
       - name: Run tests with coverage
+        if: steps.changes.outputs.flutter == 'true'
         run: flutter test --coverage
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
-        if: always()
+        if: always() && steps.changes.outputs.flutter == 'true'
         with:
           file: flutter-app/coverage/lcov.info
           flags: flutter
           fail_ci_if_error: false
+
+      - name: No Flutter changes — skipping
+        if: steps.changes.outputs.flutter != 'true'
+        run: echo "No flutter-app changes in this PR; tests skipped (required check passes)."
 
   # ─── Android Release Build ────────────────────────────────────────────────────
   build-android:
