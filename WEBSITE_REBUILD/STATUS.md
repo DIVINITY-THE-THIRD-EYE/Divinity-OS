@@ -62,6 +62,33 @@
   5. BREVO_API_KEY absent (keyfile/vercel.env template empty) — contact-form
      email delivery unverified.
 
+### 2026-07-15 (later) — owner supplied credentials (Desktop/sup.txt); blockers re-tested
+- **GitHub PAT (github_pat_…)**: authenticates as DIVINITY-THE-THIRD-EYE but
+  has NO Contents:write grant — push still 403, blob-create probe 403
+  "Resource not accessible by personal access token". Fix: edit the
+  fine-grained token → Repository access: Divinity-OS → Permissions →
+  Contents: **Read and write** (or mint a classic PAT with `repo` scope).
+  Browser-UI fallback (web-edit + upload via the owner's logged-in Chrome)
+  was blocked by the local permission classifier — needs the user to allow
+  those actions interactively if wanted.
+- **Brevo**: key VALID (account divinity.thethirdeye@gmail.com, free plan,
+  relay enabled; one verified sender: divinity.thethirdeye@gmail.com). But
+  the account has **Authorised-IPs restriction ON** → every API call from a
+  new IP 401s ("unrecognised IP address"). Verified live through the real
+  `/api/contact` route (local prod build): route fails gracefully (502 +
+  friendly message), Brevo rejects with 401 unrecognised-IP. **In production
+  on Vercel (rotating IPs) the contact form will always fail until the owner
+  removes the IP restriction**: https://app.brevo.com/security/authorised_ips.
+  Correct env values for Vercel (sender must be the verified one):
+  `BREVO_FROM_EMAIL=divinity.thethirdeye@gmail.com`,
+  `BREVO_TO_EMAIL=divinity.thethirdeye@gmail.com`.
+- `website/.env.local` now filled with working values (gitignored) — local
+  manual QA is unblocked.
+- Supabase service_role + Sanity tokens received; not needed for any
+  remaining repo task (DB already migrated via MCP; Sanity optional, no
+  project ID provisioned). Recommend owner rotates the service_role key if
+  sup.txt was ever shared beyond this machine.
+
 ### 2026-07-10 — 18_DEPLOYMENT (blocked by tooling — documented honestly)
 - Phase: 8
 - Status: PARTIAL — done to the extent this environment allows; the
