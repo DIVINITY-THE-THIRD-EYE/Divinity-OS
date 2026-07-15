@@ -6,9 +6,19 @@ describe("isStudent", () => {
     expect(isStudent({ app_metadata: { role: "student" } })).toBe(true);
   });
 
-  it("rejects trainer and admin", () => {
+  it("passes the DB's actual uppercase 'STUDENT' claim (001 CHECK constraint)", () => {
+    expect(isStudent({ app_metadata: { role: "STUDENT" } })).toBe(true);
+  });
+
+  it("rejects trainer and admin in either casing", () => {
     expect(isStudent({ app_metadata: { role: "trainer" } })).toBe(false);
     expect(isStudent({ app_metadata: { role: "admin" } })).toBe(false);
+    expect(isStudent({ app_metadata: { role: "TRAINER" } })).toBe(false);
+    expect(isStudent({ app_metadata: { role: "ADMIN" } })).toBe(false);
+  });
+
+  it("rejects a non-string role claim", () => {
+    expect(isStudent({ app_metadata: { role: 42 } })).toBe(false);
   });
 
   it("rejects a missing/null/empty role claim", () => {
