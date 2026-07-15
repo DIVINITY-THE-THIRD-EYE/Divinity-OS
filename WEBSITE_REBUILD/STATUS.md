@@ -25,6 +25,25 @@
 
 ## Log (append-only, newest first)
 
+### 2026-07-16 — ScrollScore regression found & fixed; full e2e suite green (140/140)
+- **Real regression**: the 20-re-skin rewrite of `Hero.tsx` (7b9b2c0) dropped the
+  `<ScrollScore />` mount and its act-shift CSS — `data-act` was never set, scroll
+  progress never published. Broke the homepage act-break light shift AND the yoga
+  cursor's pose morph (both e2e-caught: `home.spec.ts:35`, `yoga-cursor.spec.ts:6`).
+  Fixed: remounted in Hero, re-wired the act glow as an `.ambient` overlay rendered
+  by `Ambient.tsx` (opacity 0 at Act I — visual baselines unaffected; visual.spec
+  runs reduced-motion where ScrollScore no-ops).
+- win32 visual baselines were stale (frozen at phase 17, pre-staging-strip/re-skin) —
+  regenerated all 7. Linux baselines (aa656d5) untouched, still current.
+- `verify.spec.ts:19` failed on any machine whose `.env.local` sets
+  CERT_VERIFY_ENDPOINT — pinned it empty in playwright.config's webServer env
+  (real env beats .env files in Next.js) so the suite is deterministic everywhere.
+- Verified: tsc/lint clean · 145/145 vitest · **140/140 Playwright** (full suite).
+- Push still 403 (all credentials read-only) — this + 6 prior commits await the
+  owner re-scoping the PAT (fine-grained: Contents Read+write, or classic `repo`).
+  CI's Playwright failure on PR #28 is expected to clear once aa656d5's Linux
+  baselines + always-report CodeQL check land.
+
 ### 2026-07-15 — phone OTP system removed (owner directive)
 - Website `/login`: email+password (`signInWithPassword`) replaces the phone →
   OTP two-step; `isE164Phone` deleted (login was its only consumer); portal

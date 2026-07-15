@@ -30,5 +30,11 @@ export default defineConfig({
     url: "http://localhost:3000",
     timeout: 180_000,
     reuseExistingServer: !process.env.CI,
+    // verify.spec.ts asserts the graceful no-endpoint fallback; a dev
+    // machine's .env.local may set CERT_VERIFY_ENDPOINT and flip the route's
+    // behavior. Real (non-empty) environment values take precedence over
+    // .env files in Next.js, so pinning it empty here makes the suite
+    // deterministic on any machine.
+    env: { CERT_VERIFY_ENDPOINT: "" },
   },
 });

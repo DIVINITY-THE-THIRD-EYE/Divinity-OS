@@ -10,6 +10,8 @@ export default function Ambient() {
         <div className="clay-float-delayed animation-delay-2000 absolute -right-[12%] top-[15%] h-[50vh] w-[50vh] rounded-full bg-accent-2/[0.12] blur-3xl" />
         <div className="clay-float-slow animation-delay-4000 absolute bottom-[-10%] left-[30%] h-[50vh] w-[50vh] rounded-full bg-[#0EA5E9]/[0.12] blur-3xl" />
       </div>
+      {/* Act-break glow — opacity driven by data-act on <html> (ScrollScore) */}
+      <div className="ambient" aria-hidden />
       <div className="grain" aria-hidden />
     </>
   );

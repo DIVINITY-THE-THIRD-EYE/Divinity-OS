@@ -319,13 +319,25 @@ html.lenis body {
 .animation-delay-2000 { animation-delay: 2s; }
 .animation-delay-4000 { animation-delay: 4s; }
 
-/* ── Ambient blobs layer (replaces the old dark gradient) ──────── */
+/* ── Act-break light shift (05_MOTION_SCROLLSTORY) ─────────────── */
+/* Glow overlay above the blob layer (-z-10), below grain (-1) and content.
+ * ScrollScore toggles `data-act` on <html> as scroll passes each act
+ * boundary; the glow deepens through Acts II and III. Hidden at Act I and
+ * whenever data-act is absent (non-home routes, reduced motion). */
 .ambient {
   position: fixed;
   inset: 0;
   z-index: -2;
   pointer-events: none;
   background: var(--glow);
+  opacity: 0;
+  transition: opacity 800ms ease;
+}
+[data-act="2"] .ambient {
+  opacity: 0.5;
+}
+[data-act="3"] .ambient {
+  opacity: 0.85;
 }
 
 @media (prefers-reduced-motion: reduce) {

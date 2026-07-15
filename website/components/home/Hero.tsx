@@ -4,6 +4,7 @@ import Image from "next/image";
 import { m } from "framer-motion";
 import { introOffer } from "@/content/offers";
 import CtaLink from "@/components/ui/CtaLink";
+import ScrollScore from "./ScrollScore";
 
 /**
  * Clay hero: light canvas (blobs live in <Ambient/>), a Nunito display
@@ -18,6 +19,10 @@ export default function Hero() {
       id="top"
       className="relative flex min-h-[92svh] w-full items-center overflow-hidden px-6 py-24 md:px-10"
     >
+      {/* Headless: publishes scroll progress + data-act for the act-break
+          light shift and the yoga cursor's pose morph (05/06). Dropped by
+          the 20-re-skin rewrite of this file — must stay mounted. */}
+      <ScrollScore />
       <div className="mx-auto grid w-full max-w-7xl items-center gap-14 lg:grid-cols-[1.05fr_0.95fr]">
         {/* copy */}
         <div>
