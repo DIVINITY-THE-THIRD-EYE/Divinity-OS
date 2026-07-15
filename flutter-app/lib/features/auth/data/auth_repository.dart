@@ -30,12 +30,6 @@ abstract interface class AuthRepository {
   });
   Future<void> signInWithGoogle();
   Future<void> signInWithApple();
-  Future<void> signInWithPhone({
-    required String phone,
-    required String password,
-  });
-  Future<void> signInWithOtp({required String phone});
-  Future<void> verifyOtp({required String phone, required String token});
   Future<void> signOut();
   Future<Map<String, dynamic>?> fetchProfile(String userId);
   Future<void> updateProfile(String userId, Map<String, dynamic> data);
@@ -104,24 +98,6 @@ class SupabaseAuthRepository implements AuthRepository {
       OAuthProvider.apple,
       redirectTo: kIsWeb ? null : 'io.supabase.divinity://login-callback',
     );
-  }
-
-  @override
-  Future<void> signInWithPhone({
-    required String phone,
-    required String password,
-  }) async {
-    await _client.auth.signInWithPassword(phone: phone, password: password);
-  }
-
-  @override
-  Future<void> signInWithOtp({required String phone}) async {
-    await _client.auth.signInWithOtp(phone: phone);
-  }
-
-  @override
-  Future<void> verifyOtp({required String phone, required String token}) async {
-    await _client.auth.verifyOTP(phone: phone, token: token, type: OtpType.sms);
   }
 
   @override

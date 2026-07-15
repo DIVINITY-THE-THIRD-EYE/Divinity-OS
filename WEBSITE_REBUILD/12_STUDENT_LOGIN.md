@@ -112,3 +112,14 @@ Automated validation green. Auto-continue to 13 (same phase).
   it. Manual OTP QA (real phone round-trip, non-student rejection, session-
   survives-reload, logout) is marked **pending owner env** per this file's
   own VALIDATION clause — not faked, not skipped, continuing to 13.
+
+## AMENDMENT (2026-07-15 — phone OTP removed)
+Owner directive: "REMOVE PHONE OTP SYSTEM". The Supabase project has no SMS
+provider and won't get one. `/login` is now email+password
+(`signInWithPassword`) — same accounts as the app's email sign-in. `isE164Phone`
+deleted from `lib/validation.ts` (login was its only consumer). Flutter app's
+"Continue with Phone" option, OTP screen/route/states, and the
+`auth_enable_phone` Remote Config flag removed in the same commit; optional
+phone number on sign-up remains (profile data, not auth). Portal login
+round-trip and trainer/not-student bounce verified live against production
+Supabase with seeded test users.

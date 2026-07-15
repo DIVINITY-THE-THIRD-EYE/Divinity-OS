@@ -40,7 +40,8 @@ export default async function PortalPage() {
     redirect("/login");
   }
 
-  const displayName = user.user_metadata?.full_name || user.phone || "Student";
+  const displayName =
+    user.user_metadata?.full_name || user.user_metadata?.name || user.email || "Student";
 
   return (
     <section className="px-6 py-24 md:px-10 md:py-32">

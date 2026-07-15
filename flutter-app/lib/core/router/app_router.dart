@@ -8,7 +8,6 @@ import '../../features/auth/domain/auth_state.dart' as app_auth;
 import '../../features/auth/presentation/auth_provider.dart';
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/onboarding_wizard.dart';
-import '../../features/auth/presentation/otp_screen.dart';
 import '../../features/auth/presentation/pending_approval_screen.dart';
 import '../../features/auth/presentation/reset_password_screen.dart';
 import '../../features/feedback/presentation/student_feedback_screen.dart';
@@ -18,7 +17,6 @@ import 'app_transitions.dart';
 
 abstract final class Routes {
   static const String login = '/login';
-  static const String otp = '/otp';
   static const String onboarding = '/onboarding';
   static const String pendingApproval = '/pending';
   static const String resetPassword = '/reset-password';
@@ -42,11 +40,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: Routes.login,
         pageBuilder: (_, s) =>
             AppTransitions.sharedAxisX(child: const LoginScreen(), state: s),
-      ),
-      GoRoute(
-        path: Routes.otp,
-        pageBuilder: (_, s) =>
-            AppTransitions.sharedAxisX(child: const OtpScreen(), state: s),
       ),
       GoRoute(
         path: Routes.onboarding,
@@ -121,7 +114,6 @@ class _RouterNotifier extends ChangeNotifier {
       app_auth.AuthInitial() || app_auth.AuthLoading() => null,
       app_auth.AuthUnauthenticated() ||
       app_auth.AuthError() => loc == Routes.login ? null : Routes.login,
-      app_auth.AuthOtpSent() => loc == Routes.otp ? null : Routes.otp,
       app_auth.AuthNeedsOnboarding() =>
         loc == Routes.onboarding ? null : Routes.onboarding,
       app_auth.AuthPendingApproval() =>
@@ -129,9 +121,7 @@ class _RouterNotifier extends ChangeNotifier {
       app_auth.AuthPasswordRecovery() =>
         loc == Routes.resetPassword ? null : Routes.resetPassword,
       app_auth.AuthAuthenticated() =>
-        (loc == Routes.login ||
-                loc == Routes.otp ||
-                loc == Routes.pendingApproval)
+        (loc == Routes.login || loc == Routes.pendingApproval)
             ? Routes.home
             : null,
     };

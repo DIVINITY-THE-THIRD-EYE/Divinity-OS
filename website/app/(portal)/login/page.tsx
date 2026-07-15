@@ -33,7 +33,7 @@ export default async function LoginPage({
           Welcome back.
         </h1>
         <p className="mt-4 font-body text-[15px] text-fg-muted">
-          Sign in with the same phone number you use in the Divinity app.
+          Sign in with the same email and password you use in the Divinity app.
         </p>
       </div>
       <div className="mt-12">

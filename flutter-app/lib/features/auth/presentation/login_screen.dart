@@ -7,7 +7,7 @@ import '../../../shared/widgets/third_eye_icon.dart';
 import '../domain/auth_state.dart' as app_auth;
 import 'auth_provider.dart';
 
-enum LoginView { providers, emailSignIn, phoneSignIn, signUp }
+enum LoginView { providers, emailSignIn, signUp }
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -28,7 +28,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _confirmPasswordCtrl = TextEditingController();
 
   bool _obscurePassword = true;
-  bool _phoneOtpMode = false;
 
   @override
   void dispose() {
@@ -52,14 +51,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       await ref
           .read(authStateProvider.notifier)
           .signInWithEmail(email: email, password: password);
-    } else if (_view == LoginView.phoneSignIn) {
-      if (_phoneOtpMode) {
-        await ref.read(authStateProvider.notifier).sendOtp(phone: phone);
-      } else {
-        await ref
-            .read(authStateProvider.notifier)
-            .signInWithPhone(phone: phone, password: password);
-      }
     } else if (_view == LoginView.signUp) {
       await ref
           .read(authStateProvider.notifier)
@@ -309,32 +300,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               const SizedBox(height: 12),
             ],
-            if (config.enablePhoneOtp) ...[
-              OutlinedButton(
-                onPressed: () => setState(() => _view = LoginView.phoneSignIn),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  side: const BorderSide(color: AppColors.borderDark),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  backgroundColor: AppColors.surfaceDark,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.phone_outlined,
-                      size: 18,
-                      color: Colors.white,
-                    ),
-                    const SizedBox(width: 12),
-                    Text('Continue with Phone', style: tt.titleSmall),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-            ],
             const SizedBox(height: 16),
             if (config.enableEmailPassword) ...[
               TextButton(
@@ -402,75 +367,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               child: ElevatedButton(
                 onPressed: isLoading ? null : _submit,
                 child: const Text('Sign In'),
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextButton(
-              onPressed: () => setState(() => _view = LoginView.providers),
-              child: const Text('Use another sign-in method'),
-            ),
-          ],
-        );
-
-      case LoginView.phoneSignIn:
-        return Column(
-          children: [
-            TextFormField(
-              controller: _phoneCtrl,
-              keyboardType: TextInputType.phone,
-              maxLength: 10,
-              decoration: const InputDecoration(
-                labelText: 'Phone Number',
-                prefixText: '+91 ',
-                prefixIcon: Icon(Icons.phone_android_outlined),
-                counterText: '',
-              ),
-              validator: (v) => (v == null || v.length != 10)
-                  ? 'Enter a valid 10-digit number'
-                  : null,
-            ),
-            if (!_phoneOtpMode) ...[
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _passwordCtrl,
-                obscureText: _obscurePassword,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  prefixIcon: const Icon(Icons.lock_outline),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscurePassword
-                          ? Icons.visibility_off_outlined
-                          : Icons.visibility_outlined,
-                      size: 20,
-                    ),
-                    onPressed: () =>
-                        setState(() => _obscurePassword = !_obscurePassword),
-                  ),
-                ),
-                validator: (v) =>
-                    (v == null || v.isEmpty) ? 'Enter your password' : null,
-              ),
-            ],
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                  onPressed: () =>
-                      setState(() => _phoneOtpMode = !_phoneOtpMode),
-                  child: Text(
-                    _phoneOtpMode ? 'Use password instead' : 'Use OTP instead',
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: isLoading ? null : _submit,
-                child: Text(_phoneOtpMode ? 'Send OTP' : 'Sign In'),
               ),
             ),
             const SizedBox(height: 16),

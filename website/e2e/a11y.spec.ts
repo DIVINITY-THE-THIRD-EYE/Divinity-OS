@@ -115,16 +115,19 @@ test.describe("16 accessibility — axe sweep", () => {
     }
   });
 
-  test("login form: labelled fields, tel autocomplete, error recovery", async ({ page }) => {
+  test("login form: labelled fields, autocomplete, error recovery", async ({ page }) => {
     await page.goto("/login");
-    const phone = page.getByLabel(/phone number/i);
-    await expect(phone).toHaveAttribute("autocomplete", "tel");
-    await phone.fill("not-a-phone");
-    await page.getByRole("button", { name: /send code/i }).click();
-    const error = page.getByText(/international format/i);
-    await expect(error).toBeVisible();
-    // Error must be in an aria-live region so screen readers announce it.
-    const liveRegion = page.locator('[role="alert"]', { hasText: /international format/i });
+    const email = page.getByLabel(/email address/i);
+    const password = page.getByLabel(/password/i);
+    await expect(email).toHaveAttribute("autocomplete", "email");
+    await expect(password).toHaveAttribute("autocomplete", "current-password");
+    // A well-formed email + wrong password passes native validation, so the
+    // submit reaches the auth call, which fails (no env in CI / bad creds
+    // locally) — either way the error must land in an aria-live region.
+    await email.fill("nobody@example.com");
+    await password.fill("wrong-password");
+    await page.getByRole("button", { name: /sign in/i }).click();
+    const liveRegion = page.locator('[role="alert"]');
     await expect(liveRegion).toBeVisible();
   });
 

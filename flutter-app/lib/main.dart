@@ -65,7 +65,6 @@ Future<void> main() async {
     'auth_enable_email': true,
     'auth_enable_google': true,
     'auth_enable_apple': true,
-    'auth_enable_phone': true,
     'auth_enable_anonymous': false,
   });
   await remoteConfig.setConfigSettings(
