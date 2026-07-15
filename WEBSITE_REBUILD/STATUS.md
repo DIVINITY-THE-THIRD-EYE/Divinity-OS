@@ -25,6 +25,43 @@
 
 ## Log (append-only, newest first)
 
+### 2026-07-15 — production push session (Fable): real bug fixed, deploy state verified, blockers narrowed
+- **Real bug found & fixed**: `lib/supabase/role-gate.ts` compared the JWT role
+  claim against lowercase `"student"`, but the DB stores `'STUDENT'` (001 CHECK
+  constraint, copied verbatim by `sync_user_role_to_auth`) — every legitimate
+  student bounced off /portal. Fixed case-insensitively + tests both casings.
+  Verified against prod: seeded a student and the GoTrue password grant returns
+  `role: "STUDENT"`.
+- **Merge-block root cause fixed**: required check "CodeQL Analysis"
+  (codeql-flutter.yml) was PR-path-filtered to flutter-app/** and never
+  reported on PR #28 → permanently blocked. Applied 46f208a's always-report
+  pattern. Also generated the 7 Linux visual baselines (IN-013) inside
+  mcr.microsoft.com/playwright:v1.61.1-jammy — 7/7 passed in-container.
+- **DB**: migration 047 (drop duplicate attendance index, linter 0009) +
+  pgTAP c25; applied to prod via MCP (same pattern as 046). Advisor ERROR 0010
+  re-confirmed as the documented accepted design (046 header). All 46+1
+  migrations present in prod.
+- **Deploy state verified live** (Vercel MCP): project `divinity-os` is
+  git-linked; every branch push auto-previews; preview of 46f208a verified
+  serving /login with Supabase host in CSP → Vercel env vars are configured.
+  Production alias serves old main at divinity-os.vercel.app.
+- **Test users seeded in prod** (email+password; DB was empty): student/
+  trainer/admin `*-test@example.com`, login verified via real GoTrue password
+  grant; RLS smoke: student sees only own row, role escalation blocked (009).
+- **Blockers narrowed to 5, all external**:
+  1. GitHub push: every available credential is read-only (gh keyring token
+     has no scopes; Credential Manager entry stale) — 2 local commits
+     (role-gate fix + CI unblock) await a working credential.
+  2. divinityfitness.in does not resolve — DNS never pointed at Vercel.
+  3. Website portal OTP: `phone_provider_disabled` — no SMS provider on the
+     Supabase project.
+  4. Flutter Web: `firebase_options.dart` throws UnsupportedError on web —
+     no Firebase *web app* registered (needs console + App Check/reCAPTCHA +
+     VAPID keys). Slim web build (3.7M, CDN CanvasKit) exists but would crash
+     at Firebase.initializeApp; deliberately NOT wired into /portal.
+  5. BREVO_API_KEY absent (keyfile/vercel.env template empty) — contact-form
+     email delivery unverified.
+
 ### 2026-07-10 — 18_DEPLOYMENT (blocked by tooling — documented honestly)
 - Phase: 8
 - Status: PARTIAL — done to the extent this environment allows; the
