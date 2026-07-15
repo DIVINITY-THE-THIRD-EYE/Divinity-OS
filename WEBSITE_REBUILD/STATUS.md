@@ -25,6 +25,28 @@
 
 ## Log (append-only, newest first)
 
+### 2026-07-15 — phone OTP system removed (owner directive)
+- Website `/login`: email+password (`signInWithPassword`) replaces the phone →
+  OTP two-step; `isE164Phone` deleted (login was its only consumer); portal
+  greeting falls back name → email. Fixed a pre-existing bug the live check
+  exposed: the not-student bounce message never rendered (LoginForm survives
+  the /login → /portal → /login redirect; `useState(initialError)` ignores the
+  fresh prop — now synced via `useEffect`).
+- Flutter: "Continue with Phone", OTP screen/route, `AuthOtpSent`,
+  `signInWithPhone`/`sendOtp`/`verifyOtp`, `auth_enable_phone` RC flag all
+  removed; login analytics moved to email sign-in success. Optional phone on
+  sign-up kept (profile data, not auth).
+- Verified: flutter analyze clean · 254/254 flutter tests · website tsc/lint
+  clean · 145/145 vitest · production build green · 54/54 Playwright
+  (portal + full a11y sweep) · LIVE round-trips against production Supabase:
+  student → portal welcome; trainer → signed out + visible not-student alert.
+- Release artifacts rebuilt without phone auth: signed app-release.apk
+  (65.4MB) + Flutter web bundle.
+- **Consequence: the "Supabase SMS provider" external blocker is gone.**
+  Remaining owner blockers: GitHub write credential (PAT lacks
+  Contents:write), Brevo authorised-IPs restriction, DNS, Firebase web app
+  (optional). Commit e401245 (this work) is local-only until push works.
+
 ### 2026-07-15 — production push session (Fable): real bug fixed, deploy state verified, blockers narrowed
 - **Real bug found & fixed**: `lib/supabase/role-gate.ts` compared the JWT role
   claim against lowercase `"student"`, but the DB stores `'STUDENT'` (001 CHECK
