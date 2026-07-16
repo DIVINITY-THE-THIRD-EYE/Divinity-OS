@@ -2,6 +2,15 @@
 
 All notable changes to Divinity — The Third Eye website.
 
+## [1.1.0](https://github.com/DIVINITY-THE-THIRD-EYE/Divinity-OS/compare/divinity-website-v1.0.0...divinity-website-v1.1.0) (2026-07-16)
+
+
+### ✨ Features
+
+* 10-phase build-out — Plans, leave rules, waitlist, certs, events payments, i18n, unified theme ([d4a769e](https://github.com/DIVINITY-THE-THIRD-EYE/Divinity-OS/commit/d4a769e2d10b46a956632cf79149101e0535a5f3))
+* Hindi + English i18n on both Flutter app and website ([2c24840](https://github.com/DIVINITY-THE-THIRD-EYE/Divinity-OS/commit/2c2484060456b8d8d2213be38a0c156c5904d839))
+* unified void/bone/ember design system across website and Flutter app ([974f420](https://github.com/DIVINITY-THE-THIRD-EYE/Divinity-OS/commit/974f42048a205e4bbeeb2e06bf431160fc5e061f))
+
 ## [Unreleased] — Phase 1: Conversion & Trust
 
 ### Added
