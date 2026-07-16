@@ -66,7 +66,7 @@ jobs:
       # docs/CODEQL_STRATEGY.md for the full rationale.
       - name: Initialize CodeQL
         if: github.event_name != 'pull_request' || steps.changes.outputs.flutter == 'true'
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: java-kotlin
           queries: security-extended
@@ -119,6 +119,6 @@ jobs:
       # docs/CODEQL_VERIFICATION.md for the run that confirmed this.
       - name: Perform CodeQL Analysis
         if: github.event_name != 'pull_request' || steps.changes.outputs.flutter == 'true'
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4
         with:
           category: /language:java-kotlin
