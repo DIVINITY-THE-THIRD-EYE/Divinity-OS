@@ -1,15 +1,49 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { m, AnimatePresence } from "framer-motion";
 import { waHref } from "@/lib/links";
+import { introOffer } from "@/content/offers";
 
 const whatsappHref = waHref(
   "Namaste — I'd like to claim the first-week trial offer at Divinity."
 );
 
+/**
+ * Fixed at the very top (above Nav). Publishes its own rendered height as
+ * `--promo-h` on <html> so Nav can sit fixed just below it instead of
+ * overlapping — before this, both were independently fixed/positioned at the
+ * same y:0 with Nav's lower z-index, so the promo bar silently ate every
+ * click meant for the nav underneath it (caught via Playwright: clicking the
+ * "Pricing" nav link timed out — elementFromPoint at that link's coordinates
+ * resolved to the promo bar, not the link).
+ */
 export default function PromoBar() {
   const [dismissed, setDismissed] = useState(false);
+  // Measure the inner content div, not the outer m.div — the outer one is
+  // what framer-motion animates height:0→auto on, so reading ITS offsetHeight
+  // mid-animation (e.g. right after mount) returns a moving, too-small value.
+  // The inner content div has no animation on it, so its height is the real,
+  // stable target size from the very first render.
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    if (dismissed) {
+      document.documentElement.style.setProperty("--promo-h", "0px");
+      return;
+    }
+    const el = contentRef.current;
+    if (!el) return;
+    const update = () => document.documentElement.style.setProperty("--promo-h", `${el.offsetHeight}px`);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [dismissed]);
+
+  useEffect(() => {
+    return () => document.documentElement.style.setProperty("--promo-h", "0px");
+  }, []);
 
   return (
     <AnimatePresence>
@@ -19,12 +53,12 @@ export default function PromoBar() {
           animate={{ height: "auto", opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
           transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-          className="relative z-[350] overflow-hidden bg-ember"
+          className="fixed inset-x-0 top-0 z-[360] overflow-hidden bg-gradient-to-r from-accent to-accent-2"
         >
-          <div className="flex items-center justify-between gap-3 px-4 py-2.5 md:justify-center md:gap-6">
+          <div ref={contentRef} className="flex items-center justify-between gap-3 px-4 py-2.5 md:justify-center md:gap-6">
             <p className="font-mono text-[11px] uppercase tracking-wide text-void">
               <span className="line-through opacity-90">₹500</span>
-              <span className="mx-1.5 font-bold">₹99 first week</span>
+              <span className="mx-1.5 font-bold">{introOffer.price} {introOffer.duration}</span>
               <span className="hidden md:inline">— try any class, no commitment.</span>
             </p>
             <a

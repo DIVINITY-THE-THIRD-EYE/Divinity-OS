@@ -1,44 +1,22 @@
-import { site, faqs, disciplines } from "@/lib/content";
+import { site, disciplines, locationConfig } from "@/lib/content";
+import { buildLocalBusinessJsonLd } from "@/lib/seo";
 
+/**
+ * Site-wide structured data — LocalBusiness only. FAQPage/Course schema
+ * moved to the specific pages whose visible content they describe (/faq,
+ * each program page) — emitting FAQPage/Course on every route regardless of
+ * what's actually on that page is the kind of mismatch Google's structured
+ * data guidelines flag (14_SEO.md).
+ */
 export default function JsonLd({ site: siteProp }: { site?: typeof site }) {
   const activeSite = siteProp || site;
-  const data = [
-    {
-      "@context": "https://schema.org",
-      "@type": ["HealthAndBeautyBusiness", "SportsActivityLocation"],
-      name: activeSite.full,
-      description:
-        `A yoga, fitness and wellness academy in Lucknow guiding body and mind toward balance through breath, movement and stillness, founded by ${activeSite.founder}.`,
-      url: activeSite.url,
-      telephone: activeSite.phone,
-      founder: { "@type": "Person", name: activeSite.founder },
-      address: {
-        "@type": "PostalAddress",
-        addressLocality: "Lucknow",
-        addressRegion: "Uttar Pradesh",
-        addressCountry: "IN",
-      },
-      areaServed: "Lucknow",
-      knowsAbout: disciplines.map((d) => d.title),
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: faqs.map((f) => ({
-        "@type": "Question",
-        name: f.q,
-        acceptedAnswer: { "@type": "Answer", text: f.a },
-      })),
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "Course",
-      name: "Yoga, Fitness & Wellness Programs",
-      description:
-        "Hatha & Vinyasa yoga, fitness training, therapeutic yoga, pranayama, and wellness programs.",
-      provider: { "@type": "Organization", name: activeSite.full, sameAs: activeSite.url },
-    },
-  ];
+  const data = {
+    ...buildLocalBusinessJsonLd(activeSite, {
+      latitude: locationConfig.latitude,
+      longitude: locationConfig.longitude,
+    }),
+    knowsAbout: disciplines.map((d) => d.title),
+  };
 
   return (
     <script

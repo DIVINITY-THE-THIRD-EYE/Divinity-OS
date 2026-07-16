@@ -15,14 +15,12 @@ class AuthConfig {
     required this.enableEmailPassword,
     required this.enableGoogleSignIn,
     required this.enableAppleSignIn,
-    required this.enablePhoneOtp,
     required this.enableAnonymous,
   });
 
   final bool enableEmailPassword;
   final bool enableGoogleSignIn;
   final bool enableAppleSignIn;
-  final bool enablePhoneOtp;
   final bool enableAnonymous;
 }
 
@@ -33,7 +31,6 @@ final authConfigProvider = Provider<AuthConfig>((ref) {
       enableEmailPassword: rc.getBool('auth_enable_email'),
       enableGoogleSignIn: rc.getBool('auth_enable_google'),
       enableAppleSignIn: rc.getBool('auth_enable_apple'),
-      enablePhoneOtp: rc.getBool('auth_enable_phone'),
       enableAnonymous: rc.getBool('auth_enable_anonymous'),
     );
   } catch (_) {
@@ -41,7 +38,6 @@ final authConfigProvider = Provider<AuthConfig>((ref) {
       enableEmailPassword: true,
       enableGoogleSignIn: true,
       enableAppleSignIn: true,
-      enablePhoneOtp: true,
       enableAnonymous: false,
     );
   }
@@ -223,7 +219,15 @@ class AuthNotifier extends StateNotifier<app_auth.AuthState> {
     try {
       await _repo.signInWithEmail(email: email, password: password);
       final user = _repo.currentUser;
-      if (user != null) await _resolveUserState(user);
+      if (user != null) {
+        await _resolveUserState(user);
+        if (state is app_auth.AuthAuthenticated) {
+          // Fire-and-forget; must never affect auth flow.
+          try {
+            AnalyticsService.logLogin().ignore();
+          } catch (_) {}
+        }
+      }
     } on AuthException catch (e) {
       state = app_auth.AuthError(e.message);
     } catch (e) {
@@ -293,65 +297,6 @@ class AuthNotifier extends StateNotifier<app_auth.AuthState> {
       _handlingLocal = false;
     }
   }
-
-  Future<void> signInWithPhone({
-    required String phone,
-    required String password,
-  }) async {
-    _handlingLocal = true;
-    state = app_auth.AuthLoading();
-    try {
-      await _repo.signInWithPhone(phone: phone, password: password);
-      final user = _repo.currentUser;
-      if (user != null) await _resolveUserState(user);
-    } on AuthException catch (e) {
-      state = app_auth.AuthError(e.message);
-    } catch (e) {
-      state = app_auth.AuthError('Unexpected error. Please try again.');
-    } finally {
-      _handlingLocal = false;
-    }
-  }
-
-  Future<void> sendOtp({required String phone}) async {
-    state = app_auth.AuthLoading();
-    try {
-      await _repo.signInWithOtp(phone: phone);
-      state = app_auth.AuthOtpSent(phone);
-    } on AuthException catch (e) {
-      state = app_auth.AuthError(e.message);
-    } catch (_) {
-      state = app_auth.AuthError('Failed to send OTP. Please try again.');
-    }
-  }
-
-  Future<void> verifyOtp({required String phone, required String token}) async {
-    _handlingLocal = true;
-    state = app_auth.AuthLoading();
-    try {
-      await _repo.verifyOtp(phone: phone, token: token);
-      final user = _repo.currentUser;
-      if (user != null) {
-        await _resolveUserState(user);
-        if (state is app_auth.AuthAuthenticated) {
-          // Fire-and-forget; must never affect auth flow.
-          try {
-            AnalyticsService.logLogin().ignore();
-          } catch (_) {}
-        }
-      } else {
-        state = app_auth.AuthError('Verification failed. Please try again.');
-      }
-    } on AuthException catch (e) {
-      state = app_auth.AuthError(e.message);
-    } catch (_) {
-      state = app_auth.AuthError('Unexpected error. Please try again.');
-    } finally {
-      _handlingLocal = false;
-    }
-  }
-
-  Future<void> resendOtp({required String phone}) => sendOtp(phone: phone);
 
   Future<void> signOut() async {
     _handlingLocal = true;

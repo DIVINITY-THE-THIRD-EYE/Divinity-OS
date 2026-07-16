@@ -16,15 +16,15 @@ export default function EmptyState({
   glyph?: string;
 }) {
   return (
-    <div className="mx-auto flex max-w-xl flex-col items-center gap-5 border border-[var(--line-dark)] bg-deep/40 px-8 py-16 text-center">
+    <div className="mx-auto flex max-w-xl flex-col items-center gap-5 rounded-[32px] bg-[var(--void)] px-8 py-16 text-center shadow-clay-card">
       <span
         aria-hidden
-        className="flex h-14 w-14 items-center justify-center rounded-full border border-[var(--line-dark)] font-display text-2xl text-ember"
+        className="clay-breathe flex h-16 w-16 items-center justify-center rounded-full bg-[var(--void)] font-display text-2xl text-accent shadow-clay-inset"
       >
         {glyph}
       </span>
-      <p className="font-display text-2xl italic text-bone">{title}</p>
-      <p className="max-w-md font-body text-[15px] leading-relaxed text-mist">{message}</p>
+      <p className="font-display text-2xl font-bold text-fg">{title}</p>
+      <p className="max-w-md font-body text-[15px] leading-relaxed text-fg-muted">{message}</p>
       {cta && (
         <CtaLink href={cta.href} external={cta.external} variant="outline">
           {cta.label}

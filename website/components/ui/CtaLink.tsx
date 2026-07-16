@@ -4,12 +4,17 @@ import type { ReactNode } from "react";
 type Variant = "primary" | "outline" | "ghost";
 
 const base =
-  "inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-wide transition-colors";
+  "inline-flex items-center justify-center gap-2 text-[13px] font-bold uppercase tracking-wide transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/30 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--void)]";
 
+// Clay physics: primary bulges out (violet gradient + clay-button shadow),
+// lifts on hover, squishes on press. Outline/ghost stay flat-recessed.
 const variants: Record<Variant, string> = {
-  primary: "bg-ember px-7 py-3.5 text-void hover:bg-ember-pale",
-  outline: "border border-ember px-7 py-3.5 text-ember hover:bg-ember hover:text-void",
-  ghost: "text-mist hover:text-ember",
+  primary:
+    "rounded-2xl bg-gradient-to-br from-accent-light to-accent px-8 py-4 text-white shadow-clay-button hover:-translate-y-0.5 hover:shadow-clay-button-hover active:scale-[0.96] active:shadow-clay-pressed",
+  outline:
+    "rounded-2xl bg-[var(--void)] px-8 py-4 text-accent shadow-clay-raised hover:-translate-y-0.5 hover:shadow-clay-raised-hover active:scale-[0.96] active:shadow-clay-pressed",
+  ghost:
+    "rounded-xl px-3 py-2 text-fg-muted hover:text-accent hover:bg-accent/5",
 };
 
 /** Route-aware CTA. `external` switches to a plain anchor (wa.me, Instagram). */

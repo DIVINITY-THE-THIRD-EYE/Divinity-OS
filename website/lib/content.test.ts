@@ -48,17 +48,20 @@ describe("discipline slug routing", () => {
 });
 
 describe("content getters", () => {
-  it("returns posts/events since the arrays are populated", () => {
-    expect(posts.length).toBe(3);
-    expect(events.length).toBe(3);
-    expect(getPostBySlug("science-of-prana-why-breath-comes-first")).toBeDefined();
-    expect(getEventBySlug("weekend-pranayama-intensive")).toBeDefined();
+  // Default (production) env: NEXT_PUBLIC_SHOW_STAGING is unset, so
+  // stripStaging() drops the "[STAGING]" placeholders — posts/events resolve
+  // empty and the routes' empty states render. Visitors never see staging text.
+  it("strips staging placeholders from posts/events by default", () => {
+    expect(posts.length).toBe(0);
+    expect(events.length).toBe(0);
+    expect(getPostBySlug("science-of-prana-why-breath-comes-first")).toBeUndefined();
+    expect(getEventBySlug("weekend-pranayama-intensive")).toBeUndefined();
     expect(getPostBySlug("not-a-slug")).toBeUndefined();
     expect(getEventBySlug("not-a-slug")).toBeUndefined();
   });
 
-  it("upcomingEvents returns populated list of future events", () => {
-    expect(upcomingEvents().length).toBeGreaterThan(0);
+  it("upcomingEvents is empty when events are stripped", () => {
+    expect(upcomingEvents().length).toBe(0);
   });
 });
 

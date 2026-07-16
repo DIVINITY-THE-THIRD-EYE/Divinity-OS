@@ -21,20 +21,20 @@ export default function Breadcrumbs({ trail }: { trail: Crumb[] }) {
   };
 
   return (
-    <nav aria-label="Breadcrumb" className="font-mono text-[10px] uppercase tracking-wide text-mist">
+    <nav aria-label="Breadcrumb" className="font-mono text-[10px] uppercase tracking-wide text-fg-muted">
       <ol className="flex flex-wrap items-center gap-2">
         {items.map((c, i) => {
           const last = i === items.length - 1;
           return (
             <li key={c.href} className="flex items-center gap-2">
               {last ? (
-                <span aria-current="page" className="text-ember">{c.label}</span>
+                <span aria-current="page" className="text-accent">{c.label}</span>
               ) : (
-                <Link href={c.href} className="transition-colors hover:text-ember">
+                <Link href={c.href} className="transition-colors hover:text-accent">
                   {c.label}
                 </Link>
               )}
-              {!last && <span aria-hidden className="text-mist/50">/</span>}
+              {!last && <span aria-hidden className="text-fg-muted/50">/</span>}
             </li>
           );
         })}

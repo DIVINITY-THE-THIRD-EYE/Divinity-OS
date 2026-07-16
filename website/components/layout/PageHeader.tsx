@@ -24,13 +24,13 @@ export default function PageHeader({
   children?: ReactNode;
 }) {
   return (
-    <header className="relative overflow-hidden border-b border-[var(--line-dark)] bg-void px-6 pb-16 pt-32 md:px-10 md:pb-24 md:pt-44">
+    <header className="relative overflow-hidden border-b border-[var(--line)] bg-surface px-6 pb-16 pt-32 md:px-10 md:pb-24 md:pt-44">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(80% 60% at 50% 0%, rgba(208,138,62,0.10), transparent 60%)",
+            "radial-gradient(80% 60% at 50% 0%, rgba(124,58,237,0.12), transparent 60%)",
         }}
       />
       <div className="relative mx-auto max-w-6xl">
@@ -39,19 +39,19 @@ export default function PageHeader({
             <Breadcrumbs trail={trail} />
           </div>
         )}
-        <Reveal>
-          {eyebrow && <p className="eyebrow mb-6 text-ember">{eyebrow}</p>}
-          <h1 className="font-display text-[clamp(40px,7vw,96px)] font-light leading-[0.95] tracking-tight text-bone">
+        <Reveal immediate>
+          {eyebrow && <p className="eyebrow mb-6 text-accent">{eyebrow}</p>}
+          <h1 className="font-display text-[clamp(40px,7vw,96px)] font-light leading-[0.95] tracking-tight text-fg">
             {title}
             {titleAccent && (
               <>
                 {" "}
-                <em className="text-ember">{titleAccent}</em>
+                <em className="text-accent">{titleAccent}</em>
               </>
             )}
           </h1>
           {intro && (
-            <p className="mt-7 max-w-2xl font-body text-[17px] leading-relaxed text-mist">
+            <p className="mt-7 max-w-2xl font-body text-[17px] leading-relaxed text-fg-muted">
               {intro}
             </p>
           )}

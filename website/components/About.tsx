@@ -7,7 +7,7 @@ import { site } from "@/lib/content";
 export default function About({ site: siteProp }: { site?: typeof site }) {
   const activeSite = siteProp || site;
   return (
-    <section id="about" className="relative overflow-hidden bg-bone px-6 py-28 text-ink md:px-10 md:py-40">
+    <section id="about" className="relative overflow-hidden bg-deep px-6 py-28 text-ink md:px-10 md:py-40">
       {/* faint Devanagari watermark — आज्ञा (Ajna, the third eye). Rendered as
           pseudo-content (see .watermark) so it stays out of contrast checks. */}
       <span
@@ -37,7 +37,7 @@ export default function About({ site: siteProp }: { site?: typeof site }) {
                 className="h-auto w-full object-cover"
               />
             </div>
-            <div className="absolute -bottom-4 left-4 bg-bone px-4 py-2.5 shadow-sm ring-1 ring-[var(--line-light)]">
+            <div className="absolute -bottom-4 left-4 bg-deep px-4 py-2.5 shadow-sm ring-1 ring-[var(--line-light)]">
               <span className="block font-display text-lg italic leading-none text-ink">
                 {activeSite.founder}
               </span>

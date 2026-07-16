@@ -6,6 +6,7 @@ import { site } from "@/lib/content";
 import { footerGroups, legalItems } from "@/lib/nav";
 import { waHref } from "@/lib/links";
 import { useLocale } from "@/lib/i18n/LocaleContext";
+import Newsletter from "./Newsletter";
 
 export default function Footer({ site: siteProp }: { site?: typeof site }) {
   const activeSite = siteProp || site;
@@ -13,7 +14,9 @@ export default function Footer({ site: siteProp }: { site?: typeof site }) {
   const whatsappHref = waHref("Namaste — I'd like to know more about practising at Divinity.", activeSite.whatsapp);
 
   return (
-    <footer className="border-t border-[var(--line-dark)] bg-void px-6 pb-10 pt-16 md:px-10">
+    <footer className="border-t border-[var(--line-dark)] bg-void">
+      <Newsletter />
+      <div className="px-6 pb-10 pt-16 md:px-10">
       <div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-[2fr_1fr_1fr_1.3fr]">
         <div>
           <Link href="/" className="flex items-center gap-2.5" aria-label={`${activeSite.full} — home`}>
@@ -90,6 +93,7 @@ export default function Footer({ site: siteProp }: { site?: typeof site }) {
             Align · Awaken · Ascend
           </span>
         </div>
+      </div>
       </div>
     </footer>
   );

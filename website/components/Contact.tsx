@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Reveal from "./Reveal";
 import { site, locationConfig } from "@/lib/content";
+import { contact } from "@/content/contact";
 import { formErrorMessage } from "@/lib/form-error";
 import WeatherWidget from "./WeatherWidget";
 
@@ -63,41 +64,42 @@ export default function Contact({ site: siteProp }: { site?: typeof site }) {
   }
 
   const field =
-    "w-full border-b border-[var(--line-dark)] bg-transparent py-3 font-body text-bone placeholder:text-mist/60 focus:border-ember focus:outline-none";
+    "w-full border-b border-[var(--line)] bg-transparent py-3 font-body text-fg placeholder:text-fg-muted/60 focus:border-accent focus:outline-none";
 
   return (
     <section
       id="contact"
-      className="relative overflow-hidden border-t border-[var(--line-dark)] bg-void px-6 py-28 md:px-10 md:py-40"
+      className="relative overflow-hidden border-t border-[var(--line)] bg-surface px-6 py-28 md:px-10 md:py-40"
     >
       <span
         aria-hidden
         data-watermark="Divinity"
-        className="watermark pointer-events-none absolute bottom-[-90px] left-1/2 -translate-x-1/2 select-none font-display text-[clamp(120px,20vw,320px)] leading-none text-bone/[0.025]"
+        className="watermark pointer-events-none absolute bottom-[-90px] left-1/2 -translate-x-1/2 select-none font-display text-[clamp(120px,20vw,320px)] leading-none text-fg/[0.025]"
       />
 
       <div className="relative mx-auto grid max-w-6xl gap-16 md:grid-cols-2 md:gap-24">
         <Reveal>
-          <p className="eyebrow mb-7 text-ember">Begin today</p>
-          <h2 className="font-display text-[clamp(40px,6vw,92px)] font-light leading-[0.92] tracking-tight text-bone">
+          <p className="eyebrow mb-7 text-accent">Begin today</p>
+          <h2 className="font-display text-[clamp(40px,6vw,92px)] font-light leading-[0.92] tracking-tight text-fg">
             Your first
             <br />
-            <em className="text-ember">breath</em> with us.
+            <em className="text-accent">breath</em> with us.
           </h2>
-          <p className="mt-8 max-w-sm font-body text-base leading-relaxed text-mist">
+          <p className="mt-8 max-w-sm font-body text-base leading-relaxed text-fg-muted">
             Visit us in {activeSite.city}, or send a note below. The first step is the
             simplest — and it is yours to take.
           </p>
-          <div className="mt-10 space-y-1 font-mono text-[12px] uppercase tracking-wide text-mist">
+          <div className="mt-10 space-y-1 font-mono text-[12px] uppercase tracking-wide text-fg-muted">
             <p>{activeSite.city}</p>
             <p>{activeSite.entity}</p>
+            <p>{contact.hours}</p>
           </div>
-          
+
           <div className="mt-12 space-y-8">
             <WeatherWidget />
             
             <div className="space-y-4">
-              <div className="relative h-[280px] w-full overflow-hidden border border-[var(--line-dark)]">
+              <div className="relative h-[280px] w-full overflow-hidden border border-[var(--line)]">
                 <iframe
                   title={`Interactive location map of Divinity in ${locationConfig.name}`}
                   src={`https://maps.google.com/maps?q=${encodeURIComponent(locationConfig.name + ", " + locationConfig.city)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
@@ -114,7 +116,7 @@ export default function Contact({ site: siteProp }: { site?: typeof site }) {
                   href={`https://maps.google.com/?q=${encodeURIComponent(locationConfig.name + ", " + locationConfig.city)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-block border border-[var(--line-dark)] px-4 py-2.5 font-mono text-[10px] uppercase tracking-wider text-bone hover:border-ember hover:text-ember transition-colors"
+                  className="inline-block border border-[var(--line)] px-4 py-2.5 font-mono text-[10px] uppercase tracking-wider text-fg hover:border-accent hover:text-accent transition-colors"
                 >
                   Open in Google Maps
                 </a>
@@ -122,7 +124,7 @@ export default function Contact({ site: siteProp }: { site?: typeof site }) {
                   href={`https://www.google.com/maps/dir/?api=1&destination=${locationConfig.latitude},${locationConfig.longitude}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-block bg-ember px-4 py-2.5 font-mono text-[10px] uppercase tracking-wider text-void hover:bg-ember-pale transition-colors"
+                  className="inline-block bg-accent px-4 py-2.5 font-mono text-[10px] uppercase tracking-wider text-surface hover:bg-ember-pale transition-colors"
                 >
                   Directions
                 </a>
@@ -133,11 +135,11 @@ export default function Contact({ site: siteProp }: { site?: typeof site }) {
 
         <Reveal delay={0.1}>
           {status === "done" ? (
-            <div role="status" aria-live="polite" className="flex h-full flex-col justify-center border border-[var(--line-dark)] p-10 text-center">
-              <p className="font-display text-3xl italic text-ember">
+            <div role="status" aria-live="polite" className="flex h-full flex-col justify-center border border-[var(--line)] p-10 text-center">
+              <p className="font-display text-3xl italic text-accent">
                 Thank you.
               </p>
-              <p className="mt-3 font-body text-mist">
+              <p className="mt-3 font-body text-fg-muted">
                 We have received your note and will reach out shortly to begin.
               </p>
             </div>
@@ -155,11 +157,11 @@ export default function Contact({ site: siteProp }: { site?: typeof site }) {
                 />
               </div>
               <div>
-                <label htmlFor="contact-name" className="eyebrow mb-2 block text-mist">Name</label>
+                <label htmlFor="contact-name" className="eyebrow mb-2 block text-fg-muted">Name</label>
                 <input id="contact-name" name="name" required autoComplete="name" className={field} placeholder="Your name" aria-required="true" />
               </div>
               <div>
-                <label htmlFor="contact-email" className="eyebrow mb-2 block text-mist">Email</label>
+                <label htmlFor="contact-email" className="eyebrow mb-2 block text-fg-muted">Email</label>
                 <input
                   id="contact-email"
                   name="email"
@@ -173,7 +175,7 @@ export default function Contact({ site: siteProp }: { site?: typeof site }) {
                 />
               </div>
               <div>
-                <label htmlFor="contact-intention" className="eyebrow mb-2 block text-mist">
+                <label htmlFor="contact-intention" className="eyebrow mb-2 block text-fg-muted">
                   What draws you
                 </label>
                 <select id="contact-intention" name="intention" required aria-required="true" className={`${field} appearance-none`} defaultValue="">
@@ -188,7 +190,7 @@ export default function Contact({ site: siteProp }: { site?: typeof site }) {
                 </select>
               </div>
               <div>
-                <label htmlFor="contact-message" className="eyebrow mb-2 block text-mist">Message</label>
+                <label htmlFor="contact-message" className="eyebrow mb-2 block text-fg-muted">Message</label>
                 <textarea
                   id="contact-message"
                   name="message"
@@ -205,7 +207,7 @@ export default function Contact({ site: siteProp }: { site?: typeof site }) {
               <button
                 type="submit"
                 disabled={status === "sending"}
-                className="w-full bg-ember py-4 font-mono text-[11px] uppercase tracking-wide text-void transition-colors hover:bg-ember-pale disabled:opacity-60"
+                className="w-full bg-accent py-4 font-mono text-[11px] uppercase tracking-wide text-surface transition-colors hover:bg-ember-pale disabled:opacity-60"
               >
                 {status === "sending" ? "Sending…" : "Send enquiry"}
               </button>

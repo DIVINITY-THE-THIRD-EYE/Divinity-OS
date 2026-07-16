@@ -9,8 +9,8 @@ import { site } from "@/lib/content";
 import { navItems, primaryNav } from "@/lib/nav";
 import { trapTab } from "@/lib/focus-trap";
 import { useLocale } from "@/lib/i18n/LocaleContext";
-import { useTheme } from "@/lib/theme/ThemeContext";
 import Magnetic from "./Magnetic";
+import ThemeToggle from "./ThemeToggle";
 
 function openPalette() {
   window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }));
@@ -20,7 +20,6 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
   const activeSite = siteProp || site;
   const pathname = usePathname();
   const { locale, setLocale, t } = useLocale();
-  const { theme, toggleTheme } = useTheme();
   const [solid, setSolid] = useState(false);
   const [open, setOpen] = useState(false);
   const menuBtnRef = useRef<HTMLButtonElement>(null);
@@ -64,9 +63,9 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
         initial={{ y: -40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-        className={`fixed inset-x-0 top-0 z-[300] flex items-center justify-between px-6 transition-all duration-500 md:px-10 ${
+        className={`fixed inset-x-0 top-[var(--promo-h,0px)] z-[300] flex items-center justify-between px-6 transition-all duration-500 md:px-10 ${
           solid
-            ? "border-b border-[var(--line-dark)] bg-void/85 py-3 backdrop-blur-md"
+            ? "mx-3 mt-2 rounded-[28px] bg-surface/80 py-3 shadow-clay-sm backdrop-blur-xl md:mx-6"
             : "py-6"
         }`}
       >
@@ -79,9 +78,9 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
             priority
             className="h-7 w-7 transition-transform duration-500 group-hover:scale-110"
           />
-          <span className="font-mono text-[11px] uppercase tracking-label text-ember">
+          <span className="font-mono text-[11px] uppercase tracking-label text-accent">
             {activeSite.name}
-            <span className="text-mist"> — the third eye</span>
+            <span className="text-fg-muted"> — the third eye</span>
           </span>
         </Link>
 
@@ -91,8 +90,8 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
               key={l.href}
               href={l.href}
               aria-current={isActive(l.href) ? "page" : undefined}
-              className={`font-mono text-[11px] uppercase tracking-wide transition-colors hover:text-ember ${
-                isActive(l.href) ? "text-ember" : "text-mist"
+              className={`font-mono text-[11px] uppercase tracking-wide transition-colors hover:text-accent ${
+                isActive(l.href) ? "text-accent" : "text-fg-muted"
               }`}
             >
               {t(l.label)}
@@ -100,29 +99,29 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
           ))}
           <button
             onClick={openPalette}
-            className="flex items-center gap-1.5 text-mist transition-colors hover:text-ember"
+            className="flex items-center gap-1.5 text-fg-muted transition-colors hover:text-accent"
             aria-label="Open command menu"
           >
             <span className="kbd">⌘K</span>
           </button>
           <button
             onClick={() => setLocale(locale === "en" ? "hi" : "en")}
-            className="font-mono text-[11px] uppercase tracking-wide text-mist transition-colors hover:text-ember"
+            className="flex min-h-6 min-w-6 items-center justify-center font-mono text-[11px] uppercase tracking-wide text-fg-muted transition-colors hover:text-accent"
             aria-label={t("Language")}
           >
             {locale === "en" ? "हिं" : "EN"}
           </button>
-          <button
-            onClick={toggleTheme}
-            className="font-mono text-[11px] uppercase tracking-wide text-mist transition-colors hover:text-ember"
-            aria-label="Toggle theme"
+          <Link
+            href="/login"
+            className="font-mono text-[11px] uppercase tracking-wide text-fg-muted transition-colors hover:text-accent"
           >
-            {theme === "dark" ? "☀" : "☾"}
-          </button>
+            Student Login
+          </Link>
+          <ThemeToggle />
           <Magnetic>
             <Link
               href="/contact"
-              className="border border-ember px-5 py-2 font-mono text-[11px] uppercase tracking-wide text-ember transition-colors hover:bg-ember hover:text-void"
+              className="rounded-full bg-gradient-to-br from-accent-light to-accent px-6 py-2.5 text-[11px] font-bold uppercase tracking-wide text-white shadow-clay-button transition-all duration-200 hover:-translate-y-0.5 hover:shadow-clay-button-hover active:scale-95"
             >
               {t("Begin")}
             </Link>
@@ -132,7 +131,7 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
         <button
           ref={menuBtnRef}
           onClick={() => setOpen(true)}
-          className="font-mono text-[11px] uppercase tracking-wide text-bone lg:hidden"
+          className="font-mono text-[11px] uppercase tracking-wide text-fg lg:hidden"
           aria-label="Open menu"
           aria-expanded={open}
           aria-controls="mobile-menu"
@@ -152,12 +151,12 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[400] flex flex-col items-center justify-center gap-6 overflow-y-auto bg-void/95 px-6 py-24 backdrop-blur-lg lg:hidden"
+            className="fixed inset-0 z-[400] flex flex-col items-center justify-center gap-6 overflow-y-auto bg-surface/95 px-6 py-24 backdrop-blur-lg lg:hidden"
           >
             <button
               ref={closeBtnRef}
               onClick={() => setOpen(false)}
-              className="absolute right-6 top-6 font-mono text-[11px] uppercase tracking-wide text-mist"
+              className="absolute right-6 top-6 font-mono text-[11px] uppercase tracking-wide text-fg-muted"
               aria-label="Close menu"
             >
               {t("Close")}
@@ -173,7 +172,7 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
                   href={l.href}
                   aria-current={isActive(l.href) ? "page" : undefined}
                   className={`font-display text-3xl font-light ${
-                    isActive(l.href) ? "text-ember" : "text-bone"
+                    isActive(l.href) ? "text-accent" : "text-fg"
                   }`}
                 >
                   {t(l.label)}
@@ -188,7 +187,7 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
             >
               <Link
                 href="/contact"
-                className="border border-ember px-7 py-3 font-mono text-[11px] uppercase tracking-wide text-ember"
+                className="rounded-full bg-gradient-to-br from-accent-light to-accent px-8 py-3.5 text-[12px] font-bold uppercase tracking-wide text-white shadow-clay-button"
               >
                 {t("Begin")}
               </Link>
@@ -201,17 +200,14 @@ export default function Nav({ site: siteProp }: { site?: typeof site }) {
             >
               <button
                 onClick={() => setLocale(locale === "en" ? "hi" : "en")}
-                className="font-mono text-[11px] uppercase tracking-wide text-mist"
+                className="font-mono text-[11px] uppercase tracking-wide text-fg-muted"
               >
                 {locale === "en" ? "हिंदी में देखें" : "View in English"}
               </button>
-              <button
-                onClick={toggleTheme}
-                className="font-mono text-[11px] uppercase tracking-wide text-mist"
-                aria-label="Toggle theme"
-              >
-                {theme === "dark" ? "☀ Light" : "☾ Dark"}
-              </button>
+              <Link href="/login" className="font-mono text-[11px] uppercase tracking-wide text-fg-muted">
+                Student Login
+              </Link>
+              <ThemeToggle />
             </m.div>
           </m.div>
         )}

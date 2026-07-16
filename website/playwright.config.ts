@@ -17,6 +17,11 @@ export default defineConfig({
     baseURL: "http://localhost:3000",
     trace: "on-first-retry",
   },
+  // Visual regression (17_TESTING.md): 2% pixel-diff tolerance across the
+  // 4 named pages' baselines (e2e/visual.spec.ts).
+  expect: {
+    toHaveScreenshot: { maxDiffPixelRatio: 0.02 },
+  },
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
   ],
@@ -25,5 +30,11 @@ export default defineConfig({
     url: "http://localhost:3000",
     timeout: 180_000,
     reuseExistingServer: !process.env.CI,
+    // verify.spec.ts asserts the graceful no-endpoint fallback; a dev
+    // machine's .env.local may set CERT_VERIFY_ENDPOINT and flip the route's
+    // behavior. Real (non-empty) environment values take precedence over
+    // .env files in Next.js, so pinning it empty here makes the suite
+    // deterministic on any machine.
+    env: { CERT_VERIFY_ENDPOINT: "" },
   },
 });

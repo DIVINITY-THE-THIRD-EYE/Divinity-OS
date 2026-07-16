@@ -34,15 +34,50 @@ const config: Config = {
         mist: withOpacity("--mist-rgb"),
         ink: withOpacity("--ink-rgb"),
         "ink-mute": withOpacity("--ink-mute-rgb"),
+        // Semantic layer (03_DESIGN_SYSTEM). surface/-2/-3 need opacity-modifier
+        // support (bg-surface/85 etc., used by Nav's scroll-solid state) so they
+        // get the same -rgb + withOpacity() treatment as the primitives above.
+        surface: withOpacity("--surface-rgb"),
+        "surface-2": withOpacity("--surface-2-rgb"),
+        "surface-3": withOpacity("--surface-3-rgb"),
+        fg: "var(--fg)",
+        "fg-muted": "var(--fg-muted)",
+        accent: "var(--accent)",
+        "accent-light": "var(--accent-light)",
+        "accent-2": "var(--accent-2)",
+        gold: withOpacity("--gold-rgb"),
       } as unknown as Record<string, string>,
       fontFamily: {
-        display: ["var(--font-display)", "Georgia", "serif"],
+        // Display = Nunito (clay), body = DM Sans. mono aliases to body since
+        // the clay/neu system has no monospace role (eyebrows use DM Sans).
+        display: ["var(--font-display)", "Nunito", "system-ui", "sans-serif"],
         body: ["var(--font-body)", "system-ui", "sans-serif"],
-        mono: ["var(--font-mono)", "monospace"],
+        mono: ["var(--font-body)", "system-ui", "sans-serif"],
+      },
+      // Clay/neu shadow stacks — themable via the --sh-* vars (globals.css).
+      boxShadow: {
+        "clay-card": "var(--sh-card)",
+        "clay-card-hover": "var(--sh-card-hover)",
+        "clay-raised": "var(--sh-raised)",
+        "clay-raised-hover": "var(--sh-raised-hover)",
+        "clay-sm": "var(--sh-sm)",
+        "clay-button": "var(--sh-button)",
+        "clay-button-hover": "var(--sh-button-hover)",
+        "clay-pressed": "var(--sh-pressed)",
+        "clay-inset": "var(--sh-inset-deep)",
+        "clay-inset-sm": "var(--sh-inset-sm)",
       },
       letterSpacing: {
         label: "0.28em",
         wide: "0.18em",
+      },
+      fontSize: {
+        "display-xl": "clamp(72px, 16vw, 210px)",
+        "display-l": "clamp(40px, 8vw, 104px)",
+        "display-m": "clamp(36px, 6vw, 72px)",
+        lead: ["18px", "1.6"],
+        body: ["16px", "1.6"],
+        caption: ["14px", "1.4"],
       },
     },
   },

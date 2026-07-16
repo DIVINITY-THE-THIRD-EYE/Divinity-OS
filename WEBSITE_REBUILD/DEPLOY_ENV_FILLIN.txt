@@ -1,0 +1,29 @@
+# ═══════════════════════════════════════════════════════════════
+# Divinity website — Vercel Production env vars (fill in the blanks)
+# Paste each into Vercel → Project → Settings → Environment Variables
+# ═══════════════════════════════════════════════════════════════
+
+# ── REQUIRED ──────────────────────────────────────────────────
+
+# Supabase (student login /portal). Same project as Flutter app.
+# Supabase → Project Settings → API. ANON KEY ONLY — never service-role.
+NEXT_PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+
+# Brevo (contact form + newsletter). app.brevo.com → SMTP & API → API Keys
+BREVO_API_KEY=
+BREVO_TO_EMAIL=          # inbox that receives enquiries
+BREVO_TO_NAME=Divinity
+BREVO_FROM_EMAIL=        # VERIFIED sender in Brevo (Senders & IP)
+BREVO_FROM_NAME=Divinity Website
+
+# ── OPTIONAL (site runs without) ──────────────────────────────
+
+BREVO_LIST_ID=           # newsletter signup list (Brevo → Contacts → Lists)
+
+NEXT_PUBLIC_SANITY_PROJECT_ID=
+NEXT_PUBLIC_SANITY_DATASET=production
+NEXT_PUBLIC_SANITY_API_VERSION=2024-01-01
+
+# /verify page — Supabase edge function. Server-only (no NEXT_PUBLIC_).
+CERT_VERIFY_ENDPOINT=https://<project-ref>.supabase.co/functions/v1/verify-certificate

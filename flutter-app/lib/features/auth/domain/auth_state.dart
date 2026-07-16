@@ -12,11 +12,6 @@ final class AuthAuthenticated extends AuthState {
   final UserRole role;
 }
 
-final class AuthOtpSent extends AuthState {
-  AuthOtpSent(this.phone);
-  final String phone;
-}
-
 final class AuthNeedsOnboarding extends AuthState {
   AuthNeedsOnboarding(this.user);
   final User user;

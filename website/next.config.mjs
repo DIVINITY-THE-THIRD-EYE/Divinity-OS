@@ -1,6 +1,11 @@
 /** @type {import('next').NextConfig} */
 const isProd = process.env.NODE_ENV === "production";
 
+// Explicit host, not a wildcard (12_STUDENT_LOGIN.md SECURITY NOTES) — read
+// from the same public env var the Supabase clients use, so it never drifts
+// from the actual project.
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
 // Content-Security-Policy. `'unsafe-inline'` is required for Next's hydration
 // bootstrap, the inline JSON-LD, and framer-motion's injected inline styles, so
 // this is defense-in-depth (frame-ancestors / base-uri / form-action / scoped
@@ -16,7 +21,7 @@ const csp = [
   "font-src 'self'",
   "style-src 'self' 'unsafe-inline'",
   "script-src 'self' 'unsafe-inline'",
-  "connect-src 'self' https://api.brevo.com",
+  `connect-src 'self' https://api.brevo.com${supabaseUrl ? ` ${supabaseUrl}` : ""}`,
 ].join("; ");
 
 const securityHeaders = [
@@ -52,6 +57,14 @@ const nextConfig = {
   },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
+  },
+  async redirects() {
+    // /services renamed to /programs (08_CORE_PAGES.md) — permanent so search
+    // engines and any bookmarked/external links transfer cleanly.
+    return [
+      { source: "/services", destination: "/programs", permanent: true },
+      { source: "/services/:slug", destination: "/programs/:slug", permanent: true },
+    ];
   },
 };
 

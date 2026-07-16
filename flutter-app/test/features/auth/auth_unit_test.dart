@@ -247,87 +247,16 @@ void main() {
     });
   });
 
-  group('AuthNotifier — signInWithPhone', () {
-    test('transitions to AuthAuthenticated on success', () async {
-      final n = await buildNotifier(repo);
-
-      final user = MockUser();
-      when(() => user.id).thenReturn('uid-3');
-      when(
-        () => repo.signInWithPhone(
-          phone: any(named: 'phone'),
-          password: any(named: 'password'),
-        ),
-      ).thenAnswer((_) async {});
-      when(() => repo.currentUser).thenReturn(user);
-      when(
-        () => repo.fetchProfile('uid-3'),
-      ).thenAnswer((_) async => activeProfile(role: 'TRAINER'));
-
-      await n.signInWithPhone(phone: '+919876543210', password: 'secret');
-
-      expect(n.state, isA<app_auth.AuthAuthenticated>());
-      expect(
-        (n.state as app_auth.AuthAuthenticated).role,
-        app_auth.UserRole.trainer,
-      );
-    });
-
-    test('sets AuthError on AuthException', () async {
-      final n = await buildNotifier(repo);
-
-      when(
-        () => repo.signInWithPhone(
-          phone: any(named: 'phone'),
-          password: any(named: 'password'),
-        ),
-      ).thenThrow(const AuthException('Invalid login credentials'));
-
-      await n.signInWithPhone(phone: '+919876543210', password: 'wrong');
-
-      expect(n.state, isA<app_auth.AuthError>());
-      expect(
-        (n.state as app_auth.AuthError).message,
-        contains('Invalid login'),
-      );
-    });
-  });
-
-  group('AuthNotifier — sendOtp / verifyOtp', () {
-    test('sendOtp transitions to AuthOtpSent', () async {
-      final n = await buildNotifier(repo);
-
-      when(
-        () => repo.signInWithOtp(phone: any(named: 'phone')),
-      ).thenAnswer((_) async {});
-
-      await n.sendOtp(phone: '+919876543210');
-
-      expect(n.state, isA<app_auth.AuthOtpSent>());
-      expect((n.state as app_auth.AuthOtpSent).phone, '+919876543210');
-    });
-
-    test('sendOtp sets AuthError on AuthException', () async {
-      final n = await buildNotifier(repo);
-
-      when(
-        () => repo.signInWithOtp(phone: any(named: 'phone')),
-      ).thenThrow(const AuthException('Phone not supported'));
-
-      await n.sendOtp(phone: '+919876543210');
-
-      expect(n.state, isA<app_auth.AuthError>());
-    });
-
-    test('verifyOtp resolves to AuthAuthenticated on success', () async {
+  group('AuthNotifier — role resolution', () {
+    test('signInWithEmail resolves ADMIN role from profile', () async {
       final n = await buildNotifier(repo);
       final user = MockUser();
       when(() => user.id).thenReturn('uid-4');
 
       when(
-        () => repo.verifyOtp(
-          phone: any(named: 'phone'),
-          token: any(named: 'token'),
+        () => repo.signInWithEmail(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
         ),
       ).thenAnswer((_) async {});
       when(() => repo.currentUser).thenReturn(user);
@@ -335,7 +264,7 @@ void main() {
         () => repo.fetchProfile('uid-4'),
       ).thenAnswer((_) async => activeProfile(role: 'ADMIN'));
 
-      await n.verifyOtp(phone: '+919876543210', token: '123456');
+      await n.signInWithEmail(email: 'admin@divinity.com', password: 'secret');
 
       expect(n.state, isA<app_auth.AuthAuthenticated>());
       expect(
@@ -343,25 +272,6 @@ void main() {
         app_auth.UserRole.admin,
       );
     });
-
-    test(
-      'verifyOtp sets AuthError when currentUser is null after verify',
-      () async {
-        final n = await buildNotifier(repo);
-
-        when(
-          () => repo.verifyOtp(
-            phone: any(named: 'phone'),
-            token: any(named: 'token'),
-          ),
-        ).thenAnswer((_) async {});
-        when(() => repo.currentUser).thenReturn(null);
-
-        await n.verifyOtp(phone: '+919876543210', token: '999999');
-
-        expect(n.state, isA<app_auth.AuthError>());
-      },
-    );
   });
 
   group('AuthNotifier — signOut', () {

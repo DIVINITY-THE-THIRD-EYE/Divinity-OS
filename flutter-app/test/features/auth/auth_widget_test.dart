@@ -1,10 +1,8 @@
 import 'package:divinity_app/core/theme/app_theme.dart';
 import 'package:divinity_app/features/auth/data/auth_repository.dart';
-import 'package:divinity_app/features/auth/domain/auth_state.dart' as app_auth;
 import 'package:divinity_app/features/auth/presentation/auth_provider.dart';
 import 'package:divinity_app/features/auth/presentation/login_screen.dart';
 import 'package:divinity_app/features/auth/presentation/onboarding/steps/step_consent.dart';
-import 'package:divinity_app/features/auth/presentation/otp_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -38,21 +36,6 @@ class _FakeAuthRepository implements AuthRepository {
 
   @override
   Future<void> signInWithApple() async {}
-
-  @override
-  Future<void> signInWithPhone({
-    required String phone,
-    required String password,
-  }) async {}
-
-  @override
-  Future<void> signInWithOtp({required String phone}) async {}
-
-  @override
-  Future<void> verifyOtp({
-    required String phone,
-    required String token,
-  }) async {}
 
   @override
   Future<void> signOut() async {}
@@ -104,7 +87,7 @@ void main() {
 
       expect(find.text('Continue with Google'), findsOneWidget);
       expect(find.text('Continue with Email'), findsOneWidget);
-      expect(find.text('Continue with Phone'), findsOneWidget);
+      expect(find.text('Continue with Phone'), findsNothing);
       expect(find.text('Create Account'), findsOneWidget);
     });
 
@@ -118,19 +101,6 @@ void main() {
       expect(find.text('Email Address'), findsOneWidget);
       expect(find.text('Password'), findsOneWidget);
       expect(find.text('Sign In'), findsOneWidget);
-      expect(find.text('Use another sign-in method'), findsOneWidget);
-    });
-
-    testWidgets('toggles to Phone Sign In form', (tester) async {
-      await tester.pumpWidget(_wrap(const LoginScreen()));
-      await tester.pump();
-
-      await tester.tap(find.text('Continue with Phone'));
-      await tester.pump();
-
-      expect(find.text('Phone Number'), findsOneWidget);
-      expect(find.text('Sign In'), findsOneWidget);
-      expect(find.text('Use OTP instead'), findsOneWidget);
       expect(find.text('Use another sign-in method'), findsOneWidget);
     });
 
@@ -155,33 +125,6 @@ void main() {
 
       expect(find.text('Divinity'), findsOneWidget);
       expect(find.text('THE THIRD EYE'), findsOneWidget);
-    });
-  });
-
-  group('OtpScreen', () {
-    Widget wrapOtp() {
-      return ProviderScope(
-        overrides: [
-          authStateProvider.overrideWith((ref) => _OtpSentNotifier()),
-        ],
-        child: MaterialApp(theme: AppTheme.dark(), home: const OtpScreen()),
-      );
-    }
-
-    testWidgets('renders OTP input and Verify button', (tester) async {
-      await tester.pumpWidget(wrapOtp());
-      await tester.pump();
-
-      expect(find.text('Verify OTP'), findsOneWidget);
-      expect(find.text('Resend OTP'), findsOneWidget);
-      expect(find.text('Back to Login'), findsOneWidget);
-    });
-
-    testWidgets('shows phone from AuthOtpSent state', (tester) async {
-      await tester.pumpWidget(wrapOtp());
-      await tester.pump();
-
-      expect(find.text('+919876543210'), findsOneWidget);
     });
   });
 
@@ -235,11 +178,4 @@ void main() {
       expect(consent, isTrue);
     });
   });
-}
-
-// Notifier that starts in AuthOtpSent for OtpScreen widget tests.
-class _OtpSentNotifier extends AuthNotifier {
-  _OtpSentNotifier() : super(_FakeAuthRepository()) {
-    state = app_auth.AuthOtpSent('+919876543210');
-  }
 }

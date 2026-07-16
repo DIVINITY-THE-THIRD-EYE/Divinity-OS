@@ -10,10 +10,14 @@ on:
     branches: [main, feature/trust-certificates]
     paths:
       - 'flutter-app/**'
+  # No paths filter on PRs: "CodeQL Analysis" is a REQUIRED status check in
+  # branch protection. A path filter here means it never reports on
+  # website/supabase-only PRs, which then stay permanently "blocked" (exactly
+  # what happened to PR #28). Same fix as flutter.yml: always run, gate the
+  # heavy build/scan steps behind a change-detection guard so the required
+  # context still posts green on unrelated PRs.
   pull_request:
     branches: [main]
-    paths:
-      - 'flutter-app/**'
   schedule:
     # Run every Sunday at 2 AM IST (8:30 PM UTC Saturday)
     - cron: '30 20 * * 6'
@@ -42,6 +46,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Only PRs get the short-circuit; push/schedule/dispatch always scan.
+      - name: Detect Flutter changes
+        if: github.event_name == 'pull_request'
+        uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            flutter:
+              - 'flutter-app/**'
+              - '.github/workflows/codeql-flutter.yml'
+
       # security-extended (not security-and-quality): keeps every security
       # query security-and-quality would run, drops only the pure code-style/
       # quality queries (naming conventions, dead code, etc. — not
@@ -50,18 +65,21 @@ jobs:
       # were exceeding this account's available Actions minutes. See
       # docs/CODEQL_STRATEGY.md for the full rationale.
       - name: Initialize CodeQL
+        if: github.event_name != 'pull_request' || steps.changes.outputs.flutter == 'true'
         uses: github/codeql-action/init@v3
         with:
           languages: java-kotlin
           queries: security-extended
 
       - name: Set up Java 17
+        if: github.event_name != 'pull_request' || steps.changes.outputs.flutter == 'true'
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: temurin
 
       - name: Set up Flutter
+        if: github.event_name != 'pull_request' || steps.changes.outputs.flutter == 'true'
         uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -71,6 +89,7 @@ jobs:
       # re-downloaded the full Gradle/Android dependency graph from scratch
       # every run (~12 minutes of the ~25-40 minute total job time).
       - name: Cache Gradle
+        if: github.event_name != 'pull_request' || steps.changes.outputs.flutter == 'true'
         uses: actions/cache@v4
         with:
           path: |
@@ -81,10 +100,12 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Install dependencies
+        if: github.event_name != 'pull_request' || steps.changes.outputs.flutter == 'true'
         working-directory: flutter-app
         run: flutter pub get
 
       - name: Build (required for CodeQL to analyze generated code)
+        if: github.event_name != 'pull_request' || steps.changes.outputs.flutter == 'true'
         working-directory: flutter-app
         run: flutter build apk --debug
         env:
@@ -97,6 +118,7 @@ jobs:
       # Security tab instead of only a downloadable artifact. See
       # docs/CODEQL_VERIFICATION.md for the run that confirmed this.
       - name: Perform CodeQL Analysis
+        if: github.event_name != 'pull_request' || steps.changes.outputs.flutter == 'true'
         uses: github/codeql-action/analyze@v3
         with:
           category: /language:java-kotlin
