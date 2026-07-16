@@ -124,10 +124,13 @@ test.describe("16 accessibility — axe sweep", () => {
     // A well-formed email + wrong password passes native validation, so the
     // submit reaches the auth call, which fails (no env in CI / bad creds
     // locally) — either way the error must land in an aria-live region.
+    // Scoped to the form: the page also has Next.js's route-announcer div,
+    // which carries role="alert" globally and would otherwise make this
+    // locator match 2 elements (strict-mode violation).
     await email.fill("nobody@example.com");
     await password.fill("wrong-password");
     await page.getByRole("button", { name: /sign in/i }).click();
-    const liveRegion = page.locator('[role="alert"]');
+    const liveRegion = page.locator('form [role="alert"]');
     await expect(liveRegion).toBeVisible();
   });
 
