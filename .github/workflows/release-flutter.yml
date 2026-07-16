@@ -30,7 +30,7 @@ jobs:
       # After a release tag is created, build and upload the signed AAB
       - name: Checkout (on release)
         if: ${{ steps.release.outputs['flutter-app--release_created'] }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Java 17 (on release)
         if: ${{ steps.release.outputs['flutter-app--release_created'] }}

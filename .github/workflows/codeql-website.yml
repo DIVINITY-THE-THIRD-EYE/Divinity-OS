@@ -45,7 +45,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # Only PRs get the short-circuit; push/schedule/dispatch always scan.
       - name: Detect website changes
