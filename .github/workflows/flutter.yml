@@ -157,7 +157,7 @@ jobs:
             --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
 
       - name: Upload App Bundle artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: divinity-release-aab
           path: flutter-app/build/app/outputs/bundle/release/app-release.aab
