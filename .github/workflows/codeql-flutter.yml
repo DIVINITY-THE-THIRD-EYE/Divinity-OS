@@ -73,7 +73,7 @@ jobs:
 
       - name: Set up Java 17
         if: github.event_name != 'pull_request' || steps.changes.outputs.flutter == 'true'
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           java-version: '17'
           distribution: temurin
